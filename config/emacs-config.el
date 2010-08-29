@@ -197,7 +197,7 @@
 (require 'vb-config)
 (require 'xml-config)
 (require 'sql-config)
-(require 'mail-config)
+;;(require 'mail-config)
 (require 'erc-config)
 (require 'gnus-config)
 (require 'jde)

@@ -11,11 +11,8 @@
 (setq sql-db2-program "db2cmd db2clp.bat db2.exe")
 (setq sql-ms-program "osql")
 (setq sql-mysql-program "c:/cygwin/usr/local/bin/mysql")
-(setq sql-ms-password "secret123")
 (setq sql-pop-to-buffer-after-send-region nil)
 (setq sql-product (quote ms))
-(setq sql-server "syssrv100")
-(setq sql-user "Intranet1")
 
 
 (provide 'sql-config)
