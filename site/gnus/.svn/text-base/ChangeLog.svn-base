@@ -1,0 +1,344 @@
+2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* GNUS-NEWS: Update copyright.
+
+	* etc/gnus-tut.txt (Gnus FAQ): Remove text version.  Refer to info
+	documentation and online version instead.
+
+	* GNUS-NEWS: Changed "Dired integration"
+
+2004-01-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* GNUS-NEWS: Add `gnus-group-read-ephemeral-group'.
+
+2003-12-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* GNUS-NEWS: Mention change of `e' in draft groups.
+
+2003-05-01  Jesper Harder  <harder@ifa.au.dk>
+
+	* etc/gnus-tut.txt (http): Update.
+
+2003-05-01  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Add prefix limit feature.
+
+2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* GNUS-NEWS: Added Article Buttons.  Added Upgrading (from Simon
+	Josefsson).  Add gnus-mime-delete-part, markup fixes and some
+	other corrections.  Mention Gnus FAQ.
+	
+
+2003-04-30  Jesper Harder  <harder@ifa.au.dk>
+
+	* GNUS-NEWS: Additions.
+
+2003-04-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* GNUS-NEWS: Fixed X-Draft-Headers entry.
+
+2003-04-27  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Fix PGP entry.  Doc GCC variable change.
+
+2003-04-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* make.bat: Flag as binary to ensure DOS line terminators.  Delete
+	trailing whitespace.
+
+2003-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
+	From Frank Schmitt  <ich@frank-schmitt.net>
+
+	* etc/gnus-tut.txt: Update Gnus FAQ, delete trailing whitespace.
+
+2003-04-17  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* make.bat: Cleaned up end-of-line characters.
+
+2003-04-17  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile.in (XEMACS): Use @EMACS@.
+
+	* aclocal.m4 (AC_PATH_LISPDIR): Set $datadir to $prefix/lib if
+	building with XEmacs.
+
+	* aclocal.m4 (AC_SET_BUILD_FLAGS): New.  So we can set XEmacs
+	command line options to '-batch -no-autoloads...' for a cleaner
+	build environment.
+
+	* configure.in: Use it.
+
+	* configure: Regenerate.
+
+2003-04-16  Reiner Steib  <Reiner.Steib@gmx.de>
+	From Frank Schmitt  <ich@frank-schmitt.net>
+
+	* make.bat: New variable EMACS_ARGS.  Changed XEmacs args.
+
+2003-03-23  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Add IDNA.  Add TLS.  Fix USEFOR reference.
+
+2003-03-22  Frank Schmitt  <ich@frank-schmitt.net> 
+	
+	* make.bat: Redone from scratch; supports both Emacs and XEmacs
+	now; correctly generate gnus-load.el; check for errors; use
+	makeinfo if available, infohack.el if it isn't; be less verbose
+	when copying files; copy files from etc/gnus and etc/smilies, too
+
+2003-03-22  Frank Schmitt  <ich@frank-schmitt.net> 
+	
+	* make-x.bat: Removed, make.bat does its job now.
+
+2003-03-22  Frank Schmitt  <ich@frank-schmitt.net> 
+	
+	* etc/gnus-tut.txt: Include Gnus FAQ from http://my.gnus.org.
+
+2003-02-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* GNUS-NEWS: Renamed `gnus-unsightly-citation-regexp' to
+	`gnus-cite-unsightly-citation-regexp'.
+
+2003-02-18  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Talk about canlock more.
+
+2003-02-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* GNUS-NEWS: Add user visible changes from Michael Shields from
+	the past couple of days.  Actual text from Michael.
+
+2003-01-24  Jesper Harder  <harder@ifa.au.dk>
+
+	* etc/gnus-tut.txt: Update.
+
+2003-01-15  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Add.  Fix from Reiner Steib
+	<4uce.02.r.steib@gmx.net>.
+
+2003-01-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* make.bat: Removed "-no-init-file" (it's the same as "-q").  Use
+	new variables EMACSBATCH and GNUS_INFO_DIR.  Install gnus-?,
+	message-?, sieve and pgg (in texi).  Added hint for dir entries.
+
+	* make-x.bat: Ditto.
+
+2003-01-13  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Add smileys, Sender:, message-utils.
+	Expand anti-spam.  Fixes.
+
+2003-01-09  Simon Josefsson  <jas@extundo.com>
+
+	* etc/gnus/preview.xpm: Add.
+
+2003-01-06  Simon Josefsson  <jas@extundo.com>
+
+	* etc/gnus/receipt.xpm: Add.
+
+2003-01-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* etc/gnus/preview.xbm: Add.
+
+2003-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* etc/gnus/gnus.xpm (oort): Make the color replaceable.
+
+2002-12-05  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* etc/smilies/*.pbm: Made them binary.
+
+2002-11-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* etc/smilies/blink.xpm: Changed smileys and some new ones from
+	Alex Schroeder <alex@emacswiki.org>.
+
+2002-04-26  Steve Youngs  <youngs@xemacs.org>
+
+	* aclocal.m4 (AC_PATH_INFODIR): New.  Defaults to '$prefix/info'
+	for Emacs and 'site-packages/info' for XEmacs.
+	(AC_PATH_ETCDIR): Drop 'gnus' off the end of the default directory
+	for XEmacs.
+
+	* configure.in: Use 'AC_PATH_INFO_DIR'.
+
+2002-02-22  Steve Youngs  <youngs@xemacs.org>
+
+	* aclocal.m4 (AC_PATH_LISPDIR): Default to
+	.../site-packages/lisp/gnus for XEmacs. 
+	(AC_PATH_ETCDIR): Default to .../site-packages/etc/gnus for
+	XEmacs. 
+
+2002-02-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* etc/gnus/gnus.xpm: Remove some garbages at the end of the file.
+
+2002-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* etc/gnus/oort.xface (X-Face): Oort X-Face from
+	Raymond Scholz <ray-2002@zonix.de>.
+	
+2002-01-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* etc/gnus/describe-group.xpm: Set pixels of first line to
+	background color. A bug in Emacs?
+
+2001-12-18  Josh Huber  <huber@alum.wpi.edu>
+
+	* ChangeLog, todo: (oops) changed buffer-file-coding-system back
+	to coding.
+
+2001-12-18  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* make-x.bat: Ensure nonempty variable value.  Reported by Frank
+	Haun <pille3000@gmx.net>.
+
+2001-12-18 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* ChangeLog, todo: Add `coding'.
+
+2001-12-17  Josh Huber  <huber@alum.wpi.edu>
+
+	* ChangeLog: changed coding to buffer-file-coding-system
+	* todo: same
+
+2001-12-10  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* make-x.bat: Code cleanup.  Fix a bug with "/copy".  From Frank
+	Schmitt <ich@Frank-Schmitt.net>.
+
+2001-11-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* make-x.bat: Use parameter "/copy" rather than "copy" for increased
+	dwimishness for old-time DOS users.  From Frank Schmitt
+	<ich@Frank-Schmitt.net>.
+
+2001-11-15  Simon Josefsson  <jas@extundo.com>
+
+	* etc/gnus/unimportant.xpm, etc/gnus/important.xpm: New files.
+
+2001-11-11  Simon Josefsson  <jas@extundo.com>
+
+	* make-x.bat: Don't use -nw.  Suggested by Frank Haun
+	<pille3000@gmx.net>.
+
+2001-11-01 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* etc/smilies/blink.xpm: New set of xpm. From Oliver Scholz
+	<oscholz@my.gnus.org>.
+
+2001-10-29  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* etc/smilies/sad.pbm: New bitmap.
+	* etc/smilies/blink.pbm: Ditto.
+	Contributed by Kim F. Storm <storm@cua.dk>.
+
+2001-10-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Frank Schmitt <ich@Frank-Schmitt.net>. 
+	
+	* make-x.bat: Use correct directory structure for XEmacs on Windows.
+
+2001-10-06 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* Makefile.in (uninstall): Add.
+	
+	* etc/Makefile.in (uninstall): Add.
+
+2001-09-27 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* aclocal.m4 (GNUS_CHECK_FONTS): Typo. Use /dev/null as latex input.
+
+2001-09-27 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* aclocal.m4, configure.in: Check commercial fonts.
+
+2001-09-24 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* configure.in: Generate texi/ps/Makefile.
+
+2001-09-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* make.bat: Use parameter "/copy" rather than "copy" for increased
+	dwimishness for old-time DOS users.
+
+2001-09-18 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* make-x.bat: New.
+
+2001-07-04  Yair Friedman  <yairfr@Amdocs.com>
+
+	* make.bat: Use infohack.el to create info files.
+
+2001-05-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* etc/Makefile.in (datadir): Set this variable, like in the other
+	Makefile.in's.  Patch from Gaute B Strokkenes <gs234@cam.ac.uk>.
+
+2001-02-11 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* GNUS-NEWS: Copyright and others.
+
+2001-02-09 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* aclocal.m4 (AC_CHECK_URL): Add.
+
+	* configure.in: Use it.
+
+2001-01-15  Jesper Harder <harder@ifa.au.dk>
+
+	* make.bat: Fix doc.
+
+2000-12-22 03:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* configure.in: Add etc/Makefile.
+
+2000-12-20  Jesper Harder <jesper_harder@hotmail.com>
+
+	* make.bat: set max-lisp-eval-depth.
+
+2000-10-12  Jesper Harder <jesper_harder@hotmail.com>
+
+	* make.bat: Makes it possible to generate the Info files on
+	windows again.
+
+2000-08-24 Jesper Harder <jesper_harder@hotmail.com>
+
+	* make.bat: Use emacs.exe if emacs.bat does not exist.
+
+2000-05-07  Pavel Janik  <Pavel.Janik@inet.cz>
+
+	* gnus.texi: direntry added.
+
+	* message.texi: direntry added.
+
+	* emacs-mime.texi: direntry added.
+
+2000-07-13 10:09:52  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_CHECK_W3): Fix typo.
+
+2000-07-12 15:47:06  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* aclocal.m4: Stolen macros from w3.
+	* configure.in: Use them.
+	* configure: Generate it.
+
+2000-04-22 20:25:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* GNUS-NEWS: Outline.
+
+2000-01-06  Dave Love  <fx@gnu.org>
+
+	* aclocal.m4 (AM_PATH_LISPDIR): Check for user's EMACS setting.
+
+1999-11-13  Adrian Aichner  <aichner@ecf.teradyne.com>
+
+	* xemacs.mak: New NMAKE file to support build and install on
+	Windows NT.
+
+;; Local Variables:
+;; coding: iso-2022-7bit
+;; End:

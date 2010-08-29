@@ -1,0 +1,22 @@
+;; Object remember/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "remember/"
+  :tables (list 
+   (semanticdb-table "remember-config.el"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("remember" include nil nil [134 153]) ("planner" include nil nil [154 172]) ("planner-rss" include nil nil [173 195]) ("remember-planner" include nil nil [196 223]) ("setq" code nil nil [251 291]) ("setq" code nil nil [292 352]) ("setq" code nil nil [353 418]) ("defvaralias" code nil nil [420 494]) ("ajk/my-cleanup-then-save-buffers-kill-emacs" function (:user-visible-flag t :arguments ("&optional" "arg")) nil [496 916]) ("defalias" code nil nil [917 1013]) ("sacha/remember-to-notes" function (:user-visible-flag t) nil [1015 1207]) ("global-set-key" code nil nil [1209 1269]) ("remember-config" package nil nil [1271 1297]))
+    :file "remember-config.el"
+    :pointmax 1297
+    :unmatched-syntax 'nil
+    )
+   (semanticdb-table "remember.elc"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("if" code nil nil [248 502]) ("remember" package nil nil [567 586]) ("remember-version" variable (:constant-flag t :default-value "$Version: arch$") nil [619 675]) ("custom-declare-group" code nil nil [676 759]) ("custom-declare-variable" code nil nil [810 902]) ("custom-declare-variable" code nil nil [967 1061]) ("custom-declare-variable" code nil nil [1154 1254]) ("custom-declare-variable" code nil nil [1499 1623]) ("custom-declare-variable" code nil nil [1699 1806]) ("remember-buffer" variable (:default-value "*Remember*") nil [1857 1906]) ("custom-declare-variable" code nil nil [1966 2073]) ("custom-declare-variable" code nil nil [2235 2427]) ("remember-annotation" variable nil nil [2454 2498]) ("remember-initial-contents" variable nil nil [2555 2605]) ("remember-before-remember-hook" variable nil nil [2669 2723]) ("defalias" code nil nil [2810 3462]) ("defalias" code nil nil [3510 3648]) ("put" code nil nil [3649 3724]) ("defalias" code nil nil [3769 3955]) ("put" code nil nil [3956 4025]) ("defalias" code nil nil [4104 4222]) ("custom-declare-variable" code nil nil [4280 4385]) ("custom-declare-variable" code nil nil [4444 4551]) ("defalias" code nil nil [4790 5802]) ("custom-add-option" code nil nil [5803 5877]) ("custom-declare-variable" code nil nil [5930 6030]) ("custom-declare-variable" code nil nil [6081 6180]) ("defalias" code nil nil [6236 6822]) ("custom-add-option" code nil nil [6823 6895]) ("defalias" code nil nil [7227 7628]) ("defalias" code nil nil [7765 7867]) ("defalias" code nil nil [7919 8004]) ("byte-code" code nil nil [8005 8244]) ("defalias" code nil nil [8534 8791]))
+    :file "remember.elc"
+    :pointmax 8792
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0beta3"
+  :semanticdb-version "2.0beta3"
+  )

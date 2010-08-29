@@ -1,0 +1,20 @@
+% Reference Booklet for (ding) Gnus, Letter format.
+% To be processed with latex 2e
+\documentclass{article}
+
+\usepackage{supertabular}
+
+\newlength{\logowidth} \setlength{\logowidth}{6.861in}
+\newlength{\logoheight} \setlength{\logoheight}{7.013in}
+
+\def\Guide{Card}\def\guide{card}
+\def\logoscale{0.25}
+
+\usepackage{epsfig}
+
+\textwidth 4.5in \textheight 7.5in \topmargin -1.0in
+\oddsidemargin -0.5in \evensidemargin -0.5in
+\begin{document}
+\small%\footnotesize
+\input{booklet}
+\end{document}

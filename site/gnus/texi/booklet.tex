@@ -1,0 +1,172 @@
+% include file for the Reference Booklet (16 pages).
+\def\Guide{Booklet}\def\guide{booklet}
+\def\logoscale{0.5}
+\def\sec{\section}
+\def\subsec{\subsection}
+\def\subsubsec{\subsubsection}
+\def\blankpage{\vspace*{\fill}\par
+%\centerline{(This page intentionally left blank.)}
+\par\vspace*{\fill}\pagebreak}
+
+\input{gnusref}
+
+\setcounter{page}{0}
+\thispagestyle{empty}
+\vspace*{\fill}
+\Title
+\vspace{0.4in}
+\Logo{booklet}
+\vspace*{\fill}
+\pagebreak
+
+% TODO: how does this work ?
+%\tableofcontents
+
+\Notes
+%
+\section*{Group-Mode}
+\GroupModeGeneral
+    \subsection*{Group Subscribedness-Levels}
+    \GroupLevels
+    \subsection*{List Groups}
+    \ListGroups
+    \subsection*{Create/Edit Foreign Groups}
+    \CreateEditGroups
+    \subsection*{Unsubscribe, Kill and Yank Groups}
+    \SubscribeKillYankGroups
+    \subsection*{Mark Groups}
+    \MarkGroups
+    \subsection*{Group-Unplugged}
+    \GroupUnplugged
+% topics in group-mode
+    \subsection*{Group Topics}
+    \GroupTopicsGeneral
+    \subsubsection*{Topic Sorting}
+    \TopicSorting
+\pagebreak
+% summary-mode
+\section*{Summary-Mode}
+\SummaryModeGeneral
+    \subsection*{Select Articles}
+    \SelectArticles
+%
+    \subsection*{Threading}
+    \Threading
+%
+    \subsection*{Limiting}
+    \Limiting
+    \subsection*{Sort the Summary-Buffer}
+    \SortSummary
+    \subsection*{Score (Value) Commands}
+    \Scoring
+% 
+    \subsection*{MIME operations from the Summary-Buffer}
+    \MIMESummary
+    \subsection*{Extract Series (Uudecode etc)}
+    \ExtractSeries
+    \subsection*{Output Articles}
+    \OutputArticles
+%
+    \subsection*{Post, Followup, Reply, Forward, Cancel}
+    \PostReplyetc
+    \subsection*{Message-Composition}
+    \MsgCompositionGeneral
+        \subsubsection*{Jumping in message-buffer}
+        \MsgCompositionMovementArticle
+        \subsubsection*{Attachments/MML}
+        \MsgCompositionMML
+% marking articles
+    \subsection*{Mark Articles}
+    \MarkArticlesGeneral
+        \subsubsection*{Mark Based on Score}
+        \MarkByScore
+        \subsubsection*{The Process Mark}
+        \ProcessMark
+        \subsubsection*{Mark Indication-Characters}
+        \MarkCharacters
+%
+    \subsection*{Summary-Unplugged}
+    \SummaryUnplugged
+    \subsection*{Mail-Group Commands}
+    \MailGroups
+    \subsection*{Draft-Group Commands}
+    \DraftGroup
+% exiting
+    \subsection*{Exit the Summary-Buffer}
+    \ExitSummary
+%
+%
+\section*{Article Mode (reading)}
+\ArticleModeGeneral
+    \subsection*{Wash the Article-Buffer}
+    \WashArticle
+    \subsubsection*{Blank Lines and Whitespace}
+    \BlankAndWhitespace
+    \subsubsection*{Picons, X-faces, Smileys}
+    \Picons
+    \subsubsection*{Time and Date}
+    \TimeAndDate
+    \subsection*{Hide/Highlight Parts of the Article}
+    \HideHighlightArticle
+    \subsection*{MIME operations from the Article-Buffer (reading)}
+    \MIMEArticleMode
+%
+%
+\section*{Server Mode}
+\ServerMode
+    \subsection*{Unplugged-Server}
+    \ServerUnplugged
+%
+%
+\section*{Browse Server Mode}
+\BrowseServer
+
+%\pagebreak
+\vspace*{\fill}
+\Copyright
+
+%% \pagebreak
+%% \Notes
+%% \GroupLevels
+%% \Marks
+%% \General
+%% \ServerMode
+%% \BrowseServer
+%% \ArticleMode
+%% \pagebreak
+
+%% \GroupMode
+%% \ListGroups     
+%% \CreateGroups   
+%% \SortGroups     
+%% \SOUP           
+%% \MarkGroups     
+%% \Unsubscribe    
+%% \GroupTopics    
+%% \SummaryMode    
+%% \SortSummary    
+%% \Article        
+%% \MailGroup      
+%% \Limit          
+%% \GotoArticle    
+%% \MarkArticles   
+%% \MarkScore      
+%% \ProcessMark    
+%% \OutputArticles 
+%% \Send           
+%% \Exit           
+%% \Thread         
+%% \Score          
+%% \Wash           
+%% \Hide           
+%% \Highlight      
+%% \Extract        
+%% \PickAndRead    
+
+%% %\pagebreak
+%% %\sec{Personal Notes}
+%% %\blankpage
+
+%% \thispagestyle{empty}
+%% \vspace*{\fill}
+%% \CopyRight

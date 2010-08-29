@@ -1,0 +1,21 @@
+;; Object lisp/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "lisp/"
+  :tables (list 
+   (semanticdb-table "jde-plugins.el"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("eieio" include nil nil [976 992]) ("executable" include nil nil [993 1014]) ("jde-plugins-directory" variable (:default-value (expand-file-name "plugins" (jde-root))) nil [1017 1164]) ("jde-plugin" type (:typemodifiers ("\"Class of plugins.\"") :members (("bsh-cp" variable (:documentation "Beanshell classpath for this plugin." :type "list") nil nil) ("menu-spec" variable (:documentation "Specifies menu for this plugin." :type "list") nil nil) ("plugins" variable (:documentation "Installed plugins." :static-flag t :default-value "nil" :type "list") nil nil)) :type "class") nil [1166 1554]) ("jde-pi-register" function (:arguments ("plugin")) nil [1557 1745]) ("jde-pi-get-plugin-dir" function (:arguments ("plugin")) nil [1748 1893]) ("jde-pi-load-plugin" function (:arguments ("plugin")) nil [1898 2766]) ("jde-pi-load-plugins" function (:user-visible-flag t) nil [2771 3444]) ("jde-pi-load-plugins" code nil nil [3446 3467]) ("jde-pi-get-bsh-classpath" function nil nil [3469 3756]) ("jde-pi-install-plugins" function (:user-visible-flag t) nil [3763 4755]) ("jde-plugin-make-menu-spec" function nil nil [4758 4971]) ("jde-plugin-mode-map" variable (:default-value (let ((km (make-sparse-keymap)) (menu-spec (jde-plugin-make-menu-spec))) (if menu-spec (easy-menu-define jde-plugin-menu km "JDEE Plugin Minor Mode Menu" menu-spec)) km)) nil [4973 5225]) ("jde-plugin-minor-mode" variable nil nil [5227 5311]) ("make-variable-buffer-local" code nil nil [5313 5364]) ("jde-plugin-minor-mode" function (:user-visible-flag t :arguments ("&optional" "arg")) nil [5366 5999]) ("semantic-add-minor-mode" code nil nil [6001 6079]) ("jde-plugins" package nil nil [6082 6104]))
+    :file "jde-plugins.el"
+    :pointmax 6889
+    )
+   (semanticdb-table "jde-util.el"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("efc" include nil nil [1528 1542]) ("if" code nil nil [1544 1612]) ("jde-line-beginning-position" function (:arguments ("&optional" "n")) nil [1614 1777]) ("jde-line-end-position" function (:arguments ("&optional" "n")) nil [1779 1922]) ("jde-require" function (:arguments ("feature")) nil [1924 2403]) ("jde-assert-source-buffer" function nil nil [2405 2623]) ("if" code nil nil [2664 3119]) ("if" code nil nil [3121 3462]) ("jde-get-line-at-point" function (:arguments ("&optional" "pos")) nil [3465 3750]) ("jde-with-file-contents" function (:arguments ("file" "&rest" "body")) nil [3752 4546]) ("jde-normalize-paths" function (:arguments ("pathlist" "&optional" "symbol")) nil [4548 4804]) ("jde-remove-inner-class" function (:arguments ("class")) nil [4807 4928]) ("jde-find-class-source-file" function (:arguments ("class")) nil [4930 7272]) ("jde-find-class-source" function (:user-visible-flag t :arguments ("class" "&optional" "other-window")) nil [7279 8336]) ("jde-root" function nil nil [8340 8913]) ("jde-find-jde-data-directory" function nil nil [8915 9529]) ("jde-temp-directory" function nil nil [9531 9900]) ("jde-get-java-source-buffers" function nil nil [9902 10161]) ("jde-get-project-source-buffers" function (:arguments ("&optional" "project-file")) nil [10163 10763]) ("jde-get-visible-source-buffers" function nil nil [10765 11049]) ("jde-get-selected-source-buffer" function nil nil [11051 11210]) ("jde-util" package nil nil [11213 11232]))
+    :file "jde-util.el"
+    :pointmax 13940
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0beta3"
+  :semanticdb-version "2.0beta3"
+  )

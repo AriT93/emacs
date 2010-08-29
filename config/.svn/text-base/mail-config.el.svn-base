@@ -1,0 +1,31 @@
+(message "loading mail-config")
+(setenv "MAILHOST" "pop.mail.yahoo.com")
+(setq rmail-primary-inbox-list
+	  '("po:arit93" )rmail-pop-password-required t)
+(setq rmail-pop-password-required t)
+
+;;(setq ange-ftp-ftp-program-name "c:/windows/ftp.exe")
+
+
+(load-library "smtpmail")
+(setq send-mail-function `smtpmail-send-it)
+(put 'upcase-region 'disabled nil)
+
+(setq user-mail-address "arit93@yahoo.com")
+(setq user-full-name "Ari Turetzky")
+(setq mail-source-delete-incoming nil)
+(setq mail-sources nil)
+(setq rmail-displayed-headers "^To:\\|^From:\\|^Subject:\\|^Sender:\\|X-Apparently-to:\\|^CC:\\|^BCC:")
+(setq rmail-dont-reply-to-names "arit93@yahoo.com")
+(setq rmail-preserve-inbox t)
+(setq smtpmail-starttls-credentials '(("smtp.mail.yahoo.com" 587 "arit93@yahoo.com" "9l3tl2")))
+(setq smtpmail-auth-credentials (quote (("smtp.mail.yahoo.com" 587 "arit93@yahoo.com" "9l3tl2"))))
+(setq smtpmail-default-smtp-server "smtp.mail.yahoo.com")
+(setq smtpmail-smtp-server "smtp.mail.yahoo.com")
+
+(setq smtpmail-debug-info t)
+(setq smtpmail-smtp-service 587)
+
+(setq smtpmail-warn-about-unknown-extensions t)
+
+(provide 'mail-config)

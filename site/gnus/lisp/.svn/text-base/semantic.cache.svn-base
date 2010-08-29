@@ -1,0 +1,23 @@
+;; Object semantic.cache
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "semantic.cache"
+  :tables (list 
+   (semanticdb-table "Makefile"
+    :major-mode 'makefile-mode
+    :tags '(("datadir" variable (:default-value (("${prefix}/share"))) nil [1 27]) ("lispdir" variable (:default-value (("$(datadir)/emacs/site-lisp"))) nil [27 64]) ("prefix" variable (:default-value (("/usr"))) nil [64 78]) ("srcdir" variable (:default-value (("/cygdrive/j/emacs/site/gnus-5.10.6/lisp/"))) nil [78 128]) ("subdir" variable (:default-value (("lisp"))) nil [128 142]) ("top_srcdir" variable (:default-value ((".."))) nil [142 158]) ("EMACS" variable (:default-value (("emacs"))) nil [159 173]) ("FLAGS" variable (:default-value (("-batch") ("-q") ("-no-site-file") ("-l") ("$(srcdir)/dgnushack.el"))) nil [173 231]) ("INSTALL" variable (:default-value (("/usr/bin/install") ("-c"))) nil [231 261]) ("INSTALL_DATA" variable (:default-value (("${INSTALL}") ("-m") ("644"))) nil [261 294]) ("SHELL" variable (:default-value (("/bin/sh"))) nil [294 310]) ("W3DIR" variable (:default-value (("no"))) nil [311 322]) ("URLDIR" variable (:default-value (("no"))) nil [322 334]) ("EMACS_COMP" variable (:default-value (("URLDIR=$(URLDIR)") ("W3DIR=$(W3DIR)") ("lispdir=$(lispdir)") ("srcdir=$(srcdir)") ("$(EMACS)") ("$(FLAGS)"))) nil [334 433]) ("all" function (:arguments (("clean-some") ("gnus-load.el"))) nil [434 506]) ("total" function (:arguments (("clean-some") ("gnus-load.el"))) nil [434 506]) ("clean-some" function (:arguments (nil)) nil [506 576]) ("warn" function (:arguments (("clean-some") ("gnus-load.el"))) nil [576 941]) ("clever" function (:arguments (("gnus-load.el"))) nil [1047 1112]) ("some" function (:arguments (("gnus-load.el"))) nil [1047 1112]) ("install" function (:arguments (("install-el") ("install-elc") nil)) nil [1112 1146]) ("install-el" function (:arguments (("gnus-load.el"))) nil [1146 1540]) ("install-elc" function (:arguments (("clever"))) nil [1540 1749]) ("uninstall" function (:arguments (nil)) nil [1749 1891]) ("tags" function (:arguments (nil)) nil [1891 1910]) ("separately" function (:arguments (nil)) nil [1910 2006]) ("pot" function (:arguments (nil)) nil [2006 2061]) ("gnus-load.el" function (:arguments (nil)) nil [2061 2219]) ("distclean" function (:arguments (nil)) nil [2219 2300]) ("Makefile" function (:arguments (("$(srcdir)/Makefile.in") ("../config.status"))) nil [2300 2432]))
+    :file "Makefile"
+    :pointmax 2576
+    :unmatched-syntax '((punctuation 2535 . 2536) (symbol 2526 . 2535))
+    )
+   (semanticdb-table "dgnushack.el"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("defalias" code nil nil [1054 1079]) ("cl" include nil nil [1081 1094]) ("srcdir" variable (:default-value (or (getenv "srcdir") ".")) nil [1096 1138]) ("my-getenv" function (:arguments ("str")) nil [1140 1226]) ("if" code nil nil [1228 1297]) ("push" code nil nil [1299 1391]) ("push" code nil nil [1393 1483]) ("unless" code nil nil [1608 2736]) ("byte-compile-dest-file" function (:arguments ("filename")) nil [3012 3686]) ("bytecomp" include nil nil [3688 3707]) ("when" code nil nil [4042 5285]) ("push" code nil nil [5287 5310]) ("load" code nil nil [5311 5360]) ("defalias" code nil nil [5362 5404]) ("defalias" code nil nil [5405 5440]) ("defalias" code nil nil [5441 5481]) ("defalias" code nil nil [5482 5517]) ("defalias" code nil nil [5518 5558]) ("defalias" code nil nil [5559 5601]) ("unless" code nil nil [5623 5811]) ("when" code nil nil [5834 8204]) ("dgnushack-compile-verbosely" function nil nil [8207 8493]) ("dgnushack-compile" function (:arguments ("&optional" "warn")) nil [8495 10773]) ("dgnushack-recompile" function nil nil [10775 10858]) ("dgnushack-gnus-load-file" variable (:default-value (if (featurep (quote xemacs)) (expand-file-name "auto-autoloads.el") (expand-file-name "gnus-load.el"))) nil [10860 11002]) ("dgnushack-cus-load-file" variable (:default-value (if (featurep (quote xemacs)) (expand-file-name "custom-load.el") (expand-file-name "cus-load.el"))) nil [11004 11142]) ("dgnushack-make-cus-load" function nil nil [11144 11495]) ("dgnushack-make-auto-load" function nil nil [11497 12377]) ("dgnushack-make-load" function nil nil [12379 14213]))
+    :file "dgnushack.el"
+    :pointmax 14243
+    :unmatched-syntax '((close-paren 8202 . 8203) (symbol 5813 . 5829) (open-paren 5812 . 5813) (close-paren 5809 . 5810) (symbol 5602 . 5618) (open-paren 5601 . 5602))
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0beta1"
+  :semanticdb-version "2.0beta1"
+  )

@@ -1,0 +1,126 @@
+2006-10-20  Michael Olson  <mwolson@gnu.org>
+
+	* planner-calendar.el: Adapt for nested tag support.  Thanks to
+	Charles philip Chan for noticing.
+
+2006-10-16  Adrian Aichner  <adrian@xemacs.org>
+
+	* timeclock.el: Typo fixes.
+	* timeclock.el (timeclock-history): New.
+	* timeclock.el (timeclock-use-history): New.
+	* timeclock.el (timeclock-log): Honor timeclock-use-history.
+	* timeclock.el (timeclock-read-moment): Provide error on
+	unexpected data in timeclock-file, going unnoticed until now.
+	* timeclock.el (timeclock-find-discrep): Report line number of
+	discrepancy to ease manual fixing.
+
+2006-10-16  Michael Olson  <mwolson@gnu.org>
+
+	* planner-authz.el (planner-authz-markup-tags): Adapt for nested
+	tag support.
+
+	* planner-notes-index.el: Use add-hook instead of add-to-list, in
+	case muse-publish has not been loaded yet.  Use
+	muse-publish-markup-tags instead of planner-markup-tags.
+
+	* planner-publish.el (planner-publish-markup-tags): Adapt for
+	nested tag support.  Make the <nested-section> tag nestable.
+
+	* planner-timeclock.el: Use add-hook instead of add-to-list, in
+	case muse-publish has not been loaded yet.  Use
+	muse-publish-markup-tags and muse-colors-markup-tags instead of
+	planner-markup-tags.
+	(planner-colors-timeclock-report-tag)
+	(planner-publish-timeclock-report-tag): New functions created from
+	planner-timeclock-report-tag.
+
+2006-09-26  Michael Olson  <mwolson@gnu.org>
+
+	* planner.el (planner-setup-highlighting): Don't quote
+	beginning-of-line.  This should fix a bug that was noticed in
+	recent Emacs 22 builds.
+
+2006-09-23  John Sullivan  <john@wjsullivan.net>
+
+	* planner-el.texi (Installing from Arch): Fix arch revision
+	number.
+
+2006-09-10  Michael Olson  <mwolson@gnu.org>
+
+	* planner-zoom.el (planner-zoom-iup, planner-zoom-idown)
+	(planner-zoom-inext, planner-zoom-iprev): Use planner-page-name
+	instead of buffer-name.  This fixes a match-string error, and
+	makes things work when you have muse-file-extension set to
+	something.
+
+2006-09-04  John Sullivan  <john@wjsullivan.net>
+
+	* planner.el (planner-list-tasks-with-status): Fix doc string.
+
+2006-08-26  John Sullivan  <john@wjsullivan.net>
+
+	* planner-el.texi (Publishing Planner pages): Clarify the
+	requirements and remove redundancies.
+	(Notes): Update and clarify information about remember-planner.
+
+2006-08-22  Magnus Henoch  <mange@freemail.hu>
+
+	* planner-gnus.el (planner-gnus-browse-url): Fix marking unread
+	messages as read problem.
+
+2006-08-20  John Sullivan  <john@wjsullivan.net>
+
+	* planner-el.texi (Concept Index): Standardize and add missing
+	module filenames as index entries.
+
+2006-08-18  Marko Schütz  <schutz_m@usp.ac.fj>
+
+	* planner-timeclock-summary-proj.el
+	(planner-timeclock-proj-entries): Fix bug that occurred when a
+	timeclock entry had no project name.
+
+2006-08-12  Michael Olson  <mwolson@gnu.org>
+
+	* Makefile (.PHONY): Split long line.
+
+	* AUTHORS: Bookkeeping.
+
+	* contrib/schedule.el: Update header.
+
+	* contrib/timeclock.el: Install Adrian's changes from 2006-08-01.
+	Note that this version of the file is not distributed with GNU
+	Emacs, but with Planner instead.
+
+2006-08-11  Michael Olson  <mwolson@gnu.org>
+
+	* planner-calendar.el (planner-calendar-published-file-href): Fix
+	potential error when the calendar for next month is empty.
+
+2006-08-08  Michael Olson  <mwolson@gnu.org>
+
+	* ChangeLog.1: Rename from ChangeLog.2004 to comply with standards
+	in the Emacs source tree.
+
+	* ChangeLog.2: Rename from ChangeLog.2005 to comply with standards
+	in the Emacs source tree.
+
+	* ChangeLog.3: New file created from the old ChangeLog.
+
+2006-08-01  Adrian Aichner  <adrian@xemacs.org>
+
+	* timeclock.el: Keep timeclock-file buffer around, so that an
+	encrypted timeclock-file does not have to be opened on each
+	clocking operation (requiring entry of encryption key).
+	* timeclock.el (timeclock-get-timeclock-file-buffer): New.
+	* timeclock.el (timeclock-log): Don't kill timeclock-file buffer.
+	* timeclock.el (timeclock-log-data): Use
+	`timeclock-get-timeclock-file-buffer', which avoids reading
+	timeclock-file, if it's already in a live buffer.
+	* timeclock.el (timeclock-find-discrep): Ditto.
+	* timeclock.el (timeclock-visit-timelog): Ditto.
+
+See ChangeLog.3 for earlier changes.
+
+;; Local Variables:
+;; coding: utf-8
+;; End:

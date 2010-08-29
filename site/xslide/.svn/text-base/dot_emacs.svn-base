@@ -1,0 +1,28 @@
+;; $Id: dot_emacs,v 1.2 2003/07/18 23:28:28 tonygraham Exp $
+
+;; XSL mode
+(autoload 'xsl-mode "xslide" "Major mode for XSL stylesheets." t)
+
+;; Uncomment if you want to use `xsl-grep' outside of XSL files.
+;(autoload 'xsl-grep "xslide" "Grep for PATTERN in files matching FILESPEC." t)
+
+;; Uncomment if you want to use `xslide-process' in `xml-mode'.
+;(autoload 'xsl-process "xslide-process" "Process an XSL stylesheet." t)
+;(add-hook 'xml-mode-hook
+;	  (lambda ()
+;	    (define-key xml-mode-map [(control c) (meta control p)]
+;	      'xsl-process)))
+
+;; Turn on font lock when in XSL mode
+(add-hook 'xsl-mode-hook
+	  'turn-on-font-lock)
+
+(setq auto-mode-alist
+      (append
+       (list
+	'("\\.fo" . xsl-mode)
+	'("\\.xsl" . xsl-mode))
+       auto-mode-alist))
+
+;; Uncomment if using abbreviations
+;(abbrev-mode t)

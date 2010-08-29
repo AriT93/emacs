@@ -1,0 +1,15 @@
+;; Object contrib/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "contrib/"
+  :tables (list 
+   (semanticdb-table "schedule.el"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("calendar" include nil nil [2554 2573]) ("diary-lib" include nil nil [2574 2594]) ("holidays" include nil nil [2595 2614]) ("schedule-version" variable (:constant-flag t :default-value "2.0") nil [2616 2679]) ("defgroup" code nil nil [2681 2772]) ("schedule-week-length" variable nil nil [2795 2926]) ("schedule-workday" variable (:user-visible-flag t :default-value (if (boundp (quote timeclock-workday)) timeclock-workday (* 8 60 60))) nil [2928 3211]) ("schedule-duration-to-seconds" function (:arguments ("code")) nil [3213 3828]) ("schedule-computed-week" variable nil nil [3830 3930]) ("schedule-calculate-week" function nil nil [3932 4855]) ("schedule-week" variable (:user-visible-flag t :default-value (quote (nil ("9:00a" "8h") ("9:00a" "8h") ("9:00a" "8h") ("9:00a" "8h") ("9:00a" "8h") nil))) nil [4886 5745]) ("schedule-diary-period" variable (:user-visible-flag t) nil [5747 6235]) ("schedule-day-remainder" variable nil nil [6262 6367]) ("schedule-diary-entries" variable nil nil [6369 6445]) ("schedule-diary-entries-begin" variable nil nil [6447 6547]) ("schedule-holiday-list" variable nil nil [6549 6632]) ("schedule-initialized" variable nil nil [6634 6724]) ("schedule-completion-time" function (:arguments ("then" "count")) nil [6762 7877]) ("schedule-initialize" function nil nil [7904 8611]) ("schedule-time-add-seconds" function (:arguments ("time" "seconds")) nil [8613 8943]) ("schedule-advance-day" function (:arguments ("then" "&optional" "count")) nil [8945 9106]) ("schedule-time-to-seconds" function (:arguments ("time")) nil [9108 9290]) ("schedule-seconds-to-time" function (:arguments ("seconds")) nil [9292 9521]) ("schedule-time-diff" function (:arguments ("t1" "t2")) nil [9523 9687]) ("schedule-time-less-p" function (:arguments ("t1" "t2")) nil [9689 9867]) ("schedule-time-date" function (:arguments ("then")) nil [9869 10065]) ("schedule-seconds-to-duration" function (:arguments ("seconds")) nil [10067 10658]) ("schedule-day-begin" function (:arguments ("then")) nil [10660 11227]) ("schedule-diary-entry-times" function (:arguments ("s")) nil [11298 18367]) ("schedule-convert-diary-time" function (:arguments ("date" "diary-time")) nil [18369 18760]) ("schedule-get-diary-entries" function (:arguments ("then")) nil [18762 20211]) ("schedule-nearest-workday" function (:arguments ("then")) nil [20213 20689]) ("schedule-nearest-true-workday" function (:arguments ("then")) nil [20691 21307]) ("schedule-align-now" function (:arguments ("then")) nil [21309 21664]) ("schedule" package nil nil [21666 21685]))
+    :file "schedule.el"
+    :pointmax 21713
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.0"
+  )

@@ -1,0 +1,1003 @@
+2003-01-05  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* doc/processors.png: Shows transformation parameter entry.
+	* doc/xsltd-stopped.png: Shows revised menu and output during debugging
+	* doc/speedbar.png: Shows speedbar-0.14beta
+2003-01-04  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* doc/xslt-process.texi.in: Updated to reflect changes to software.
+	* java/xslt.jar: reflect changes
+	* lisp/xslt-process.el: Added setting of global transformation
+	parameters, Display keybindings under GNU Emacs (still not working
+	for debug mode), Processor selection menu now works under GNU Emacs
+	Prevent display of erroneous "no output generated" messages
+	* java/xslt/debugger/xalan/XalanValue.java: Map Java object type
+	* java/xslt/debugger/AbstractXSLTDebugger.java,
+	* java/xslt/debugger/Manager.java,
+	* java/xslt/debugger/cmdline/Controller.java: Added setting of global
+	transformation 	parameters
+2003-01-01  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* doc/processors.png: Show new version number.
+2002-21-31  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* java/xslt.jar: reflects changes
+	* lisp/xslt-speedbar.el: updated to work with XEmacs
+	* lisp/xslt-process.el: support Java 1.4
+	* java/xslt/debugger/xalan/XalanTraceListener.java:
+	new local variable discovery algorithm
+	* java/xslt/debugger/xalan/XalanValue.java: support of Java objects
+	* java/xslt/debugger/xalan/XalanStyleFrame.java:
+	new local variable discovery algorithm
+	* java/xslt/debugger/AbstractXSLTDebugger.java: added
+	getStyleSheetId method
+	* java/xslt/debugger/SourceFrame.java,
+	* java/xslt/debugger/StyleFrame.java: check for
+	null references in equals() methods
+	* tests/test5.xsl: further mods for Xalan debugger
+	* tests/fo/glossary.xml: link to stylesheet
+	* tests/fo/glossary.xsl: correct coding of link to simple-page-master
+	in page-sequence.
+
+2002-12-07  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* java/Makefile: Changed for Xalan-2.4.1
+	* doc/xslt-process.texi.in: update Xalan version numbers.
+	* lisp/xslt-process.el: update Xalan version numbers and Java path
+	* add new xalan.jar, xml-apis.jar, xercesImpl.jar
+	* remove xalan-2.4.D1.jar, xercesImpl-2.0.1.jar
+2002-08-10  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java/Makefile: Properly check for Windows: use "cygwin", instead
+	of "win", to avoid confusion on MacOS X, whose uname reports
+	"Darwin".
+2002-08-07  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* doc/Makefile: Changed to work with ImageMagik-5.4.3
+	* doc/processors.png: Show new version numbers.
+	* doc/xslt-process.texi.in: Fix typos, and error in node structure.
+2002-08-06  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* doc/xslt-process.texi.in: Updated to reflect changes made
+	since version 2.1 was released.
+	* lisp/xslt-process.el: Version number now 2.2
+	
+2002-08-05  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* java/xslt.jar,
+	* lisp/xslt-speedbar.el,
+	* lisp/xslt-process.el,
+	* java/xslt/debugger/xalan/XalanTraceListener.java,
+	* java/xslt/debugger/xalan/XSLTDebugger.java,
+	* java/xslt/debugger/saxon/XSLTDebugger.java,
+	* java/xslt/debugger/saxon/SaxonValue.java,
+	* java/xslt/debugger/saxon/SaxonTraceListener.java,
+	* java/xslt/debugger/saxon/SaxonStyleFrame.java,
+	* java/xslt/debugger/cmdline/EmacsObserver.java, 
+	* java/xslt/debugger/cmdline/Controller.java, 
+	* java/xslt/debugger/cmdline/CmdLineObserver.java, 
+	* java/xslt/debugger/Observer.java, 
+	* java/xslt/debugger/Manager.java,
+	* java/xslt/debugger/FOPLogger.java,
+	* java/xslt/debugger/AbstractXSLTDebugger.java: 
+	Update copyright notices. Add missing GPL. Tidy code layout. No functional
+	changes.
+2002-08-04  Tony Addyman   <A.M.Addyman@salford.ac.uk>
+	* java/Makefile: Updated CLASSPATH to point to new jar files. Saxon jar
+	at start to provide line numbers for Xalan debugger.
+	* tests/test5.xsl: Modified to suit Xalan as well as Saxon: different
+	Java interface and lazy evaluation.
+	* lisp/xslt-process.el: Xalan version now 2.4.D1 and Xalan1compat removed.
+	Add visit count to breakpoints. Saxon at start of classpath to provide
+	line numbers for Xalan debugger.
+	* java/xslt/debugger/xalan/XSLTDebugger.java,
+	java/xslt/debugger/xalan/XalanTraceListener: Updated to add support for use
+	of debugger with Xalan.
+	* java/xslt/debugger/xalan/XalanType, java/xslt/debugger/XalanValue,
+	java/xslt/debugger/xalan/XalanVariable, java/xslt/debugger/xalan/XalanStyleFrame:
+	new files created to add support for use of debugger with Xalan.
+	* java/xalan-2.4.D1.jar: updated to new version.
+	* java/xalan1compat.jar: removed - no longer supported by Apache.
+	* java/xslt/debugger/AbstractXSLTDebugger.java,
+	java/xslt/debugger/Manager.java, java/xslt/debugger/Observer.java,
+	java/xslt/debugger/cmdline/EmacsObserver.java,
+	java/xslt/debugger/cmdline/CmdLineObserver.java,
+	java/xslt/debugger/saxon/SaxonTraceListener: Add visit count to breakpoints.
+2002-07-21  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* java/xslt/debugger/saxon/SaxonValue.java: Restrict the size of string
+	values which the debugger can return for display.
+	* java/xslt/debugger/saxon/SaxonStyleFrame.java: Display of global variables
+	corrected.
+	
+	* lisp/xslt-speedbar.el: Removed message interfering with mini-buffer display.
+2002-07-20  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* java/xslt/debugger/AbstractXSLTDebugger.java,
+	java/xslt/debugger/saxon/XSLTDebugger.java,
+	lisp/xslt-process.el: Output resulting from XSLT stylesheet execution is
+	displayed during debugging and incrementally updated in an emacs window.
+2002-07-15  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* java/avalon-framework-4.0.jar, java/avalon-framework-cvs-20020315.jar,
+	java/batik.jar, java/fop-0.20.3.jar, java/fop.jar, java/logkit-1.0.jar,
+	java/saxon-6.5.2.jar, java/xerces-1.2.3.jar, java/xercesImpl-2.0.1.jar,
+	java/xslt.jar, java/xalan-2.1.0, java/xalan-2.3.1: Updated to new versions.
+	* java/Makefile: Updated CLASSPATH to point to the latest jar
+	files.
+	* java/xslt/debugger/Manager.java, java/xslt/debugger/Observer.java,
+	java/xslt/debugger/FOPMessageListener.java,
+	java/xslt/debugger/cmdline/Controller.java, lisp/xslt-process.el: Add support
+	for fop-0.20.4 and xalan-2.3.1; improve reporting of log output from fop.
+	* java/xslt/debugger/FOPLogger.java: Added to improve fop log reporting.
+	* lisp/xslt-speedbar.el: Reformat multiline text values for global variables.
+2002-07-11  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* lisp/xslt-speedbar.el: Reformat multiline text values to a single
+	lineto avoid display problems in speedbar. A paragraph character is
+	the separator.
+2002-07-10  Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* lisp/xslt-process.el: Correct error preventing "Other" option
+	working for PDF viewer.
+2002-04-15   Tony Addyman  <A.M.Addyman@salford.ac.uk>
+	* java/avalon-framework-4.0.jar, java/fop-0.20.1.jar,
+	java/fop-0.20.3.jar, java/logkit-1.0.jar, java/saxon-6.3.jar,
+	java/saxon-6.5.2.jar, java/xerces-1.2.3.jar, java/xerces.jar,
+	java/xslt.jar: Updated to new versions.
+	* java/Makefile: Updated CLASSPATH to point to the latest jar
+	files.
+	* lisp/xslt-process.el,
+	java/xslt/debugger/saxon/SaxonTraceListener.java,: Updated to support
+	Saxon-6.5.2	
+2001-08-20  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Check if xslt-process-docbook-install-dir
+	is defined before accessing its value.
+	* lisp/xslt-process.el: Moved around function definitions to avoid
+	undefined function messages.
+2001-08-19  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* doc/Makefile: Generate version.texi here.
+	* Makefile: Generate version.texi in the doc/ directory.
+	* java/xslt/debugger/FOPMessageListener.java: Remove the println
+	statements.
+	* java/xslt/debugger/Manager.java: Remove the println statements.
+	* lisp/xslt-process.el: Updated version to 2.1. Added options to
+	customize the PDF viewer and the DocBook installation directory.
+	* doc/apply-xslt.png: Regenerated to show the "View PDF" menu
+	item.
+	
+	* doc/xslt-process.texi.in: Added info on generating PDF.
+	* doc/xslt-process.texi.in: Added line of code for making public
+	the xslt-process-install-docbook.
+	* lisp/xslt-process.el: Added the ability to automatically
+	register Docbook-XSL files by specifying the installation
+	directory of DocBook-XSL.
+2001-08-16  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* doc/xslt-process.texi.in: Added change log item about the FOP
+	support.
+	* tests/fo/glossary.xsl: Added.
+	* tests/fo/glossary.xml: Added.
+	* lisp/xslt-process.el: Added support for PDF rendering using
+	Apache's FOP processor.
+	* java/Makefile: Added the FOP jar file in the classpath.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Implemented
+	displayInfo.
+	* java/xslt/debugger/cmdline/Controller.java: Added the toPDF
+	command. Generate proper help messages.
+	* java/xslt/debugger/cmdline/CmdLineObserver.java: Implement
+	displayInfo.
+	* java/xslt/debugger/Observer.java: Added displayInfo for messages
+	to be displayed by the observer.
+	* java/xslt/debugger/Manager.java: Added support for Apache's FOP
+	processor.
+	* java/xslt/debugger/FOPMessageListener.java: Added. Handles
+	displaying of messages from the FOP processor.
+2001-08-15  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* doc/xslt-process.texi.in: Added change item for the JVM
+	properties patch.
+	* lisp/xslt-process.el: Added xslt-process-jvm-option-properties
+	to pass properties to the JVM. Suggestion and initial patch from
+	Phillip Lord <p.lord@russet.org.uk>.
+2001-08-09  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* doc/xslt-process.texi.in: Added defadvice for the xml-mode.
+2001-06-20  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* Makefile: Updated the dist target.
+	* doc/Makefile: Removed the homepage target.
+	* lisp/xslt-process.el: Fixed typo: use fboundp instead of fbound.
+	* doc/xslt-process.texi.in: Added subsection on installing elib.
+2001-06-19  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* bin/texi2html: Added. This is a slightly modified version of the
+	original one to allow for various variations.
+	* lisp/xslt-process.el: Added support for running the XSLT
+	processor while being in an XSLT buffer.
+	* doc/xslt-process.texi.in: Added blurb in the HTML section about
+	downloading the PDF and PS documents. Removed the SF logo from the
+	generated HTML. Updated email and URL pointers.
+	* doc/Makefile: Don't generate frames for HTML.
+2001-06-17  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java/xslt/debugger/cmdline/Controller.java: The command line now
+	accepts quoted strings, which should be safe for files that have
+	blanks in them. The run and debug commands now allow for the XSLT
+	stylesheet to be passed as argument.
+	* java/xslt/debugger/Manager.java: Added methods to access the XML
+	and XSLT filenames. startProcess, startDebugger, and
+	startXSLTProcessing no longer take as argument the XML filename.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Modified to allow
+	an external XSLT stylesheet to be specified, not only the
+	associated stylesheet.
+	* lisp/xslt-process.el: Use the new syntax for the 'run' and
+	'debug' commands. Pass the associated XSLT stylesheet, if one is
+	specified, to the XSLT processor.
+	
+	Select by default the currently associated stylesheet when
+	presenting the buffer with the currently registered stylesheets.
+	* doc/xslt-process.texi.in: Added description on the XSLT
+	stylesheet registry. Added a line space before images for
+	PDF. Added @finalout.
+	* doc/texinfo.tex: Remove \centerline when dealing with PDF
+	images. Added \noindent so that included images are not indented
+	at beginning of line.
+	* doc/Makefile: Fix bad HTML code generated by texi2html.
+	* doc/assoc-stylesheet.png: Added.
+	* doc/xslt-registry.png: Added.
+2001-06-16  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* doc/texinfo.tex: Remove the \centerline instruction for
+	pdfimages.
+	* doc/speedbar.png: Added.
+2001-06-14  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Added the ability to register stylesheets
+	and associate XML documents with the registered XSLT files. You
+	can also specify the associated stylesheet to be used, instead of
+	an external XSLT file.
+	* etc/Makefile: Don't remove the generated PNG image on the
+	'clean' target.
+	* doc/Makefile: Handle the generated images from etc/. Remove the
+	CENTER specification for images from the generated HTML
+	pages. Clean what's garbage only on the 'clean' target, but leave
+	files around for a distribution.
+2001-06-13  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Added definitions for
+	line-beginning-position and line-end-position.
+2001-06-11  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java/xslt/debugger/xalan/XSLTDebugger.java: Removed debug
+	println calls.
+	* java/xslt/debugger/AbstractXSLTDebugger.java
+	(processErrorMessage): Check for a null message.
+	* lisp/xslt-process.el: Added support for determining whether any
+	output has been generated during the processing; print a
+	descriptive message if nothing is generated to the output. Always
+	show the error buffer in case of errors.
+	* java/xslt/debugger/xalan/XSLTDebugger.java: Define
+	getSAXParserErrorHandler to return a customized error handler.
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Define
+	getSAXParserErrorHandler to return a customized error handler.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Tell Emacs both
+	when we start the XSLT processing and when we finish it.
+	* java/xslt/debugger/TrAXErrorListener.java: Modified the
+	signature of reportError to allow for the exception to be
+	returned. Subclass this class for particular XSLT processors and
+	throw an exception if this is needed.
+	* java/xslt/debugger/SAXParserErrorHandler.java: Likewise.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Added
+	getSAXParserErrorHandler and getTrAXErrorListener methods to allow
+	for customizatin of error reporting. Set the error listeners using
+	the objects returned by these methods.
+	
+	Set an error listener on the Transformer object to handle
+	Xalan. Create a new source for the associated stylesheet, to avoid
+	not having an XML reader. This seems to have fixed the Xalan
+	problem with the incorrect error reporting of an invalid
+	xml-stylesheet in the XSLT file.
+	* java/xslt/debugger/xalan/XalanSAXParserErrorHandler.java:
+	Added. Throw exception when reportError is invoked.
+	* java/xslt/debugger/saxon/SaxonSAXParserErrorHandler.java:
+	Likewise.
+	* tests/test5.xsl: Use the value of variable date.
+	* tests/test2.xsl: Changed the text content of the variable a1.
+2001-06-07  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* etc/Makefile: Created.
+	* tests/test5.xsl: Moved the variables under the h1 template.
+	* lisp/xslt-process.el: Moved the key bindings variables into a
+	different group under the "xslt-process" group.
+	* java/Makefile: Define the all and distclean targets.
+	* doc/xslt-process.texi.in: Documented the speedbar and the
+	customization.
+	* Makefile: Moved the functionality in the directories underneath
+	to simplify the rules.
+	* doc/Makefile: Run tidy on the resulting index.html.
+	* doc/.cvsignore: Added the png files generated from etc/.
+2001-06-06  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-speedbar.el: Display the type of global variables as
+	icons as well.
+	* java/xslt/debugger/saxon/SaxonType.java: Fixed typo bug due to
+	copy/paste.
+	* etc/boolean.xpm: Made numbers larger.
+	* etc/object.xpm: Drew a picture of a sphere.
+	* etc/tree.xpm: Drew a tree.
+	* etc/type.xpm: A question mark.
+	* tests/test5.xsl: Define variables of different types.
+	* tests/test5.xml: Put the i element inside the h1 element.
+2001-06-05  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-speedbar.el: Use images to denote the type instead of
+	displaying the type as text after the variable name.
+	* lisp/xslt-process.el: Correctly handle killing the xslt
+	process. Push the etc directory in the load-path so that speedbar
+	finds the images.
+	* etc/boolean.xpm: Added.
+	* etc/number.xpm: Added.
+	* etc/string.xpm: Added.
+	* etc/tree.xpm: Added.
+	* etc/type.xpm: Added.
+	* etc/object.xpm: Added.
+2001-06-04  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Minor changes and cleanup to support the
+	`finish' functionality.
+	* java/xslt/debugger/saxon/SaxonTraceListener.java: Implemented
+	the `finish' functionality.
+	* java/xslt/debugger/saxon/SaxonStyleFrame.java: Set the
+	isTemplate instance variable if the StyleElement is an instance of
+	XSLTemplate (standing for an xsl:template instruction).
+	* java/xslt/debugger/cmdline/Controller.java (doFinish): Added;
+	handles the `finish' command.
+	* java/xslt/debugger/TrAXErrorListener.java (reportError): Don't
+	throw an exception when working with Saxon.
+	* java/xslt/debugger/StyleFrame.java: Added isTemplate(), method
+	to identify whether a StyleFrame instance stands for a
+	xsl:template instruction.
+	* java/xslt/debugger/Manager.java: Removed debugging println.
+	* doc/Makefile: Use the wildcard function to generate the IMAGES
+	variable. Set the read-only mode when generating xslt-process.texi
+	file, to avoid accidentally editing the file instead of the
+	.texi.in version.
+	* doc/xslt-process.texi.in: Document how to specify a stylesheet,
+	how to temporarily change the XSLT processor. Added future
+	enhancements and changes sections.
+	* doc/xsltd-stopped.png: Added.
+	* doc/xslt-errors.png: Added.
+	
+	* doc/.cvsignore: Added sizes.sed and xslt-process.texi.
+2001-06-03  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Added customization for the Web browser.
+	* doc/Makefile: Automatically resize the images in the dvi, ps,
+	and pdf versions of the documentation from the .texi.in document.
+	* doc/xslt-process.texi: Renamed to xslt-process.texi.in to be
+	able to automatically resize images.
+2001-06-01  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el (xslt-process-invoke-browser-view): Check
+	for Emacs variant when getting the temporary directory name.
+	* tests/test5.xml: Reference the test5.xsl instead of test.xsl,
+	which doesn't exist.
+	* lisp/xslt-process.el: Added the ability to view the results of
+	XSLT processing in a Web browser.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Set the output
+	stream to the controller rather than the manager.
+	* java/xslt/debugger/cmdline/Controller.java: Added the ability to
+	direct the results of XSLT processing to a file.
+	* java/xslt/debugger/Manager.java: Added new instance variable
+	closeOnFinish. Implement processorFinished method to close the
+	output stream if closeOnFinish is true.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Invoke the
+	Manager's processorFinished method.
+2001-05-31  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* Added generic description based on the documentation.
+	* README: Added generic description based on the texinfo
+	documentation.
+	* INSTALL: Added generic description.
+	* lisp/xslt-process.el: Use the plain xalan-2.1.0 jar for now,
+	until the Xalan CVS version builds.
+	* doc/Makefile: Generate different picture types from the PNG
+	version. No longer generate the README and INSTALL documents from
+	the texinfo documentation.
+	* Added support for displaying global variables.
+	* lisp/xslt-speedbar.el: Added support for displaying global
+	variables.
+	* lisp/xslt-process.el: Support for global variables (mostly
+	similar with the local variables).
+	* java/xslt/debugger/saxon/XSLTDebugger.java (getGlobalVariables):
+	Return null if no style frames.
+	* java/xslt/debugger/saxon/SaxonValue.java: Deal with the case
+	when staticContext is null: create a dummy null value.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Implement
+	globalVariablesChanged(). Parametrize the common code from
+	globalVariablesChanged() and localVariablesChanged() in
+	variablesChanged().
+	* java/xslt/debugger/cmdline/CmdLineObserver.java: Implement
+	globalVariablesChanged().
+	* java/xslt/debugger/Observer.java: Added
+	globalVariablesChanged().
+	* java/xslt/debugger/Manager.java: Inform the observer when the
+	global variables change.
+	* java/Makefile: Updated the xalan jar file.
+2001-05-30  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Updated the Xalan and Saxon version
+	numbers.
+	* java/xalan-2.1.0-modif.jar: Updated. This version contains my
+	own changes to handle line and column number information for
+	source tree nodes.
+	
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Invoke observer's
+	processorStarted().
+	* java/xslt/debugger/Observer.java: Added processorStarted().
+	* java/xslt/debugger/SAXParserErrorHandler.java: Added copyright
+	notice.
+	* java/xslt/debugger/TrAXErrorListener.java: Likewise.
+	* java/xslt/debugger/cmdline/CmdLineObserver.java: Implemented
+	processorStarted.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Keep track of
+	error messages and display them only once. Clear the error
+	messages set in processorStarted().
+	
+2001-05-23  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* Added automatic rule to correctly convert a PNG image to PDF
+	based on its size (uses ImageMagick to do the work).
+	* doc/Makefile: Added automatic rule to correctly convert a PNG
+	image to PDF based on its size (uses ImageMagick to do the work).
+	* doc/xslt-process.texi: Added links to the other packages. Added
+	table of contents.
+	* doc/Makefile: Added rule to generate the pdf version of images.
+2001-05-22  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Display error messages in a compilation
+	buffer. Kill the errors buffer upon restarting the XSLT
+	processing.
+	
+	Call xslt-process-debugger-buffer-killed when the Java process
+	disappears.
+	
+	Added Emacs-Lisp compilation support. General clean-up to remove
+	Lisp compilation warnings.
+	
+	Define xslt-process-unescape, function to replaced the escape
+	sequences in strings passed from the Java process. Call unescape
+	in output-from-process.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Moved the escape
+	function to Utils.
+	* java/xslt/debugger/cmdline/Controller.java: Set the observer
+	before creating the concrete AbstractXSLTDebugger instance.
+2001-05-21  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java/xslt/debugger/Utils.java (escape): New function to escape
+	special characters interpreted by Emacs.
+	* java/xslt/debugger/TrAXErrorListener.java: Added.
+	* java/xslt/debugger/SAXParserErrorHandler.java: Added.
+	* java/xslt/debugger/Manager.java: Report the caught exceptions to
+	the observer instance.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Moved the error
+	handler classes outside this class, to better support different
+	XSLT processors.
+	* doc/xslt-process.texi: Started the update for version 2.
+	* doc/xslt-process-mode.png: Added.
+	* tests/: Added.
+2001-05-12  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Changed the order of xerces and saxon in
+	the classpath so xerces is picked first before aelfred as
+	parser. Need to add support for specifying the XML parser
+	explicitly.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Escape the string
+	passed as value of a variable as it may contain special characters
+	used as Emacs delimiters.
+	* java/xslt/debugger/cmdline/Controller.java
+	(getAbsoluteFilename): Return a URI identifier.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Added support for
+	reporting errors that can occur during parsing and transformation.
+2001-05-07  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java/xslt/debugger/saxon/SaxonValue.java: Correctly determine
+	the value of a variable using the fingerprint for its name.
+	* java/xslt/debugger/saxon/SaxonStyleFrame.java: Commented out
+	println messages.
+	* java/xslt/debugger/Value.java: Initialize the instance
+	variables.
+2001-05-04  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java/Makefile: Updated the CLASSPATH to point to the new Saxon
+	jar file.
+	* lisp/xslt-speedbar.el: Display local variables in the speedbar.
+	* lisp/xslt-process.el (xslt-process-find-xslt-data-directory):
+	Handle nil value returned by locate-data-directory.
+	Define xslt-process-local-variables. Add it in the list of
+	variables dumped in a bug report. Added
+	xslt-process-local-variables-changed-hooks. Call the hooks when
+	notified by the debugger.
+	
+	* java/saxon-6.3.jar: Updated the Saxon version.
+	* Check for the existance of the speedbar buffer before trying to
+	do operations on it. Added initial support for coordination
+	between the source and style frames.
+	* lisp/xslt-speedbar.el: Check for the existance of the speedbar
+	buffer before trying to do operations on it. Added initial support
+	for coordination between the source and style frames.
+	* lisp/xslt-process.el: Define xslt-process-dir-separator and use
+	it when creating full path names. Added logic to find the
+	installation directory so that it handles installation as an
+	XEmacs package.
+	
+	Define xslt-process-stack-frames-changed, which should modify the
+	selected stack frames.
+	
+	Define xslt-process-local-variables-changed, which should change
+	the display of the local variables in the speedbar.
+	* java/xslt/debugger/saxon/SaxonTraceListener.java: Moved logic to
+	do the notification of stack and local variable changes in
+	Manager.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Implement
+	stackFramesChanged and localVariablesChanged methods.
+	* java/xslt/debugger/cmdline/Controller.java: Inform of stack
+	frame changes whenever they change as a result of xf or sf
+	command.
+	* java/xslt/debugger/cmdline/CmdLineObserver.java: Added dummy
+	implementations for styleStackChanged, stackFramesChanged and
+	localVariablesChanged.
+	* java/xslt/debugger/Observer.java: Added the stackFramesChanged
+	and localVariablesChanged method.
+	* java/xslt/debugger/Manager.java: Moved here the logic to check
+	the stack frames and inform the Observer from XSLTDebugger.
+	* java/xslt/debugger/Breakpoint.java: Added copyright notice.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Likewise.
+	* java/xslt/debugger/SourceFrame.java: Likewise.
+	* java/xslt/debugger/Observer.java: Likewise.
+	* java/xslt/debugger/Manager.java: Likewise.
+	* java/xslt/debugger/cmdline/CmdLineObserver.java: Likewise.
+	* java/xslt/debugger/Variable.java: Likewise.
+	* java/xslt/debugger/Value.java: Likewise.
+	* java/xslt/debugger/Utils.java: Likewise.
+	* java/xslt/debugger/Type.java: Likewise.
+	* java/xslt/debugger/StyleFrame.java: Likewise.
+	* java/xslt/debugger/cmdline/Controller.java: Likewise. 
+	* java/xslt/debugger/xalan/XSLTDebugger.java: Likewise.
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Likewise.
+	* java/xslt/debugger/saxon/SaxonStyleFrame.java: Likewise.
+	* java/xslt/debugger/saxon/SaxonVariable.java: Likewise.
+	* java/xslt/debugger/saxon/SaxonTraceListener.java: Likewise.
+	* java/xslt/debugger/saxon/SaxonValue.java: Likewise.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Likewise.
+	* java/xslt/debugger/saxon/SaxonType.java: Likewise.
+2001-04-30  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java\Makefile: Define ON_WINDOWS; based on it define SEP (the
+	CLASSPATH separator) as either semicolon or colon.
+	* lisp\xslt-process.el: Define `urlize' to handle file names on
+	Windows that contain back slashes: they are converted to forward
+	slashes to avoid problems in different names between the Emacs and
+	Java sides. Invoke urlize on all the places dealing with
+	filenames.
+	
+	Similarly, use a dir separator, which is backslash on Windows and
+	forward slash on Unix.
+	
+	Changed the message printed when typing is faster than the
+	response time of the Emacs/Java process pair. The message is more
+	informative now.
+	
+	Use yes-or-no-p instead of the XEmacs specific
+	yes-or-no-p-maybe-dialog-box.
+	
+	Use the ^ and $ begin and end delimiters.
+	* java\xslt\debugger\cmdline\EmacsObserver.java: Replace the
+	beginning and end delimeters of an Emacs command sent to stdout
+	with ^ and $ respectively. These delimiters have to be one
+	character to avoid a complicated logic on the Lisp side. Here
+	these delimiters have to appear atomically (not split in multiple
+	input strings), in a string received from the Java process.
+	* java\xslt\debugger\cmdline\Controller.java: On Windows, in the
+	canonical name of a file, replace all the back slashes with
+	forward slashes to avoid confusions.
+	* java\xslt\debugger\Manager.java: Added the runningWindows static
+	variable. On Windows systems convert all the filenames to
+	lowercase, to avoid different interpretations.
+	* java\Makefile: Enclose the argument to -classpath in quotes to
+	prevent bash on Windows to interpret the semi-colon in a special
+	way.
+2001-04-29  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-speedbar.el: Removed the redundant calls to message.
+	* lisp/xslt-process.el: Call the function in mapvector. Use the
+	xslt-debug-mode-map when creating the menu.
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Use the Controller
+	methods to setup the trace listener; thanks to Mike Kay for
+	pointing out the Controller's methods for doing this.
+	* lisp/xslt-process.el: More GNU Emacs compatibility. Define
+	remassoc instead of using rassoc, which I mistakenly believed has
+	the same functionality. Use our own functions for dealing with
+	XEmacs extends or GNU Emacs overlays, instead of using setnu.
+	* java/xslt/debugger/xalan/XSLTDebugger.java: Set the
+	TraceListener only if forDebug is true.
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Use only one
+	TransformerFactory instance. Set the TRACE_LISTENER attribute
+	depending on the forDebug value.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Pass forDebug in
+	prepareTransformerForDebugging and always call this method.
+	* java/Makefile: Added the clean target.
+2001-04-26  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Define the menu as a variable, so it can
+	be used with easy-menu-define under GNU Emacs. Fixed the
+	erase-buffer calls with an argument, that were causing errors on
+	GNU Emacs.
+	* lisp/xslt-process.el: Added the initial GNU Emacs compatibility
+	support:
+	- renamed all the variables and functions to remove special
+	characters like / or ? from their name (uf, why doesn't GNU Emacs
+	support them?)
+	
+	- use the cl hashtable to get support for hashtables in GNU Emacs
+	
+	- define remassoc to be rassoc for GNU Emacs
+	
+	- use the setnu package to get the extents API for XEmacs under
+	GNU Emacs
+	
+	- use an extent instead of an annotation to get the entering and
+	exiting arrow
+	
+	- use the easymenu to get XEmacs-like menus under GNU Emacs
+	- define mapvector for GNU Emacs.
+	* lisp/xslt-speedbar.el: Use the string package to get common
+	functionality for string replace in both GNU Emacs and XEmacs. Use
+	cl's hashtables instead of XEmacs' only hashtables. Renamed the
+	variables to remove special characters out of their name. Use
+	buffer-substring instead of buffer-string, to be compatible with
+	GNU Emacs.
+2001-04-22  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-speedbar.el: Added code to handle displaying of the
+	source frames.
+	* lisp/xslt-process.el: Renamed
+	xslt-process-style-selected-position to
+	xslt-process-selected-position.
+	
+	Added support for handling the messages generated using
+	xsl:message from the XSLT processor.
+	
+	Added xslt-process-error-messages to collect error messages that
+	are submitted in a bug report.
+	
+	Print using message the stack traces obtained from the Java
+	process when something goes wrong.
+	* java/xslt/debugger/xalan/XSLTDebugger.java: Removed the
+	functionality that invoked the XSLT processor as it was moved in
+	the AbstractXSLTDebugger class.
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Moved the
+	functionality that invoked the XSLT processor in the
+	AbstractXSLTDebugger class. Added getTransformerFactory() and
+	prepareTransformerForDebugging() which handle processor specific
+	code to properly setup a transformer for debugging.
+	* java/xslt/debugger/saxon/SaxonTraceListener.java: Cleaned-up the
+	code handling entering and exiting from element nodes. Now all the
+	functionality is concentrated in the enterNode and leaveNode
+	methods. Now handle both source and style frames when doing
+	debugger operations.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Setup new socket
+	for sending the output generated by the processor using
+	xsl:message. Include the stacktrace in the error messages passed
+	to Emacs.
+	* java/xslt/debugger/Manager.java: Added messageStream, an output
+	stream for messages printed out during XSLT processing with
+	xsl:message. Added accessor methods for it.
+	
+	(startDebugger): Reset the stack frames at the beginning of a
+	processing.
+	* java/saxon-6.2.2-fix.jar: Fixed a problem with correctly setting
+	the output stream when an emitter is already setup.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Organized
+	imports. Set the action to DO_NOTHING after finishing processing.
+2001-04-17  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Define the version, various email
+	addresses and the public Web site. Added support for specifying
+	the desired XSLT processor through the menus. Rearranged the state
+	variables. Added menu entries for customization and for viewing
+	various information. Added support for submitting bug
+	reports. Fixed the way the output buffer is chosen when output
+	from the XSLT process occurs.
+	* lisp/xslt-speedbar.el: Require speedbar right at the top of the
+	file.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Set the outStream
+	on the manager instance.
+	* java/xslt/debugger/cmdline/Controller.java (createXSLTDebugger):
+	Removed superfluous messages.
+	* java/xslt/debugger/Manager.java: outStream is not setup in this
+	class instead of being setup in a debugger instance.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Moved the
+	outStream instance variable to Manager.
+	* Makefile: The version of the package now lives in the
+	lisp/xslt-process.el file. The update date in
+	doc/xslt-process.texi is now generated automatically.
+	* doc/Makefile: Likewise.
+	* doc/xslt-process.texi: Take the version and update-month
+	variables from version.texi, an automatically generated file.
+	* doc/.cvsignore: Added version.texi.
+2001-04-16  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Pass in the classpath the java/ directory
+	instead of the xslt.jar. In xslt-process-start-debugger-process
+	invoke the appropriate command, either 'run' or 'debug', to
+	execute the XSLT processor. Upon the initial invocation pass the
+	default XSLT processor.
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Added
+	getTransformerFactory and prepareTransformerForDebugging
+	methods. Commented out the run method.
+	* java/xslt/debugger/xalan/XSLTDebugger.java: Likewise.
+	
+	* java/xslt/debugger/cmdline/Controller.java: Added the `run'
+	command to handle the XSLT processing directly.
+	* java/xslt/debugger/Manager.java: Handle both processing and
+	debugging of XSLT stylesheets.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Correctly handle
+	synchronization issues. Use the run() both for debugging and
+	processing the stylesheet directly.
+	* java/Makefile: Correctly build the jar file.
+2001-04-15  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* samples/books.xsl: Commented out the saxon:group elements.
+	* lisp/xslt-process.el: No longer uses BSH to invoke the XSLT
+	processor. Use instead the same command line XSLT process used for
+	debugging.
+	
+	Added the ability to specify which XSLT engine to be used.
+	
+	Temporarily drop support for Cocoon until I figure out a way to do
+	debugging in the Cocoon environment (if implemented, this would be
+	I killer app!).
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Create a new
+	instance using the 'new' operator instead of newInstance().
+	* java/xslt/debugger/xalan/XSLTDebugger.java: Likewise.
+	
+	* java/xslt/debugger/Manager.java: Added the ability to deal with
+	multiple JAXP transformers without having to restart the XSLT
+	debugger process.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Start moving the
+	functionality from XSLTDebugger classes in this class.
+	* java/Makefile: Added.
+	* Makefile: Move the responsibility of compiling the Java classes
+	and building the jar file in the makefile in the java/ directory.
+2001-04-12  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java/xslt/debugger/xalan/XSLTDebugger.java: Created.
+	* lisp/xslt-process.el: Send the 'debug' command instead or 'r' to
+	run the XSLT debugger.
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Create an instance
+	of the Saxon's TransformerFactoryImpl explicitly.
+	* java/xslt/debugger/cmdline/Controller.java: Renamed the run
+	method to 'debug'. Added the 'set' and 'show' methods. Create the
+	XSLT debugger instance based on the processor name that's set at
+	runtime.
+	* java/xslt/debugger/Manager.java: Set the processor name in the
+	debugger instance.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Added
+	processorName and accessor methods.
+2001-04-11  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java/saxon-6.2.2-fix.jar: Added.
+	
+	* lisp/xslt-speedbar.el: Added xslt-process-selected-style-frame
+	to point to the last selected style frame.
+	
+	Added xslt-process-speedbar-current-line-face, face for displaying
+	the current line in the speedbar.
+	
+	(xslt-process-speedbar-change-style-frame): New function to select the
+	line of the selected style frame.
+	
+	(xslt-process-speedbar-show-style-frames-stack): Invoke the
+	xslt-process-speedbar-change-style-frame function when an item in
+	the speedbar is clicked. Display the speedbar style frame item
+	with appropriate face. Pass the index of the frame to this
+	function.
+	* lisp/xslt-process.el: Renamed
+	xslt-process-last-selected-position-filename to
+	xslt-process-style-selected-position-filename. Modified to account
+	for the frame object now being an array rather than a list. Added
+	xslt-process-frame-is-exiting? and xslt-process-frame-position.
+	
+	Moved functionality from do-quit to
+	xslt-process-debugger-buffer-killed. do-quit now calls this
+	method. The buffer-killed function now calls
+	xslt-process-processor-finished.
+	
+	(xslt-process-processor-finished): Reset the source and style frames
+	stack and invoke the hooks.
+	
+	(xslt-process-results-process-filter): Simplified, no longer use
+	markers.
+	* java/xslt/debugger/saxon/SaxonTraceListener.java (leave): Mark
+	the frame as exiting.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Generate arrays
+	instead of lists for faster access. Add isExiting and position in
+	the frame array.
+	* java/xslt/debugger/StyleFrame.java: Added isExiting.
+	* java/xslt/debugger/SourceFrame.java: Likewise.
+2001-04-09  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-speedbar.el: Added some key bindings in the speedbar's
+	keymap for the XSLT debugger. Correctly handle showing of the
+	style frames in speedbar.
+	* lisp/xslt-process.el: Added
+	xslt-process-debugger-process-started to indicate whether the XSLT
+	debugger process is started or not. Use this variable to change
+	the status of the "Quit debugger" menu item.
+	
+	Added source and style frames stack variables and support for
+	them.
+	
+	Use no buffer for the Emacs process communication with the XSLT
+	debugger. Use a filter function to insert into the output
+	buffer. This way killing this buffer doesn't affect in any way the
+	connection with the debugger process.
+	
+	Temporarily make the results buffer writable so it can be erased.
+	
+	Reset the state of the source and style frames, and of the
+	xslt-process-debugger-process-started variables when the debugger
+	process dies.
+	
+	Removed unnecessary comments and commented out `message' calls.
+	* java/xslt/debugger/saxon/SaxonTraceListener.java: Removed
+	printing of debug messages.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Remove the
+	superfluous newlines.
+	* java/xslt/debugger/StyleFrame.java: Remove the file: URI method
+	if present.
+	* java/xslt/debugger/SourceFrame.java: Remove the file: URI method
+	if present.
+2001-04-08  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-speedbar.el: Graciously handle setting, deleting,
+	enabling, and disabling of breakpoints: they are now updated in
+	the speedbar. Added configurable faces for these colors.
+	* lisp/xslt-process.el: Added hooks to be invoked when breakpoint
+	operations happen, and source and style frames change. Added
+	speedbar entry in the XSLT menu. Reimplement
+	xslt-process-output-from-process to handle partial output from the
+	XSLT debugger process; this still needs more work.
+	* java/xslt/debugger/saxon/SaxonTraceListener.java: Send the
+	sourceStackChanged and styleStackChanged messages if the
+	appropriate stack frames change.
+	* java/xslt/debugger/saxon/SaxonStyleFrame.java: Removed the
+	localVariables instance variables; use instead the inherited one.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Implemented
+	sourceStackChanged and styleStackChanged.
+	* java/xslt/debugger/cmdline/Controller.java: Added
+	getManager. Added help line for the sbt command.
+	* java/xslt/debugger/cmdline/CmdLineObserver.java: Added
+	implementations for sourceStackChanged and styleStackChanged
+	methods.
+	* java/xslt/debugger/StyleFrame.java: Added clone, equals,
+	hashCode, getFilename and getLine methods.
+	* java/xslt/debugger/SourceFrame.java: Added clone, equals and
+	hashCode, getFilename and getLine methods.
+	* java/xslt/debugger/Observer.java: Added sourceStackChanged and
+	styleStackChanged methods. Documented methods.
+	* java/xslt/Xalan1.java: Prefix filename with the file: URI.
+	* java/xslt/Saxon.java: Prefix filename with the file: URI.
+2001-04-05  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Removed debug messages.
+	* lisp/xslt-process.el: Cleaned up the highlighting code by
+	putting the common functionality in a single function.
+2001-04-04  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-speedbar.el: Got the breakpoints to correctly expand
+	and unexpand in the speedbar. Need to implement auto-updating of
+	the breakpoints list when the users sets up a new breakpoint, and
+	to handle the case when the buffer containing the breakpoint
+	disappears.
+	* lisp/xslt-process.el: In xslt-process-get-file-buffer open the
+	file and return the buffer that holds the file.
+2001-04-03  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Added test code for the speedbar support.
+2001-04-02  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Removed the make-variable-buffer-local
+	calls from inside xslt-process-mode. Grouped the functions based
+	on how they get invoked.
+	* Makefile: Changed the rules for compiling the Java files.
+	* java/xslt/debugger/saxon/SaxonTraceListener.java: Print the
+	entering and exiting messages followed by a colon to be able to
+	match them in Emacs.
+	* lisp/xslt-process.el: Create a TCP/IP connection to the XSLT
+	debugger process to get the results of the processing separate
+	from stdin. Now the XSLT results go in a separate buffer.
+	Line indicators to show whether the debugger is entering in or
+	exiting from an element. Fixed (most of) the problems when
+	toggling back and forth in debug mode and in the xslt-process
+	mode.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Added the support
+	code for creating the server socket and passing it to the Emacs
+	process.
+	* java/xslt/debugger/cmdline/Controller.java: Added getDebugger().
+2001-04-01  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Setup keybindings for the stop and quit
+	actions.
+	
+	Correctly handle, by making the minor-mode-alist buffer local,
+	different minor mode line strings in distinct buffers.
+	
+	Added execution-context-error-function as function hook to be
+	called when an error message is reported.
+	
+	Remove the XSLT-process mode from a file, when xslt-process-mode
+	is invoked with a negative argument. The menu is correctly removed
+	now.
+	
+	Restarting the XSLT debugger now asks the user. All the step,
+	next, continue and finish actions now check for the current state
+	of the XSLT debugger before doing anything.
+	
+	Quit now asks the user whether to delete the breakpoints from the
+	source files.
+	
+	Graciously reset the Emacs' state variables when the XSLT process
+	buffer is killed.
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Setup the
+	StreamResult based on the outStream instance variable. Don't close
+	the output stream after the processing is complete.
+	* java/xslt/debugger/cmdline/Controller.java: Pass the Controller
+	instance in the Observer's constructor.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Implement
+	debuggerProcessStarted(). Pass the Controller instance in the
+	constructor.
+	* java/xslt/debugger/cmdline/CmdLineObserver.java: Implement
+	debuggerProcessStarted().
+	* java/xslt/debugger/Observer.java: Added debuggerProcessStarted.
+	* java/xslt/debugger/AbstractXSLTDebugger.java: Use an output
+	stream instead of an output file name. This allows a socket stream
+	to be set up for outputting the result of the XSLT processing.
+2001-03-30  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Better handling of menu items enabling and
+	disabling. Added initial support for restarting the XSLT debugger
+	process. Correctly handle unhighlighting of breakpoints. Print
+	notification message when the XSLT processor finishes processing
+	or when it encounters an error.
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Invoke the observer
+	instance to handle errors.
+	* java/xslt/debugger/saxon/SaxonTraceListener.java: Comment out
+	unnecessary printlns.
+	* java/xslt/debugger/cmdline/Controller.java: Removed the code to
+	handle the restarting during a processor run. Expect this to
+	happen in the front-end code, where there's much more control.
+	* java/xslt/debugger/Observer.java: Added processorFinished and
+	caughtException.
+	* java/xslt/debugger/cmdline/CmdLineObserver.java: Likewise.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Likewise.
+	* lisp/xslt-process.el: Start the XSLT debugger in Emacs
+	mode. Handle Emacs formatted output from the debugger. Now handles
+	step, next and continue operations in an XSLT debug mode
+	buffer. Automatically opens debugged files not present in Emacs
+	and switch them to the XSLT debug mode.
+	* java/xslt/debugger/cmdline/Controller.java: Allow specifying the
+	processor to be used and whether notifications should be formatted
+	for Emacs.
+	* java/xslt/debugger/cmdline/EmacsObserver.java: Prints messages
+	formatted such that they contain code that can be executed
+	directly by Emacs.
+2001-03-28  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Correctly display the mode
+	indicator. Breakpoint related functions reworked.
+2001-03-24  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java/xslt/debugger/saxon/SaxonTraceListener.java: Fixed the next
+	operation.
+2001-03-22  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* java/xslt/debugger/saxon/SaxonValue.java: Use SaxonType to store
+	the type of the value.
+	* java/xslt/debugger/saxon/SaxonStyleFrame.java: Fixed typos in
+	getGlobalVariables() and getLocalVariables().
+2001-03-06  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	Started the work on XSLT debugging support.
+	
+	* java/xslt/debugger/saxon/XSLTDebugger.java: Added.
+	* java/xslt/debugger/Debugger.java: Added support code for
+	creating the back-end.
+	* java/xslt/debugger/XSLTDebuggerIntf.java: Added.
+	* java/xslt/debugger/Variable.java: Added.
+	* java/xslt/debugger/Observer.java: Added.
+	* java/xslt/debugger/Frame.java: Added.
+	* java/xslt/debugger/Debugger.java: Added.
+	* java/xslt/debugger/Breakpoint.java: Added.
+2001-02-26  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* doc/xslt-process.texi: Added new TODO item: Add check to observe
+	changes in the Java additional classpath and restart BSH if such
+	changes occur while it's running.
+Thu Feb 15 01:22:23 2001  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* doc/xslt-process.texi: Reorganized and enhanced the
+	documentation.
+Sun Feb 11 23:51:24 2001  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* doc/xslt-process.texi: Updated with the latest changes.
+	* lisp/xslt-process.el: Move the customization in the programming
+	tools submenu.
+	* java/xslt/TrAX.java: Added the ability to use a cache with the
+	file URL protocol.
+Fri Feb  9 09:55:22 2001  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* TODO: Updated.
+	* java/xslt/TrAX.java: Added support for cached
+	stylesheets. Currently only http: URIs seem to be handled well,
+	but file: will follow soon. It looks like the FTP support does not
+	work.
+Wed Feb  7 19:47:20 2001  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Renamed Xalan2 to TrAX as the support code
+	works with any TrAX processor.
+Thu Jan  4 01:23:25 2001  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* doc/xslt-process.texi: Updated the documentation for the 1.1
+	release.
+Wed Jan  3 23:37:15 2001  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Added xslt-process-additional-classpath to
+	allow passing additional classpath arguments to BSH (suggestion
+	from T.V. Raman <tvraman@almaden.ibm.com>).
+Fri Dec 15 00:29:44 2000  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Handle user agent specification for
+	Cocoon.
+	* java/xslt/Cocoon1.java: Handle user agent specification.
+Thu Dec 14 22:45:43 2000  Ovidiu Predescu  <ovidiu@cup.hp.com>
+	* lisp/xslt-process.el: Always display error messages in a buffer,
+	even when applying the stylesheet fails because of JVM startup
+	problems.
+sheet fails because of JVM startup
+	problems.

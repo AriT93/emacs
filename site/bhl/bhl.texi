@@ -1,0 +1,2278 @@
+\input texinfo @c -*-texinfo-*-
+
+@c %**start of header
+@setfilename bhl.info
+@settitle BHL mode : Plain text - HTML - LaTeX - ...
+@setchapternewpage on
+@documentlanguage en
+@set AUTHOR Bastien Guerry
+@set MAIL_AUTHOR bzg-@@altern.org
+@set VERSION 1.9
+@set UPDATED 20/01/2006
+@set CREATED 16/11/2002
+@set SITE http://@-www.@-nongnu.@-org/@-bhl/
+@c @smallbook
+@c @afourpaper
+@c @afivepaper
+@c %**end of header
+
+@c @iftex
+@c @cropmarks
+@c @end iftex
+
+@syncodeindex vr cp
+@syncodeindex fn cp
+@syncodeindex pg cp
+@syncodeindex ky cp
+
+@dircategory Miscellaneous
+@direntry
+* BHL: (bhl.info).  BHL mode: Plain text - HTML - LaTeX - ...
+@end direntry
+
+@footnotestyle separate
+
+@c @titlepage
+@c @title          The @acronym{bhl} mode
+@c @subtitle       Convert plain text to HTML/LaTeX/SGML
+@c @author         Copyright @copyright{} 2003 @value{AUTHOR} - @value{UPDATED} 
+
+@c Permission is granted to copy, distribute and/or modify this document
+@c under the terms of the GNU Free Documentation License, Version 1.2 or
+@c any later version published by the Free Software Foundation.
+@c @sp
+@c @end titlepage
+
+@titlepage
+@sp 10
+@center @titlefont{The @acronym{bhl} mode}
+@sp 2
+@center Convert plain text to HTML/La@TeX{}/Texinfo/SGML/TXT
+@sp 1
+@center @value{AUTHOR}
+@sp 3
+@center @value{UPDATED}
+@page
+@vskip 0pt plus 1filll
+This manual is for the @acronym{bhl} mode
+(version @value{VERSION}, @value{UPDATED}).
+@sp 1
+Copyright @copyright{} 2003 Bastien Guerry.
+@sp 1
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2 or
+any later version published by the Free Software Foundation.
+@end titlepage
+
+@ifinfo
+@ignore
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2 or
+any later version published by the Free Software Foundation. 
+@end ignore
+@end ifinfo
+
+@iftex
+@headings off
+@everyheading @emph{The @acronym{bhl} mode} @| @| @thispage
+@everyfooting @| @| Version @value{VERSION}, @today{}
+@end iftex
+
+@shortcontents
+
+@node  top, Overview, (dir), (dir)
+@top BHL mode : Plain text - HTML - LaTeX - ...
+@cindex Plain
+@cindex HTML
+@cindex SGML
+@pindex LaTeX
+@pindex HeVeA
+@pindex latex2html
+
+@ifinfo
+@flushright
+Bastien Guerry
+Created @value{CREATED}
+Modified @value{UPDATED}
+@end flushright
+@end ifinfo
+
+This is the manual of @acronym{bhl} version @value{VERSION}.
+
+@acronym{bhl} is an Emacs mode that enables you to convert a plain
+text file into an HTML, SGML, LaTeX, Texinfo, Wiki and TXT file. Since
+you can run @acronym{bhl} @emph{offline}, it's also a standalone
+format: writing a @acronym{bhl} file makes it ready for generic
+conversions.
+
+``@acronym{bhl}'' is an acronym for: @b{B}rute (i.e. ``plain'') to
+@b{H}tml and @b{L}aTeX.
+
+I have been asked if there was an easy way to pronounce
+``@acronym{bhl}''. Yes, there is. @code{Bhl-} is the indo-european
+root for ``blow'' (and derivative but less poetic verbs like
+``blather''). So, just say ``blow''.
+
+@menu
+* Overview::                    Getting started
+* Installing BHL::              Two minutes
+* The syntax::                  One minute
+* Properties of conversion::    Not that interesting
+* Browsing your document::      Is that useful ?
+* Commands and key bindings::   That's what you need
+* Options::                     Going further
+* Example::                     Keep it simple
+* Index::                       Keep it complete
+@end menu
+
+@node    Overview, Installing BHL, top, top
+@chapter Overview
+@cindex StructuredText
+@cindex Emacs
+@cindex Zope
+@cindex Wiki
+@cindex Table of contents
+@cindex List
+@cindex Table
+@cindex Image
+
+@section What is BHL?
+
+@acronym{bhl} is a text formatting and publishing tool. It is an Emacs
+mode that provides two kinds of tools: tools for editing a plain text
+file as an implicitly structured document, and tools for converting
+this document into other formats: HTML, SGML, LaTeX, Texinfo and TXT.
+
+In order to be readable by @acronym{bhl}, a plain text file must fit
+some syntactic conventions. This conventions are neither completely
+universal nor specially odd. They are chosen among the most useful and
+the most convenient text formatting conventions. The purpose of this
+mode is to use the most @emph{invisible} and @emph{convenient} syntax.
+``Invisible syntax'' means that the source file must be as readable as
+possible -- like any plain text file must be. ``Convenient syntax''
+means that it must fit the users' habits.
+
+For example, @code{*word*} appears in bold; @code{_word_} appears in
+emphasis; lists and URLs follow @code{StructuredText} or @code{Wiki}
+conventions; the numbering of sections respects logic and intuition.
+(@xref{The syntax}.)
+
+In short: there is nothing you have to learn to write your documents
+with the @acronym{bhl} mode (just try, it's true).
+
+@acronym{bhl} is not @code{WYSIWYG} since you are only editing text.
+@acronym{bhl} is not @code{WYSIWYM} (like @code{LyX}), since what you
+mean is editing text. So, what is @acronym{bhl}? It is
+@code{WYSIWYS(IWYS)}: What You See Is What You See (Is What You See).
+Editing text is editing text.
+
+@section Why should I use BHL? 
+@cindex Footnotes
+@cindex Happy
+@cindex Emacs
+
+@table @emph
+@c @item The Only One
+@c @acronym{bhl} is the only generic text converter which implement the
+@c conversion into the Texinfo format.
+
+@item Happy sectioning
+You can easily update the numbering of sections and (sub)subsections.
+You can easily choose/convert the style of sectioning. You can insert
+the table of content where you want. @xref{Sections}.
+
+@item Happy links
+@acronym{bhl} likes links: you can quickly jump to the next link,
+follow it (either an URL or a WikiName), browse through the complete
+list of your document's links and insert this list into your document.
+@xref{The list of links}.
+
+@item Happy specifications
+You can specify some conversion properties inside a document, so that
+@acronym{bhl} converts this document properly.  @xref{Specifications}.
+
+@item Happy footnotes
+Footnotes won't stay aside. You can convert each of them, even if you
+are not using the classical numeric style.
+@end table
+
+@node   Installing BHL, The syntax, Overview, top
+@chapter Installing BHL
+@cindex Installation
+@cindex Make
+@cindex Install
+@cindex Info
+@cindex HTML
+@cindex PDF
+@cindex ~/.emacs.el
+
+You have just downloaded @file{bhl.tar.gz} on
+@uref{http://@-www.@-nongnu.@-org/@-bhl}. Untar the archive like this:
+
+@example
+~$ tar zxvf @file{bhl.tar.gz}
+@end example
+
+Go to the bhl-*/ directory and set up the @file{Makefile}.  Once this
+is done, just compile and install like this:
+
+@example
+~$ make 
+~$ make install
+@end example
+
+If you want to install @acronym{bhl} in your @code{/usr/local/} or
+@code{/usr/share/} paths, you need to have @code{superuser}
+(i.e. @code{root}) permissions.  But don't worry: at the end of the
+install procedure, a message tells you if something has gone wrong.
+
+If you want to generate and install the @file{bhl.info} file:
+
+@example
+~$ make info
+~$ make install-info
+@end example
+
+If you want the printed manual (@code{PDF}):
+
+@example
+~$ make pdf
+@end example
+
+If you want the HTML manual:
+
+@example
+~$ make html
+@end example
+
+If you want to clean up the directory:
+
+@example
+~$ make clean
+@end example
+
+You can add these lines to your @file{~/.emacs.el}:
+
+@lisp
+(autoload 'bhl-mode "bhl" "BHL Mode" t)
+(add-to-list 'auto-mode-alist '("\\.bhl$" . bhl-mode))
+@end lisp
+
+The last line enables you to associate a new extension
+(i.e. @code{.bhl}) with the @acronym{bhl} editing mode, so that @acronym{bhl} will
+automatically be loaded when you open a @code{.bhl} ending file.
+
+@node   The syntax, Properties of conversion, Installing BHL, top
+@chapter The syntax
+@cindex Conventions
+
+Ordinarily, a plain text file has no visible or invisible syntax.  To
+be @acronym{bhl}-readable, a file has to respect some conventions.
+
+@menu
+* Title and paragraphs::        Things you cannot avoid
+* Sections::                    Sectioning styles
+* Fonts and environments::      Beautifiers and Cie
+* Escaping characters::         To escape or not to escape
+* Handling links::              How BHL handles links
+* Handling lists::              How BHL handles lists
+* Handling tables::             How BHL handles tables
+* Handling images::             How BHL handles images
+@end menu
+
+@node   Title and paragraphs, Sections, The syntax, The syntax
+@section Title and paragraphs
+@cindex Title
+@cindex Subtitle
+@cindex Paragraphs
+@cindex Indentation
+@cindex @code{#!subtitle!}
+
+The title is mandatory.  @acronym{bhl} tries to read it in the very
+first lines of the buffer.  The title is on a line that does not
+include any newline or tab character.
+
+The subtitle is not mandatory.  It is currently included in the HTML,
+TXT and Texinfo output.  You can include it as a specification, like
+this:
+
+@example
+#!subtitle!My subtile subtitle
+@end example
+
+For details on how to format and insert specifications,
+@xref{Specifications}.
+
+The paragraphs always begin at the beginning of the line.  Don't
+indent paragraphs: restrict indentation to lists.
+
+@node    Sections, Fonts and environments, Title and paragraphs, The syntax
+@section Sections
+@cindex Section
+@cindex Subsection
+@cindex Subsubsection
+@cindex Whitespace
+@kindex C-c C-t
+@kindex C-c M-t
+@cindex @code{num}
+@cindex @code{alpha}
+@cindex @code{aster}
+@cindex @code{equal-sign}
+@cindex num
+@cindex alpha
+@cindex aster
+@cindex equal-sign
+@cindex guess
+@cindex style
+
+@acronym{bhl} handles three levels of section: sections, subsections and
+subsubsections.
+
+@acronym{bhl} handles five different sectioning styles: @code{num},
+@code{alpha}, @code{aster}, @code{equal-sign} and @code{user-defined}.
+The default style is set to numerical.
+
+Here is a table with examples of each sectioning style:
+
+@vtable @code
+@item num
+1.<SPC>A section@*
+1.1.<SPC>A subsection@*
+1.1.1.<SPC>A subsubsection@*
+@item alpha
+A.<SPC>A section@*
+A.A.<SPC>A subsection@*
+A.A.A.<SPC>A subsubsection@*
+@item aster
+*<SPC>A section@*
+**<SPC>A subsection@*
+***<SPC>A subsubsection@*
+@item equal-sign
+=<SPC>A section@*
+==<SPC>A subsection@*
+===<SPC>A subsubsection@*
+@end vtable
+
+You can choose the default style of sectioning by modifying
+@var{bhl-sectioning-default-style}.  This is the default sectioning
+style for any newly created @acronym{bhl} file.
+
+When you find an already existant @acronym{bhl} file, @acronym{bhl}
+tries to guess its sectioning style, if you've set
+@var{bhl-autoguess-style-flag} to @code{t} -- which is its default
+value.  At any time, you can ask @acronym{bhl} to guess the style with
+@command{bhl-guess-style}, which is bound to @key{C-c M-s} (and also
+available from the menu, as usual).
+
+For example, suppose you are using the alphabetical style in
+@code{foo.bhl} and your @var{bhl-sectioning-default-style} is set to
+@code{num}, then @acronym{bhl} will automatically turn the current
+style to @code{alpha}.  If @acronym{bhl} is not able to recognize any
+style, it sets the sectioning style to the value of
+@var{bhl-sectioning-default-style}.
+
+Don't mix sectioning styles!  If @acronym{bhl} finds a numerical
+section, it will consider that all the (sub)sections are numerical,
+which is actually rather stupid, but I've no time for this at the
+moment.
+
+You can switch from one style to another style from the menu or with
+@command{bhl-sectioning-switch-style}.  This command reads a style
+from the minibuffer and converts the (sub)sections' prefix into the
+chosen style.
+
+If you choose to use your own style, you have to manually customize
+@var{bhl-my-sectioning-regexp-list}. @xref{Global options}.  This
+variable includes a list of the three regular expressions that match
+respectively the sections, subsections and subsubsections.  Please
+note that @command{bhl-udpate-toc} won't work anymore if you set
+@var{bhl-sectioning-default-style} to @code{my}.
+
+You can update the sections' prefix (numbers or letters) with @key{C-c
+M-t}, which is the default key binding for @command{bhl-update-toc}.
+
+@node   Fonts and environments, Escaping characters, Sections, The syntax
+@section Fonts and environments
+@cindex Beautifiers
+@cindex Horizontal rule
+
+This section describes the use of font beautifiers, environments and
+horizontal rules.
+
+@menu
+* Font beautifiers::            Bold, emphasis, underline, truetype
+* Comments::                    Inserting comments
+* Environments::                Verbatim and minipage
+* Horizontal rules::            and their alignment
+@end menu
+
+@node  Font beautifiers, Comments, Fonts and environments, Fonts and environments
+@subsection Font beautifiers
+@cindex *[words]*
+@cindex _[words]_
+@cindex ==[words]==
+@cindex _*[words]*_
+@cindex __[words]__
+@cindex Bold
+@cindex TrueType
+@cindex Italic
+@cindex Emphasis
+@cindex Underline
+
+Font beautifiers allow you to emphasize, underline, boldify and
+truetypify some words.
+
+In the SGML and Texinfo outputs, @emph{underline} means put in italic,
+just like @emph{emphasis}.  In the HTML and LaTeX output,
+@emph{underline} means underline truly.
+
+If you want to put your text in bold-italic, use @code{_*this order*_}
+rather than @code{*_this order_*}.  Note that bold-italic is not
+available in the Texinfo output.
+
+If you want to insert an underscore or an asterisk that has no
+syntactic meaning, put an escape character before: @code{\*} and
+@code{\_}.  The same is possible with the comment character
+@code{#}. @xref{Comments}.
+
+You can choose a font beautifier for a specific region with the
+@command{bhl-change-font-} commands. @xref{Changing font}.
+
+@sp 1
+
+Here are the tags to be used in your @acronym{bhl} file if you want to
+change the fonts:
+
+@table @samp
+@item *a word*
+put @samp{a word} in bold font. 
+@item _a word_
+put @samp{a word} in emphasis font. 
+@item _*a word*_
+put @samp{a word} in bold and italic font. 
+@item __a word__
+underline @samp{a word}. 
+@item ==a word==
+put  @samp{a word} in truetype font.
+@end table
+
+@node  Comments, Environments, Font beautifiers, Fonts and environments
+@subsection Comments
+@kindex C-c ;
+@kindex C-u C-c ;
+
+The character for introducing new comments is @code{#}.
+
+You can insert comments wherever you want, but comments always end at the
+end of the current line. There is no ``ending-comment'' character.
+
+If you want to insert a @code{#} which should not introduce a new
+comment, use the escape sequence @code{\#}.
+
+You can comment the current region with @command{bhl-comment-region}
+@key{C-c ;} and uncommment it by adding a symbolic prefix to
+@command{bhl-comment-region} @key{C-u C-c ;}.
+
+You can make comments invisible with @command{bhl-hide-comment} and
+make them visible again with @command{C-u bhl-hide-comment}.
+
+@node  Environments, Horizontal rules, Comments, Fonts and environments
+@subsection Environments
+@cindex Length
+@cindex Environment
+@vindex bhl-hr-face
+@vindex bhl-special-face
+@cindex Documentation
+
+@acronym{bhl} handles three environments: @code{quote},
+@code{verbatim} and @code{minipage}.  The first one quotes some part
+of text. The second one may be useful for inserting code into a
+documentation.  The third one creates a minipage inside the main page,
+with or without borders.
+
+@subsubsection Quote environment
+@cindex Quote
+@cindex Quotation
+
+To quote some part, just add one single tab in the beginning of each
+line. Here is an example:
+
+@smallexample
+        Put some words here.
+        Put some words here.
+        Put some words here.
+        Put some words here.
+@end smallexample
+
+@subsubsection Verbatim environment
+@cindex Verbatim
+@findex bhl-convert-url
+@cindex TrueType
+@vindex bhl-verbatim-ignore
+
+Here is the syntax of the @code{verbatim} environment:
+
+@smallexample
+--
+Put some words here.
+--
+@end smallexample
+
+Attention: two dashes are the default delimiters for the
+@code{verbatim} environment, while four dashes are markers for
+horizontal rules.
+
+Remember that the highlighting of dashes indicates the syntaxic role
+they play when @var{bhl-special-face} differs from @var{bhl-hr-face}
+(which is the default case). @xref{Horizontal rules}.
+
+The @var{bhl-verbatim-ignore} variable contains a list of syntactic
+elements that have no meaning inside a verbatim environment.  This
+means that those syntactic elements won't be converted, even if they
+are fontified. @xref{Global options}.
+
+@subsubsection Minipage environment
+@cindex Minipage
+@cindex @code{%%%}
+@findex bhl-insert-minipage
+@vindex bhl-texi-centered-minipage-tag
+@vindex bhl-sgml-minipage-tag
+
+Here an example of how to insert a @code{minipage}:
+
+@smallexample
+%%%[12cm]
+This minipage (12cm) will be centered without border.
+%%%
+
+<%%[10cm]
+This minipage (10cm) will be put on the left without border.
+%%%
+
+>-%
+This minipage will be put on the right with borders.
+%%%
+@end smallexample
+
+The basic indicator for the beginning and the end of a minipage
+environment is @code{%%%} at the beginning of a line.  This indicates
+a centered minipage, without border and of the same width as the main
+page.
+
+By replacing the first @code{%} with a @code{<} or a @code{>}, you
+put the minipage respectively on the left or on the right.  For
+example, @code{<%%%%} indicates a left aligned minipage which has the
+same width as the main page.
+
+By replacing the second @code{%} with a dash (@code{-}), you put solid
+borders on the minipage.  For example, @code{<-%%%%%} indicates the
+beginning of a minipage that has the same width as the main page, put
+on the left with solid borders.
+
+The length can be put into square brackets like this: @code{%%%[8cm]}.
+It is optional.  Avoid using relative lengths such as ``40%'': the
+@code{%} character is syntax-sensible in the LaTeX environment.  Use
+only absolute lengths and common units.
+
+Minipages are properly converted only for the HTML, LaTeX and Texinfo
+outputs.  For the Texinfo output, you can choose what a centered
+minipage looks like with @var{bhl-texi-centered-minipage-tag}.  For
+the SGML output, you can choose what a minipage looks like with
+@var{bhl-sgml-minipage-tag}.  @command{bhl2txt} does not convert
+minipages, it simply strips the @code{%%%} at the beginning of the
+line.
+
+You can insert a minipage with
+@command{bhl-insert-minipage}. @xref{Inserting}.
+
+@node  Horizontal rules,  , Environments, Fonts and environments
+@subsection Horizontal rules
+@cindex @code{----}
+
+A horizontal rule is represented by at less four dashes (@code{----} -
+Small), equal signs (@code{====} - Large) or slashes (@code{////} -
+X-Large) at the beginning of a line.
+
+The first character can be replaced by an indicator of alignment.
+
+Attention: horizontal rules are not converted in the SGML and Texinfo
+formats.
+
+@example
+----[12cm]
+<---[12cm]
+>---[12cm]
+@end example
+
+The first line will be centered.  The second line will be put on the
+left.  The third line will be put on the right.  The width of these
+lines is 12cm.  The length is optional: you can simply insert
+@code{----}, @code{====} or @code{////}.
+
+You can insert a horizontal rule with
+@command{bhl-insert-hr}. @xref{Inserting}.
+
+@node  Escaping characters, Handling links, Fonts and environments, The syntax
+@section Escaping characters
+
+You can escape four characters: asterisk (@code{*}), underscore
+(@code{_}), sharp @code{#} and backslash @code{\}.  When escaped,
+these characters have no syntactic effect anymore.  Escaping
+backslashes only makes sense for the @code{bhl2latex} conversion.
+
+When converting into LaTeX, @acronym{bhl} escapes some characters by
+itself.  These characters are: @code{$ & % @{ @}}.  Attention: the
+@code{bhl2latex} conversion does NOT @emph{automatically} convert
+backslashes.  You've to insert something like @code{$\backslash$} by
+yourself or escape them like @code{\\}.  When converting into Texinfo,
+@acronym{bhl} escapes @code{@@ @{ @}}.
+
+If you don't want that @acronym{bhl} escapes those characters, just
+escape them by yourself in the @acronym{bhl} file.
+
+@node      Handling links, Handling lists, Escaping characters, The syntax
+@section Handling links
+@cindex http
+@cindex ftp
+@cindex file
+@cindex mailto
+@kindex C-c C-c h
+@kindex C-S-TAB 
+@kindex C-TAB
+@kindex mouse-2
+@findex browse-url
+@findex bhl-convert-url
+@findex bhl-goto-next-url-or-wiki
+@findex bhl-browse-url-function
+@vindex bhl-default-wikifiles-extension
+@vindex bhl-downcase-wikifiles-names-flag
+@vindex bhl-non-wiki-names-list
+
+@subsection What is a link?
+
+There are two kinds of links: URLs and WikiNames.  An URL is... you
+know what it is.  A WikiName is a mixed-case word like ``MyWikiName''.
+When the cursor is on a link, you can hit @key{RET} or @key{mouse-2}
+to follow it.  Following an URL calls
+@command{bhl-browse-url-function}.  Following a WikiName finds a new
+file whose name is the concatenation of the WikiName and the
+@code{.bhl} extension.
+
+You can downcase this resulting name by setting
+@var{bhl-downcase-wikifiles-names-flag} to non-@code{nil}.  You can
+also change the default extension of WikiFiles names by setting
+@var{bhl-default-wikifiles-extension}.  The list of mixed-case strings
+that shouldn't be considered as WikiNames is stored in
+@var{bhl-non-wiki-names-list}.
+
+You can see the list of links of your document with
+@command{bhl-show-lol}, which is bound to @key{C-c C-/}.  You can
+insert the list of links of your document with
+@command{bhl-insert-lol}, which is bound to @key{C-c C-c l}.
+@xref{The list of links}.
+
+You can browse URLs and WikiNames with
+@command{bhl-goto-next-url-or-wiki} @key{C-TAB}. (@xref{Browsing the
+BHL file}.)
+
+@subsection Converting Links
+
+URLs are converted by the @command{bhl-convert-url} function and
+WikiNames are converted by the @command{bhl-convert-wiki-names}
+function.  You can write your URL as it is (@code{http://site.org}),
+or put it into square brackets to define a label:
+@code{[[http://@-site.@-org][my@- site]]}.
+
+You can insert an URL with @command{bhl-insert-url}, @key{C-c C-c h}:
+@xref{Commands and key bindings}.
+
+Here is a list of some URLs and their conversions into the HTML
+format:
+
+@cartouche
+@table @code
+@item http://site.org
+<a href=``http://site.org''>http://site.org</a>
+@item url:mypage.html
+<a href=``mypage.html''>mypage.html</a>
+@item [[http://site.org][SITE]]
+<a href=``http://site.org''>SITE</a>
+@item mailto:bb@@site.fr
+<a href=``mailto:bb@@site.org>bb@@site.org</a>
+@item [[mailto:bb@@site.fr][BB]]
+<a href=``mailto:bb@@site.org>BB</a>
+@end table
+@end cartouche
+
+Here is a list of some URLs and their conversions into the LaTeX
+format:
+
+@cartouche
+@table @code
+@item http://site.org
+\url@{http://site.org@}
+@item url:mypage.html
+\url@{mypage.html@}
+@item [[http://site.org][SITE]
+SITE (\url@{http://site.org@})
+@item mailto:bb@@site.org
+\url@{bb@@site.org@}
+@item [[mailto:bb@@site.org][BB]]
+BB (\url@{bb@@site.org@})
+@end table
+@end cartouche
+
+Here is a list of some URLs and their conversions into the Texinfo
+format:
+
+@cartouche
+@table @code
+@item http://site.org
+@@uref@{http://site.org@}
+@item url:mypage.html
+@@uref@{mypage.html@}
+@item [[http://site.org][SITE]
+@@uref@{http://site.org,SITE@}
+@item mailto:bb@@site.org
+@@uref@{bb@@site.org@}
+@item [[mailto:bb@@site.org][BB]]
+@@uref@{bb@@site.org,BB@}
+@end table
+@end cartouche
+
+Here is a list of some URLs and their conversions into the SGML
+format:
+
+@cartouche
+@table @code
+@item http://site.org
+<HTMLURL URL=``http://@-site.@-org'' NAME=``http://@-site.@-org''>
+@item url:mypage.html
+<HTMLURL URL=``mypage.html'' NAME=``mypage.html''>
+@item [[http://site.org][SITE]
+<HTMLURL URL=``http://site.org'' NAME=``SITE''>
+@item mailto:bb@@site.org
+<HTMLURL@- URL=``mailto:bb@-@@site.org''@- NAME=@-``mailto:bb@-@@site.org''>
+@item [[mailto:bb@@site.org][BB]]
+<HTMLURL URL=``mailto:bb@@site.org'' NAME=``BB''>
+@end table
+@end cartouche
+
+Here is a list of some URLs and their conversions into the TXT
+format:
+
+@cartouche
+@table @code
+@item http://site.org
+http://site.org
+@item url:mypage.html
+mypage.html
+@item [[http://site.org][SITE]
+http://site.org (SITE)
+@item mailto:bb@@fardeau.fr
+bb@@fardeau.fr@
+@item [[mailto:bb@@fardeau.fr][BB]]
+bb@@fardeau.fr (BB)
+@end table
+@end cartouche
+
+In these examples, you can replace `http://' by `ftp://' or
+`file:///'.  When using @code{[[...][...]]}, a prefix like `http://'
+is not mandatory.
+
+@findex bhl-convert-url
+
+@node   Handling lists, Handling tables, Handling links, The syntax
+@section Handling lists
+@cindex List
+@kindex M-TAB
+
+@acronym{bhl} handles three kinds of lists: non-ordered lists, ordered
+lists and descriptive (or definition) lists.
+
+A @emph{non-ordered list item} is defined by: some @key{TAB} at the
+beginning of the line, a list separator among <@code{- * o}>, a
+whitespace.
+
+An @emph{ordered list item} is defined by: some @key{TAB} at the
+beginning of the line, a number, a dot, a whitespace.
+
+A @emph{definition list item} is defined by: some @key{TAB} at the
+beginning of the line, a term, a whitespace, two dashes, a whitespace.
+
+@key{TAB} inserts an indent-relative TAB, while @key{M-TAB} inserts a
+rigid TAB mesuring exactly three columns.  Make sure that there is a
+whitespace after a @code{*}: no whitespace means that the next
+characters may use bold font.
+
+@acronym{bhl} handles also nested lists, but no definition list can be
+nested.  To add a nested item, just add a TAB character relatively to
+the previous item.  In each list, the first item indicates the kind:
+ordered, non-ordered or definition list.
+
+Here is a table of lists separators:
+
+@table @code
+@item <TAB(S)>[*,-,o]<SPC>
+item of a non-ordered list
+@item <TAB(S)>[0-9].<SPC>
+item of an ordered list (enumerate)
+@item <TAB(S)>A term<SPC>--<SPC>
+item of a definition list
+@end table
+
+Take a look at the examples on
+@uref{http://@-www.@-nongnu.@-org/@-bhl} for further details.
+
+@cindex Examples
+
+@node    Handling tables, Handling images, Handling lists, The syntax
+@section Handling tables
+
+@cindex Table
+
+Here is an example of a table:
+
+
+@cartouche
+@example
+ | @@Name@@  | @@First name@@  | @@Age@@  |
+ | Jean    | Luc-Henri     | 123    |
+ | Paul    | Matthieu      | 2      |
+@end example
+@end cartouche
+
+The character @code{|} has three different functions: it begins a new
+row, it seperates two cells, it ends a row.  Whitespaces and tab
+characters are NOT allowed between the beginning of a new line and the
+first @code{|}.
+
+Optional @code{@@} around the cell content indicates that this cell is
+a header. Typically, you put headers on the very first row of the
+table. In the HTML output, a header cell is put into @code{<TH></TH>}
+tags. In other LaTeX and SGML, the header line is separated from the
+rest of the table by an horizontal rule.
+
+More details about the table options: @xref{Converting tables}.
+
+@node    Handling images,  , Handling tables, The syntax
+@section Handling images
+
+@cindex Image
+@findex bhl-insert-url
+@findex bhl-insert-image
+@kindex C-c C-c i
+
+Here is an example of how to insert an image:
+
+@example
+[[image.jpg]]
+@end example
+
+You can search for a particular file and insert it as an image with
+@key{C-c C-c i}, wich is the default key binding for
+@command{bhl-insert-image}.
+
+Only @command{bhl2html} handles images.  Other conversion functions
+like @command{bhl2sgml}, @command{bhl2texinfo} or @command{bhl2latex} put
+images into comment strings. @command{bhl2txt} erases images.
+
+@node  Properties of conversion, Browsing your document, The syntax, top
+@chapter Properties of conversion
+@cindex CSS
+@cindex Properties
+@cindex Specification
+
+You may want to convert your @acronym{bhl} document without
+customizing anything.  This is OK.  But you surely want to control
+some properties of the different conversion functions.  For example,
+you may decide that the HTML conversion includes the table of
+contents, whereas the LaTeX conversion doesn't.  You may want to
+calculate the @code{\date@{...@}} command of the LaTeX output
+relatively to the current time.  You may want to set up a different
+CSS style for a particular HTML output.  Etc.
+
+This section tells you how to do this.
+
+@menu
+* Overview of properties::      
+* Specifications::              
+@end menu
+
+@node   Overview of properties, Specifications, Properties of conversion, Properties of conversion
+@section Overview of properties
+
+@vindex bhl-html-conversions-list
+@vindex bhl-latex-conversions-list
+@vindex bhl-sgml-conversions-list
+@vindex bhl-txt-conversions-list
+@vindex bhl-texi-conversions-list
+@vindex bhl2html-properties-list
+@vindex bhl2latex-properties-list
+@vindex bhl2sgml-properties-list
+@vindex bhl2txt-properties-list
+@vindex bhl2texi-properties-list
+@findex bhl-initialize-properties
+@vindex bhl-after-conversion-hook
+
+The two important variables for the choice of conversions properties
+are @var{bhl-xxx-conversions-list} and @var{bhl2xxx-properties-list},
+where @code{xxx} is the name of the conversion.  @xref{Global
+options}.
+
+@var{bhl-xxx-conversions-list} includes the detailed list of
+conversions for each format.  Normally you should not change this
+variable too often.
+
+@var{bhl2xxx-properties-list} allows you to set global options for the
+conversion.  These global options deal with the checking of dubious
+tags, the insertion of the sections' prefix, the tables' captions, the
+i18n conventions, the insertion of the table of contents and the
+centering of sections/title (for the @command{bhl2txt} conversion.)
+You can change this variable by:
+
+@itemize @minus
+@item
+inserting a specification line inside your @acronym{bhl} document;
+@item 
+selecting the options from the menu;
+@item
+modifying this variable with @command{M-x customize}.
+@end itemize
+
+This order is important: the options set inside a specification line
+will override the options set from the menu, which override those set
+in the default customization.
+
+These global options are set to their default value (i.e. their
+customized value) each time you run the @code{bhl-mode} command.  They
+are also set to their default value after each conversion, except if
+you remove the @command{bhl-initialize-properties} function from the
+@code{bhl-after-conversion-hook} list.
+
+@node  Specifications,  , Overview of properties, Properties of conversion
+@section Specifications
+@cindex Specifications
+@cindex @code{#!title!}
+@cindex @code{#!html-title!}
+@cindex @code{#!latex-title!}
+@cindex @code{#!texi-title!}
+@cindex @code{#!sgml-title!}
+@cindex @code{#!author!}
+@cindex @code{#!date!}
+@cindex @code{#!lang!}
+@cindex @code{#!subtitle!}
+@cindex @code{#!encoding!}
+@cindex @code{#!latex!}
+@cindex @code{#!latex-class!}
+@cindex @code{#!latex-options!}
+@cindex @code{#!latex-packages!}
+@cindex @code{#!html!}
+@cindex @code{#!html-style!}
+@cindex @code{#!sgml!}
+@cindex @code{#!txt!}
+@cindex @code{#!texi!}
+@cindex @code{#!texi-style!}
+@cindex @code{(no)prefix}
+@cindex @code{(no)check}
+@cindex @code{(no)caption}
+@cindex @code{(no)i18n}
+@cindex @code{(no)toc}
+@cindex @code{(no)center}
+@cindex @code{(no)tas}
+@vindex bhl-html-content-type
+@vindex bhl-i18n-conventions
+
+@acronym{bhl} allows you to add some specification lines inside a document,
+so that @acronym{bhl} handles @emph{this} document adequately.
+Specifications concern mainly two kind of properties: the properties
+of the document's header and the conversion properties.  Here are some
+examples of specification lines:
+
+@example
+#!html!prefix:check:caption:toc
+#!latex!noprefix:nocheck:nocaption:notoc
+#!date!It's %H:%M.
+@end example
+
+In this example, the command @command{bhl2html} will insert the
+sections' prefix, check for dubious tags, ask for a caption for each
+table and insert the table of contents (also known as @emph{toc}).
+The command @command{bhl2latex} WON'T insert the sections' prefix,
+check for dubious tags, ask for a caption for each table and insert
+the toc.  The date will be set to the current time (hours:minutes).
+Quite simple, isn't it?
+
+A specification line is always a comment at the beginning of the line.
+It splits into two parts: a @emph{prefix}, which is enclosed into two
+exclamation marks, and the @emph{labels}, which are separated by a
+column. Each label can be turned off by adding @code{no-}:
+@code{notoc} is the exact opposite of @code{toc}.
+
+Here is a complete list of available specification prefix and their
+relevant labels.
+
+@table @code
+@item #!author!
+The name of the author for the current document.
+
+@item #!title!
+The title of the document. This specification overrides any other
+title (the first line of the buffer or any @code{#!xxx-title!}
+specification).
+
+@item #!xxx-title!
+The title of the document for the @code{xxx} conversion. @code{xxx}
+may be @code{html}, @code{sgml}, @code{texi} or @code{latex}. This
+specification is overriden by the @code{#!title!} specification, and
+overrides the first line of the buffer.
+
+@item #!subtitle!
+The subtitle of the document.  The subtitle conversion is supported
+only for the HTML, Texinfo and TXT output.
+
+@item #!lang!
+The language of the document.  This override the value of
+@var{bhl-i18n-conventions}.  In the Texinfo output, it sets the value
+of @code{@@documentlanguage}.
+
+@item #!encoding!
+The encoding of the document.  This information is relevant for the
+Texinfo and HTML conversion.  In the Texinfo output, it sets the value
+of @code{@@documentencoding}.  In the HTML output, it overrides the
+value of @var{bhl-html-content-type}.
+
+@item #!date!
+The date of the current document.  Since the column has no special
+meaning here, you can use the Emacs time-formatting conventions.  For
+example, @code{#!date!%H:%M} will set @code{date} to the current time
+(hours:minutes). @inforef{Time Conversion, , Elisp}.
+
+@item #!html!
+The prefix concerning @command{bhl2html} specifications.  Here is a
+complete list of available labels:
+
+@table @code
+@item prefix
+Insert the prefix of (sub)sections.
+@item check
+Check for dubious HTML tags/comments before converting.
+@item caption
+Ask for a caption when converting a table.
+@item i18n
+Use i18n conventions.
+@item toc
+Insert the table of content in the HTML output.
+@end table
+
+@item #!html-style!
+The CSS file to refer to as the style for the HTML output.
+
+@item #!latex!
+The prefix concerning @command{bhl2latex} specifications. Here is a
+complete list of available labels:
+
+@table @code
+
+@item prefix
+Insert the prefix of (sub)sections.
+@item check
+Check for dubious LaTeX commands/comments before converting.
+@item caption
+Ask for a caption when converting a table.
+@item i18n
+Use i18n conventions.
+@item toc
+Insert the table of content in the LaTeX output.
+@end table
+
+@item !#latex-class!
+The class of the LaTeX output.
+
+@item #!latex-options!
+The options of the chosen class.  You can insert as many options as
+you want, provided that you separate them with a column.
+
+@item #!latex-packages!
+Some LaTeX packages and their options. For example :
+
+@smallexample
+
+#!latex-packages!fontenc[T1]:[latin1]inputenc:babel[french]
+
+\usepackage[T1]@{fontenc@}
+\usepackage[latin1]@{inputenc@}
+\usepackage[french]@{babel@}
+
+@end smallexample
+
+The location of the square brackets doesn't matter.
+
+@item #!texi!
+The prefix concerning @command{bhl2texinfo} specifications. Here is a
+complete list of available labels:
+
+@table @code
+@item check
+Check for dubious Texinfo commands/comments before converting.
+@item i18n
+Use i18n conventions.
+@item toc
+Insert the table of content in the Texinfo output.
+@end table
+
+@item #!texi-style!
+The style of the frontpage in the Texinfo output. May be either
+@code{classical} or @code{centered}.
+
+@item #!sgml!
+The prefix of @command{bhl2sgml} specifications.  Here is a
+complete list of available labels:
+
+@table @code
+@item check
+Check for dubious SGML tags/comments before converting.
+@item caption
+Ask for a caption when converting a table.
+@item i18n
+Use i18n conventions.
+@end table
+
+@item #!txt!
+The prefix of @command{bhl2txt} specifications.  Here is a complete
+list of available labels:
+
+@table @code
+@item center
+Center the title and (sub)sections' titles.
+@item toc
+Insert the table of content in the TXT output.
+@item tas
+tabs are spaces: convert tabs to whitespaces in the TXT output.
+@end table
+
+@end table
+
+@node      Browsing your document, Commands and key bindings, Properties of conversion, top
+@chapter Browsing your document
+
+@cindex List of links
+@cindex Table of contents
+@cindex @code{*lol*}
+@cindex @code{*toc*}
+@kindex C-c C-t
+@kindex C-c C-/
+@findex bhl-show-toc
+@findex bhl-show-lol
+@findex bhl-toc-mode
+
+The @acronym{bhl} mode comes with two commands that allows you to
+browse your document: @command{bhl-show-toc} and
+@command{bhl-show-lol}.  The latter is not a joke: it allows you to
+browse the list of links.  The former allows you to browse the table
+of contents.  These two commands create a new buffer turned into
+either @code{bhl-toc-mode} or @code{bhl-lol-mode}.
+
+@menu
+* The table of contents::       Show me the toc!
+* The list of links::           Show me the lol!
+@end menu
+
+@node  The table of contents, The list of links, Browsing your document, Browsing your document
+@section The table of contents
+
+@cindex Table of contents
+@findex bhl-insert-toc
+@vindex bhl-toc-location
+@vindex bhl-default-toc-depth
+@kindex C-c C-t
+@kindex C-c M-t
+
+The @acronym{bhl} mode enables you to update the numbering of sections
+of your @acronym{bhl} file, to insert the table of contents into your
+@acronym{bhl} file, to browse the table of contents in a new buffer.
+
+Two variables are required to handle the table of contents:
+@var{bhl-toc-location} and @var{bhl-default-toc-depth}.  The first one
+defines the location of the inserted toc.  You can change its value
+via the menu or via @command{customize}.  The second one defines the
+default toc depth.
+
+You can insert the toc with @command{bhl-insert-toc} @key{C-c C-c
+t}. A numeric argument defines the depth of this inserted toc.  You
+can also insert the toc from the @code{*toc*} buffer with @key{i}.
+From this buffer, the toc depth is set to the depth of the currently
+displayed toc.
+
+When it converts the buffer, @acronym{bhl} first checks if there is a
+table of contents.  If there is one, @acronym{bhl} inserts it in the
+output according to the current toc location of the buffer.
+
+@menu
+* Browse the table of contents::  in a new buffer
+* Insert the table of contents::  in the source file
+@end menu
+
+@node    Browse the table of contents, Insert the table of contents, The table of contents, The table of contents
+@subsection Browse the table of contents
+
+@cindex Browse
+@kindex C-c C-t
+@kindex ?
+@kindex q
+@kindex n
+@kindex p
+@kindex <
+@kindex >
+@kindex i
+@kindex 1
+@kindex 2
+@kindex 3
+
+You can get a new buffer, named @code{*toc*}, with a browsable table
+of contents.  You can browse the toc via the menu or with the key
+binding @key{C-c C-t}.  An optional numeric argument indicates the toc
+depth.
+
+@table @key
+@item ? 
+Display a quick help for the @code{bhl-toc-mode}.
+@item q
+Quit the @code{*toc*} buffer.
+@item n
+Go to the next item.
+@item p
+Go to the previous item.
+@item >
+Go to the last item.
+@item <
+Go to the first item.
+@item i
+Insert the table of contents in your @acronym{bhl} file.
+@item 1
+Set the toc depth to 1.
+@item 2
+Set the toc depth to 2.
+@item 3
+Set the toc depth to 3.
+@end table
+
+@node   Insert the table of contents,  , Browse the table of contents, The table of contents
+@subsection Insert the table of contents
+@kindex C-c C-c t
+
+@vindex bhl-toc-location
+@cindex Menu
+
+You can insert the table of contents of your @acronym{bhl} file into
+itself with @key{C-c C-c t}.  If a toc has already been inserted, this
+command only updates the table of contents, leaving it to its current
+location.  If a toc has not been inserted yet, this command inserts a
+new one according to the value of @var{bhl-toc-location}.  An optional
+numeric argument indicates the toc depth.
+
+@node  The list of links,  , The table of contents, Browsing your document
+@section The list of links
+
+@findex bhl-show-lol
+@findex bhl-lol-mode
+@cindex @code{*lol*}
+@kindex C-c C-/
+@kindex ?
+@kindex q
+@kindex n
+@kindex p
+@kindex <
+@kindex >
+@kindex i
+@kindex RET
+@kindex mouse-2
+
+You can see the list of links with @command{bhl-show-lol}.  The
+default key for this command is @key{C-c C-/}.  A new buffer is
+created, named @code{*lol*} and turned into the @code{bhl-lol-mode}.
+
+While moving inside this buffer, your document's buffer is updated so
+that its point is set to the link you're currently pointing on.  You
+can also visit the link you're pointing on with @key{RET} or
+@key{mouse-2}.
+
+Here is a list of the available commands inside the
+@code{bhl-lol-mode}:
+
+@table @key
+@item ? 
+Display a quick help for the @code{bhl-lol-mode}.
+@item q
+Quit the @code{*lol*} buffer.
+@item n
+Go to the next item/link.
+@item p
+Go to the previous item/link.
+@item >
+Go to the last item/link.
+@item <
+Go to the first item/link.
+@item i
+Insert the list of links into your document.
+@end table
+
+@node      Commands and key bindings, Options, Browsing your document, top
+@chapter Commands and key bindings
+@kindex C-c C-w
+@kindex C-c C-c C-w
+@kindex C-c C-l
+@kindex C-c C-s
+@kindex C-c C-k
+@kindex C-c C-d
+@kindex C-c C-o
+@cindex TOC
+@kindex C-c M-t
+@kindex C-c C-t
+@vindex bhl-toc-location
+@kindex C-c C-c t
+@kindex C-c C-f C-b
+@kindex C-c C-f C-e
+@kindex C-c C-f C-u
+@kindex C-c C-f C-_
+@kindex C-c C-f C-n
+@cindex Style
+
+This section describes the main commands of the @acronym{bhl} mode.
+
+@menu
+* Conversion commands::         The five conversions
+* Inserting::                   Insert URls, images and the toc
+* Browsing the BHL file::       Browse the source file
+* Changing font::               Change the font
+* Miscellaneous::               Rather clear, no?
+@end menu
+
+@node   Conversion commands, Inserting, Commands and key bindings, Commands and key bindings
+@section Conversion commands
+@kindex C-c C-w
+@kindex C-c C-l
+@kindex C-c C-k
+@kindex C-c C-s
+@kindex C-c C-d
+@kindex C-c C-o
+@cindex Popup menu
+
+This conversion commands end with two hooks: a hook relative to each
+conversion format (@var{bhl-xxx-after-conversion-hook}) and a global
+hook (@var{bhl-after-conversion-hook}).  You can also reach these
+commands from the popup menu @key{C-down-mouse-3}: press @key{control}
+and the right button of the mouse.
+
+@defun bhl2html
+Convert the current buffer into HTML and display the output in a new
+buffer.  The default key binding is @key{C-c C-w}.
+@end defun
+
+@defun bhl2latex
+Convert the current buffer into LaTeX and display the output in a new
+buffer.  The default key binding is @key{C-c C-l}.
+@end defun
+
+@defun bhl2texinfo
+Convert the current buffer into Texinfo and display the output in a
+new buffer.  The default key binding is @key{C-c C-o}.
+@end defun
+
+@defun bhl2sgml
+Convert the current buffer into SGML (Linuxdoc) and display the output
+in a new buffer.  The default key binding is @key{C-c C-s}.
+@end defun
+
+@defun bhl2wiki
+Convert the current buffer into (kind of) WIKI and display the output
+in a new buffer. Strip the remaining tags and syntaxic elements. The
+default key binding is @key{C-c C-k}.
+@end defun
+
+@defun bhl2txt
+Convert the current buffer into TXT and display the output in a new
+buffer.  Strip the remaining tags and syntaxic elements.  The default
+key binding is @key{C-c C-d}.
+@end defun
+
+@node  Inserting, Browsing the BHL file, Conversion commands, Commands and key bindings
+@section Inserting
+@kindex C-c C-c h
+@kindex C-c C-c i
+@kindex C-c C-c r
+@kindex C-c C-c v
+@kindex C-c C-c t
+@kindex C-c C-c l
+
+@defun bhl-insert-url
+Read an URL and his name from the minibuffer and insert it.  The
+default key binding is @key{C-c C-c h}.
+@end defun
+
+@defun bhl-insert-image
+Read the filename of an image from the minibuffer and insert it.  The
+default key binding is @key{C-c C-c i}.
+@end defun
+
+@defun bhl-insert-minipage
+Insert a minipage.  The default key binding is @key{C-c C-c m}.
+@end defun
+
+@defun bhl-insert-verbatim
+Insert a verbatim environment.  The default key binding is @key{C-c
+C-c v}. 
+@end defun
+
+@defun bhl-insert-hr
+Insert a horizontal rule.  Ask for its alignment and width in the
+minibuffer.  The default key binding is @key{C-c C-c r}.
+@end defun
+
+@defun bhl-insert-toc [depth]
+Insert the table of contents into the current buffer.  The default key
+binding is @key{C-c C-c t}.  This command is also available from the
+@code{*toc*} buffer in @command{bhl-toc-mode} with @key{i}.
+
+The optional argument (@code{depth}) indicates the toc depth.  Without
+any argument, the toc depth's value is @var{bhl-default-toc-depth}.
+
+You can insert the table of contents in three different places: just
+after the title, just before the end, just at the point.  The value of
+@var{bhl-toc-location} defines the toc location.
+@end defun
+
+@defun bhl-insert-lol
+Insert the list of links into the current buffer.  The default key
+binding is @key{C-c C-c l}.  This command is also available from the
+@code{*lol*} buffer in @command{bhl-lol-mode} with @key{i}.
+@end defun
+
+
+
+@node  Browsing the BHL file, Changing font, Inserting, Commands and key bindings
+@section Browsing the BHL file
+@kindex C-c C-t
+@kindex C-c C-/
+@kindex C-c C-n
+@kindex C-c C-p
+@kindex C-u C-c C-n
+@kindex C-u C-c C-p
+@kindex C-TAB
+@kindex C-S-TAB
+@cindex WikiName
+@cindex Popup menu
+
+@defun bhl-show-toc [depth]
+Get a new buffer named @code{*toc*} with the table of contents.  The
+default key binding is @key{C-c C-t}.  The optional argument
+(@code{depth}) indicates the toc depth. Without any argument, the toc
+depth's value is @var{bhl-default-toc-depth}.  This command is also
+available from the popup menu.
+@end defun
+
+@defun bhl-show-lol
+Get a new buffer named @code{*lol*} with the list of links.  A link
+may be an URL or a WikiName.  The default key binding is @key{C-c
+C-/}.  This command is also available from the popup menu.
+@end defun
+
+@defun bhl-goto-next-section
+Go to the next section.  The default key binding is @key{C-c C-n}. With
+@key{C-u}, go to the next section or (sub)subsection.
+@end defun
+
+@defun bhl-goto-previous-section
+Go to the previous section.  The default key binding is @key{C-c C-p}. With
+@key{C-u}, go to the previous section or (sub)subsection.
+@end defun
+
+@defun bhl-goto-next-url-or-wiki
+Go to the next URL or WikiName.  The default key binding is @key{C-TAB}.
+@end defun
+
+@node    Changing font, Miscellaneous, Browsing the BHL file, Commands and key bindings
+@section Changing font
+@vindex bhl-tt-face
+@kindex C-c C-f C-b
+@kindex C-c C-f C-e
+@kindex C-c C-f C-u
+@kindex C-c C-f C-t
+@kindex C-c C-f C-_
+@kindex C-c C-f C-n
+
+@defun bhl-change-font-bold
+Place the cursor between two @code{*}.  If a region is selected, put
+the region between two @code{*}.  This overrides previous
+fontification.  The default key binding is @key{C-c C-f C-b}.
+@end defun
+
+@defun bhl-change-font-emphasis
+Place the cursor between two @code{_}.  If a region is selected, put
+the region between two @code{_}.  This overrides previous
+fontification.  The default key binding is @key{C-c C-f C-e}.
+@end defun
+
+@defun bhl-change-font-underline
+Place the cursor between two @code{__}.  If a region is selected, put
+the region between two @code{__}.  This overrides previous
+fontification.  The default key binding is @key{C-c C-f C-u}.
+@end defun
+
+@defun bhl-change-font-truetype
+Place the cursor or a selected region between two @code{==}.  If a
+region is selected, put the region between two @code{==}.  This
+overrides previous fontification.  The default key binding is @key{C-c
+C-f C-t}.
+@end defun
+
+@defun bhl-change-font-bolditalic
+Place the cursor between @code{_*} and @code{*_}.  If a region is
+selected, put the region between @code{_*} and @code{*_}.  This
+overrides previous fontification.  The default key binding is @key{C-c
+C-f C-_}.
+@end defun
+
+@defun bhl-change-font-normal
+Strip any fontification of the selected region.  No effect when no
+region is selected. The default key binding is @key{C-c C-f C-n}.
+@end defun
+
+@node  Miscellaneous,  , Changing font, Commands and key bindings
+@section Miscellaneous
+@cindex numerical
+@cindex alphabetical
+@cindex mail
+@cindex log
+@cindex bug
+@cindex version
+@kindex C-c ;
+@kindex C-u C-c ;
+@kindex C-c C-x m
+@kindex C-c C-o
+@kindex C-c C-t
+@kindex C-c C-v
+@cindex Popup menu
+@cindex Comment
+
+@defun bhl-sectioning-switch-style
+Read a sectioning style from the minibuffer and convert (sub)sections'
+prefix into this style. The available styles are @code{num},
+@code{alpha}, @code{aster} and @code{equal-sign}.
+@end defun
+
+@defun bhl-comment-region
+Comment the current region.  With a symbolic argument, uncomment the
+current region.  The default key binding is @key{C-c ;}.
+@end defun
+
+@defun bhl-hide-comment
+Make the comments invisible.  With a symbolic argument, make the
+comments visible again.
+@end defun
+
+@defun bhl-compose-mail
+Convert the current buffer into TXT format with @command{bhl2txt} and
+use the output in a mail draft.  The default key binding is @key{C-c
+C-x m}.  This command is also available from the popup menu.
+@end defun
+
+@defun bhl-view-log
+Display the log of the last conversion in a temporary buffer. This is
+by default added to @code{bhl-after-conversion-hook}.  The default key
+binding is @key{C-c C-c g}.
+@end defun
+
+@defun bhl-update-toc
+Update the sections', subsections' and subsubsections' numbering.  The
+default key binding is @key{C-c M-t}.
+@end defun
+
+@defun bhl-submit-but-report
+Send a mail with a bug report.  This is only available in GNU Emacs.
+@end defun
+
+@defun bhl-show-version
+Display the version number of the @acronym{bhl} mode.  The default key binding is
+@key{C-c C-v}.
+@end defun
+
+@defun bhl-texi-toggle-accents
+Toggle accents in a Texinfo buffer.  If you are using accents, it may
+be a good idea to add this function to
+@var{bhl-after-texi-conversion-hook}.
+@end defun
+
+@node Options, Example, Commands and key bindings, top
+@chapter Options
+
+You can change the value of each option via @command{M-x
+customize-group RET bhl RET} or via @command{Customize BHL} in the
+@acronym{bhl} menu.
+
+@menu
+* Global options::              First things to set up
+* BHL to HTML::                 Options of the HTML conversion
+* BHL to LaTeX::                Options of the LaTeX conversion
+* BHL to Texinfo::              Options of the Texinfo conversion
+* BHL to SGML::                 Options of the SGML conversion
+* BHL to WIKI::                 Options of the WIKI conversion
+* BHL to TXT::                  Options of the TXT conversion
+* Wiki options::                Options of BHL as a local Wiki
+* Options of the toc::          Location and depth
+* Converting tables::           Alignment and caption
+@end menu
+
+@node   Global options, BHL to HTML, Options, Options
+@section Global options
+@findex browse-url
+@vindex bhl-xxx-conversions-list
+@findex footnote-mode
+@cindex Anglais
+@cindex Convention
+@cindex numerical
+@cindex alphabetical
+
+@defopt bhl-mode-hook
+Hook run while in @acronym{bhl} mode.  If you are under GNU Emacs, it
+could be useful to add @code{footnote-mode}, since @acronym{bhl}
+converts footnotes.
+@end defopt
+
+@defopt bhl-after-conversion-hook
+Hook run at the very end of a conversion.  The default value is
+@command{bhl-initialize-properties}.  Adding @command{bhl-view-log}
+could also be useful.  If you remove this function, the conversion
+properties of the @emph{last} converted buffer will be the default
+conversion properties for the @emph{next} converted buffer -- which
+may not be what tou really want.
+@end defopt
+
+@defopt bhl-autoguess-style-flag
+If non-nil, autoguess the sectioning style.  When you find a file,
+@acronym{BHL} tries to guess its sectioning style and sets the value
+of `bhl-sectioning-default-style' to the value of the file's style.
+
+The default value of @var{bhl-autoguess-style-flag} is @code{nil}.
+@end defopt
+
+@defopt bhl-sectioning-default-style
+Define the style for the titles of sections, subsections and
+subsubsections. The five available styles are: numerical (@code{num}),
+alphabetical (@code{alpha}), asterisks (@code{aster}), equal-signs
+(@code{equal-signs}) and your own style (@code{my}). @xref{Sections}.
+
+If you want to use your own style, you have to define
+@var{bhl-my-sectioning-regexp-list}. In this case,
+@command{bhl-update-toc} is not available anymore.
+@end defopt
+
+@defopt bhl-my-sectioning-regexp-list
+A list of regular expressions that match the different levels of
+sectioning. They respectively match the prefix of a section's,
+subsection's and subsubsection's title. Since the titles of the
+sections are always put @emph{at the beginning of the line}, you don't
+have to insert a @code{^} in these regular expressions.
+
+The default value of @var{bhl-my-sectioning-regexp-list} is the value
+of @var{bhl-my-sectioning-regexp-list}, which corresponds to the
+numerical style (@code{num})..
+@end defopt
+
+@defopt bhl-verbatim-ignore
+A list of syntactic elements that shouldn't be converted when found
+inside a verbatim environment.  The default value of this variable is
+@code{(tag comment list description table url wikiname images
+special-char tex-label footnote quote)}.
+@end defopt
+
+@defopt bhl-ignored-regexps
+A list of regexps. Each line matching a regexp within this list is
+automatically killed before any conversion.
+@end defopt
+
+@defopt bhl-tags-overlap-flag
+Non-nil means that you can use tags on multiple lines.  Maybe useful
+to turn this option off is you want to use tags on multiple lines
+inside a verbatim environment.
+@end defopt
+
+@defopt bhl-i18n-conventions
+The car of this variable is a language specification among
+@code{english}, @code{french} and @code{german}.  @acronym{bhl} will follows
+conventions according to the chosen language.
+
+If the second element if t, @acronym{bhl} follows conventions concerning the
+punctuation, as defined in @var{bhl-xx-punctuation} (where @code{xx}
+is @code{en}, @code{fr} or @code{de}).
+
+If the third element if t, @acronym{bhl} follows conventions concerning the
+quotation marks, as defined in @var{bhl-xx-quotation-marks}. 
+
+If the fourth element if t, @acronym{bhl} follows conventions concerning
+special characters, as defined in @var{bhl-xx-special-chars}. 
+@end defopt
+
+@defopt bhl-browse-url-function
+A function for calling your favorite browser.  The default value is
+@command{browse-url}.
+@end defopt
+
+@node    BHL to HTML, BHL to LaTeX, Global options, Options
+@section BHL to HTML
+@cindex Doctype
+@cindex Properties
+
+@defopt bhl-after-html-conversion-hook
+Hook run after the HTML conversion.
+@end defopt
+
+@defopt bhl2html-properties-list
+The list of properties relevant for the @command{bhl2html}
+conversion. @xref{Properties of conversion}.  Don't modifiy this
+variable manually.  Use @code{M-x customize} instead.
+@end defopt
+
+@defopt bhl-html-conversions-list
+A list of conversions to perform with @command{bhl2html}.  Each element of
+this list is boolean.  Don't edit this option manually, use @command{M-x
+customize} instead.
+@end defopt
+
+@defopt bhl-html-meta-alist
+A list of META tags to be inserted in the header of HTML output. Each
+element is divided into two elements: the first one indicates the
+@emph{name} of the META tag, the second one indicates the
+@emph{content} of the META tag.
+
+@table @code
+@item '((``author'' . ``you''))
+@code{<META name="author" content="you">}
+@end table
+@end defopt
+
+@defopt bhl-html-link-alist
+A list of @code{LINK} tags to be inserted in the header of HTML
+output.  Each element is divided into two elements: the first one
+indicates the @emph{rel} of the @code{LINK} tag, the second one
+indicates the @code{href} of the @code{LINK} tag.
+
+@table @code
+@item '((``generator-home . ``http://www.nongnu.org/bhl))
+@code{<LINK rel=@-"generator-@-home"
+href=@-"http://@-www.@-nongnu.@-org/@-bhl">} 
+@end table
+@end defopt
+
+@defopt bhl-html-doctype
+The document type description of the HTML output.  The default value is:
+@code{<!DOCTYPE@- html@- PUBLIC@- \"-//W3C@-//DTD@- HTML@- 4.01@-
+Transitional@-//EN\">}.
+@end defopt
+
+@defopt bhl-html-content-type
+The content type description of the HTML output.  The default value is:
+@code{<META@- HTTP@--EQUIV=@-"Content@--Type"@-
+CONTENT=@-"text/@-html;@- charset=@-iso-@-8859-1>"}.
+@end defopt
+
+@defopt bhl-html-default-style
+The style to be inserted into the header (@code{<HEAD>...</HEAD>}) of
+the HTML output.
+@end defopt
+
+@defopt bhl-html-title-tags
+A list defining the opening and closing tags of the HTML title.
+@end defopt
+
+@defopt bhl-html-subtitle-tags
+A list defining the opening and closing tags of the HTML subtitle.
+@end defopt
+
+@defopt bhl-html-para-align
+How @acronym{bhl} aligns each paragraph of the HTML output.  The default value
+is @code{none}.
+@end defopt
+
+@defopt bhl-html-img-align
+Image alignment. The default value is @code{center}.
+@end defopt
+
+@defopt bhl-html-list-item-is-para-flag
+Non-@code{nil} means that list items are paragraphs into the HTML
+output.
+@end defopt
+
+@defopt bhl-html-footer
+A string that will be put at the end of the HTML output.
+@end defopt
+
+@node    BHL to LaTeX, BHL to Texinfo, BHL to HTML, Options
+@section BHL to LaTeX
+
+@defopt bhl-after-latex-conversion-hook
+Hook run after the LaTeX conversion.
+@end defopt
+
+@defopt bhl2latex-properties-list
+The list of properties relevant for the @command{bhl2latex}
+conversion. @xref{Properties of conversion}.  Don't modifiy this
+variable manually.  Use @code{M-x customize} instead.
+@end defopt
+
+@defopt bhl-latex-conversions-list
+A list of conversions to perform with @command{bhl2latex}.  Each element
+of this list is boolean.  Don't edit this option manually, use
+@command{M-x customize} instead.
+@end defopt
+
+@defopt bhl-latex-packages-alist
+A list of packages to be included in the LaTeX header.  Each element
+is divided into two elements: the first one indicates the @emph{name}
+of the packages, the second one indicates the @emph{options} of the
+package.
+
+@table @samp
+@item '((``inputenc'' . ``latin1''))
+@code{\usepackage[latin1]@{inputenc@}}.
+@end table
+@end defopt
+
+@defopt bhl-latex-default-class
+The default class of document for the LaTeX output.  The default value
+is @code{article}.
+@end defopt
+
+@defopt bhl-latex-default-class-options
+The default options passed to the @code{\documentclass@{...@}}
+command.  The default value is @code{12pt}.
+@end defopt
+
+@defopt bhl-latex-extra-preambles
+A list of lines to be included in the LaTeX header.
+@end defopt
+
+@defopt bhl-latex-extra-body
+A list of lines to be included before the first section.
+@end defopt
+
+@defopt bhl-latex-default-class-options
+The default options passed to the @code{\documentclass@{...@}}
+command.  The default value is @code{12pt}.
+@end defopt
+
+@defopt bhl-latex-footer
+A string that will be put at the end of the LaTeX output.
+@end defopt
+
+@node     BHL to Texinfo, BHL to SGML, BHL to LaTeX, Options
+@section BHL to Texinfo
+
+@defopt bhl-texi-conversion-hook
+Hook run after the Texinfo conversion.  The default value is
+@code{(texinfo-@-every-@-node-@-update bhl-@-texi-@-make-@-menu)}, so
+that the output file is ready for compilation.  If you are using
+accents, you may add @code{bhl-texi-toggle-accents}.
+@end defopt
+
+@defopt bhl2texi-properties-list
+The list of properties relevant for the @command{bhl2texinfo}
+conversion. @xref{Properties of conversion}.  Don't modifiy this
+variable manually.  Use @code{M-x customize} instead.
+@end defopt
+
+@defopt bhl-texi-conversions-list
+A list of conversions to perform with @command{bhl2texinfo}.  Each
+element of this list is boolean.  Don't edit this option manually, use
+@command{M-x customize} instead.
+@end defopt
+
+@defopt bhl-texi-setchapternewpage-flag
+Set the @code{@@setchapternewpage} value.  The default value is
+@code{on}.
+@end defopt
+
+@defopt bhl-texi-titlepage-style
+The style of the title page.  The @code{classical} titlepage is the
+one mostly used by the @acronym{GNU} manuals.  The @code{centered}
+titlepage centers the title and other informations on the front page.
+@end defopt
+
+@defopt bhl-texi-centered-minipage-tag
+The default tag used for the conversion of centered
+minipages. @xref{Environments}.
+@end defopt
+
+@defopt bhl-texi-table-tag
+The tag for the conversion of tables in the Texinfo output.  The
+default value is @code{verbatim}.  If you want to skip tables when
+converting into Texinfo format, you should set this to @code{ignore}.
+@end defopt
+
+@defopt bhl-texi-footer
+A string that will be put at the end of the Texinfo output.
+@end defopt
+
+@node   BHL to SGML, BHL to WIKI, BHL to Texinfo, Options
+@section BHL to SGML
+
+@defopt bhl-after-sgml-conversion-hook
+Hook run after the SGML conversion.
+@end defopt
+
+@defopt bhl2sgml-properties-list
+The list of properties relevant for the @command{bhl2hsgml}
+conversion. @xref{Properties of conversion}.  Don't modifiy this
+variable manually.  Use @code{M-x customize} instead.
+@end defopt
+
+@defopt bhl-sgml-conversions-list
+A list of conversions to perform with @command{bhl2sgml}.  Each element
+of this list is boolean.  Don't edit this option manually, use
+@command{M-x customize} instead.
+@end defopt
+
+@defopt bhl-sgml-list-item-is-para-flag
+Non-@code{nil} means that list items are paragraphs into the SGML
+output.
+@end defopt
+
+@defopt bhl-sgml-minipage-tag
+The default tag used for the conversion of
+minipages. @xref{Environments}.
+@end defopt
+
+@defopt bhl-sgml-footer
+A string that will be put at the end of the SGML output.
+@end defopt
+
+@node  BHL to WIKI, BHL to TXT, BHL to SGML, Options
+@section BHL to WIKI
+
+Starting with 1.7.9, @acronym{BHL} implements a @code{bhl2wiki}
+fonction. For now, the conversion is far from perfect, but it may be
+useful.
+
+@defopt bhl-after-wiki-conversion-hook
+Hook run after the conversion into WIKI. This hook is run just before
+`bhl-after-conversion-hook'.
+@end defopt
+
+@defopt bhl2wiki-properties-list
+List of properties of the `bhl2wiki' conversion.
+@end defopt
+
+@defopt bhl-wiki-conversions-list
+A list of conversion functions to perform with `bhl2html'.
+Each element of this list corresponds to a conversion function.
+@end defopt
+
+@defopt bhl-wiki-footer
+A string that will be put at the end of the WIKI output.
+@end defopt
+
+@node    BHL to TXT, Wiki options, BHL to WIKI, Options
+@section BHL to TXT
+
+@defopt bhl-after-txt-conversion-hook
+Hook run after the TXT conversion.
+@end defopt
+
+@defopt bhl2txt-properties-list
+The list of properties relevant for the @command{bhl2txt}
+conversion. @xref{Properties of conversion}.  Don't modifiy this
+variable manually.  Use @code{M-x customize} instead.
+@end defopt
+
+@defopt bhl-txt-conversions-list
+A list of conversions to perform with @command{bhl2txt}.  Each element
+of this list is boolean.  Don't edit this option manually, use
+@command{M-x customize} instead.
+@end defopt
+
+@node  Wiki options, Options of the toc, BHL to TXT, Options
+@section Wiki options
+
+@defopt bhl-is-a-local-wiki-flag
+If non-@code{nil}, this means that @acronym{bhl} is a local wiki. You
+can toggle this variable from the menu.
+@end defopt
+
+@defopt bhl-default-wikifiles-extension
+The default extension for the Wiki file names.  The default value for
+this options is @code{.bhl}.  For example, when following a WikiName
+named @code{MyWikiName}, a new file named @code{MyWikiName.bhl} will
+be found.
+@end defopt
+
+@defopt bhl-downcase-wikifiles-names-flag
+If non-@code{nil}, following a WikiName named @code{MyWikiName} will
+find a file named @code{mywikiname.bhl}, which is the downcased value
+of the WikiName.  Otherwise, it will find a file named
+@code{MyWikiName.bhl}.
+@end defopt
+
+@defopt bhl-non-wiki-names-list
+A list of mixed-case strings that should not be considered as
+WikiNames.  For example: ``OpenOffice''.
+@end defopt
+
+@node  Options of the toc, Converting tables, Wiki options, Options
+@section Options of the toc
+
+@defopt bhl-default-toc-depth
+The default doc depth.  The default value is three.
+@end defopt
+
+@defopt bhl-toc-location
+Indicates the toc location.  This variable may have three different
+values: @code{top} (just after the title), @code{bottom} (just before
+the end) or @code{point} (at point).
+@end defopt
+
+@defopt bhl-intro-toc
+A string to insert before the table of contents in the source file.
+@end defopt
+
+@defopt bhl-end-toc
+A string to insert after the table of contents in the @acronym{bhl} files.
+@end defopt
+
+@node   Converting tables,  , Options of the toc, Options
+@section Converting tables
+
+@defopt bhl-table-location
+Where to put the table.  The default value is @code{htbp}, i.e. @code{here
+top bottom page}.  This variable does not concern the HTML output.
+@end defopt
+
+@defopt bhl-table-align
+The table alignment. The default value is @code{center}. 
+@end defopt
+
+@defopt bhl-table-cell-align
+The cell alignment inside a table.  The default value is @code{center}.
+@end defopt
+
+@node Example, Index, Options, top
+@chapter Example
+
+@smallexample
+Just ANother Example
+
+--- Table of contents
+
+ 1. Fonts and environments
+   1.1. Using font beautifiers
+   1.2. Environments
+ 2. Converting lists
+   2.1. Ordered and non-ordered lists
+   2.2. Description lists
+   2.3. Nested lists
+ 3. Converting tables
+ 4. Browsing your document
+   4.1. The table of content
+   4.2. The list of links
+ 5. Contact
+
+--- End of the table of contents
+
+
+# This is the last example of a BHL file converted into HTML, LaTeX
+# and SGML formats.  This example shows you the various syntaxic rules
+# that BHL handles.  For further details, please refer to the manual
+# of the BHL mode. http://www.nongnu.org/bhl
+
+# These lines are comments.
+# You can comment a region with `bhl-comment-region'
+
+# The few next lines are specification lines. They
+# indicate the properties of the different conversions.
+
+#!author!Bastien Guerry
+#!date!It is %Hh%M on %d/%m/%Y.
+
+#!html!toc:nocaption:noprefix:noi18n
+#!sgml!caption
+#!latex!toc:caption:prefix:i18n
+#!latex-options!11pt:a4paper
+#!latex-packages!inputenc[latin1]
+
+This document is a small example of what BHL can do. For further
+details, please read the full documentation on
+http://www.nongnu.org/bhl.
+
+#!language!fr
+#!encoding!iso-8859-1
+#!texi-style!centered
+
+1. Fonts and environments
+
+1.1. Using font beautifiers
+
+Here is a list of the *different* fonts beautifiers that you can
+use inside the BHL mode.
+
+	Bold -- *one or two words.*
+	Emphasis -- _one or two words._
+	Truetype -- ==one or two words.==
+	Underline -- __one or two words.__
+	Bold italic -- _*one or two words*_.
+
+If want to insert an asterisk, you can use the escape character like
+\*this\* or like \_this\_. This is also available for \#comments.
+
+1.2. Environments
+
+BHL handles two specific environments: verbatim and minipage.
+
+Verbatim:
+
+--
+Here is a *part* of text that			will be displayed
+in 	verbatim	                         #a comment
+
+Please remark[1] that this environment has no syntactic rule, except
+you modify the variable bhl-verbatim-ignore.
+
+	* list are ignored
+
+And so do...
+
+	Item -- descriptions.
+
+And so do tables!
+
+| A | B |
+| C | D |
+
+And so do quote environments:
+
+    blahblahblah
+    blahblahblah
+
+Etc.
+--
+
+
+A minipage:
+
+%%%[12cm]
+This minipage (12cm) is centered without border.
+%%%
+
+<%%[10cm]
+This minipage (10cm) is put on the left without border.
+%%%
+
+>-%[8cm]
+This minipage (8cm) is put on the right with border.
+%%%
+
+A horizontal rule:
+
+----[3cm]
+
+Another horizontal rule, put on the right:
+
+>---[3cm]
+
+2. Converting lists
+
+2.1. Ordered and non-ordered lists
+
+*Ordered* lists begin with three *whitespaces*, a list separator (\*, - or o)
+and another whitespace.
+
+	* Like this;
+	* or like that.
+
+2.2. Description lists
+
+Description lists are treated like other lists, except that they
+cannot be nested in other lists.
+
+A description item consists in tabs, a term to be defined, a
+whitespace, two dashes and another whitespace.
+
+	Term -- a definition of the terme. 
+	Definition -- another definition. 
+
+2.3. Nested lists
+
+	* Lists can be nested inside other lists. 
+
+		* You just need to add three whitespaces more. 
+		* These to items will be nested into two other items. sldkfj
+		  lskdjf lmmlkm
+
+			1. Three levels of nested lists are supported. 
+			2. Four levels won't be very useful...
+
+	* Blank lines are not mandatory between items.
+
+3. Converting tables
+
+A WikiName. 
+
+Here is a table:
+
+| @@dHL et lqskdj@@                |  @@qsdqsdOolsqdf@@      |
+| Free softxware                 |  bastien1@@free.fr     |
+| With Emacs                     |  Without Emacs        |
+|  bastien                       |  Without Emacs        |
+
+A table line begins and ends with a "|".  Other "|" inside a line of
+the table separate two cells.  Arobases around the content of a cell
+mean that this cell is a header of the table.
+
+4. Browsing your document
+
+4.1. The table of content
+
+You can _browse_ the table of content, _insert_ it inside your
+document, and _update_ the numbering of sections.
+
+The default key binding for browsing the table of content is C-c
+C-t.
+
+You can also choose the style of sectioning and swith from one style
+to another. The style of this document is set to *num* (which is the
+default style) by the specification line above.
+
+4.2. The list of links
+
+The default key binding for browsing the list of links is C-c
+C-/. This creates a new buffer with a list of URLs or wikinames that
+you can follow.
+
+5. Contact
+
+Please feel free to submit bugs or ideas:
+[[mailto:bastien1@@free.fr][BHL contact]].
+
+Footnotes: 
+[1]  A note.
+@end smallexample
+
+@node  Index,  , Example, top
+@chapter Index
+
+@printindex cp
+
+@unnumbered Thanks
+
+@acronym{BHL} is somewhat related to @code{emacs-wiki.el} and
+@code{muse.el} and you should have a look at them. They are more
+wiki-oriented than @acronym{BHL} and they can be more convenient if
+you want to convert a lot of pages at the same time. But basically
+they do the same job.
+
+Thanks to Serge Basterot, Jeffrey Borlik, Christoph Conrad, Tim Cross,
+Mario DomgÅˆrgen, Thomas Gehrlein, Jacob Hamacher, Sylvain Holtzer, Dan
+P. Katz, Mario Lang, Massimiliano Mirra, Julie Neveux, John Stauffer,
+Thierry Stoehr and Marco Testi.
+
+@contents
+
+@bye

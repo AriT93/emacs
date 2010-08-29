@@ -1,0 +1,16 @@
+;; Object blog/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "blog/"
+  :tables (list 
+   (semanticdb-table "blog.el"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("defgroup" code nil nil [2314 2387]) ("blog-mode-version" variable (:default-value "0.1") nil [2389 2456]) ("blog-mode-map" variable (:default-value (let ((map (make-sparse-keymap))) (define-key map "" (quote write-blog-finish)) (define-key map "" (quote blog-make-para)) map)) nil [2458 2615]) ("blog-file-name" variable nil nil [2616 2643]) ("blog-root" variable nil nil [2646 2748]) ("blog-file-extension" variable (:default-value ".txt") nil [2750 2864]) ("blog-mode-version" function (:user-visible-flag t) nil [2866 3009]) ("blog-mode" function (:user-visible-flag t) nil [3010 3230]) ("blog-mode-hook" variable nil nil [3233 3330]) ("blog-mode-write-blog-hook" variable nil nil [3332 3445]) ("blog-mode-hook-identify" function nil nil [3447 3547]) ("add-hook" code nil nil [3549 3600]) ("add-hook" code nil nil [3601 3646]) ("setq" code nil nil [3648 3716]) ("add-hook" code nil nil [3717 3843]) ("write-blog" function (:user-visible-flag t :arguments ("blog-name" "&optional" "blog-weight" "blog-workout")) nil [3845 4581]) ("write-blog-daily" function (:user-visible-flag t :arguments ("blog-weight" "blog-workout")) nil [4583 4803]) ("wrap-blog-mmm-mode" function (:user-visible-flag t) nil [4805 5065]) ("write-blog-finish" function (:user-visible-flag t) nil [5067 5468]) ("blog-make-para" function (:user-visible-flag t) nil [5470 5651]) ("blog-buffer" function (:user-visible-flag t :arguments ("&optional" "name")) nil [5653 5965]) ("blog-region" function (:user-visible-flag t :arguments ("name" "beg" "end")) nil [5967 6227]) ("blog-buffer-html" function (:user-visible-flag t :arguments ("name")) nil [6229 6491]) ("blog-region-html" function (:user-visible-flag t :arguments ("name" "beg" "end")) nil [6503 6785]) ("blog-grep-edit-blog" function (:user-visible-flag t :arguments ("regexp")) nil [6787 6925]) ("blog" package nil nil [6927 6942]))
+    :file "blog.el"
+    :pointmax 6966
+    :unmatched-syntax 'nil
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0beta3"
+  :semanticdb-version "2.0beta3"
+  )

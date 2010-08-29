@@ -1,0 +1,186 @@
+% Reference Card for Oort Gnus: to be processed with LaTeX2e
+\documentclass{article}
+
+\usepackage{supertabular}
+
+\def\Guide{Card}\def\guide{card}
+\def\logoscale{0.25}
+\newlength{\logowidth} \setlength{\logowidth}{6.861in}
+\newlength{\logoheight} \setlength{\logoheight}{7.013in}
+
+\raggedbottom\raggedright
+
+\usepackage{epsfig}
+
+\setlength{\textwidth}{7.26in} \setlength{\textheight}{10in}
+\setlength{\topmargin}{-1.0in}
+% the same settings work for A4, although there is a bit of space at the
+% top and bottom of the page. 
+\setlength{\oddsidemargin}{-0.5in} \setlength{\evensidemargin}{-0.5in}
+
+
+% README (for refcard + booklet)
+% This is a 5+ page reference card. In addition there is a booklet
+% (bk-a4.tex for A4 and bk-lt.tex for Letter).
+%
+% *** files for the refcard
+% refcard.tex (this file), gnusref.tex ("include"-file) and
+% gnuslogo-refcard.eps (Gnus logo).
+%
+% *** printing (about 5 pages now: write me if you can make it shorter..)
+% if you are using latex-mode, you do C-c C-f (process with latex),
+% C-c C-v (view using xdvi/dvi2tty) and C-c C-p (print)
+% the original author has set up the page dimensions cleverly so that this
+% should print on both letter and a4 (see note above)
+% $latex refcard.tex
+% this creates a file refcard.dvi which you can preview using
+% $xdvi refcard.dvi [C-c C-v]
+% and print using something like
+% $dvips refcard.dvi 
+%
+% If you want to print the booklet, you need to use `pstops' from the
+% `psutils' package (TODO: somebody write a howto ?)
+%
+% *** customization:
+
+% the part following \begin{document} in this file consists of a macro for
+% each section and section-headers (\section*{..}). It should be easy to
+% reorder things and/or remove sections (put '%' at the beginning of the line).
+% (i.e. you might want to omit \notes in the printed version)
+% The same goes for the booklet: Its contents are defined in booklet.tex.
+% If you think that the order is not logical and you have ideas for
+% improvements, please send mail to the current maintainer.
+
+% *** TODO:
+% o some things might not be updated: scoring and server modes, maybe more
+% o Gnus Unplugged category-buffer commands need to be written
+
+\begin{document}
+
+\def\progver{5.10}\def\refver{5.10-1} % program and refcard versions
+\def\date{Mar 23rd, 2002}
+\def\author{Gnus Bugfixing Girls + Boys $<$bugs@gnus.org$>$}
+\raggedbottom\raggedright
+
+\twocolumn
+% use \tiny to shrink it to 4 pages (needs a high-resolution printer though)
+%\tiny
+\scriptsize
+\pagestyle{plain}
+
+% this contains a set of commands containing the actual sections
+% (and some explanations).
+\input{gnusref}
+
+\Title
+\par
+\Logo{refcard}
+\Notes
+%
+%
+\section*{Group-Mode}
+\GroupModeGeneral
+    \subsection*{Group Subscribedness-Levels}
+    \GroupLevels
+    \subsection*{List Groups}
+    \ListGroups
+    \subsection*{Create/Edit Foreign Groups}
+    \CreateEditGroups
+    \subsection*{Unsubscribe, Kill and Yank Groups}
+    \SubscribeKillYankGroups
+    \subsection*{Mark Groups}
+    \MarkGroups
+    \subsection*{Group-Unplugged}
+    \GroupUnplugged
+% topics in group-mode
+    \subsection*{Group Topics}
+    \GroupTopicsGeneral
+    \subsubsection*{Topic Sorting}
+    \TopicSorting
+%
+% summary-mode
+\section*{Summary-Mode}
+\SummaryModeGeneral
+    \subsection*{Select Articles}
+    \SelectArticles
+%
+    \subsection*{Threading}
+    \Threading
+%
+    \subsection*{Limiting}
+    \Limiting
+    \subsection*{Sort the Summary-Buffer}
+    \SortSummary
+    \subsection*{Score (Value) Commands}
+    \Scoring
+    \subsection*{Output Articles}
+    \OutputArticles
+    \subsection*{Extract Series (Uudecode etc)}
+    \ExtractSeries
+    \subsection*{MIME operations from the Summary-Buffer}
+    \MIMESummary     
+%
+    \subsection*{Post, Followup, Reply, Forward, Cancel}
+    \PostReplyetc
+    \newpage
+      \subsection*{Message Composition}
+      \MsgCompositionGeneral
+        \subsubsection*{Jumping in message-buffer}
+        \MsgCompositionMovementArticle
+        \subsubsection*{Attachments/MML}
+        \MsgCompositionMML
+% marking articles
+    \subsection*{Mark Articles}
+    \MarkArticlesGeneral
+        \subsubsection*{Mark Based on Score}
+        \MarkByScore
+        \subsubsection*{The Process Mark}
+        \ProcessMark
+        \subsubsection*{Mark Indication-Characters}
+        \MarkCharacters
+%
+    \subsection*{Summary-Unplugged}
+    \SummaryUnplugged
+    \subsection*{Mail-Group Commands}
+    \MailGroups
+    \subsection*{Draft-Group Commands}
+    \DraftGroup
+% exiting
+    \subsection*{Exit the Summary-Buffer}
+    \ExitSummary
+%
+%
+\section*{Article Mode (reading)}
+\ArticleModeGeneral
+    \subsection*{Wash the Article-Buffer}
+    \WashArticle
+    \subsubsection*{Blank Lines and Whitespace}
+    \BlankAndWhitespace
+    \subsubsection*{Picons, X-faces, Smileys}
+    \Picons
+    \subsubsection*{Time and Date}
+    \TimeAndDate
+    \subsection*{Hide/Highlight Parts of the Article}
+    \HideHighlightArticle
+    \subsection*{MIME operations from the Article-Buffer (reading)}
+    \MIMEArticleMode
+%
+%
+\section*{Server Mode}
+\ServerMode
+    \subsection*{Unplugged-Server}
+    \ServerUnplugged
+%
+%
+\section*{Browse Server Mode}
+\BrowseServer
+
+%\pagebreak
+\vspace*{\fill}
+\Copyright
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% End:

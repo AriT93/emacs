@@ -1,0 +1,15 @@
+;; Object common/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "common/"
+  :tables (list 
+   (semanticdb-table "cedet.el"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("cl" include nil nil [2162 2175]) ("cedet-version" variable (:constant-flag t :default-value "1.0beta3") nil [2178 2243]) ("cedet-packages" variable (:constant-flag t :default-value (\` ((cedet (\, cedet-version) "common") (cogre "0.4beta1") (ede "1.0beta3") (eieio "0.18beta1") (semantic "2.0beta3") (speedbar "0.15beta1") (cedet-contrib "0.0" "contrib")))) nil [2245 2680]) ("let" code nil nil [2736 4017]) ("cedet" package nil nil [4019 4035]))
+    :file "cedet.el"
+    :pointmax 4060
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0beta3"
+  :semanticdb-version "2.0beta3"
+  )

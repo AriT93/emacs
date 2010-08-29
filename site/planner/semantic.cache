@@ -1,0 +1,15 @@
+;; Object planner/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "planner/"
+  :tables (list 
+   (semanticdb-table "planner-config.el"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("add-to-list" code nil nil [164 238]) ("planner" include nil nil [288 306]) ("planner-publish" include nil nil [307 333]) ("remember-config" include nil nil [335 361]) ("load-library" code nil nil [363 387]) ("load-library" code nil nil [388 428]) ("planner-appt" include nil nil [429 452]) ("load-library" code nil nil [453 486]) ("planner-calendar" include nil nil [487 514]) ("load-library" code nil nil [515 546]) ("load-library" code nil nil [547 580]) ("planner-diary" include nil nil [581 605]) ("load-library" code nil nil [606 634]) ("load-library" code nil nil [675 704]) ("load-library" code nil nil [705 735]) ("load-library" code nil nil [736 772]) ("load-library" code nil nil [773 804]) ("load-library" code nil nil [805 833]) ("load-library" code nil nil [834 867]) ("planner-tasks-overview" include nil nil [868 901]) ("load-library" code nil nil [902 936]) ("load-library" code nil nil [937 979]) ("load-library" code nil nil [980 1010]) ("load-library" code nil nil [1011 1038]) ("psvn" include nil nil [1039 1054]) ("planner-psvn" include nil nil [1055 1078]) ("setq" code nil nil [1079 1132]) ("global-set-key" code nil nil [1225 1280]) ("global-set-key" code nil nil [1281 1330]) ("global-set-key" code nil nil [1331 1376]) ("global-set-key" code nil nil [1377 1429]) ("global-set-key" code nil nil [1430 1498]) ("global-set-key" code nil nil [1499 1555]) ("global-set-key" code nil nil [1556 1613]) ("global-set-key" code nil nil [1614 1670]) ("define-key" code nil nil [1717 1793]) ("define-key" code nil nil [1794 1870]) ("define-key" code nil nil [1934 2001]) ("setq" code nil nil [2022 2058]) ("setq" code nil nil [2059 2104]) ("setq" code nil nil [2105 2147]) ("setq" code nil nil [2148 2188]) ("setq" code nil nil [2189 2227]) ("setq" code nil nil [2228 2270]) ("setq" code nil nil [2308 2355]) ("setq" code nil nil [2356 2400]) ("setq" code nil nil [2401 2448]) ("setq" code nil nil [2449 2576]) ("setq" code nil nil [2788 2826]) ("add-to-list" code nil nil [2828 2903]) ("add-to-list" code nil nil [2904 2982]) ("setq" code nil nil [3034 3072]) ("setq" code nil nil [3074 3106]) ("planner-diary-insinuate" code nil nil [3107 3132]) ("planner-insinuate-calendar" code nil nil [3133 3161]) ("planner-appt-use-tasks-and-schedule" code nil nil [3162 3199]) ("planner-appt-insinuate" code nil nil [3200 3224]) ("setq" code nil nil [3225 3281]) ("planner-appt-schedule-cyclic-insinuate" code nil nil [3282 3322]) ("setq" code nil nil [3323 3370]) ("planner-accomplishments-insinuate" code nil nil [3371 3406]) ("planner-timeclock-summary-insinuate" code nil nil [3407 3444]) ("setq" code nil nil [3445 3501]) ("planner-config" package nil nil [3503 3528]))
+    :file "planner-config.el"
+    :pointmax 3562
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.0"
+  )

@@ -1,0 +1,95 @@
+2003-08-04  Tony Graham  <tonygraham@users.sourceforge.net>
+
+	* === Released 0.2.2 ===.
+
+	* Makefile: Removed CHANGELOG.TXT from dist.
+
+	* NEWS: Updated for 0.2.2.
+
+	* README.TXT: Upped version number, added `xsl-if-to-choose' to
+	features.
+
+2003-08-03  Tony Graham  <tonygraham@users.sourceforge.net>
+
+	* README.TXT: Reworked byte-compiling instructions, added note to
+	ignore errors.
+
+2003-07-18  Tony Graham  <tonygraham@users.sourceforge.net>
+
+	* dot_emacs: Added commented-out autoloads of `xsl-grep' and
+	`xsl-process'.
+
+	* xslide.el: Removed one of two autoloads of
+	`reporter-submit-bug-report'.
+
+2003-07-14  Tony Graham  <tonygraham@users.sourceforge.net>
+
+	* xslide.el: Added `xsl-xemacs-p', `xsl-fsfemacs-p', and
+	`xsl-note-emacs-version' so can better handle Emacs/XEmacs
+	differences.  Used `xsl-fsfemacs-p' in `xsl-mode'.
+
+2003-07-14  Tony Graham  <tonygraham@users.sourceforge.net>
+
+	* xslide.el: Added `xsl-xemacs-p', `xsl-fsfemacs-p', and
+	`xsl-note-emacs-version' so can better handle Emacs/XEmacs
+	differences.  Used `xsl-fsfemacs-p' in `xsl-mode'.
+
+2003-07-02  Tony Graham  <tonygraham@users.sourceforge.net>
+
+	* xslide-font.el: Corrected a doc string.
+
+	* xslide.el: Added `xsl-if-to-choose', changed version to 0.2.2,
+	changed completions.
+
+2003-06-05  Tony Graham  <tonygraham@users.sourceforge.net>
+
+	* xslide.el: Fix docstring nits from patch 586138 (Ville Skytta).
+
+	* xslide-process.el: Added support for more XSLT processors from
+	patch 529922 (Ville Skytta).
+
+	* README.TXT: Updated instructions for byte-compiling without
+	using makefile.
+
+2003-05-26  Tony Graham  <tonygraham@users.sourceforge.net>
+
+	* === Released 0.2.1 ===.
+
+	* Makefile, README.TXT: 'makefile' is now 'Makefile' and other
+	files changed capitalisation.
+
+	* README.TXT, xslide.el: Updated for xslide 0.2.1.
+
+	* NEWS, TODO: Added NEWS and TODO files.
+
+2003-05-20  Tony Graham  <tonygraham@users.sourceforge.net>
+
+	* xslide.el: Added unused `xsl-initial-fo-file' and
+	`xsl-initial-fo-initial-point'.
+
+	* xslide-data.el: Added some padding, space, line-height, and keep
+	entries.
+
+	* xslide-font.el: Now cope with whitespace in
+	`xsl-font-lock-region-point-min', etc.
+
+2001-11-16  Tony Graham  <tkg@menteith.com>
+
+	* xslide-font.el: Changed font-lock block limit regexps to just
+	'<'.
+
+	* xslide.el: Set `indent-line-function' so `indent-region' works
+	correctly.
+
+2001-10-20  Tony Graham  <tkg@menteith.com>
+
+	* ChangeLog: Added ChangeLog since incremental changes now
+	available from CVS.
+
+	* xslide.el: Set ident-line-function to `xsl-electric-tab'.
+
+	* xslide-process.el: Add ability to view or browse process output
+	and xsl-process-view-output and xsl-process-browse-output
+	customizable variables to control them.  Add error-regexp and
+	process command template for xsltproc.
+
