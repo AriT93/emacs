@@ -152,9 +152,12 @@ loaded as such.)"
 (defun set-shell-cmdproxy()
   "Set shell to `cmdproxy'."
   (interactive)
-  (setq shell-file-name "c:/emacs-multi/bin/cmdproxy.exe")
-  (setq explicit-shell-file-name "c:/emacs-multi/bin/cmdproxy.exe")
+;;  (setq shell-file-name "c:/emacs/bin/cmdproxy.exe")
+;;  (setq explicit-shell-file-name "c:/emacs/bin/cmdproxy.exe")
+  (setq shell-file-name "cmd.exe")
+  (setq explicit-shell-file-name "cmd.exe")
   (setenv "SHELL" explicit-shell-file-name)
+  (setenv "PATH" "%PATH%;C:\\WINNT\\Microsoft.NET\\Framework\\v2.0.50727\\")
   ;;;;;(setq explicit-sh-args nil)           ; Undefined?
   (setq w32-quote-process-args t))
 

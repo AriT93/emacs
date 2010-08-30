@@ -1,6 +1,6 @@
 ;; htmlize.el -- Convert buffer text and decorations to HTML.
 
-;; Copyright (C) 1997,1998,1999,2000,2001,2002,2003,2005,2006 Hrvoje Niksic
+;; Copyright (C) 1997,1998,1999,2000,2001,2002,2003,2005,2006,2009 Hrvoje Niksic
 
 ;; Author: Hrvoje Niksic <hniksic@xemacs.org>
 ;; Keywords: hypermedia, extensions
@@ -96,7 +96,7 @@
     ;; `cl' is loaded.
     (load "cl-extra")))
 
-(defconst htmlize-version "1.34")
+(defconst htmlize-version "1.36")
 
 ;; Incantations to make custom stuff work without customize, e.g. on
 ;; XEmacs 19.14 or GNU Emacs 19.34.
@@ -866,9 +866,9 @@ If no rgb.txt file is found, return nil."
   ;; Only works in Emacs 21 and later.
   (let ((size-list
 	 (loop
-	  for f = face then (face-attribute f :inherit)
-	  until (eq f 'unspecified)
-	  for h = (face-attribute f :height)
+	  for f = face then (ignore-errors (face-attribute f :inherit)) ;?????
+	  until (or (not f) (eq f 'unspecified))
+	  for h = (ignore-errors (face-attribute f :height)) ;???????
 	  collect (if (eq h 'unspecified) nil h))))
     (reduce 'htmlize-merge-size (cons nil size-list))))
 
