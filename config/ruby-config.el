@@ -117,7 +117,7 @@
 
 
 
-(setq ri-ruby-script (expand-file-name "~/.emacs.d/lisp/ri-emacs.rb"))
+(setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
 
 (add-hook 'ruby-mode-hook
           (lambda()
@@ -139,7 +139,7 @@
                             (local-set-key [f4] 'ri-ruby-show-args)))
 
 (autoload 'ri "ri-ruby.el" nil t)
-(load (expand-file-name "~/.emacs.d/lisp/ri-ruby.el"))
+(load (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
 (global-auto-complete-mode t)
 (define-key ac-complete-mode-map "\C-n" 'ac-next)
 (define-key ac-complete-mode-map "\C-p" 'ac-previous)

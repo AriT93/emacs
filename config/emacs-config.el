@@ -1,8 +1,8 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; emacs-config.el															 ;;
-;; Time-stamp: <2010-08-30 08:48:24 mrpy>
-;; This file will hold specific setting I like for emacs out side of 		 ;;
-;; customize.  Mostly requires and such but a few setq's and such as well	 ;;
+;; emacs-config.el                                                           ;;
+;; Time-stamp: <2010-08-30 15:58:58 abturet>
+;; This file will hold specific setting I like for emacs out side of         ;;
+;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (if (window-system)
@@ -27,7 +27,9 @@
  ((string="w32" window-system)
   (set-face-attribute 'mode-line nil :family "Century Gothic" :height 1.0 :weight 'ultra-light ))
  ((string="x" window-system)
-  (set-face-attribute 'mode-line nil :family "Consolas" :height 1.0 )))
+  (set-face-attribute 'mode-line nil :family "Consolas" :height 1.0 ))
+((string="ns" window-system)
+ (set-face-attribute 'mode-line nil :family "Monaco" :height 1.0)))
 
 (setq-default compile-command "nmake")
 (setq tramp-auto-save-directory "~/tmp")
@@ -41,12 +43,12 @@
 (require 'js-comint)
 (setq inferior-js-program-command "rhino")
 (add-hook 'js2-mode-hook '(lambda ()
-			    (local-set-key "\C-x\C-e" 'js-send-last-sexp)
-			    (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
-			    (local-set-key "\C-cb" 'js-send-buffer)
-			    (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
-			    (local-set-key "\C-cl" 'js-load-file-and-go)
-			    ))
+                (local-set-key "\C-x\C-e" 'js-send-last-sexp)
+                (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
+                (local-set-key "\C-cb" 'js-send-buffer)
+                (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
+                (local-set-key "\C-cl" 'js-load-file-and-go)
+                ))
 
 ;;decide settings for specific environs
 (cond
@@ -58,7 +60,7 @@
 
 
 ;;(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "-outline-Liberation Mono-bold-r-normal-normal-14x-97-96-96-c-*-iso8859-1"))))
-(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Monaco-10:bold"))))
+(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Monaco-12:bold"))))
 
 
 (setq muse-project-alist
@@ -185,12 +187,11 @@
 (if (window-system)
     (progn (require 'color-theme)
            (color-theme-initialize)
-;;(color-theme-simple-2)
-;;(color-theme-calm-forest)
-;;(load-file "~/emacs/site/color-theme/themes/LazyCatTheme.el")
-           (load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")))
-;;(require 'LazyCatFont)
-;;(require 'LazyCatTheme)
+           ;;(color-theme-simple-2)
+           ;;(color-theme-calm-forest)
+           ;;(load-file "~/emacs/site/color-theme/themes/LazyCatTheme.el")
+           (load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")
+           (vivid-chalk)))
 
 ;;(add-to-list 'vc-handled-backends 'SVN)
 ;; (highline-mode t)
