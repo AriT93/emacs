@@ -1,12 +1,13 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; emacs-config.el                                                           ;;
-;;                                                                           ;;
-;; This file will hold specific setting I like for emacs out side of         ;;
-;; customize.  Mostly requires and such but a few setq's and such as well    ;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; emacs-config.el															 ;;
+;; Time-stamp: <2010-08-30 08:48:24 mrpy>
+;; This file will hold specific setting I like for emacs out side of 		 ;;
+;; customize.  Mostly requires and such but a few setq's and such as well	 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(tool-bar-mode nil)
-(menu-bar-mode nil)
+(if (window-system)
+    (tool-bar-mode -1))
+(menu-bar-mode -1)
 (message "loading emacs-config")
 (setq w32-use-full-screen-buffer nil)
 (setq uniquify-buffer-name-style t)
@@ -17,11 +18,16 @@
 (add-hook 'text-mode-hook ' turn-on-auto-fill)
 (autoload 'nuke-trailing-whitespace "whitespace" nil t)
 (add-hook 'write-file-hooks 'nuke-trailing-whitespace)
+(add-hook 'before-save-hook 'time-stamp)
+(setq dired-omit-files-p t)
+(add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+(setq TeX-command-list (quote (("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t) ("LaTeX" "%l \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("LaTeX PDF" "pdflatex \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("View" "%v" TeX-run-discard nil nil) ("Print" "gsview32 %f" TeX-run-command t nil) ("File" "dvips %d -o %f " TeX-run-command t nil) ("BibTeX" "bibtex %s"</FONT> TeX-run-BibTeX nil nil) ("Index" "makeindex %s" TeX-run-command nil t) ("Check" "lacheck %s" TeX-run-compile nil t) ("Other" "" TeX-run-command t t))))
+
 (cond
  ((string="w32" window-system)
-  (set-face-attribute 'mode-line nil :family "Liberation Mono" :height 1.0 ))
+  (set-face-attribute 'mode-line nil :family "Century Gothic" :height 1.0 :weight 'ultra-light ))
  ((string="x" window-system)
-  (set-face-attribute 'mode-line nil :family "Liberation Mono" :height 1.0 )))
+  (set-face-attribute 'mode-line nil :family "Consolas" :height 1.0 )))
 
 (setq-default compile-command "nmake")
 (setq tramp-auto-save-directory "~/tmp")
@@ -30,134 +36,81 @@
 (require 'whitespace)
 (require 'start-opt)
 
+(add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
+
 (require 'js-comint)
 (setq inferior-js-program-command "rhino")
 (add-hook 'js2-mode-hook '(lambda ()
-                            (local-set-key "\C-x\C-e" 'js-send-last-sexp)
-                            (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
-                            (local-set-key "\C-cb" 'js-send-buffer)
-                            (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
-                            (local-set-key "\C-cl" 'js-load-file-and-go)))
-
-(add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
+			    (local-set-key "\C-x\C-e" 'js-send-last-sexp)
+			    (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
+			    (local-set-key "\C-cb" 'js-send-buffer)
+			    (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
+			    (local-set-key "\C-cl" 'js-load-file-and-go)
+			    ))
 
 ;;decide settings for specific environs
-(if( string-equal system-name "SYS286558")
-    (progn
-      (setq TeX-command-list (quote (("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t) ("LaTeX" "%l \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("LaTeX PDF" "pdflatex \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("View" "%v" TeX-run-discard nil nil) ("Print" "gsview32 %f" TeX-run-command t nil) ("File" "dvips %d -o %f " TeX-run-command t nil) ("BibTeX" "bibtex %s" TeX-run-BibTeX nil nil) ("Index" "makeindex %s" TeX-run-command nil t) ("Check" "lacheck %s" TeX-run-compile nil t) ("Other" "" TeX-run-command t t))))
-      (require 'latex)
-      (require 'cygwin-mount)
-      (setq cygwin-mount-cygwin-bin-directory "c:/cygwin/bin/")
-      (require 'setup-cygwin)
-      (message "Welcome to: %s"(system-name))
-      (setq printer-name "JH135ADELL5100")
-      (setq ps-header-line-pad 0.15)
-      (setq ps-header-offset 12.346456692913385)
-      (setq ps-printer-name "\\SYS286558\JH135ADELL5100C")
-      (setq ps-top-margin 64.51968503937007)
-      (setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Monaco-10"))))
-      (setq tramp-default-method "plink")
-      (setq ps-lpr-command "c:\\Program Files\\Ghostgum\\gsview\\gsprint.exe")
+(cond
+ ((string="nil" window-system)
+  (require 'cygwin-mount)
+  (setq cygwin-mount-cygwin-bin-directory "c:/cygwin/bin/")
+  (require 'setup-cygwin)
+  (set-shell-bash)))
 
-      ;; THis line causes ghostscript to query which printer to
-      ;; use - which you may not need if, for example, you only
-      ;; have one printer.
-      (setq ps-lpr-switches '("-query"))
 
-      (setq ps-printer-name t)
-      (setq blog-root "/abturet@ariserve.dynup.net:~/blog/")
-      (setq muse-project-alist
-            '(("WikiPlanner"
-               ("~/Plans"           ;; where your Planner pages are located
-                :default "TaskPool" ;; use value of `planner-default-page'
-                :force-publish ("WelcomePage")
-                :major-mode planner-mode
-                :visit-link planner-visit-link)
-               ;; This next part is for specifying where Planner pages
-               ;; should be published and what Muse publishing style to
-               ;; use.  In this example, we will use the XHTML publishing
-               ;; style.
-               (:base "planner-xhtml"
-                      ;; where files are published to
-                      ;; (the value of `planner-publishing-directory', if
-                      ;;  you have a configuration for an older version
-                      ;;  of Planner)
-                      :path "C:/InetPub/wwwroot/Wiki"
-                      :header "c:/InetPub/wwwroot/Wiki/head.html"))
-              ("WikiNew"
-               ("~/WikiNew"
-                :default "WelcomePage"
-                :force-publish ("WelcomePage")
-                :major-mode muse-mode)
-               (:base "xhtml"
-                      :path "C:\\InetPub\\wwwroot\\WikiNew"
-                      :header "C:/InetPub/wwwroot/WikiNew/head.html")
-               (:base "pdf"
-                      :path "C:/InetPub/wwwroot/WikiNew/pdf"))
-              ("CourseRegistration"
-               ("~/Development/CourseRegistration/doc"
-                :default "CourseRegistration"
-                :force-publish ("CourseRegistration")
-                :major-mode muse-mode)
-               (:base "xhtml"
-                      :path "//syssrv100/Development Web/CourseRegistration/"
-                      :include "/*.html"
-                      :header "~/Development/CourseRegistration/doc/head.html"
-                      :footer "~/Development/CourseRegistration/doc/foot.html"))))
-      (setq muse-wiki-interwiki-alist
-            '(("EmacsWiki" . "http://www.emavcswiki.org/cgi-bin/wiki/")
-              ("WikiPlanner" . "http://localhost/Plans")
-              ("WikiNew" . "http://localhost/WikiNew")))
-      (server-start)
-      )
-  (progn
-    (message "Welcome to %s"(system-name))
-    (setq vm-print-command-switches "-o media=Letter -o page-right=36 -o page-left=36 -o page-top=72 -o page-bottom=72")
-    (setq  lpr-switches "-o media=Letter -o page-right=72 -o page-left=72 -o page-top=86 -o page-bottom=86")
-    (setq blog-root "/abturet@ariserve.dynup.net:~/blog/")
-    ;;  (setq planner-publishing-directory "~/public_html/Plans")
-    (setq browse-url-browser-function (quote browse-url-default-macosx-browser))
-    (setq browse-url-netscape-program "mozilla")
-    (if( string-equal system-name "localhost")
-;;;         (setq default-frame-alist (quote ((foreground-color . "white") (background-color . "black") (tool-bar-lines . 1) (menu-bar-lines . 1) (font . "-bitstream-bitstream vera sans mono-medium-r-normal-*-14-0-0-0-m-0-iso8859-1"))))
-;;;       (setq default-frame-alist (quote ((foreground-color . "white") (background-color . "black") (tool-bar-lines . 1) (menu-bar-lines . 1) (font . "-bitstream-bitstream vera sans mono-medium-r-normal-*-16-0-0-0-m-0-iso8859-1")))))
-        (setq default-frame-alist (quote ((foreground-color . "white") (background-color . "black") (font . "Liberation Mono-12:bold"))))
-      (setq default-frame-alist (quote ((foreground-color . "white") (background-color . "black") (font . "Liberation Mono-12:bold")))))
+;;(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "-outline-Liberation Mono-bold-r-normal-normal-14x-97-96-96-c-*-iso8859-1"))))
+(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Monaco-10:bold"))))
 
-    (setq planner-project "WikiPlanner")
-    (setq muse-project-alist
-          '(("WikiPlanner"
-             ("~/Plans"           ;; where your Planner pages are located
-              :default "TaskPool" ;; use value of `planner-default-page'
-              :major-mode planner-mode
-              :visit-link planner-visit-link)
 
-             ;; This next part is for specifying where Planner pages
-             ;; should be published and what Muse publishing style to
-             ;; use.  In this example, we will use the XHTML publishing
-             ;; style.
+(setq muse-project-alist
+      '(("WikiNew"
+         ("H:/Wiki/WikiNew"
+          :default "WelcomePage"
+          :force-publish ("WelcomePage")
+          :major-mode muse-mode)
+         (:base "xhtml"
+                :path "C:\\Documents and Settings\\All Users\\webdocs\\wwwroot\\WikiNew"
+                :style-sheet "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://localhost/WikiNew/style.css\"/>"))))
+(setq muse-wiki-interwiki-alist
+      '(("EmacsWiki" . "http://www.emavcswiki.org/cgi-bin/wiki/")
+        ("WikiPlanner" . "http://localhost/Plans")
+        ("WikiNew" . "http://localhost/WikiNew")))
+(server-start)
 
-             (:base "planner-xhtml"
-                    ;; where files are published to
-                    ;; (the value of `planner-publishing-directory', if
-                    ;;  you have a configuration for an older version
-                    ;;  of Planner)
-                    :path "~/public_html/Plans/"))
-            ("WikiNew"
-             ("~/WikiNew"
-              :major-mode muse-mode)
-             (:base "xhtml"
-                    :path "~/public_html/WikiNew"
-                    :header "~/public_html/WikiNew/head.html")
-             (:base "pdf"
-                    :path "~/public_html/WikiNew/pdf"))))
-    (setq muse-wiki-interwiki-alist
-          '(("EmacsWiki" . "http://www.emacswiki.org/cgi-bin/wiki/")
-            ("WikiPlanner" . "http://localhost/Plans")
-            ("WikiNew" . "http://localhost/WikiNew")))
 
-    )
-  )
+
+(require 'org)
+;; Open links to outlook emails from org
+(defun org-open-outlook-url (uid)
+  "Open an outlook format url"
+  (interactive "sGUID: ")
+  (w32-shell-execute nil (format "Outlook:%s" uid)))
+;; Open links to notes docs from org
+(defun org-open-notes-url (uid)
+  "Open an Notes doclink"
+  (interactive "sLink: ")
+  (w32-shell-execute nil (format "Notes:%s" uid)))
+(org-add-link-type "Notes" 'org-open-notes-url)
+(org-add-link-type "Outlook" 'org-open-outlook-url)
+
+;;***********remember + Org config*************
+(setq org-remember-templates
+      '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
+        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
+(setq remember-annotation-functions '(org-remember-annotation))
+(setq remember-handler-functions '(org-remember-handler))
+(add-hook 'remember-mode-hook 'org-remember-apply-template)
+(global-set-key (kbd "C-c r") 'remember)
+
+(setq org-todo-keywords '((type "TODO" "STARTED" "WAITING" "DONE")))
+(setq org-todo-keywords-1 '((type "TODO" "STARTED" "WAITING" "DONE")))
+(setq org-agenda-include-diary t)
+(setq org-agenda-include-all-todo t)
+
+(if (window-system)
+    (progn (setq org-agenda-files (quote ("h:/Doc/R15701.org" "h:/todo.org" "H:/Doc/R14690.org" ))))
+  (setq org-agenda-files (quote ("/cygdrive/h/Doc/R15701.org" "/cygdrive/h/Doc/servicetickets.org"  "/cygdrive/h/todo.org"))))
+
+
 
 
 (defun insert-time()
@@ -168,7 +121,7 @@
 ;;#(load-library "javascript")
 ;;(require 'javascript-mode)
 (require 'js2-mode)
-(require 'magit)
+(if (not (string-equal window-system "w32"))(require 'magit))
 (require 'highline)
 (require 'uniquify)
 ;;(require 'vm)
@@ -182,6 +135,7 @@
 (require 'speedbar)
 ;; (require 'xslt-process)
 (require 'semantic-load)
+(require 'ls-lisp)
 (require 'blog)
 (require 'erc)
 (require 'erc-menu)
@@ -221,24 +175,28 @@
 (require 'color-theme)
 (require 'ruby-mode)
 (require 'ruby-electric)
+(require 'org)
 (require 'ruby-config)
 ;;(require 'rails)
 ;;(require 'yasnippet)
 ;;(require 'zenburn)
 
-;;(load-file "~/emacs/site/color-theme/themes/LazyCatTheme.el")
-(load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")
-(vivid-chalk)
-(color-theme-initialize)
+
+(if (window-system)
+    (progn (require 'color-theme)
+           (color-theme-initialize)
 ;;(color-theme-simple-2)
+;;(color-theme-calm-forest)
+;;(load-file "~/emacs/site/color-theme/themes/LazyCatTheme.el")
+           (load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")))
 ;;(require 'LazyCatFont)
 ;;(require 'LazyCatTheme)
-;;(color-theme-calm-forest)
-(add-to-list 'vc-handled-backends 'SVN)
+
+;;(add-to-list 'vc-handled-backends 'SVN)
 ;; (highline-mode t)
-(require 'bbdb)
-(if (window-system)
-    (require 'oneonone-config))
+;;(require 'bbdb)
+;; (if (window-system)
+;;     (require 'oneonone-config))
 ;;(bbdb-initialize 'w3)
 (load-library "mailcrypt")
 
@@ -310,8 +268,8 @@
 
 ;;this is where my twit.el hack will go
 ;;starting now!
-(load-file "~/emacs/site/lisp/twit.el")
-;; ;;;###autoload
+;;(load-file "~/emacs/site/lisp/twit.el")
+;;;###autoload
 ;; (defun twit-send-svn ()
 ;;   (interactive)
 ;;   (twit-post-function twit-update-url (progn
@@ -340,11 +298,34 @@
 (setq highline-face '((:background "thistle4")))
 (setq highline-vertical-face (quote ((t (:background "lemonChiffon2")))))
 
-(if (window-system)
-    (progn
-      (setq fit-frame-max-width 110)
-      (setq fit-frame-max-height 40)))
-;;ruby-mode
+;;;; ------------------------------------------------------------------------
+;;;; --- Frame max toggle - From: "rgb" <rbielaws@...> / gnu.emacs.help / 18 Mar 2005 16:30:32 -0800
+;;;; ------------------------------------------------------------------------
+(make-variable-frame-local 'my-frame-state)
+
+(defun my-frame-maximize ()
+  "Maximize Emacs window in win32"
+  (interactive)
+
+  (modify-frame-parameters nil '((my-frame-state . t)))
+  (w32-send-sys-command ?\xf030))
+
+ (defun my-frame-restore ()
+   "Restore Emacs window in win32"
+   (interactive)
+
+   (modify-frame-parameters nil '((my-frame-state . nil)))
+   (w32-send-sys-command ?\xF120))
+
+(defun my-frame-toggle ()
+  "Maximize/Restore Emacs frame based on `my-frame-state'"
+  (interactive)
+  (if my-frame-state
+          (my-frame-restore)
+        (my-frame-maximize)))
+
+(global-set-key (kbd "M-m") 'my-frame-toggle)
+
 
    (autoload 'ruby-mode "ruby-mode"
      "Mode for editing ruby source files" t)
@@ -372,7 +353,10 @@
                     ))
   (add-hook hook 'hideshowvis-enable))
 
-
+(setenv "PATH" (concat (getenv "PATH") ";c:/CYGWIN/bin;"))
+(setenv "CVSROOT" ":ext:mrpy@cctech:/opt/CC/cvs/cvsroot")
+(setenv "CVS_RSH" "plink")
+(setenv "PLINK_PROTOCOL" "ssh")
 
 
 ;;transparency
@@ -395,9 +379,41 @@
 (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
 (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
 ;;(setq ac-omni-completion-sources '((ruby-mode .(("\\.\\=" .(ac-source-rcodetools))))))
-(setq rct-debug t)
+(setq rct-debug nil)
 
 
+(setq ac-modes
+      (append ac-modes
+              '(sql-mode
+                sqlplus-mode
+                js2-mode
+                text-mode
+                css-mode
+                eruby-nxhtml-mumamo-mode)))
+
+(require 'cmd-mode)
+(require 'ls-lisp)
+
+(dolist (hook (list 'emacs-lisp-mode-hook
+                    'c++-mode-hook))
+  (add-hook hook 'hideshowvis-enable))
+(add-to-list 'write-file-functions 'time-stamp)
+
+(require 'dired-x)
+(setq dired-omit-files
+      (rx(or(seq bol(? ".") "#")
+            (seq bol"."(not(any".")))
+            (seq "~" eol)
+            (seq bol "CVS" eol)
+            (seq bol "svn" eol))))
+
+(setq dired-omit-extensions
+      (append dired-latex-unclean-extensions
+              dired-bibtex-unclean-extensions
+              dired-texinfo-unclean-extensions))
+
+
+(add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
 
 (ido-mode t)
 (setq ido-enable-flex-matching t)
@@ -410,5 +426,16 @@
 ;; (slime-setup '(slime-repl))
 ;; (slime-setup '(slime-asdf))
 ;; (setq inferior-lisp-program "/usr/bin/clisp")
+
+(global-set-key "\C-cy" '(lambda ()
+                           (interactive)
+                           (popup-menu 'yank-menu)))
+;; kick off flymake for perl
+(defun my-perl-startup ()
+  "setup perl"
+  (interactive)
+  (flymake-mode)
+  )
+(add-hook 'perl-mode-hook 'my-perl-startup)
 
 (provide 'emacs-config)

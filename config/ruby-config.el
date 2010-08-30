@@ -78,6 +78,7 @@
 (setq rinari-tags-file-name "TAGS")
 
 (require 'auto-complete nil t)
+(require 'auto-complete-config)
 (require 'auto-complete-yasnippet)
 ;;(require 'auto-complete-ruby)
 ;;(require 'auto-complete-css)
@@ -116,6 +117,7 @@
 
 
 
+(setq ri-ruby-script (expand-file-name "~/.emacs.d/lisp/ri-emacs.rb"))
 
 (add-hook 'ruby-mode-hook
           (lambda()
@@ -136,6 +138,8 @@
                             (local-set-key "\M-\C-i" 'ri-ruby-complete-symbol)
                             (local-set-key [f4] 'ri-ruby-show-args)))
 
+(autoload 'ri "ri-ruby.el" nil t)
+(load (expand-file-name "~/.emacs.d/lisp/ri-ruby.el"))
 (global-auto-complete-mode t)
 (define-key ac-complete-mode-map "\C-n" 'ac-next)
 (define-key ac-complete-mode-map "\C-p" 'ac-previous)
