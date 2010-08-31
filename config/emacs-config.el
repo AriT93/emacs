@@ -1,6 +1,6 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2010-08-30 15:58:58 abturet>
+;; Time-stamp: <2010-08-31 07:26:18 mrpy>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -60,7 +60,13 @@
 
 
 ;;(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "-outline-Liberation Mono-bold-r-normal-normal-14x-97-96-96-c-*-iso8859-1"))))
-(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Monaco-12:bold"))))
+(cond
+ ((string="w32" window-system)
+(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Consolas-11:bold")))))
+ ((string="x" window-system)
+(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Liberation Mono:bold")))))
+((string="ns" window-system)
+(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Monaco-12:bold"))))))
 
 
 (setq muse-project-alist
