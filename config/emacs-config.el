@@ -1,6 +1,6 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2010-09-03 14:02:16 mrpy>
+;; Time-stamp: <2010-09-11 10:33:22 abturet>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -141,7 +141,7 @@
 (require 'gist)
 (require 'ecb)
 (require 'speedbar)
-;; (require 'xslt-process)
+(require 'xslt-process)
 (require 'semantic-load)
 (require 'ls-lisp)
 (require 'blog)
