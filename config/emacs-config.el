@@ -1,6 +1,6 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2010-09-03 14:02:16 mrpy>
+;; Time-stamp: <2010-09-07 07:52:40 mrpy>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -51,12 +51,12 @@
                 ))
 
 ;;decide settings for specific environs
-(cond
- ((string="w32" window-system)
-  (require 'cygwin-mount)
-  (setq cygwin-mount-cygwin-bin-directory "c:/cygwin/bin/")
-  (require 'setup-cygwin)
-  (set-shell-bash)))
+;; (cond
+;;  ((string="w32" window-system)
+;;   (require 'cygwin-mount)
+;;   (setq cygwin-mount-cygwin-bin-directory "c:/cygwin/bin/")
+;;   (require 'setup-cygwin)
+;;   (set-shell-bash)))
 
 
 ;;(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "-outline-Liberation Mono-bold-r-normal-normal-14x-97-96-96-c-*-iso8859-1"))))
