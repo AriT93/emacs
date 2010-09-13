@@ -3,6 +3,8 @@
 (setq auto-mode-alist (cons '("\\.rb$" . ruby-mode)  auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.rhtml$" . eruby-nxhtml-mumamo) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.erb$" . eruby-nxhtml-mumamo) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.html.erb$" . eruby-nxhtml-mumamo) auto-mode-alist))
+
 (require 'auto-complete)
 (require 'rcodetools)
 (require 'haml-mode)
