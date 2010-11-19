@@ -93,7 +93,7 @@
 (define-key ac-complete-mode-map "\r" 'ac-complete)
 (define-key ac-complete-mode-map "\M-n" 'ac-next)
 (define-key ac-complete-mode-map "\M-p" 'ac-previous)
-(set-default 'ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-semantic ac-source-rcodetools))
+(set-default 'ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-semantic ac-source-files-in-current-dir))
 
    (setq ac-modes
          (append ac-modes
@@ -109,10 +109,12 @@
    (add-hook 'eshell-mode-hook
              (lambda ()
                (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
-
+   (add-hook 'js2-mode-hook
+             (lambda ()
+               (add-to-list 'ac-sources '(ac-source-files-in-current-dir ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables))))
    (add-hook 'ruby-mode-hook
              (lambda ()
-               (add-to-list 'ac-sources 'ac-source-rcodetools)
+               (add-to-list 'ac-sources 'ac-source-rcodetools )
               ;;  (add-to-list  'ac-omni-completion-sources (cons "\\." '(ac-source-rcodetools)))
               ;; (add-to-list 'ac-omni-completion-sources  (cons "::" '(ac-source-rcodetools))))
 ))
