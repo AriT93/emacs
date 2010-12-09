@@ -1,6 +1,6 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2010-11-19 07:46:15 mrpy>
+;; Time-stamp: <2010-12-09 11:13:55 mrpy>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -125,6 +125,12 @@
   (interactive)
   (insert (format-time-string "%y-%m-%d-%R")))
 
+(require 'yasnippet)
+
+(setq yas/snippet-dirs "~/emacs/site/yasnippet-0.7.0/snippets")
+(yas/load-directory yas/snippet-dirs)
+(yas/global-mode)
+
 (require 'semantic-config)
 ;;#(load-library "javascript")
 ;;(require 'javascript-mode)
@@ -141,7 +147,7 @@
 (require 'gist)
 (require 'ecb)
 (require 'speedbar)
-(require 'xslt-process)
+;;(require 'xslt-process)
 (require 'semantic-load)
 (require 'ls-lisp)
 (require 'blog)
@@ -184,6 +190,7 @@
 (require 'ruby-mode)
 (require 'ruby-electric)
 (require 'org)
+
 (require 'ruby-config)
 ;;(require 'rails)
 ;;(require 'yasnippet)

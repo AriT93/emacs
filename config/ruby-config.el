@@ -8,10 +8,8 @@
 (require 'auto-complete)
 (require 'rcodetools)
 (require 'haml-mode)
-(require 'yasnippet)
-
-(yas/initialize)
-(yas/load-directory "~/emacs/site/yasnippet/snippets")
+;; (yas/initialize)
+;; (yas/load-directory "~/emacs/site/yasnippet/snippets/")
 
 
 (require 'ruby-block)
@@ -111,7 +109,7 @@
                (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
    (add-hook 'js2-mode-hook
              (lambda ()
-               (add-to-list 'ac-sources '(ac-source-files-in-current-dir ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables))))
+               (add-to-list 'ac-sources '(ac-source-files-in-current-dir ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables)(auto-complete-mode))))
    (add-hook 'ruby-mode-hook
              (lambda ()
                (add-to-list 'ac-sources 'ac-source-rcodetools )
