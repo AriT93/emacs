@@ -8,9 +8,15 @@
 (require 'auto-complete)
 (require 'rcodetools)
 (require 'haml-mode)
-;; (yas/initialize)
-;; (yas/load-directory "~/emacs/site/yasnippet/snippets/")
+(require 'yasnippet)
+ (yas/initialize)
+ (yas/load-directory "~/emacs/site/yasnippet/snippets/")
 
+
+;; (setq yas/snippet-dirs "~/emacs/site/yasnippet-0.7.0/snippets")
+;; (yas/load-directory yas/snippet-dirs)
+;; (yas/global-mode)
+;;(require 'xslt-process)
 
 (require 'ruby-block)
 ;;(require 'rails)
@@ -91,7 +97,7 @@
 (define-key ac-complete-mode-map "\r" 'ac-complete)
 (define-key ac-complete-mode-map "\M-n" 'ac-next)
 (define-key ac-complete-mode-map "\M-p" 'ac-previous)
-(set-default 'ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-semantic ac-source-files-in-current-dir))
+(set-default 'ac-sources '(ac-source-words-in-buffer ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-semantic ac-source-files-in-current-dir))
 
    (setq ac-modes
          (append ac-modes
