@@ -1,6 +1,6 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2010-12-09 12:54:50 mrpy>
+;; Time-stamp: <2010-12-21 07:45:27 mrpy>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -399,6 +399,9 @@
                 JavaSript-IDE-mode
                 text-mode
                 css-mode
+                html-mode
+                nxhtml-mumamo-mode
+                ruby-mode
                 eruby-nxhtml-mumamo-mode)))
 
 (require 'cmd-mode)

@@ -21,10 +21,10 @@
 (setq-default sgml-set-face t)
 
 
-(add-hook 'sgml-mode-hook 'xslt-process-mode)
-(add-hook 'xml-mode-hook 'xslt-process-mode)
-(add-hook 'nxml-mode-hook 'xslt-process-mode)
-(add-hook 'xsl-mode 'xslt-process-mode)
+;; (add-hook 'sgml-mode-hook 'xslt-process-mode)
+;; (add-hook 'xml-mode-hook 'xslt-process-mode)
+;; (add-hook 'nxml-mode-hook 'xslt-process-mode)
+;; (add-hook 'xsl-mode 'xslt-process-mode)
 
 ;;  (setq-default mode-line-buffer-identification
 ;;  	      '((buffer-file-name
