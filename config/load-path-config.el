@@ -4,6 +4,7 @@
 (add-to-list 'load-path (expand-file-name "~/emacs/site/emacs-w3m/attic"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/color-theme/themes"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/lisp"))
+;;(add-to-list 'load-path (expand-file-name "~/emacs/site/yasnippet-0.7.0"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/yasnippet"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/yasnippets-rails"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/mailcrypt"))

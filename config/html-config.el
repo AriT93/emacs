@@ -22,6 +22,8 @@
 ;;(add-hook 'html-mode-hook 'turn-off-auto-fill)
 
 ;;; css- mode;;
+
+;;(add-hook 'html-mode-hook 'mumamo-alias-html-mumamo-mode)
 (autoload 'css-mode "css-mode")
 
 (provide 'html-config)

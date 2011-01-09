@@ -1,6 +1,6 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2010-12-07 19:51:11 abturet>
+;; Time-stamp: <2010-12-21 07:45:27 mrpy>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -125,6 +125,7 @@
   (interactive)
   (insert (format-time-string "%y-%m-%d-%R")))
 
+
 (require 'semantic-config)
 ;;#(load-library "javascript")
 ;;(require 'javascript-mode)
@@ -141,7 +142,7 @@
 (require 'gist)
 (require 'ecb)
 (require 'speedbar)
-(require 'xslt-process)
+;;(require 'xslt-process)
 (require 'semantic-load)
 (require 'ls-lisp)
 (require 'blog)
@@ -184,6 +185,7 @@
 (require 'ruby-mode)
 (require 'ruby-electric)
 (require 'org)
+
 (require 'ruby-config)
 ;;(require 'rails)
 ;;(require 'yasnippet)
@@ -397,6 +399,9 @@
                 JavaSript-IDE-mode
                 text-mode
                 css-mode
+                html-mode
+                nxhtml-mumamo-mode
+                ruby-mode
                 eruby-nxhtml-mumamo-mode)))
 
 (require 'cmd-mode)
