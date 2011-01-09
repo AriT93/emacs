@@ -1,6 +1,6 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2010-11-19 07:46:15 mrpy>
+;; Time-stamp: <2010-12-07 19:51:11 abturet>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -360,7 +360,7 @@
                     ))
   (add-hook hook 'hideshowvis-enable))
 
-(setenv "PATH" (concat (getenv "PATH") ";c:/CYGWIN/bin;"))
+(setenv "PATH" (concat (getenv "PATH") "/Users/abturet/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin:/usr/local/share/npm/bin;c:/CYGWIN/bin;"))
 (setenv "CVSROOT" ":ext:mrpy@cctech:/opt/CC/cvs/cvsroot")
 (setenv "CVS_RSH" "plink")
 (setenv "PLINK_PROTOCOL" "ssh")
