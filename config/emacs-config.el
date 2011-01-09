@@ -27,7 +27,7 @@
  ((string="w32" window-system)
   (set-face-attribute 'mode-line nil :family "Century Gothic" :height 1.0 :weight 'ultra-light ))
  ((string="x" window-system)
-  (set-face-attribute 'mode-line nil :family "Consolas" :height 1.0 ))
+  (set-face-attribute 'mode-line nil :family "Liberation Mono:bold" :height 1.0 ))
 ((string="ns" window-system)
  (set-face-attribute 'mode-line nil :family "Monaco" :height 1.0)))
 
