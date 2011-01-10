@@ -27,7 +27,7 @@
  ((string="w32" window-system)
   (set-face-attribute 'mode-line nil :family "Century Gothic" :height 1.0 :weight 'ultra-light ))
  ((string="x" window-system)
-  (set-face-attribute 'mode-line nil :family "Consolas" :height 1.0 ))
+  (set-face-attribute 'mode-line nil :family "Liberation Mono:bold" :height 1.0 ))
 ((string="ns" window-system)
  (set-face-attribute 'mode-line nil :family "Monaco" :height 1.0)))
 
@@ -362,7 +362,7 @@
                     ))
   (add-hook hook 'hideshowvis-enable))
 
-(setenv "PATH" (concat (getenv "PATH") ";c:/CYGWIN/bin;"))
+(setenv "PATH" (concat (getenv "PATH") "/Users/abturet/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin:/usr/local/share/npm/bin;c:/CYGWIN/bin;"))
 (setenv "CVSROOT" ":ext:mrpy@cctech:/opt/CC/cvs/cvsroot")
 (setenv "CVS_RSH" "plink")
 (setenv "PLINK_PROTOCOL" "ssh")
