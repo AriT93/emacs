@@ -16,4 +16,19 @@
 (global-set-key (kbd "M--") 'text-scale-adjust)
 (global-set-key (kbd "M-0") 'text-scale-adjust)
 
+
+;; C-8 will increase opacity (== decrease transparency)
+;; C-9 will decrease opacity (== increase transparency
+;; C-0 will returns the state to normal
+(global-set-key (kbd "C-9") '(lambda()(interactive)(djcb-opacity-modify)))
+(global-set-key (kbd "C-8") '(lambda()(interactive)(djcb-opacity-modify t)))
+(global-set-key (kbd "C-0") '(lambda()(interactive)
+                               (modify-frame-parameters nil `((alpha . 100)))))
+
+;; S-C-left and right will horizontally resize windows
+;; S-C-up and down will vertically resize them
+(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<down>") 'shrink-window)
+(global-set-key (kbd "S-C-<up>") 'enlarge-window)
 (provide 'keys-config)

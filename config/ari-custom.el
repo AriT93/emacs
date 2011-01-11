@@ -20,8 +20,8 @@
 (defun unix-to-dos()
   (interactive)
   (save-excursion
-	(beginning-of-buffer)
-	(replace-string"\n" "\r\n")))
+    (beginning-of-buffer)
+    (replace-string"\n" "\r\n")))
 
 
 ;;ebuild mode for gentoo development
@@ -46,8 +46,8 @@
       (interactive)
       (let
 ((str (shell-command-to-string "c://WINDOWS/system32/tasklist.exe /v")))
-	(when (string-match "^winamp.exe.*?[0-9]+\\. \\(.*?\\)[ \t]*$" str)
-	  (match-string 1 str))))
+    (when (string-match "^winamp.exe.*?[0-9]+\\. \\(.*?\\)[ \t]*$" str)
+      (match-string 1 str))))
 
 
 (defun arit93/winamp ()
@@ -56,10 +56,10 @@
 (cond
  ((string="w32" window-system)
   (let
-	((str (winamp)))
+    ((str (winamp)))
   (if (string-match "^.*?[-]\\(.*?\\)[-].*$" str)
-	  (message "%s"(match-string 1 str))
-	(message "Not Found"))))))
+      (message "%s"(match-string 1 str))
+    (message "Not Found"))))))
 
 ;;;###autoload
 (defun arit93/hs-minor-mode-setup()
@@ -85,8 +85,8 @@
   (interactive)
   (set (make-variable-buffer-local 'my-hs-hide) (not my-hs-hide))
   (if my-hs-hide
-	  (hs-hide-all)
-	(hs-show-all)))
+      (hs-hide-all)
+    (hs-show-all)))
 
 (add-hook 'csharp-mode-hook 'arit93/hs-minor-mode-setup)
 
@@ -147,6 +147,18 @@
       (beginning-of-line nil)
       (re-search-forward "<?xml[^>]*>" e)
       (xml-pretty-print-region (point) e))))
+
+;transparent emacs!!1!!1!one!!
+(defun djcb-opacity-modify (&optional dec)
+  "modify the transparency of the emacs frame; if DEC is t,
+decrease the transparency, otherwise increase it in 10%-steps"
+  (let* ((alpha-or-nil (frame-parameter nil 'alpha)) ; nil before setting
+(oldalpha (if alpha-or-nil alpha-or-nil 100))
+(newalpha (if dec (- oldalpha 10) (+ oldalpha 10))))
+    (when (and (>= newalpha frame-alpha-lower-limit) (<= newalpha 100))
+      (modify-frame-parameters nil (list (cons 'alpha newalpha))))))
+
+
 
 (provide 'ari-custom)
 

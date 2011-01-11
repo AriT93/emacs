@@ -185,7 +185,7 @@
 (require 'ruby-mode)
 (require 'ruby-electric)
 (require 'org)
-
+(require 'feature-mode)
 (require 'ruby-config)
 ;;(require 'rails)
 ;;(require 'yasnippet)
