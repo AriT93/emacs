@@ -1,6 +1,6 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2010-12-21 07:45:27 mrpy>
+;; Time-stamp: <2010-12-21 08:54:16 mrpy>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -185,7 +185,7 @@
 (require 'ruby-mode)
 (require 'ruby-electric)
 (require 'org)
-
+(require 'feature-mode)
 (require 'ruby-config)
 ;;(require 'rails)
 ;;(require 'yasnippet)
