@@ -154,5 +154,7 @@
 (setq ac-auto-start 3)
 (define-key ac-complete-mode-map "\t" 'ac-complete)
 (define-key ac-complete-mode-map "\r" nil)
+(require 'unit-test)
+(require 'autotest)
 
 (provide 'ruby-config)
