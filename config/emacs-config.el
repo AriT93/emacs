@@ -1,7 +1,7 @@
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2011-02-03 08:34:08 mrpy>
+;; Time-stamp: <2011-04-11 07:04:42 mrpy>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -15,6 +15,7 @@
 (setq uniquify-buffer-name-style (quote post-forward))
 (setq uniquify-min-dir-content 1)
 (setq cal-tex-diary t)
+(setq blog-root "/abturet@turetzky.org:~/blog/")
 (add-hook 'diary-display-hook 'fancy-diary-display)
 (add-hook 'text-mode-hook ' turn-on-auto-fill)
 (autoload 'nuke-trailing-whitespace "whitespace" nil t)
