@@ -121,8 +121,8 @@
 
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
-(if (window-system)
-    (vivid-chalk))
+;;(if (window-system)
+  ;;  (vivid-chalk))
 
 (setq ac-modes
       (append ac-modes
