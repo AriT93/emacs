@@ -1,7 +1,7 @@
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2011-05-17 08:24:53 mrpy>
+;; Time-stamp: <2011-05-17 09:14:34 mrpy>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -132,7 +132,7 @@
 ;;#(load-library "javascript")
 ;;(require 'javascript-mode)
 (require 'js2-mode)
-(if (not (string-equal window-system "w32"))(require 'magit))
+(if (not (string-equal system-type "windows-nt"))(require 'magit))
 (require 'highline)
 (require 'uniquify)
 ;;(require 'vm)
