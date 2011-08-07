@@ -3,6 +3,7 @@
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
 (add-to-list 'load-path (expand-file-name "~/emacs/site/emacs-w3m/attic"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/color-theme/themes"))
+(add-to-list 'load-path (expand-file-name "~/emacs/site/coffee-mode"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/lisp"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/feature-mode"))
 ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/yasnippet-0.7.0"))
