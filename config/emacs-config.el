@@ -1,7 +1,7 @@
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2011-05-17 09:14:34 mrpy>
+;; Time-stamp: <2011-05-26 07:19:31 mrpy>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -518,6 +518,9 @@ t)))
         (:propertize mode-line-buffer-identification
                      face 'mode-line-filename-face)
         "   "
+        (:propertize mode-line-position
+                     face 'mode-line-folder-face)
+        "  "
         (:propertize mode-name
                      help-echo (format-mode-line minor-mode-alist)
                      face 'mode-line-mode-face)
