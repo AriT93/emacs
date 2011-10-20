@@ -15,6 +15,9 @@
 (global-set-key (kbd "M-+") 'text-scale-adjust)
 (global-set-key (kbd "M--") 'text-scale-adjust)
 (global-set-key (kbd "M-0") 'text-scale-adjust)
+(define-key comint-mode-map [f5]   'gud-cont)
+(define-key comint-mode-map [f9]   'gud-break)
+(define-key comint-mode-map [f10]  'gud-next)
 
 
 ;; C-8 will increase opacity (== decrease transparency)
