@@ -1,7 +1,7 @@
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; Time-stamp: <2011-05-26 07:19:31 mrpy>
+;; Time-stamp: <2011-10-20 14:07:03 MRPY>
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -187,6 +187,7 @@
 (require 'ruby-mode)
 (require 'ruby-electric)
 (require 'org)
+(require 'coffee-mode)
 (require 'feature-mode)
 (require 'ruby-config)
 ;;(require 'rails)
@@ -400,6 +401,7 @@
               '(sql-mode
                 sqlplus-mode
                 js2-mode
+                coffee-mode
                 JavaSript-IDE-mode
                 text-mode
                 css-mode
@@ -470,8 +472,7 @@
 (set-buffer (get-buffer-create "*scratch*"))
 (if (file-readable-p scratch-file)
 (if (and (file-readable-p scratch-file-autosave)
-(file-newer-than-file-p scratch-file-autosave scratch-file)
-(y-or-n-p "Recover scratch file? "))
+(file-newer-than-file-p scratch-file-autosave scratch-file)t)
 (insert-file-contents scratch-file-autosave nil nil nil t)
 (insert-file-contents scratch-file nil nil nil t)
 (set-buffer-modified-p nil)))
