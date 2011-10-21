@@ -19,7 +19,7 @@
 (define-key comint-mode-map [f9]   'gud-break)
 (define-key comint-mode-map [f10]  'gud-next)
 
-
+;; adding a coment
 ;; C-8 will increase opacity (== decrease transparency)
 ;; C-9 will decrease opacity (== increase transparency
 ;; C-0 will returns the state to normal
