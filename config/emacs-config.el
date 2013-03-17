@@ -1,10 +1,5 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-<<<<<<< HEAD
-;; Time-stamp: <2013-02-05 13:58:33 aturetzky>
-=======
-;; Time-stamp: <2012-08-18 16:08:01 abturet>
->>>>>>> cc09d343ac4398829e21d9c6f4a57c3c2a57e52d
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
