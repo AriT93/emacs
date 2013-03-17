@@ -1,6 +1,10 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
+<<<<<<< HEAD
+;; Time-stamp: <2013-02-05 13:58:33 aturetzky>
+=======
 ;; Time-stamp: <2012-08-18 16:08:01 abturet>
+>>>>>>> cc09d343ac4398829e21d9c6f4a57c3c2a57e52d
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -22,7 +26,7 @@
 (add-hook 'before-save-hook 'time-stamp)
 (setq dired-omit-files-p t)
 (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
-(setq TeX-command-list (quote (("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t) ("LaTeX" "%l \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("LaTeX PDF" "pdflatex \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("View" "%v" TeX-run-discard nil nil) ("Print" "gsview32 %f" TeX-run-command t nil) ("File" "dvips %d -o %f " TeX-run-command t nil) ("BibTeX" "bibtex %s"</FONT> TeX-run-BibTeX nil nil) ("Index" "makeindex %s" TeX-run-command nil t) ("Check" "lacheck %s" TeX-run-compile nil t) ("Other" "" TeX-run-command t t))))
+(setq TeX-command-list (quote (("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t) ("LaTeX" "%l -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("LaTeX PDF" "pdflatex -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("View" "%v" TeX-run-discard nil nil) ("Print" "gsview32 %f" TeX-run-command t nil) ("File" "dvips %d -o %f " TeX-run-command t nil) ("BibTeX" "bibtex %s"</FONT> TeX-run-BibTeX nil nil) ("Index" "makeindex %s" TeX-run-command nil t) ("Check" "lacheck %s" TeX-run-compile nil t) ("Other" "" TeX-run-command t t))))
 
 (cond
  ((string="w32" window-system)
@@ -37,7 +41,7 @@
 (setq message-log-max 250)
 (require 'load-path-config)
 (require 'whitespace)
-(require 'start-opt)
+;;(require 'start-opt)
 
 (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
 
@@ -115,9 +119,6 @@
 (setq org-agenda-include-diary t)
 (setq org-agenda-include-all-todo t)
 
-(if (window-system)
-    (progn (setq org-agenda-files (quote ("h:/Doc/R15701.org" "h:/todo.org" "H:/Doc/R14690.org" ))))
-  (setq org-agenda-files (quote ("/cygdrive/h/Doc/R15701.org" "/cygdrive/h/Doc/servicetickets.org"  "/cygdrive/h/todo.org"))))
 
 
 
@@ -134,6 +135,7 @@
 (if (not (string-equal system-type "windows-nt"))(require 'magit))
 (require 'highline)
 (require 'uniquify)
+(require 'sawzall)
 ;;(require 'vm)
 (require 'boxquote)
 (require 'rs-info)
