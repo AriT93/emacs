@@ -50,6 +50,7 @@
 (add-to-list 'load-path (expand-file-name "~/emacs/site/js2-mode"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/ruby"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/auto-complete"))
+(add-to-list 'load-path (expand-file-name "~/emacs/site/auto-complete/lib/popup"))
 ;;(add-to-list 'load-path (expand-file-name "~/.emacs.d/emacs-rails"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/yaml-mode"))
 (add-to-list 'load-path (expand-file-name "~/emacs/site/ruby-block"))
