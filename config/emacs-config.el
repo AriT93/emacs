@@ -1,7 +1,10 @@
-
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
+<<<<<<< HEAD
 ;; Time-stamp: <2013-02-05 13:58:33 aturetzky>
+=======
+;; Time-stamp: <2012-08-18 16:08:01 abturet>
+>>>>>>> cc09d343ac4398829e21d9c6f4a57c3c2a57e52d
 ;; This file will hold specific setting I like for emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -181,7 +184,7 @@
 (require 'mmm-sample)
 (require 'vc-svn)
 (require 'psvn)
-(require 'color-theme)
+;;(require 'color-theme)
 (require 'ruby-mode)
 ;;(require 'ruby-electric)
 (require 'org)
@@ -190,18 +193,20 @@
 (require 'ruby-config)
 ;;(require 'rails)
 ;;(require 'yasnippet)
-;;(require 'zenburn)
+(require 'zenburn)
 
 
 (if (window-system)
-    (progn (require 'color-theme)
-           (color-theme-initialize)
+  ;;  (progn (require 'color-theme)
+    ;;       (color-theme-initialize)
            ;;(color-theme-simple-2)
            ;;(color-theme-calm-forest)
            ;;(load-file "~/emacs/site/color-theme/themes/LazyCatTheme.el")
            ;;(load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")
            ;;(vivid-chalk)
-           (color-theme-hash)))
+           (zenburn)
+           ;;(color-theme-hash)
+       )
 
 ;;(add-to-list 'vc-handled-backends 'SVN)
 ;; (highline-mode t)
@@ -504,33 +509,34 @@ t)))
 
 
 (setq mode-line-in-non-selected-windows nil)
-(setq default-mode-line-format
-      (quote
-       (" "
-        (:propertize global-mode-string
-                     face 'mode-line-global-face)
-        mode-line-frame-identification
-        (:propertize (:eval (if (> (length default-directory) 17)
-                   (concat "..." (substring default-directory -20))
-                 default-directory))
-                     face 'mode-line-folder-face)
-        (:propertize mode-line-buffer-identification
-                     face 'mode-line-filename-face)
-        "   "
-        (:propertize mode-line-position
-                     face 'mode-line-folder-face)
-        "  "
-        (:propertize mode-name
-                     help-echo (format-mode-line minor-mode-alist)
-                     face 'mode-line-mode-face)
-        (:propertize mode-line-process
-                     face 'mode-line-process-face)
-        "   "
-        (:propertize urgent-org-mode-line
-                     face 'mode-line-tasks-face)
-        "   "
-        "-%-"
-)))
-(color-theme-hash)
+;;(setq default-mode-line-format
+;;      (quote
+;;       (" "
+;;        (:propertize global-mode-string
+;;                     face 'mode-line-global-face)
+;;        mode-line-frame-identification
+;;        (:propertize (:eval (if (> (length default-directory) 17)
+;;                   (concat "..." (substring default-directory -20))
+;;                 default-directory))
+;;                     face 'mode-line-folder-face)
+;;        (:propertize mode-line-buffer-identification
+;;                     face 'mode-line-filename-face)
+;;        "   "
+;;        (:propertize mode-line-position
+;;                     face 'mode-line-folder-face)
+;;        "  "
+;;        (:propertize mode-name
+;;                     help-echo (format-mode-line minor-mode-alist)
+;;                     face 'mode-line-mode-face)
+;;        (:propertize mode-line-process
+;;                     face 'mode-line-process-face)
+;;        "   "
+;;        (:propertize urgent-org-mode-line
+;;                     face 'mode-line-tasks-face)
+;;        "   "
+;;        "-%-"
+;;)))
+;;(color-theme-hash)
+(zenburn)
 
 (provide 'emacs-config)
