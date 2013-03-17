@@ -1,7 +1,3 @@
-
-<!-- saved from url=(0074)https://raw.github.com/bbatsov/zenburn-emacs/master/color-theme-zenburn.el -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">;;; color-theme-zenburn.el --- A low contrast color theme for Emacs.
-
 ;; Copyright (C) 2011 Bozhidar Batsov
 
 ;; Author: Bozhidar Batsov &lt;bozhidar.batsov@gmail.com&gt;
@@ -511,4 +507,3 @@
 (provide 'color-theme-zenburn)
 
 ;;; color-theme-zenburn.el ends here.
-</pre></body></html>
