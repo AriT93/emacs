@@ -188,8 +188,8 @@
 (require 'ruby-config)
 ;;(require 'rails)
 ;;(require 'yasnippet)
-(require 'zenburn)
-
+;;(require 'zenburn)
+;;(require 'vivid-chalk)
 
 (if (window-system)
   ;;  (progn (require 'color-theme)
@@ -197,9 +197,9 @@
            ;;(color-theme-simple-2)
            ;;(color-theme-calm-forest)
            ;;(load-file "~/emacs/site/color-theme/themes/LazyCatTheme.el")
-           ;;(load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")
-           ;;(vivid-chalk)
-           (zenburn)
+    (load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")
+	(vivid-chalk)
+	;;(zenburn)
            ;;(color-theme-hash)
        )
 
@@ -532,6 +532,7 @@ t)))
 ;;        "-%-"
 ;;)))
 ;;(color-theme-hash)
-(zenburn)
+;;(zenburn)
+(vivid-chalk)
 
 (provide 'emacs-config)
