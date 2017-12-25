@@ -1,3 +1,8 @@
+:;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
 
 ;;$Id: .emacs 955 2008-05-07 20:14:42Z abturet $
 ;; my emacs file
@@ -10,81 +15,30 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ac-modes (quote (emacs-lisp-mode lisp-interaction-mode c-mode cc-mode c++-mode java-mode perl-mode cperl-mode python-mode ruby-mode ecmascript-mode javascript-mode php-mode css-mode makefile-mode sh-mode csharp-mode fortran-mode f90-mode ada-mode xml-mode sgml-mode web-mode sql-mode sql-interactive-mode)))
- '(add-log-mailing-address nil)
- '(ange-ftp-ascii-hash-mark-size 2048)
- '(ange-ftp-binary-hash-mark-size nil)
- '(ange-ftp-hash-mark-msgs "[hH]ash mark [^0-9]*\\([0-9]+\\)" t)
- '(ange-ftp-send-hash nil)
- '(autotest-command "autotest")
- '(autotest-use-ui t)
- '(backup-directory-alist (quote (("\".*\"" . "~/tmp"))))
- '(browse-url-new-window-p t t)
- '(canlock-password "7497bfc3cfbae0461b4f19a1eee54110553527ca")
- '(case-fold-search t)
- '(column-number-mode t)
- '(comint-completion-autolist t)
- '(comint-move-point-for-output t)
- '(comint-scroll-to-bottom-on-input t)
- '(comment-line-break-function (quote indent-new-comment-line) t)
+ '(eclim-auto-save nil)
+ '(eclim-executable
+   "/Users/aturetzky/eclipse/Eclipse.app/Contents/Eclipse/eclim")
+ '(eclim-interactive-completion-function (quote completing-read))
+ '(eclimd-default-workspace "~/dev/workspace")
+ '(exec-path
+   (quote
+    ("/Users/aturetzky/.rvm/gems/ruby-1.9.3-p362@global/bin" "/Users/aturetzky/.rvm/gems/ruby-1.9.3-p362/bin" "/Users/aturetzky/.rvm/rubies/ruby-1.9.3-p362/bin/" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Users/aturetzky/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/libexec" "/Users/aturetzky/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/bin" "/usr/local/bin")))
+ '(global-eclim-mode t)
+ '(highline-face (quote ((:background "gray26"))))
  '(indent-tabs-mode nil)
- '(csv-separators (quote ("," " ")))
- '(current-language-environment "utf-8")
- '(default-input-method "utf-8-unix")
- '(display-time nil)
- '(display-time-24hr-format nil)
- '(display-time-day-and date)
- '(display-time-day-and-date t)
- '(display-time-default-load-average 2)
- '(display-time-load-average-threshold 0.9)
- '(display-time-mode t nil (time))
- '(ecb-directories-menu-user-extension-function (quote ignore))
- '(ecb-history-menu-user-extension-function (quote ignore))
- '(ecb-methods-menu-user-extension-function (quote ignore))
- '(ecb-options-version "2.33beta2")
- '(ecb-sources-menu-user-extension-function (quote ignore))
- '(ecb-tree-image-icons-directories (quote ("~/emacs/site/ecb/ecb-images/default/height-17" (ecb-directories-buffer-name . "~/emacs/site/ecb/ecb-images/directories/height-17") (ecb-sources-buffer-name . "~/emacs/site/ecb/ecb-images/sources/height-14_to_21") (ecb-methods-buffer-name . "~/emacs/site/ecb/ecb-images/methods/height-14_to_21"))))
- '(electric-pair-mode t)
- '(fill-column 80)
- '(highline-vertical nil)
- '(inferior-js-program-command "/usr/local/bin/rhino")
- '(ispell-parser (quote use-mode-name) t)
- '(ispell-program-name "/usr/local/bin/ispell")
- '(js2-highlight-level 3)
- '(latex-run-command "latex -shell-escape")
- '(ls-lisp-use-insert-directory-program nil)
- '(muse-project-alist (quote (("WikiNew" ("H:/Wiki/WikiNew" :default "WelcomePage" :force-publish ("WelcomePage") :major-mode muse-mode) (:base "xhtml" :path "C:\\Documents and Settings\\All Users\\webdocs\\wwwroot\\WikiNew" :style-sheet "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://localhost/WikiNew/style.css\"/>")))))
- '(nxml-slash-auto-complete-flag t)
- '(org-agenda-add-entry-text-maxlines 0)
- '(org-agenda-exporter-settings nil)
- '(org-agenda-files (quote ("~/Documents/notes")))
- '(org-log-done t)
- '(org-tag-alist (quote (("QUESTION" . 113))))
- '(org-todo-keywords (quote ((sequence "TODO" "STARTED" "WAITING" "INPROGRESS" "|" "DONE" "CANCELLED"))))
- '(rails-ws:default-server-type "webrick")
- '(rng-nxml-auto-validate-flag t)
- '(semanticdb-default-save-directory "~/tmp")
- '(shell-command-default-error-buffer nil t)
- '(show-paren-mode t)
- '(special-display-function (quote special-display-popup-frame))
- '(speedbar-use-images t)
- '(speedbar-verbosity-level 2)
- '(sql-ms-options (quote ("-w" "300" "-n" "-E")))
- '(sql-mysql-options (quote ("-C" "-f" "-t" "-n")))
- '(sql-mysql-program "/usr/local/bin/mysql")
- '(sql-postgres-program "/usr/local/bin/psql")
- '(suggest-key-bindings 5)
- '(tab-width 4)
- '(timeclock-modeline-display t nil (timeclock))
- '(timeclock-relative nil)
- '(timeclock-workday 27000)
- '(tramp-default-method "scp")
- '(transient-mark-mode t)
- '(url-use-hypertext-gopher nil)
- '(vc-checkout-switches nil)
- '(vc-directory-exclusion-list (quote ("SCCS" "RCS" "CVS" "MCVS" ".svn" "_svn")))
- '(vc-make-backup-files t)
- '(which-function-mode t))
+ '(magit-git-executable "/usr/local/bin/git")
+ '(mode-line-format
+   (quote
+    ("%e" mode-line-front-space mode-line-mule-info mode-line-client mode-line-modified mode-line-remote mode-line-frame-identification mode-line-buffer-identification "   " mode-line-position "  "
+     (vc-mode vc-mode)
+     mode-line-modes mode-line-misc-info mode-line-end-spaces)))
+ '(org-agenda-files
+   (quote
+    ("~/Documents/todos/soleng.org" "~/Documents/todos/easytag.org")))
+ '(package-selected-packages
+   (quote
+    (ruby-block eclim python-mode json-mode org ruby-electric scala-mode rubocop ac-inf-ruby flycheck flymake flymake-haml flymake-puppet flymake-ruby flyspell-popup popup-complete popup-imenu pos-tip magit auto-complete yasnippet yasnippet-bundle ac-cake ac-dabbrev ac-emoji ac-etags ac-ispell ac-html-angular ac-js2 ac-octave auto-complete-c-headers auto-complete-chunk auto-complete-clang auto-complete-clang-async auto-complete-etags auto-complete-exuberant-ctags auto-complete-octave auctex)))
+ '(sql-postgres-program "/usr/local/bin/psql"))
 
 (setq mac-option-key-is-meta nil)
 (setq mac-command-key-is-meta t)
@@ -125,6 +79,8 @@
                 ("\\.sqp$" . sqlplus-mode)
                 ("\\.bat$" . cmd-mode)
                 ("\\.js$" . js2-mode)
+                ("\\.yaml$" . yaml-mode)
+                ("\\.scala$" . scala-mode)
                 ) auto-mode-alist ))
 
 (put 'dired-find-alternate-file 'disabled nil)
@@ -143,8 +99,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
-
+ '(font-lock-type-face ((t (:inherit font-lock-type :foreground "turquoise2" :slant italic))))
+ '(show-paren-match ((t (:foreground "HotPink1")))))
+;;(show-paren-match ((t (:foreground "chartreuse1"))))
 (message ".emacs loaded")
 ;;end .emacs
 
