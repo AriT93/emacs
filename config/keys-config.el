@@ -18,6 +18,10 @@
 (define-key comint-mode-map [f5]   'gud-cont)
 (define-key comint-mode-map [f9]   'gud-break)
 (define-key comint-mode-map [f10]  'gud-next)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
 
 ;; adding a coment
 ;; C-8 will increase opacity (== decrease transparency)
@@ -34,4 +38,5 @@
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
+(global-set-key "\C-cd" `dash-at-point)
 (provide 'keys-config)

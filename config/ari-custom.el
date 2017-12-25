@@ -62,11 +62,11 @@
     (message "Not Found"))))))
 
 ;;;###autoload
-(defun arit93/hs-minor-mode-setup()
-  "Turn on `hs-minor-mode' and hide everything."
-  (hs-minor-mode 1)
-  (hs-hide-all)
-  (set(make-variable-buffer-local 'my-hs-hide) t))
+;; (defun arit93/hs-minor-mode-setup()
+;;   "Turn on `hs-minor-mode' and hide everything."
+;;   (hs-minor-mode 1)
+;;   (hs-hide-all)
+;;   (set(make-variable-buffer-local 'my-hs-hide) t))
 ;;;   (push '(csharp-mode
 ;;;           "{" "}"
 ;;;           "\\(^\\s *#\\s *region\\b\\)\\|{"
@@ -77,24 +77,24 @@
 ;;stolen ruthlessly from sacha chua.  changed func prefix from sacha to arit93
 ;; for some level of consistency in my configs
 ;; code originally found at:   http://sachachua.com/notebook/emacs/hideshow-config.el
-(load-library "hideshow")
-(defvar my-hs-hide t "current state of hideshow for toggling all.")
-;;;###autoload
-(defun my-toggle-hideshow-all()
-  "Toggle hideshow all."
-  (interactive)
-  (set (make-variable-buffer-local 'my-hs-hide) (not my-hs-hide))
-  (if my-hs-hide
-      (hs-hide-all)
-    (hs-show-all)))
+;; (load-library "hidershow")
+;; (defvar my-hs-hide t "current state of hideshow for toggling all.")
+;; ;;;###autoload
+;; (defun my-toggle-hideshow-all()
+;;   "Toggle hideshow all."
+;;   (interactive)
+;;   (set (make-variable-buffer-local 'my-hs-hide) (not my-hs-hide))
+;;   (if my-hs-hide
+;;       (hs-hide-all)
+;;     (hs-show-all)))
 
-(add-hook 'csharp-mode-hook 'arit93/hs-minor-mode-setup)
+;; (add-hook 'csharp-mode-hook 'arit93/hs-minor-mode-setup)
 
 ;; Maybe make this a define-key for hs-minor-mode-map to be proper?
-(global-set-key (kbd "C-c @ @") 'my-toggle-hideshow-all)
-(global-set-key (kbd "C-c @ h") 'hs-hide-block)
-(global-set-key (kbd "C-c @ s") 'hs-show-block)
-(global-set-key (kbd "C-c @ SPC") 'hs-show-block)
+;; (global-set-key (kbd "C-c @ @") 'my-toggle-hideshow-all)
+;; (global-set-key (kbd "C-c @ h") 'hs-hide-block)
+;; (global-set-key (kbd "C-c @ s") 'hs-show-block)
+;; (global-set-key (kbd "C-c @ SPC") 'hs-show-block)
 
 (defun cc-mode-add-keywords (mode)
   (font-lock-add-keywords

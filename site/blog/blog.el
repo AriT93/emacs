@@ -76,9 +76,9 @@
 
 (defvar blog-mode-map
   (let ((map (make-sparse-keymap)))
-	(define-key map "\C-c\C-c" 'write-blog-finish)
-	(define-key map "\C-c\C-p" 'blog-make-para)
-	map))
+    (define-key map "\C-c\C-c" 'write-blog-finish)
+    (define-key map "\C-c\C-p" 'blog-make-para)
+    map))
 (defvar blog-file-name nil)
 
 
@@ -142,10 +142,10 @@ Optional argument BLOG-WORKOUT workout for the day."
   (blog-mode)
   (insert blog-name "\n\n")
   (if blog-weight
-	  (insert (concat "<div class=\"workout\">\nWeight:" blog-weight "<br/>\n"
-					  "Workout:" blog-workout "<br/>\n</div>\n\n")))
+      (insert (concat "<div class=\"workout\">\nWeight:" blog-weight "<br/>\n"
+                      "Workout:" blog-workout "<br/>\n</div>\n\n")))
   (blog-make-para)
-  (wrap-blog-mmm-mode)
+;;  (wrap-blog-mmm-mode)
   (setq blog-file-name (format-time-string "%Y%m%d%H%M%S"))
   (message "press C-c C-c when done editing %s" blog-name ))
 
@@ -161,9 +161,10 @@ entry "
   (save-excursion
   (goto-char (point-min))
   (goto-line 2)
-  (insert "<blog>\n")
+  ;;(insert "<blog>\n")
   (goto-char (point-max))
-  (insert "\n</blog>")))
+;;  (insert "\n</blog>"))
+))
 
 (defun write-blog-finish ()
   "Save the temporary buffer as a blog entry."
@@ -175,7 +176,8 @@ entry "
   (setq blog-file-name nil)
   (other-window 1)
   (delete-other-windows)
-  (run-hook-with-args 'blog-mode-write-blog-hook blog-title))
+  (run-hook-with-args 'blog-mode-write-blog-hook blog-title)
+  (tramp-cleanup-all-connections))
 
 (defun blog-make-para ()
  "Insert a paragraph tag."
@@ -192,11 +194,11 @@ entry "
 Optional argument NAME name for the blog entry."
   (interactive)
   (let ((p (point-min)) (m (point-max)))
-	(kill-ring-save p m)
-	( if name
-		(write-blog name)
-	  (write-blog (substring (buffer-name) 0 (string-match "[.]" (buffer-name)))))
-	(yank)))
+    (kill-ring-save p m)
+    ( if name
+        (write-blog name)
+      (write-blog (substring (buffer-name) 0 (string-match "[.]" (buffer-name)))))
+    (yank)))
 
 (defun blog-region (name beg end)
   "Blog the current region.
@@ -205,18 +207,18 @@ Argument BEG point pos.
 Argument END mark pos."
   (interactive "sName: \nr")
   (let ((p (point)) (m (mark)))
-	(kill-ring-save p m)
-	(write-blog name)
-	(yank)))
+    (kill-ring-save p m)
+    (write-blog name)
+    (yank)))
 
 (defun blog-buffer-html(name)
   "htmlize the buffer then blog it"
   (interactive "sName: ")
   (setq htmlize-output-type "font")
   (let ((buffer (htmlize-buffer)))
-	(set-buffer buffer)
-	(blog-buffer name)
-	(kill-buffer buffer))
+    (set-buffer buffer)
+    (blog-buffer name)
+    (kill-buffer buffer))
   (setq htmlize-output-type "css"))
 ;;testing
 
@@ -225,9 +227,9 @@ Argument END mark pos."
   (interactive "sName: \nr")
   (setq htmlize-output-type "font")
   (let ((buffer (htmlize-region beg end)))
-	(set-buffer buffer)
-	(blog-buffer name)
-	(kill-buffer buffer ))
+    (set-buffer buffer)
+    (blog-buffer name)
+    (kill-buffer buffer ))
   (setq htmlize-output-type "css"))
 
 (defun blog-grep-edit-blog(regexp)
