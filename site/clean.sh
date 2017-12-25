@@ -2,9 +2,9 @@
 
 for file in *; do
 	if [ -d $file ]; then
-		pushd $file;
+	    pushd $file;
 		rm *.elc;
 		popd;
-	fi	
+	fi
 done
 		

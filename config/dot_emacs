@@ -6,11 +6,11 @@
 (require 'emacs-config)
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(ac-modes (quote (emacs-lisp-mode lisp-interaction-mode c-mode cc-mode c++-mode java-mode perl-mode cperl-mode python-mode ruby-mode ecmascript-mode javascript-mode php-mode css-mode makefile-mode sh-mode csharp-mode fortran-mode f90-mode ada-mode xml-mode sgml-mode nxhtml-mode html-mode)))
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ac-modes (quote (emacs-lisp-mode lisp-interaction-mode c-mode cc-mode c++-mode java-mode perl-mode cperl-mode python-mode ruby-mode ecmascript-mode javascript-mode php-mode css-mode makefile-mode sh-mode csharp-mode fortran-mode f90-mode ada-mode xml-mode sgml-mode web-mode sql-mode sql-interactive-mode)))
  '(add-log-mailing-address nil)
  '(ange-ftp-ascii-hash-mark-size 2048)
  '(ange-ftp-binary-hash-mark-size nil)
@@ -27,6 +27,7 @@
  '(comint-move-point-for-output t)
  '(comint-scroll-to-bottom-on-input t)
  '(comment-line-break-function (quote indent-new-comment-line) t)
+ '(indent-tabs-mode nil)
  '(csv-separators (quote ("," " ")))
  '(current-language-environment "utf-8")
  '(default-input-method "utf-8-unix")
@@ -43,20 +44,23 @@
  '(ecb-options-version "2.33beta2")
  '(ecb-sources-menu-user-extension-function (quote ignore))
  '(ecb-tree-image-icons-directories (quote ("~/emacs/site/ecb/ecb-images/default/height-17" (ecb-directories-buffer-name . "~/emacs/site/ecb/ecb-images/directories/height-17") (ecb-sources-buffer-name . "~/emacs/site/ecb/ecb-images/sources/height-14_to_21") (ecb-methods-buffer-name . "~/emacs/site/ecb/ecb-images/methods/height-14_to_21"))))
+ '(electric-pair-mode t)
  '(fill-column 80)
  '(highline-vertical nil)
- '(icicle-reminder-prompt-flag 4)
+ '(inferior-js-program-command "/usr/local/bin/rhino")
  '(ispell-parser (quote use-mode-name) t)
+ '(ispell-program-name "/usr/local/bin/ispell")
  '(js2-highlight-level 3)
+ '(latex-run-command "latex -shell-escape")
  '(ls-lisp-use-insert-directory-program nil)
- '(mmm-major-mode-preferences (quote ((perl cperl-mode perl-mode) (javascript javascript-mode) (java java-mode) (css css-mode))))
- '(muse-project-alist (quote (("WikiNew" ("H:/Wiki/WikiNew" "WelcomePage") (:base "xhtml" :path "C:\\Documents and Settings\\All Users\\webdocs\\wwwroot\\WikiNew" :style-sheet "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://localhost/WikiNew/style.css\"/>")))))
+ '(muse-project-alist (quote (("WikiNew" ("H:/Wiki/WikiNew" :default "WelcomePage" :force-publish ("WelcomePage") :major-mode muse-mode) (:base "xhtml" :path "C:\\Documents and Settings\\All Users\\webdocs\\wwwroot\\WikiNew" :style-sheet "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://localhost/WikiNew/style.css\"/>")))))
  '(nxml-slash-auto-complete-flag t)
  '(org-agenda-add-entry-text-maxlines 0)
  '(org-agenda-exporter-settings nil)
- '(org-agenda-files nil)
+ '(org-agenda-files (quote ("~/Documents/notes")))
  '(org-log-done t)
- '(org-tag-alist (quote (("EPR" . 0) ("EXPECTATION" . 0) ("ONEONONE" . 0))))
+ '(org-tag-alist (quote (("QUESTION" . 113))))
+ '(org-todo-keywords (quote ((sequence "TODO" "STARTED" "WAITING" "INPROGRESS" "|" "DONE" "CANCELLED"))))
  '(rails-ws:default-server-type "webrick")
  '(rng-nxml-auto-validate-flag t)
  '(semanticdb-default-save-directory "~/tmp")
@@ -67,13 +71,14 @@
  '(speedbar-verbosity-level 2)
  '(sql-ms-options (quote ("-w" "300" "-n" "-E")))
  '(sql-mysql-options (quote ("-C" "-f" "-t" "-n")))
- '(sql-mysql-program "mysql" t)
+ '(sql-mysql-program "/usr/local/bin/mysql")
+ '(sql-postgres-program "/usr/local/bin/psql")
  '(suggest-key-bindings 5)
  '(tab-width 4)
  '(timeclock-modeline-display t nil (timeclock))
  '(timeclock-relative nil)
  '(timeclock-workday 27000)
- '(tramp-default-method "plink")
+ '(tramp-default-method "scp")
  '(transient-mark-mode t)
  '(url-use-hypertext-gopher nil)
  '(vc-checkout-switches nil)
@@ -81,25 +86,28 @@
  '(vc-make-backup-files t)
  '(which-function-mode t))
 
-
-(setq locale-coding-system 'utf-8-auto-unix)
-(set-terminal-coding-system 'utf-8-auto-unix)
-(set-keyboard-coding-system 'utf-8-auto-unix)
-(set-selection-coding-system 'utf-8-auto-unix)
-(prefer-coding-system 'utf-8-auto-unix)
+(setq mac-option-key-is-meta nil)
+(setq mac-command-key-is-meta t)
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier 'super)
+;; (setq locale-coding-system 'utf-8-auto-unix)
+;; (set-terminal-coding-system 'utf-8-auto-unix)
+;; (set-keyboard-coding-system 'utf-8-auto-unix)
+;; (set-selection-coding-system 'utf-8-auto-unix)
+;; (prefer-coding-system 'utf-8-auto-unix)
 ;;(load "~/emacs/site/nxhtml/autostart.el")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; extension to mode mapping
 ;
 (setq auto-mode-alist
       (append '(
-                ("\\.s?html?\\'" . html-mode)
+                ("\\.s?html?\\'" . web-mode)
                 ("\\.css$" . css-mode)
-                ("\\.asp$" . html-mode)
-                ("\\.aspx$" . html-mode)
-                ("\\.ascx$" . html-mode)
-                ("\\.html$" . html-mode)
-                ("\\.htm$" . html-mode)
+                ("\\.asp$" . web-mode)
+                ("\\.aspx$" . web-mode)
+                ("\\.ascx$" . web-mode)
+                ("\\.html$" . web-mode)
+                ("\\.htm$" . web-mode)
                 ("\\.md$" . emacs-lisp-mode)
                 ("\\.txt$" . text-mode)
                 ("\\.cs$" . csharp-mode)
@@ -112,7 +120,7 @@
                 ("\\.xconf$" . sgml-mode)
                 ("\\.py$" . python-mode)
                 ("\\.java$" . java-mode)
-                ("\\.jsp$" . html-mode)
+                ("\\.jsp$" . web-mode)
                 ("\\.org$" . org-mode)
                 ("\\.sqp$" . sqlplus-mode)
                 ("\\.bat$" . cmd-mode)
@@ -131,10 +139,10 @@
 (put 'downcase-region 'disabled nil)
 (org-agenda-list)
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
 
 (message ".emacs loaded")
