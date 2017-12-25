@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 ;;; puppet-mode.el --- A simple mode for editing puppet manifests
 
 ;; Copyright (C) 2011 Puppet Labs Inc
@@ -25,15 +25,6 @@
 ;; A simple mode for editing puppet manifests.
 
 ;;; Code:
-=======
-;;;
-;;; puppet-mode.el
-;;;
-;;; Author: lutter
-;;; Author: Russ Allbery <rra@stanford.edu>
-;;;
-;;; Description: A simple mode for editing puppet manifests
->>>>>>> work_setup
 
 (defconst puppet-mode-version "0.2")
 

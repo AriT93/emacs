@@ -5,7 +5,7 @@
 (autoload 'csharp-mode "csharp-mode" "Major mode for editing C# code." t)
 (require 'csharp-mode)
   ;;semantic-ific
-(require 'semantic-load)
+;;(require 'semantic-load)
 
 ;;  (c-add-style "myC#Style"
 ;;    '("java"

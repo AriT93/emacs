@@ -47,7 +47,7 @@
 	  (setq ps-header-offset 12.346456692913385)
 	  (setq ps-printer-name "\\SYS286558\JH135ADELL5100C")
 	  (setq ps-top-margin 64.51968503937007)
-	  (setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Monaco-10"))))
+	  (setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Monaco-13"))))
 	  (setq tramp-default-method "plink")
 	  (setq ps-lpr-command "c:\\Program Files\\Ghostgum\\gsview\\gsprint.exe")
 
@@ -435,7 +435,8 @@
 
 (setq rct-debug t)
 
-(yas/initialize)
+
+(yas-global-mode 1)
 (yas/load-directory "~/emacs/site/yasnippet/snippets")
 
 (load "~/emacs/site/yasnippets-rails/setup.el")

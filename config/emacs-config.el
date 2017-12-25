@@ -1,14 +1,18 @@
- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; package -- summary emacs config
+;;; Commentary:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs-config.el                                                           ;;
-;; This file will hold specific setting I like for emacs out side of         ;;
+;; This file will hold specific setting I like for Emacs out side of         ;;
 ;; customize.  Mostly requires and such but a few setq's and such as well    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;; Code:
 (if (window-system)
     (tool-bar-mode -1))
 (menu-bar-mode -1)
 (message "loading emacs-config")
-(setq w32-use-full-screen-buffer nil)
+(show-paren-mode 1)
+(electric-pair-mode 1)
+;;(setq w32-use-full-screen-buffer nil)
 (setq uniquify-buffer-name-style t)
 (setq uniquify-buffer-name-style (quote post-forward))
 (setq uniquify-min-dir-content 1)
@@ -16,13 +20,22 @@
 (setq blog-root "/abturet@turetzky.org:~/blog/")
 (add-hook 'diary-display-hook 'fancy-diary-display)
 (add-hook 'text-mode-hook ' turn-on-auto-fill)
-(autoload 'nuke-trailing-whitespace "whitespace" nil t)
-(add-hook 'write-file-hooks 'nuke-trailing-whitespace)
 (add-hook 'before-save-hook 'time-stamp)
 (setq dired-omit-files-p t)
 (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
 (setq TeX-command-list (quote (("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t) ("LaTeX" "%l -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("LaTeX PDF" "pdflatex -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("View" "%v" TeX-run-discard nil nil) ("Print" "gsview32 %f" TeX-run-command t nil) ("File" "dvips %d -o %f " TeX-run-command t nil) ("BibTeX" "bibtex %s"</FONT> TeX-run-BibTeX nil nil) ("Index" "makeindex %s" TeX-run-command nil t) ("Check" "lacheck %s" TeX-run-compile nil t) ("Other" "" TeX-run-command t t))))
 
+(require 'package)
+(add-to-list 'package-archives
+             '("marmalade" .
+               "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives
+             '("melpa-stable" .
+               "http://stable.melpa.org/packages/") t )
+(add-to-list 'package-archives
+             '("melpa" .
+               "http://melpa.org/packages/") t )
+(package-initialize)
 (cond
  ((string="w32" window-system)
   (set-face-attribute 'mode-line nil :family "Century Gothic" :height 1.0 :weight 'ultra-light ))
@@ -34,11 +47,20 @@
 (setq-default compile-command "nmake")
 (setq tramp-auto-save-directory "~/tmp")
 (setq message-log-max 250)
+;;(require 'multiple-cursors)
 (require 'load-path-config)
-(require 'whitespace)
-;;(require 'start-opt)
+;;(require 'whitespace)
+;;(autoload 'nuke-trailing-whitespace "whitespace" nil t)
+;;(add-hook 'write-file-hooks 'nuke-trailing-whitespace)
 
-(add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
+;;(require 'start-opt)
+;; (defadvice whitespace-cleanup (around whitespace-cleanup-indent-tab
+;;                                       activate)
+;;   "Fix whitespace-cleanup indent-tabs-mode bug"
+;;   (let ((whitespace-indent-tabs-mode indent-tabs-mode)
+;;         (whitespace-tab-width tab-width))
+;;     ad-do-it))
+;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
 
 (require 'js-comint)
 (setq inferior-js-program-command "rhino")
@@ -66,7 +88,7 @@
  ((string="x" window-system)
 (setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Liberation Mono:bold")))))
 ((string="ns" window-system)
-(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Monaco-12:bold"))))))
+(setq default-frame-alist (quote ((foreground-color . "gray") (background-color . "black") (font . "Monaco-13:bold"))))))
 
 
 (setq muse-project-alist
@@ -123,12 +145,14 @@
   (insert (format-time-string "%y-%m-%d-%R")))
 
 
-(require 'semantic-config)
+;;(require 'semantic-config)
 ;;#(load-library "javascript")
 ;;(require 'javascript-mode)
 (require 'js2-mode)
-(if (not (string-equal system-type "windows-nt"))(require 'magit))
+;;(if (not (string-equal system-type "windows-nt"))(require 'magit))
 (require 'highline)
+(require 'dired-details)
+(dired-details-install)
 (require 'uniquify)
 (require 'sawzall)
 ;;(require 'vm)
@@ -138,18 +162,19 @@
 (require 'tex-site)
 (require 'tramp)
 (require 'gist)
-(require 'ecb)
+;;(require 'ecb)
 (require 'speedbar)
+(require 'web-mode)
 ;;(require 'xslt-process)
-(require 'semantic-load)
+;;(require 'semantic-load)
 (require 'ls-lisp)
 (require 'blog)
 (require 'erc)
 (require 'erc-menu)
 (require 'htmlize)
-(require 'jdee-config)
+;;(require 'jdee-config)
 (require 'cl)
-(require 'semantic-util-modes)
+;;(require 'semantic-util-modes)
 (require 'misc)
 (require 'remember)
 (require 'skeleton-conf)
@@ -161,150 +186,140 @@
 ;;(require 'mail-config)
 (require 'erc-config)
 (require 'gnus-config)
-(require 'jde)
-(require 'css-mode)
+;;(require 'jde)
+;;(require 'css-mode)
 (require 'ari-custom)
 (require 'csharp-config)
-(require 'muse)
-(require 'muse-xml)
-(require 'muse-mode)
-(require 'muse-html)
-(require 'muse-wiki)
-(require 'muse-colors)
-(require 'muse-latex)
-(require 'muse-colors)
+;;(require 'muse)
+;;(require 'muse-xml)
+;;(require 'muse-mode)
+;;(require 'muse-html)
+;;(require 'muse-wiki)
+;;(require 'muse-colors)
+;;(require 'muse-latex)
+;;(require 'muse-colors)
 (require 'php-mode)
-(require 'mmm-mode)
-(require 'mmm-auto)
-(require 'mmm-sample)
 (require 'vc-svn)
-(require 'psvn)
-;;(require 'color-theme)
+;;(require 'psvn)
+(require 'color-theme)
 (require 'ruby-mode)
-;;(require 'ruby-electric)
+(require 'ruby-electric)
 (require 'org)
 (require 'coffee-mode)
 (require 'feature-mode)
-(require 'ruby-config)
+;;(require 'rcodetools)
+;;(require 'popup)
+(require 'yasnippet)
+;;(yas-global-mode t)
+;;(yas-global-mode)
+(require 'auto-complete)
+(require 'auto-complete-config)
+(require 'auto-complete-yasnippet)
+(require 'haml-mode)
+(require 'rvm)
+(rvm-use-default)
 ;;(require 'rails)
 ;;(require 'yasnippet)
 ;;(require 'zenburn)
 ;;(require 'vivid-chalk)
+(add-to-list 'load-path "~/emacs/site/emacs-eclim")
+(require 'eclim)
+(global-eclim-mode)
+(require 'eclimd)
+(require 'ac-emacs-eclim-source)
+(ac-emacs-eclim-config)
+;;(setq eclim-executable "/Applications/eclipse/eclim")
+(setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
+(setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclim")
+(setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclimd")
+(setq help-at-pt-display-when-idle t)
+(setq help-at-pt-timer-delay 0.1)
+(help-at-pt-set-timer)
+
+(global-auto-complete-mode t)           ;enable global-mode
+(setq ac-auto-start t)                  ;automatically start
+(setq ac-dwim 3)                        ;Do what i mean
+(setq ac-override-local-map nil)        ;don't override local map
+(define-key ac-complete-mode-map "\t" 'ac-expand)
+(define-key ac-complete-mode-map "\r" 'ac-complete)
+(define-key ac-complete-mode-map "\M-n" 'ac-next)
+(define-key ac-complete-mode-map "\M-p" 'ac-previous)
+(set-default 'ac-sources '(ac-source-words-in-buffer ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-files-in-current-dir))
+
+(setq ac-modes
+      (append ac-modes
+              '(eshell-mode
+                                        ;org-mode
+                )))
+                                        ;(add-to-list 'ac-trigger-commands 'org-self-insert-command)
+
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+(add-hook 'yaml-mode-hook
+          (lambda ()
+            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-semantic ac-source-files-in-current-dir ac-source-words-in-buffer ac-source-words-in-same-mode-buffers ))))
+(add-hook 'js2-mode-hook
+          (lambda ()
+            (add-to-list 'ac-sources '(ac-source-files-in-current-dir ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables)(auto-complete-mode))))
+(require 'ruby-config)
+
+
 
 (if (window-system)
-  ;;  (progn (require 'color-theme)
-    ;;       (color-theme-initialize)
+    (progn (require 'color-theme)
+           (color-theme-initialize)
+           (color-theme-zenburn))
            ;;(color-theme-simple-2)
            ;;(color-theme-calm-forest)
            ;;(load-file "~/emacs/site/color-theme/themes/LazyCatTheme.el")
-    (load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")
-	(vivid-chalk)
-	;;(zenburn)
+;;    (load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")
+    ;;(vivid-chalk)
+;;    (zenburn)
            ;;(color-theme-hash)
        )
 
 ;;(add-to-list 'vc-handled-backends 'SVN)
-;; (highline-mode t)
+ (highline-mode t)
 ;;(require 'bbdb)
 ;; (if (window-system)
 ;;     (require 'oneonone-config))
 ;;(bbdb-initialize 'w3)
-(load-library "mailcrypt")
+;;(load-library "mailcrypt")
 
-(mc-setversion "gpg")
-(setq mc-gpg-user-id "arit93@yahoo.com")
+;;(mc-setversion "gpg")
+;;(setq mc-gpg-user-id "arit93@yahoo.com")
 
-(setq mc-temp-directory "~/tmp/")
-(setq mc-gpg-user-id user-mail-address)
+;;(setq mc-temp-directory "~/tmp/")
+;;(setq mc-gpg-user-id user-mail-address)
 
 ;;ensure correct handling of xml files by nxml-mode
 (add-to-list 'auto-mode-alist
              (cons
               (concat "\\." (regexp-opt '("xml" "xsd" "svg" "rss" "rng" "build" "config") t) "\\'" )'nxml-mode))
 
-(setq mmm-global-mode 'maybe)
-
-
-(mmm-add-group
- 'fancy-html
- '(
-   (html-php-tagged
-    :submode php-mode
-    :face mmm-code-submode-face
-    :front "<[?]php"
-    :back "[?]>")
-   (html-css-attribute
-    :submode css-mode
-    :face mmm-declaration-submode-face
-    :front "style=\""
-    :back "\"")
-   (html-css-embedded
-    :submode css-mode
-    :face mmm-declaration-submode-face
-    :front "<style\[^>\]*>"
-    :back "</style>")
-   (html-javascript-embedded
-    :submode js2-mode
-    :face mmm-code-submode-face
-    :front "<script\[^>\]*>"
-    :back "</script>")
-   (html-javascript-attribute
-    :submode js2-mode
-    :face mmm-code-submode-face
-    :front "\\bon\\w+=\\s-*\""
-    :back "\"")))
 ;;
 ;; What files to invoke the new html-mode for?
-(add-to-list 'auto-mode-alist '("\\.inc\\'" . html-mode))
-(add-to-list 'auto-mode-alist '("\\.phtml\\'" . html-mode))
-(add-to-list 'auto-mode-alist '("\\.php\\'" . html-mode))
-(add-to-list 'auto-mode-alist '("\\.[sj]?html?\\'" . html-mode))
-(add-to-list 'auto-mode-alist '("\\.jsp\\'" . html-mode))
+(add-to-list 'auto-mode-alist '("\\.inc\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[sj]?html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.t\\'" . perl-mode))
+(add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 ;;
-;; What features should be turned on in this html-mode?
-(add-to-list 'mmm-mode-ext-classes-alist '(html-mode nil html-js))
-(add-to-list 'mmm-mode-ext-classes-alist '(html-mode nil embedded-css))
-(add-to-list 'mmm-mode-ext-classes-alist '(html-mode nil fancy-html))
-
-;;blog class for mmm mode that make editing blogs "pretty" just
-;; need to figure out how to add the key-maps to the submode
-(mmm-add-classes
- '((blog-html
-    :submode html-mode
-    :front "<blog>"
-    :back "</blog>"
-    :include-back t)))
-
-(mmm-add-mode-ext-class 'blog-mode nil 'blog-html)
-
-;;this is where my twit.el hack will go
-;;starting now!
-;;(load-file "~/emacs/site/lisp/twit.el")
-;;;###autoload
-;; (defun twit-send-svn ()
-;;   (interactive)
-;;   (twit-post-function twit-update-url (progn
-;;                                         (save-window-excursion
-;;                                           (set-buffer "*svn-log-edit*")
-;;                                           (concat
-;;                                            (int-to-string svn-status-commit-rev-number)
-;;                                            " "
-;;                                            (mapconcat 'svn-status-line-info->filename svn-status-files-to-commit " ")
-;;                                            " "
-;;                                            (buffer-substring-no-properties (point-min)(point-max)))))))
-;; (add-hook 'svn-log-edit-done-hook 'twit-send-svn t)
 
 
-;; (defun tweet-blog(blog-title)
-;;   "tweet the new blog entry"
-;;   (interactive)
-;;   (twit-post-function twit-update-url (progn
-;;                                         (save-window-excursion
-;;                                           (concat "http://ariserve.dynup.net/blog New Blog Posted: "
-;;                                                   blog-title)))))
-;; ;;(add-hook 'blog-mode-write-blog-hook 'tweet-blog)
 (add-hook 'html-mode-hook 'abbrev-mode)
+(add-hook 'web-mode-hook 'abbrev-mode)
 
 ;;font lock faces
 (setq highline-face '((:background "thistle4")))
@@ -313,7 +328,7 @@
 ;;;; ------------------------------------------------------------------------
 ;;;; --- Frame max toggle - From: "rgb" <rbielaws@...> / gnu.emacs.help / 18 Mar 2005 16:30:32 -0800
 ;;;; ------------------------------------------------------------------------
-(make-variable-frame-local 'my-frame-state)
+;;(make-variable-frame-local 'my-frame-state)
 
 (defun my-frame-maximize ()
   "Maximize Emacs window in win32"
@@ -338,7 +353,13 @@
 
 (global-set-key (kbd "M-m") 'my-frame-toggle)
 
+(autoload 'dash-at-point "dash-at-point"
+  "Search the word at point with Dash." t nil)
 
+
+
+(autoload 'markdown-mode' "markdown-mode" "Major Mode for editing Markdown" t)
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
    (autoload 'ruby-mode "ruby-mode"
      "Mode for editing ruby source files" t)
    (setq auto-mode-alist
@@ -355,15 +376,15 @@
    ))
 (load-library "rdebug")
 
-(autoload 'hideshowvis-enable "hideshowvis" "Highlight foldable regions")
+;;(autoload 'hideshowvis-enable "hideshowvis" "Highlight foldable regions")
 
-(dolist (hook (list 'emacs-lisp-mode-hook
-                    'c++-mode-hook
-                    'ruby-mode-hook
-                    'c-sharp-mode-hook
-                    'java-mode-hook
-                    ))
-  (add-hook hook 'hideshowvis-enable))
+;; (dolist (hook (list 'emacs-lisp-mode-hook
+;;                     'c++-mode-hook
+;;                     'ruby-mode-hook
+;;                     'c-sharp-mode-hook
+;;                     'java-mode-hook
+;;                     ))
+;;   (add-hook hook 'hideshowvis-enable))
 
 (setenv "PATH" (concat (getenv "PATH") "/Users/abturet/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin:/usr/local/share/npm/bin;c:/CYGWIN/bin;"))
 (setenv "CVSROOT" ":ext:mrpy@cctech:/opt/CC/cvs/cvsroot")
@@ -376,9 +397,9 @@
 (add-to-list 'default-frame-alist '(alpha 85 50))
 
 ;;;autocomplete
-(require 'rcodetools)
-(require 'auto-complete)
-(require 'auto-complete-config)
+;;(require 'rcodetools)
+;;(require 'auto-complete)
+;;(require 'auto-complete-config)
 ;;(require 'auto-complete-ruby)
 ;;(require 'auto-complete-yasnippet)
 ;; (require 'anything)
@@ -403,18 +424,21 @@
                 JavaSript-IDE-mode
                 text-mode
                 css-mode
-                html-mode
+                web-mode
                 perl-mode
-                nxhtml-mumamo-mode
                 ruby-mode
-                eruby-nxhtml-mumamo-mode)))
+                scala-mode
+                java-mode
+                yaml-mode
+                )))
 
 (require 'cmd-mode)
 (require 'ls-lisp)
+(require 'puppet-mode)
 
-(dolist (hook (list 'emacs-lisp-mode-hook
-                    'c++-mode-hook))
-  (add-hook hook 'hideshowvis-enable))
+;; (dolist (hook (list 'emacs-lisp-mode-hook
+;;                     'c++-mode-hook))
+;;   (add-hook hook 'hideshowvis-enable))
 (add-to-list 'write-file-functions 'time-stamp)
 
 (require 'dired-x)
@@ -533,6 +557,6 @@ t)))
 ;;)))
 ;;(color-theme-hash)
 ;;(zenburn)
-(vivid-chalk)
+;;(vivid-chalk)
 
 (provide 'emacs-config)
