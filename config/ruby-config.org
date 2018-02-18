@@ -28,6 +28,8 @@ first a little housekeeping for the linter
 ;;(yas-load-directory "~/emacs/site/yasnippet/snippets/")
 ;; (setq yas/snippet-dirs "~/emacs/site/yasnippet-0.7.0/snippets")
 ;; (yas/load-directory yas/snippet-dirs)
+(use-package yasnippet-snippets
+   :ensure t)
 (yas/global-mode)
 (global-flycheck-mode)
 ;;(require 'xslt-process)
