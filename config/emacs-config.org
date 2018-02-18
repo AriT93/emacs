@@ -4,104 +4,539 @@
 #+TAGS: emacs config
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
-Contained herein are my general non-mode specific(mostly)
-configuration  *This is a Work in Progress*
+* Simple Settings
+  Contained herein are my general non-mode specific(mostly)
+  configuration  *This is a Work in Progress*
+** Looks and Behaviors
+   #+BEGIN_SRC elisp
+     (if (window-system)
+         (tool-bar-mode t))
+     (menu-bar-mode -1)
+     (show-paren-mode 1)
+     (setq uniquify-buffer-name-style t)
+     (setq uniquify-buffer-name-style (quote post-forward))
+     (setq uniquify-min-dir-content 1)
+     (electric-pair-mode 1)
+     (setq cal-tex-diary t)
+     (setq blog-root "/abturet@turetzky.org:~/blog/")
+     (add-hook 'diary-display-hook 'fancy-diary-display)
+     (add-hook 'text-mode-hook ' turn-on-auto-fill)
+     (add-hook 'before-save-hook 'time-stamp)
+     (setq dired-omit-files-p t)
+     (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+     (setq tramp-auto-save-directory "~/tmp")
+     (setq message-log-max 1000)
+     (set-default-font "Monaco-13")
+     (add-to-list 'default-frame-alist '(font . "Monaco-13"))
+     (setq help-at-pt-display-when-idle t)
+     (setq help-at-pt-timer-delay 0.1)
+     (help-at-pt-set-timer)
+(setq mode-line-in-non-selected-windows nil)
 
-* Some simple stuff around how it looks
+   #+END_SRC
+   
+   Pop yank gives you a pop up of recent yanks,  a "yank bank" 
 #+BEGIN_SRC elisp
-  (if (window-system)
-      (tool-bar-mode t))
-  (menu-bar-mode -1)
-  (show-paren-mode 1)
-  (setq uniquify-buffer-name-style t)
-  (setq uniquify-buffer-name-style (quote post-forward))
-  (setq uniquify-min-dir-content 1)
+(global-set-key "\C-cy" '(lambda ()
+                           (interactive)
+                           (popup-menu 'yank-menu)))
+
 #+END_SRC
 
-* Some Tex-iness
-#+BEGIN_SRC elisp
-  (setq TeX-command-list
-        (quote (
-                ("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t)
-                ("LaTeX" "%l -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t)
-                ("LaTeX PDF" "pdflatex -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t)
-                ("View" "%v" TeX-run-discard nil nil)
-                ("Print" "gsview32 %f" TeX-run-command t nil)
-                ("File" "dvips %d -o %f " TeX-run-command t nil)
-                ("BibTeX" "bibtex %s"</FONT> TeX-run-BibTeX nil nil)
-                ("Index" "makeindex %s" TeX-run-command nil t)
-                ("Check" "lacheck %s" TeX-run-compile nil t)
-                ("Other" "" TeX-run-command t t))))
+** Tex
+   #+BEGIN_SRC elisp
+     (setq TeX-command-list
+           (quote (
+                   ("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t)
+                   ("LaTeX" "%l -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t)
+                   ("LaTeX PDF" "pdflatex -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t)
+                   ("View" "%v" TeX-run-discard nil nil)
+                   ("Print" "gsview32 %f" TeX-run-command t nil)
+                   ("File" "dvips %d -o %f " TeX-run-command t nil)
+                   ("BibTeX" "bibtex %s"</FONT> TeX-run-BibTeX nil nil)
+                   ("Index" "makeindex %s" TeX-run-command nil t)
+                   ("Check" "lacheck %s" TeX-run-compile nil t)
+                   ("Other" "" TeX-run-command t t))))
 
+   #+END_SRC
+
+** Get some package goodness
+   #+BEGIN_SRC elisp
+     (require 'package)
+   #+END_SRC
+
+   find our packages in the more reputable places
+   #+BEGIN_SRC elisp
+     (add-to-list 'package-archives
+                  '("marmalade" . "https://marmalade-repo.org/packages/"))
+     (add-to-list 'package-archives
+                  '("melpa" . "https://melpa.org/packages/"))
+     (add-to-list 'package-archives
+                  '("elpa" . "https://elpa.gnu.org/packages/"))
+     (add-to-list 'package-archives
+                  '("org" . "https://orgmode.org/elpa/"))
+   #+END_SRC
+
+   And now we can get kick off the package manager
+   #+BEGIN_SRC elisp
+     (package-initialize)
+   #+END_SRC
+** Use Package
+   =use-package= makes it easy to require a file without a bunch of
+   requires like you'll find just below a bit and it will also ensure it
+   gets installed from a repository we defined above
+
+   #+BEGIN_SRC elisp
+     (require 'use-package)
+   #+END_SRC
+
+   I store the load paths to locally downloaded package in their own
+   config file [[file:load-path-config.org][load-path-config]]
+
+   #+BEGIN_SRC elisp
+     (require 'load-path-config)
+   #+END_SRC
+** JS Comint using node to eval javascript code
+   And here we have the first use of use-pacakge!
+   #+BEGIN_SRC elisp
+     (use-package js-comint
+       :ensure t
+       :init
+       (setq inferior-js-program-command "node")
+       :bind
+       (("\C-x\C-e" . js-send-last-sexp)
+        ("\C-\M-x"  . js-send-last-sexp-and-go)
+        ("\C-cb"    . js-send-buffer)
+        ("\C-c\C-b" . js-send-buffer-and-go)
+        ("\C-cl"    . js-load-file-and-go))
+       )
+   #+END_SRC
+
+** Set up HighLine mode
+   #+BEGIN_SRC elisp
+     (use-package highline
+       :ensure t
+       :init
+       (highline-mode t)
+       (setq highlin-face '((:background "thistle4")))
+       (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
+   #+END_SRC
+
+** Ivy for isearcing
+   Use Ivy, counsel and Swiper(no swiping!) for isearch
+   #+BEGIN_SRC elisp
+     (use-package ivy
+       :ensure t
+       :init
+       (ivy-mode 1)
+       (setq ivy-use-virtual-buffers t)
+       (setq enable-recursive-minibuffers t)
+       (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+       :bind
+       (
+        ("\C-s" . 'swiper)
+        ("C-x C-f" . 'counsel-find-file)
+        ("C-c j" . 'counsel-git-grep)
+        ("C-c k" . 'counsel-ag)
+        ("C-c l" . 'counsel-locate)))
+   #+END_SRC
+** Preserve all the crap I put in the =*scrach*= buffer
+   the following was found a while back Not sure where but I can't find
+   it online anymore and the author doesn't seem to have it on his git
+   hub but Thanks Michal!
+   #+BEGIN_SRC  elisp
+     ;; Notes in *scratch* v. 0.2
+     ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
+     ;; Released under GNU GPL
+
+     (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
+       "File where content of *scratch* buffer will be read from and saved to.")
+     (defconst scratch-file-autosave (concat scratch-file ".autosave")
+       "File where to autosave content of *scratch* buffer.")
+
+     (save-excursion
+       (set-buffer (get-buffer-create "*scratch*"))
+       (if (file-readable-p scratch-file)
+           (if (and (file-readable-p scratch-file-autosave)
+                    (file-newer-than-file-p scratch-file-autosave scratch-file)t)
+               (insert-file-contents scratch-file-autosave nil nil nil t)
+             (insert-file-contents scratch-file nil nil nil t)
+             (set-buffer-modified-p nil)))
+       (auto-save-mode 1)
+       (setq buffer-auto-save-file-name scratch-file-autosave)
+                                             ; (setq revert-buffer-function 'scratch-revert)
+       (fundamental-mode))
+     (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
+     (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
+
+     (defun scratch-revert (ignore-auto noconfirm)
+       (when (file-readable-p scratch-file)
+         (insert-file-contents scratch-file nil nil nil t)
+         (set-buffer-modified-p nil)))
+
+     (defun kill-scratch-buffer ()
+       (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
+              (delete-region (point-min) (point-max))
+              (set-buffer-modified-p nil)
+              (next-buffer)
+              t)))
+
+     (defun kill-emacs-scratch-save ()
+       (let ((buffer (get-buffer-create "*scratch*")))
+         (if buffer
+             (save-excursion
+               (set-buffer buffer)
+               (write-region nil nil scratch-file)
+               (unless (string-equal scratch-file buffer-auto-save-file-name)
+                 (delete-auto-save-file-if-necessary t))))))
+   #+END_SRC
+
+** Flycheck is fly as hell
+   #+BEGIN_SRC elisp
+     (use-package flycheck
+       :ensure t
+       :init
+       (setq flycheck-emacs-lisp-initialize-packages 1)
+       (setq flycheck-emacs-lisp-load-path 'inherit)
+       )
+   #+END_SRC
+
+** Start up the emacs server
+   Of course it has a server...
+#+BEGIN_SRC elisp
+(server-start)
 #+END_SRC
 
-* Get some package goodness
+** Org-Mode
+   Pretty meta to talk about =org-mode= in and org doc.  this is
+   currently here but will need to move to it's own config file
+   eventually to make it more manageable
 #+BEGIN_SRC elisp
-  (require 'package)
-#+END_SRC
-
-find our packages in the more reputable places
-#+BEGIN_SRC elisp
-  (add-to-list 'package-archives
-               '("marmalade" . "https://marmalade-repo.org/packages/"))
-  (add-to-list 'package-archives
-               '("melpa" . "https://melpa.org/packages/"))
-  (add-to-list 'package-archives
-               '("elpa" . "https://elpa.gnu.org/packages/"))
-  (add-to-list 'package-archives
-               '("org" . "https://orgmode.org/elpa/"))
-#+END_SRC
-
-And now we can get kick off the package manager
-#+BEGIN_SRC elisp
-(package-initialize)
-#+END_SRC
-
-=use-package= makes it easy to require a file without a bunch of
-requires like you'll find just below a bit and it will also ensure it
-gets installed from a repository we defined above
-
-#+BEGIN_SRC elisp
+(require 'org)
+(require 'ox-twbs)
 (require 'use-package)
+(require 'ox-twbs)
+(setq org-ellipsis " ⤵")
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
+(setq org-src-window-setup 'current-window)
+
+(require 'org-bullets)
+(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+(setq org-startup-with-inline-images t)
+(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+
+;;***********remember + Org config*************
+(setq org-remember-templates
+      '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
+        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
+(setq remember-annotation-functions '(org-remember-annotation))
+(setq remember-handler-functions '(org-remember-handler))
+(add-hook 'remember-mode-hook 'org-remember-apply-template)
+(global-set-key (kbd "C-c r") 'remember)
+
+(setq org-todo-keywords '((type "TODO" "STARTED" "WAITING" "DONE")))
+(setq org-todo-keywords-1 '((type "TODO" "STARTED" "WAITING" "DONE")))
+(setq org-agenda-include-diary t)
+(setq org-agenda-include-all-todo t)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((shell  . t)
+   (js  . t)
+   (emacs-lisp . t)
+   (python . t)
+   (ruby . t)
+   (css . t )
+   (java . t)))
+(setq org-confirm-babel-evaluate nil)
+
 #+END_SRC
 
-I store the load paths to locally downloaded package in their own
-config file [[file:load-path-config.org][load-path-config]]
-
+** Teh requires
+   This is kinda like that part in the bible with all the begats...
 #+BEGIN_SRC elisp
-(require 'load-path-config)
+;;(require 'javascript-mode)
+(require 'js2-mode)
+(require 'highline)
+(require 'dired-details)
+(dired-details-install)
+(require 'uniquify)
+(require 'sawzall)
+(require 'boxquote)
+(require 'rs-info)
+(require 'tex-site)
+(require 'tramp)
+(require 'gist)
+(require 'web-mode)
+;;(require 'xslt-process)
+(require 'ls-lisp)
+(require 'cmd-mode)
+(require 'puppet-mode)
+(require 'blog)
+(require 'erc)
+(require 'erc-menu)
+(require 'htmlize)
+;;(require 'jdee-config)
+(require 'cl)
+(require 'misc)
+(require 'remember)
+(require 'skeleton-conf)
+(require 'keys-config)
+(require 'html-config)
+(require 'vb-config)
+(require 'xml-config)
+(require 'sql-config)
+;;(require 'mail-config)
+(require 'erc-config)
+(require 'gnus-config)
+;;(require 'css-mode)
+(require 'ari-custom)
+(require 'csharp-config)
+(require 'php-mode)
+(require 'vc-svn)
+(require 'color-theme)
+(require 'ruby-mode)
+(require 'ruby-electric)
+(require 'org)
+(require 'coffee-mode)
+(require 'feature-mode)
+(require 'rcodetools)
+(require 'yasnippet)
+(yas-global-mode t)
+(yas-global-mode)
+(require 'auto-complete)
+(require 'auto-complete-config)
+(require 'auto-complete-yasnippet)
+(require 'haml-mode)
+(require 'rvm)
+(rvm-use-default)
+(require 'ruby-config)
 #+END_SRC
 
-And here we have the first use of use-pacakge!
+** Eclim 
+   eclim lets you use eclipse as in the background for compilation
+   warnings and code completion
 #+BEGIN_SRC elisp
-  (use-package js-comint
+  ;; (require 'eclim)
+  ;; (global-eclim-mode)
+  ;; (require 'eclimd)
+  ;; (require 'ac-emacs-eclim-source)
+  ;; (ac-emacs-eclim-config)
+  ;; ;;(setq eclim-executable "/Applications/eclipse/eclim")
+  ;; (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
+  ;; (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclim")
+  ;; (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclimd")
+#+END_SRC
+
+** Auto-Complete
+   super nifty and awesone code completion package. This is kind of
+   spread around in my configs and will need to be organized better
+#+BEGIN_SRC elisp
+
+(global-auto-complete-mode t)           ;enable global-mode
+(setq ac-auto-start t)                  ;automatically start
+(setq ac-dwim 3)                        ;Do what i mean
+(setq ac-override-local-map nil)        ;don't override local map
+(define-key ac-complete-mode-map "\t" 'ac-expand)
+(define-key ac-complete-mode-map "\r" 'ac-complete)
+(define-key ac-complete-mode-map "\M-n" 'ac-next)
+(define-key ac-complete-mode-map "\M-p" 'ac-previous)
+(set-default 'ac-sources '(ac-source-words-in-buffer ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-files-in-current-dir))
+
+(setq ac-modes
+      (append ac-modes
+              '(eshell-mode
+                                        ;org-mode
+                )))
+                                        ;(add-to-list 'ac-trigger-commands 'org-self-insert-command)
+
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+(add-hook 'yaml-mode-hook
+          (lambda ()
+            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-semantic ac-source-files-in-current-dir ac-source-words-in-buffer ac-source-words-in-same-mode-buffers ))))
+(add-hook 'js2-mode-hook
+          (lambda ()
+            (add-to-list 'ac-sources '(ac-source-files-in-current-dir ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables)(auto-complete-mode))))
+(setq ac-modes
+      (append ac-modes
+              '(sql-mode
+                sqlplus-mode
+                js2-mode
+                coffee-mode
+                JavaSript-IDE-mode
+                text-mode
+                css-mode
+                web-mode
+                perl-mode
+                ruby-mode
+                scala-mode
+                java-mode
+                yaml-mode
+                )))
+
+#+END_SRC
+
+** Color-Theme
+   Color Theme really isn't needed any more with the built in theming
+   but I still use it because I loves me some zenburn
+#+BEGIN_SRC elisp
+  (use-package color-theme
     :ensure t
     :init
-    (setq inferior-js-program-command "node")
-    :bind
-    (("\C-x\C-e" . js-send-last-sexp)
-     ("\C-\M-x"  . js-send-last-sexp-and-go)
-     ("\C-cb"    . js-send-buffer)
-     ("\C-c\C-b" . js-send-buffer-and-go)
-     ("\C-cl"    . js-load-file-and-go))
-    )
+    (color-theme-initialize)
+    (color-theme-zenburn))
 #+END_SRC
 
-
-
-tell the world we are providing something useful
+** Auto-Modes
+   associate some fiels wit the right modes
 #+BEGIN_SRC elisp
-(provide 'emacs-config-new)
+(add-to-list 'auto-mode-alist
+             (cons
+              (concat "\\." (regexp-opt '("xml" "xsd" "svg" "rss" "rng" "build" "config") t) "\\'" )'nxml-mode))
+
+;;
+;; What files to invoke the new html-mode for?
+(add-to-list 'auto-mode-alist '("\\.inc\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[sj]?html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.t\\'" . perl-mode))
+(add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+;;
+
+
+(add-hook 'html-mode-hook 'abbrev-mode)
+(add-hook 'web-mode-hook 'abbrev-mode)
+
 #+END_SRC
 
+** Dash at point
+   I use dash for doc looks up and this alows me to call it from emacs
+   with =C-c d=
+#+BEGIN_SRC elisp
+(autoload 'dash-at-point "dash-at-point"
+  "Search the word at point with Dash." t nil)
+#+END_SRC
+
+** Markdown Mode
+#+BEGIN_SRC elisp
+(autoload 'markdown-mode' "markdown-mode" "Major Mode for editing Markdown" t)
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+#+END_SRC
+
+** Ruby stuff that should be in another file actually.
+#+BEGIN_SRC elisp
+   (autoload 'ruby-mode "ruby-mode"
+     "Mode for editing ruby source files" t)
+   (setq auto-mode-alist
+         (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
+   (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
+                     interpreter-mode-alist))
+   (autoload 'run-ruby "inf-ruby"
+     "Run an inferior Ruby process")
+   (autoload 'inf-ruby-keys "inf-ruby"
+     "Set local key defs for inf-ruby in ruby-mode")
+   (add-hook 'ruby-mode-hook
+         '(lambda ()
+            (inf-ruby-keys)
+   ))
+(load-library "rdebug")
+(setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+(autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
+(load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
+(setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+(autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
+(load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
+(setq rct-debug nil)
+
+#+END_SRC
+** Dired-X
+   better dir listings
+#+BEGIN_SRC elisp
+(require 'dired-x)
+(setq dired-omit-files
+      (rx(or(seq bol(? ".") "#")
+            (seq bol"."(not(any".")))
+            (seq "~" eol)
+            (seq bol "CVS" eol)
+            (seq bol "svn" eol))))
+
+(setq dired-omit-extensions
+      (append dired-latex-unclean-extensions
+              dired-bibtex-unclean-extensions
+              dired-texinfo-unclean-extensions))
 
 
-#+DESCRIPTION: Literate source for my Emacs configuration
-#+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
-#+PROPERTY: header-args:ruby :tangle no 
-#+PROPERTY: header-args:shell :tangle no 
-#+OPTIONS:     num:nil toc:t todo:nil tasks:nil tags:nil
-#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
-#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+(add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
+
+#+END_SRC
+** Disabled For now but could be back anytime soon!
+***   Multiple cursors 
+    [[https://github.com/magnars/multiple-cursors.el][=mulitple-cursors=]] is a cool tool that can can be used for
+    quick and easy refactoring.  However I usually get into trouble
+    whe I try to use it
+    #+BEGIN_SRC elisp
+      ;;(require 'multiple-cursors)
+    #+END_SRC
+*** Kill whitespace and in buffers
+    Personally I like this as it cleans up files. However in shared
+    codebases where others aren't as tidy it can lead to some annoying
+    pull requests.
+
+    #+BEGIN_SRC elisp
+      ;;(require 'whitespace)
+      ;;(autoload 'nuke-trailing-whitespace "whitespace" nil t)
+      ;;(add-hook 'write-file-hooks 'nuke-trailing-whitespace)
+
+      ;;(require 'start-opt)
+      ;; (defadvice whitespace-cleanup (around whitespace-cleanup-indent-tab
+      ;;                                       activate)
+      ;;   "Fix whitespace-cleanup indent-tabs-mode bug"
+      ;;   (let ((whitespace-indent-tabs-mode indent-tabs-mode)
+      ;;         (whitespace-tab-width tab-width))
+      ;;     ad-do-it))
+      ;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
+
+    #+END_SRC
+*** HideShowvis..
+    I'm not sure I remember it but I think this was for code folding
+    in buffers
+#+BEGIN_SRC elisp
+;;(autoload 'hideshowvis-enable "hideshowvis" "Highlight foldable regions")
+
+;; (dolist (hook (list 'emacs-lisp-mode-hook
+;;                     'c++-mode-hook
+;;                     'ruby-mode-hook
+;;                     'c-sharp-mode-hook
+;;                     'java-mode-hook
+;;                     ))
+;;   (add-hook hook 'hideshowvis-enable))
+
+#+END_SRC
+** Tell the world we are providing something useful
+    #+BEGIN_SRC elisp
+      (provide 'emacs-config-new)
+    #+END_SRC
+
+
+
+    #+DESCRIPTION: Literate source for my Emacs configuration
+    #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
+    #+PROPERTY: header-args:ruby :tangle no 
+    #+PROPERTY: header-args:shell :tangle no 
+    #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
+    #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+    #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
 
 
