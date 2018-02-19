@@ -1,0 +1,21 @@
+(message "loading load-path-config")
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
+(add-to-list 'load-path (expand-file-name "~/emacs/site/color-theme/themes"))
+;;(add-to-list 'load-path (expand-file-name "~/emacs/site/coffee-mode"))
+(add-to-list 'load-path (expand-file-name "~/emacs/site/lisp"))
+;;(add-to-list 'load-path (expand-file-name "~/emacs/site/feature-mode"))
+;;(add-to-list 'load-path (expand-file-name "~/emacs/site/css-mode"))
+(ad-to-list 'load-path (expand-file-name "~/emacs/site/blog"))
+;;(add-to-list 'load-path (expand-file-name "~/emacs/site/html"))
+;;(add-to-list 'load-path (expand-file-name "~/emacs/site/dotnet"))
+;;(add-to-list 'load-path (expand-file-name "~/emacs/site/java-tools"))
+;;(add-to-list 'load-path (expand-file-name "~/emacs/site/php-mode"))
+;;(add-to-list 'load-path (expand-file-name "~/emacs/site/ruby"))
+;;(add-to-list 'load-path (expand-file-name "~/emacs/site/yaml-mode"))
+
+(load "ps-print")
+;;(load-file "~/emacs/site/cedet/common/cedet.elc")
+
+(autoload 'python-mode "python-mode" "Python editing mode." t)
+
+(provide 'load-path-config)

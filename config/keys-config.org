@@ -1,0 +1,83 @@
+#+TITLE: Keyboard Commands
+#+AUTHOR: Ari Turetzky
+#+EMAIL: ari@turetzky.org
+#+TAGS: emacs config
+#+PROPERTY: header-args:sh  :results silent :tangle no
+* Keyboard shortcuts
+** Navigation commands
+#+BEGIN_SRC elisp
+ (global-set-key [home] 'beginning-of-line)
+ (global-set-key [end]  'end-of-line)
+ (global-set-key [C-home] 'beginning-of-buffer)
+ (global-set-key [C-end] 'end-of-buffer)
+
+ (global-set-key [pause] 'erase-buffer)
+ (global-set-key [f4] 'goto-line )
+#+END_SRC
+** Add to my blog
+   this just lets me create a new blog entry. this ties into the
+ blogging mode I wrote that uses my blosxom blog
+#+BEGIN_SRC elisp
+ (global-set-key [f12] 'write-blog)
+ (global-set-key [S-f12] 'write-blog-daily)
+#+END_SRC
+** Compile and Debug
+These keys are a hold over from my very early beginnings with visual
+ studio and debugging
+#+BEGIN_SRC elisp
+ (global-set-key [f5] 'compile)
+ (define-key comint-mode-map [f5]   'gud-cont)
+ (define-key comint-mode-map [f9]   'gud-break)
+ (define-key comint-mode-map [f10]  'gud-next)
+#+END_SRC
+** Occur
+#+BEGIN_SRC elisp
+ (global-set-key (kbd "C-c o") 'occur)
+#+END_SRC
+** Text Embiggening/Debiggening
+#+BEGIN_SRC 
+ (global-set-key (kbd "M-+") 'text-scale-adjust)
+ (global-set-key (kbd "M--") 'text-scale-adjust)
+ (global-set-key (kbd "M-0") 'text-scale-adjust)
+#+END_SRC
+** Multiple Cursors
+   I don't use mulitple cursors because I usually get into 
+trouble when I do. but these keys are for that
+#+BEGIN_SRC elisp
+ (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+ (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+ (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+ (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
+#+END_SRC
+** Fade in .... Fade out
+   change the transparecy
+#+BEGIN_SRC elisp
+ (global-set-key (kbd "C-9") '(lambda()(interactive)(djcb-opacity-modify)))
+ (global-set-key (kbd "C-8") '(lambda()(interactive)(djcb-opacity-modify t)))
+ (global-set-key (kbd "C-0") '(lambda()(interactive)
+                                (modify-frame-parameters nil `((alpha . 100)))))
+#+END_SRC
+** Change window sizes
+#+BEGIN_SRC elisp
+ ;; S-C-left and right will horizontally resize windows
+ ;; S-C-up and down will vertically resize them
+ (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+ (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+ (global-set-key (kbd "S-C-<down>") 'shrink-window)
+ (global-set-key (kbd "S-C-<up>") 'enlarge-window)
+#+END_SRC
+** Dash at point
+   open up dash and look up what's at the point
+#+BEGIN_SRC elisp
+ (global-set-key "\C-cd" `dash-at-point)
+
+ (provide 'keys-config)
+#+END_SRC
+
+     #+DESCRIPTION: Literate source for my Emacs configuration
+     #+PROPERTY: header-args:elisp :tangle ~/emacs/config/keys-config-new.el
+     #+PROPERTY: header-args:ruby :tangle no
+     #+PROPERTY: header-args:shell :tangle no
+     #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
+     #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+     #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js

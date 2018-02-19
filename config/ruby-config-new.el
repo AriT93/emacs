@@ -1,30 +1,13 @@
-#+TITLE: Ruby Configuration options
-#+AUTHOR: Ari Turetzky
-#+EMAIL: ari@turetzky.org
-#+TAGS: emacs config ruby
-#+PROPERTY: header-args:sh  :results silent :tangle no
-
-* Ruby Mode!
-first a little housekeeping for the linter
-#+BEGIN_SRC elisp
 ;;; ruby-config --- Summary
 ;;; Commentary:
 ;;; Code:
-#+END_SRC
 
-** Set up some autoloads and associate files
-#+BEGIN_SRC elisp
 (autoload 'ruby-mode "ruby-mode" "Ruby editing mode." t)
 (setq auto-mode-alist (cons '("\\.rb$" . ruby-mode)  auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.rhtml$" . web-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.erb$" . web-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.html.erb$" . web-mode) auto-mode-alist))
 
-#+END_SRC
-** Yasnippet integeraton
-   Apparently this is also where I manage it's  configuration
-*** TODO Migrate yasnippet to =emacs-config.org=
-#+BEGIN_SRC elisp
 ;;(yas-load-directory "~/emacs/site/yasnippet/snippets/")
 ;; (setq yas/snippet-dirs "~/emacs/site/yasnippet-0.7.0/snippets")
 ;; (yas/load-directory yas/snippet-dirs)
@@ -33,52 +16,22 @@ first a little housekeeping for the linter
 (yas/global-mode)
 (global-flycheck-mode)
 ;;(require 'xslt-process)
-#+END_SRC
-** Old-school expansion and completion
-#+BEGIN_SRC
-(defun try-complete-abbrev (old)
-  (if (expand-abbrev) t nil))
 
-(setq hippie-expand-try-functions-list
-      '(try-complete-abbrev
-        try-complete-file-name
-        try-expand-dabbrev))
-#+END_SRC
-** Yaml
-*** TODO  Move yaml to =emacs-config.org=
-    #+BEGIN_SRC elisp
+;; yaml
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
-   ;; yaml
- (require 'yaml-mode)
- (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
- (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
-    #+END_SRC
-** Ruby Debugging
-   I've never really used it but might be fun to try!
-#+BEGIN_SRC
-
-;; rdebug
-(require 'rdebug)
-(setq rdebug-short-key-mode t)
-#+END_SRC
-** Seeing Is Believing
-   This is a wonderful pacakge.  [[https://github.com/JoshCheek/seeing_is_believing][Seeing is Believing]] uses xmpfilter to
-evaluate ruby code and add comment with the output so you can see what
-is going on while you write code.
-#+BEGIN_SRC elisp
-  (use-package seeing-is-believing
-    :ensure t
-    :init
-    (setq seeing-is-believing-alignment 'chunk)
-    (setq seeing-is-believing-max-length 150)
-    (setq seeing-is-believing-max-results 15)
-    (add-hook 'ruby-mode-hook 'seeing-is-believing)
-    :bind (:map ruby-mode-map
-    ("\C-c\C-c" . seeing-is-believing-run-as-xmpfilter))
-  )
-#+END_SRC
-** Ruby Mode Hook
-#+BEGIN_SRC elisp
+(use-package seeing-is-believing
+  :ensure t
+  :init
+  (setq seeing-is-believing-alignment 'chunk)
+  (setq seeing-is-believing-max-length 150)
+  (setq seeing-is-believing-max-results 15)
+  (add-hook 'ruby-mode-hook 'seeing-is-believing)
+  :bind (:map ruby-mode-map
+  ("\C-c\C-c" . seeing-is-believing-run-as-xmpfilter))
+)
 
 ;; ruby-mode-hook
 (add-hook 'ruby-mode-hook
@@ -106,21 +59,9 @@ is going on while you write code.
               (local-set-key (kbd "<return>") 'newline-and-indent)
 ;;              (add-to-list 'ac-sources 'ac-source-dictionary t)
               ))
-#+END_SRC
-** File associations
-#+BEGIN_SRC elisp
 
 (add-to-list 'auto-mode-alist '("\\.html?" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\.erb" . web-mode))
-#+END_SRC
-** Rinari
-#+BEGIN_SRC
-
-(require 'rinari)
-(setq rinari-tags-file-name "TAGS")
-#+END_SRC
-** Set up some autocomplete goodnes
-   #+BEGIN_SRC elisp
 
 (add-hook 'java-mode-hook
           (lambda()
@@ -131,12 +72,6 @@ is going on while you write code.
                (add-to-list 'ac-sources 'ac-source-rcodetools)
                (delete 'ac-sources "ac-source-emacs-eclim")
 ))
-
-   #+END_SRC
-** Key-bindings some still used and some more ac config
-damn this is a mess
-#+BEGIN_SRC elisp
-
 
 (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
 
@@ -150,9 +85,7 @@ damn this is a mess
 ;; (define-key ac-complete-mode-map "\r" nil)
 (require 'unit-test)
 (require 'autotest)
-#+END_SRC
-** hideshow for folding
-#+BEGIN_SRC elisp
+
 (add-hook 'ruby-mode-hook
   (lambda () (hs-minor-mode)))
 
@@ -166,16 +99,6 @@ damn this is a mess
 
 (global-set-key (kbd "C-c h") 'hs-hide-block)
 (global-set-key (kbd "C-c s") 'hs-show-block)
-#+END_SRC
-** Provide the new- config
-#+BEGIN_SRC elisp
+
 (provide 'ruby-config-new)
 ;;; ruby-config-new ends here
-#+END_SRC
-    #+DESCRIPTION: Literate source for my Ruby configuration
-    #+PROPERTY: header-args:elisp :tangle ~/emacs/config/ruby-config-new.el
-    #+PROPERTY: header-args:ruby :tangle no
-    #+PROPERTY: header-args:shell :tangle no
-    #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
-    #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
-    #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
