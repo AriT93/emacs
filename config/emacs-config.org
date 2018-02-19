@@ -332,7 +332,7 @@ p
   (yas-global-mode)
   (require 'auto-complete)
   (require 'auto-complete-config)
-  (ac-config-default)
+;;  (ac-config-default)
   ;;    (require 'auto-complete-yasnippet)
   (use-package haml-mode
     :ensure t)
@@ -348,16 +348,16 @@ p
    eclim lets you use eclipse as in the background for compilation
    warnings and code completion
 #+BEGIN_SRC elisp
-  (require 'eclim)
-;;  (global-eclim-mode)
-  (require 'eclimd)
-;;  (use-package ac-emacs-eclim
-;;    :ensure t)
+    (require 'eclim)
+  ;;  (global-eclim-mode)
+    (require 'eclimd)
+      (use-package ac-emacs-eclim
+        :ensure t)
     (require 'ac-emacs-eclim)
-;;  (ac-emacs-eclim-config)
-;;  (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
-  (setq eclim-executable "~/.p2/pool/plugins/org.eclim_2.7.2/bin/eclim")
-  (setq eclimd-executable "~/.p2/pool/plugins/org.eclim_2.7.2/bin/eclimd")
+  ;;(ac-emacs-eclim-config)
+    ;;  (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
+    (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclim")
+    (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclimd")
 #+END_SRC
 
 ** Projectile
