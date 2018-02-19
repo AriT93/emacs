@@ -66,16 +66,17 @@ first a little housekeeping for the linter
 evaluate ruby code and add comment with the output so you can see what
 is going on while you write code.
 #+BEGIN_SRC elisp
-  (use-package seeing-is-believing
-    :ensure t
-    :init
-    (setq seeing-is-believing-alignment 'chunk)
-    (setq seeing-is-believing-max-length 150)
-    (setq seeing-is-believing-max-results 15)
-    (add-hook 'ruby-mode-hook 'seeing-is-believing)
-    :bind (:map ruby-mode-map
-    ("\C-c\C-c" . seeing-is-believing-run-as-xmpfilter))
-  )
+    (use-package seeing-is-believing
+      :ensure t
+      :init
+      (setq seeing-is-believing-alignment 'chunk)
+      (setq seeing-is-believing-max-length 150)
+      (setq seeing-is-believing-max-results 15)
+      :bind (:map ruby-mode-map
+      ("\C-c\C-c" . seeing-is-believing-run-as-xmpfilter))
+      :hook
+      (ruby-mode . seeing-is-believing)
+    )
 #+END_SRC
 ** Ruby Mode Hook
 #+BEGIN_SRC elisp
@@ -148,24 +149,26 @@ damn this is a mess
 ;; (setq ac-auto-start 3)
 ;; (define-key ac-complete-mode-map "\t" 'ac-complete)
 ;; (define-key ac-complete-mode-map "\r" nil)
-(require 'unit-test)
-(require 'autotest)
+;;(require 'unit-test)
+(use-package autotest
+  :ensure t
+)
 #+END_SRC
 ** hideshow for folding
 #+BEGIN_SRC elisp
-(add-hook 'ruby-mode-hook
-  (lambda () (hs-minor-mode)))
+  (add-hook 'ruby-mode-hook
+    (lambda () (hs-minor-mode)))
 
-(eval-after-load "hideshow"
-  '(add-to-list 'hs-special-modes-alist
-    `(ruby-mode
-      ,(rx (or "def" "class" "module" "do" "{" "[")) ; Block start
-      ,(rx (or "}" "]" "end"))                       ; Block end
-      ,(rx (or "#" "=begin"))                        ; Comment start
-      ruby-forward-sexp nil)))
+  (eval-after-load "hideshow"
+    '(add-to-list 'hs-special-modes-alist
+      `(ruby-mode
+        ,(rx (or "def" "class" "module" "do" "{" "[")) ; Block start
+        ,(rx (or "}" "]" "end"))                       ; Block end
+        ,(rx (or "#" "=begin"))                        ; Comment start
+        ruby-forward-sexp nil)))
 
-(global-set-key (kbd "C-c h") 'hs-hide-block)
-(global-set-key (kbd "C-c s") 'hs-show-block)
+  (global-set-key (kbd "C-c h") 'hs-hide-block)
+  (global-set-key (kbd "C-c s") 'hs-show-block)
 #+END_SRC
 ** Provide the new- config
 #+BEGIN_SRC elisp

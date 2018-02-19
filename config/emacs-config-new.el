@@ -54,7 +54,7 @@
 
 (require 'use-package)
 
-(require 'load-path-config)
+(require 'load-path-config-new)
 
 (use-package js-comint
   :ensure t
@@ -185,32 +185,37 @@
 (setq org-confirm-babel-evaluate nil)
 
 ;;(require 'javascript-mode)
-(require 'js2-mode)
+;;(require 'js2-mode)
 (require 'highline)
 (require 'dired-details)
 (dired-details-install)
 (require 'uniquify)
-(require 'sawzall)
-(require 'boxquote)
-(require 'rs-info)
+;;(require 'sawzall)
+(use-package boxquote
+  :ensure t)
+;;(require 'rs-info)
 (require 'tex-site)
 (require 'tramp)
-(require 'gist)
-(require 'web-mode)
+(use-package gist
+  :ensure t)
+(use-package web-mode
+  :ensure t)
 ;;(require 'xslt-process)
 (require 'ls-lisp)
-(require 'cmd-mode)
-(require 'puppet-mode)
+;;(require 'cmd-mode)
+(use-package puppet-mode
+  :ensure t)
 (require 'blog)
-(require 'erc)
-(require 'erc-menu)
-(require 'htmlize)
+;;(require 'erc)
+;;(require 'erc-menu)
+(use-package htmlize
+  :ensure t)
 ;;(require 'jdee-config)
 (require 'cl)
-(require 'misc)
-(require 'remember)
+;;(require 'misc)
+;;  (require 'remember)
 ;;(require 'skeleton-conf)
-(require 'keys-config)
+(require 'keys-config-new)
 ;;(require 'html-config)
 ;;(require 'vb-config)
 ;;(require 'xml-config)
@@ -219,25 +224,47 @@
 ;;(require 'erc-config)
 ;;(require 'gnus-config)
 ;;(require 'css-mode)
-(require 'ari-custom)
+(require 'ari-custom-new)
 ;;(require 'csharp-config)
-(require 'php-mode)
-(require 'vc-svn)
-(require 'color-theme)
+;;(require 'php-mode)
+;;(require 'vc-svn)
+;; (use-package  color-theme
+;;   :ensure t
+;;   :init
+;;    (setq color-theme-directory "~/emacs/site/color-theme/themes"))
+(use-package zenburn-theme
+  :ensure t
+  :init
+  (load-theme 'zenburn t))
+(use-package exec-path-from-shell
+  :ensure t
+  :init
+  (when (memq window-system '(mac nx x))
+    (exec-path-from-shell-initialize)))
+(use-package inf-ruby
+  :ensure t)
 (require 'ruby-mode)
-(require 'ruby-electric)
+(use-package  ruby-electric
+  :ensure t)
 (require 'org)
-(require 'coffee-mode)
-(require 'feature-mode)
+(use-package coffee-mode
+  :ensure t)
+(use-package feature-mode
+  :ensure t)
 (require 'rcodetools)
-(require 'yasnippet)
+(use-package yasnippet
+  :ensure t)
 (yas-global-mode t)
 (yas-global-mode)
 (require 'auto-complete)
 (require 'auto-complete-config)
-(require 'auto-complete-yasnippet)
-(require 'haml-mode)
-(require 'rvm)
+;;      (require 'auto-complete-yasnippet)
+(use-package haml-mode
+  :ensure t)
+(use-package rvm
+  :ensure t
+  :hook
+  (ruby-mode . rvm-activate-corresponding-ruby))
 (rvm-use-default)
 (require 'ruby-config-new)
 
@@ -301,11 +328,11 @@
                 yaml-mode
                 )))
 
-(use-package color-theme
-  :ensure t
-  :init
-  (color-theme-initialize)
-  (color-theme-zenburn))
+;;  (use-package color-theme
+;;    :ensure t
+;;    :init
+;;    (color-theme-initialize)
+;;    (color-theme-zenburn))
 
 (add-to-list 'auto-mode-alist
              (cons
@@ -339,14 +366,14 @@
          (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
    (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
                      interpreter-mode-alist))
-   (autoload 'run-ruby "inf-ruby"
-     "Run an inferior Ruby process")
-   (autoload 'inf-ruby-keys "inf-ruby"
-     "Set local key defs for inf-ruby in ruby-mode")
-   (add-hook 'ruby-mode-hook
-         '(lambda ()
-            (inf-ruby-keys)
-   ))
+;;   (autoload 'run-ruby "inf-ruby"
+;;     "Run an inferior Ruby process")
+;;   (autoload 'inf-ruby-keys "inf-ruby"
+;;     "Set local key defs for inf-ruby in ruby-mode")
+;;   (add-hook 'ruby-mode-hook
+;;         '(lambda ()
+;;            (inf-ruby-keys)
+;;   ))
 (load-library "rdebug")
 (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
 (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
@@ -411,5 +438,11 @@
 (setq sql-mysql-program "c:/cygwin/usr/local/bin/mysql")
 (setq sql-pop-to-buffer-after-send-region nil)
 (setq sql-product (quote ms))
+
+;;(require 'semantic-ia)
+;;(if window-system
+;;    (progn
+;;      (setq semantic-load-turn-everything-on t)
+;;      (semantic-load-enable-gaudy-code-helpers)))
 
 (provide 'emacs-config-new)

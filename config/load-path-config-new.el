@@ -5,17 +5,19 @@
 (add-to-list 'load-path (expand-file-name "~/emacs/site/lisp"))
 ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/feature-mode"))
 ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/css-mode"))
-(ad-to-list 'load-path (expand-file-name "~/emacs/site/blog"))
+(add-to-list 'load-path (expand-file-name "~/emacs/site/blog"))
 ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/html"))
 ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/dotnet"))
 ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/java-tools"))
 ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/php-mode"))
 ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/ruby"))
 ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/yaml-mode"))
+(add-to-list 'load-path (expand-file-name "~/emacs/site/rcodeools"))
+(add-to-list 'load-path (expand-file-name "~/emacs/site/rdebug"))
 
 (load "ps-print")
 ;;(load-file "~/emacs/site/cedet/common/cedet.elc")
 
 (autoload 'python-mode "python-mode" "Python editing mode." t)
 
-(provide 'load-path-config)
+(provide 'load-path-config-new)
