@@ -28,9 +28,10 @@
   (setq seeing-is-believing-alignment 'chunk)
   (setq seeing-is-believing-max-length 150)
   (setq seeing-is-believing-max-results 15)
-  (add-hook 'ruby-mode-hook 'seeing-is-believing)
   :bind (:map ruby-mode-map
   ("\C-c\C-c" . seeing-is-believing-run-as-xmpfilter))
+  :hook
+  (ruby-mode . seeing-is-believing)
 )
 
 ;; ruby-mode-hook
@@ -83,8 +84,10 @@
 ;; (setq ac-auto-start 3)
 ;; (define-key ac-complete-mode-map "\t" 'ac-complete)
 ;; (define-key ac-complete-mode-map "\r" nil)
-(require 'unit-test)
-(require 'autotest)
+;;(require 'unit-test)
+(use-package autotest
+  :ensure t
+)
 
 (add-hook 'ruby-mode-hook
   (lambda () (hs-minor-mode)))

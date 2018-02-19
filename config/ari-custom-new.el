@@ -33,5 +33,5 @@ decrease the transparency, otherwise increase it in 10%-steps"
     (when (and (>= newalpha frame-alpha-lower-limit) (<= newalpha 100))
       (modify-frame-parameters nil (list (cons 'alpha newalpha))))))
 
-(provide 'ari-custom)
+(provide 'ari-custom-new)
 ;;; ari-custom.el ends here

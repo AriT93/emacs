@@ -63,7 +63,7 @@
 
 ** Aaaand we're out
    #+BEGIN_SRC elisp
-     (provide 'ari-custom)
+     (provide 'ari-custom-new)
      ;;; ari-custom.el ends here
    #+END_SRC
    #+DESCRIPTION: Literate source for my Emacs configuration

@@ -71,7 +71,7 @@ trouble when I do. but these keys are for that
 #+BEGIN_SRC elisp
  (global-set-key "\C-cd" `dash-at-point)
 
- (provide 'keys-config)
+ (provide 'keys-config-new)
 #+END_SRC
 
      #+DESCRIPTION: Literate source for my Emacs configuration
