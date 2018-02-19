@@ -72,13 +72,15 @@
 
 (add-hook 'java-mode-hook
           (lambda()
-            (add-to-list 'ac-sources '(ac-emacs-eclim-source ac-source-eclim ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables)))
-)
-   (add-hook 'ruby-mode-hook
-             (lambda ()
-               (add-to-list 'ac-sources 'ac-source-rcodetools)
-               (delete 'ac-sources "ac-source-emacs-eclim")
-))
+            (add-to-list 'ac-sources '(ac-emacs-eclim-source ac-source-eclim ac-source-symbols
+                                                             ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables))
+            (ac-emacs-eclim-java-setup))
+          )
+(add-hook 'ruby-mode-hook
+          (lambda ()
+            (add-to-list 'ac-sources 'ac-source-rcodetools)
+            (delete 'ac-sources "ac-source-emacs-eclim")
+            ))
 
 (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
 
