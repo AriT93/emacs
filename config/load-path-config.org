@@ -12,13 +12,15 @@
   (add-to-list 'load-path (expand-file-name "~/emacs/site/lisp"))
   ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/feature-mode"))
   ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/css-mode"))
-  (ad-to-list 'load-path (expand-file-name "~/emacs/site/blog"))
+  (add-to-list 'load-path (expand-file-name "~/emacs/site/blog"))
   ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/html"))
   ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/dotnet"))
   ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/java-tools"))
   ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/php-mode"))
   ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/ruby"))
   ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/yaml-mode"))
+  (add-to-list 'load-path (expand-file-name "~/emacs/site/rcodeools"))
+  (add-to-list 'load-path (expand-file-name "~/emacs/site/rdebug"))
 #+END_SRC
 * Why are these here?  
   I don't know I can move them later(never...)
@@ -28,7 +30,7 @@
 
 (autoload 'python-mode "python-mode" "Python editing mode." t)
 
-(provide 'load-path-config)
+(provide 'load-path-config-new)
 
 #+END_SRC
     #+DESCRIPTION: Literate source for my Emacs configuration

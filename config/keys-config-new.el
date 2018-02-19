@@ -35,4 +35,4 @@
 
 (global-set-key "\C-cd" `dash-at-point)
 
-(provide 'keys-config)
+(provide 'keys-config-new)
