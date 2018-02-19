@@ -35,19 +35,19 @@ These keys are a hold over from my very early beginnings with visual
  (global-set-key (kbd "C-c o") 'occur)
 #+END_SRC
 ** Text Embiggening/Debiggening
-#+BEGIN_SRC 
+#+BEGIN_SRC
  (global-set-key (kbd "M-+") 'text-scale-adjust)
  (global-set-key (kbd "M--") 'text-scale-adjust)
  (global-set-key (kbd "M-0") 'text-scale-adjust)
 #+END_SRC
 ** Multiple Cursors
-   I don't use mulitple cursors because I usually get into 
+   I don't use mulitple cursors because I usually get into
 trouble when I do. but these keys are for that
 #+BEGIN_SRC elisp
- (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
- (global-set-key (kbd "C->") 'mc/mark-next-like-this)
- (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
- (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
+;; (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+;; (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+;; (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+;; (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
 #+END_SRC
 ** Fade in .... Fade out
    change the transparecy

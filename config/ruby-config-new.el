@@ -22,6 +22,12 @@
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
+(use-package ruby-tools
+  :ensure t
+  :hook
+  (ruby-mode . ruby-tools-mode)
+  :diminish ruby-tools-mode)
+
 (use-package seeing-is-believing
   :ensure t
   :init
