@@ -184,102 +184,102 @@
 (setq org-confirm-babel-evaluate nil)
 
 ;;(require 'javascript-mode)
-;;(require 'js2-mode)
-(use-package ag
-  :ensure t)
-(require 'highline)
-(require 'dired-details)
-(dired-details-install)
-(require 'uniquify)
-;;(require 'sawzall)
-(use-package boxquote
-  :ensure t)
-;;(require 'rs-info)
-(require 'tex-site)
-(require 'tramp)
-(use-package gist
-  :ensure t)
-(use-package web-mode
-  :ensure t)
-;;(require 'xslt-process)
-(require 'ls-lisp)
-;;(require 'cmd-mode)
-(use-package puppet-mode
-  :ensure t)
-(require 'blog)
-;;(require 'erc)
-;;(require 'erc-menu)
-(use-package htmlize
-  :ensure t)
-;;(require 'jdee-config)
-(require 'cl)
-;;(require 'misc)
-;;  (require 'remember)
-;;(require 'skeleton-conf)
-(require 'keys-config-new)
-;;(require 'html-config)
-;;(require 'vb-config)
-;;(require 'xml-config)
-;;(require 'sql-config)
-;;(require 'mail-config)
-;;(require 'erc-config)
-;;(require 'gnus-config)
-;;(require 'css-mode)
-(require 'ari-custom-new)
-;;(require 'csharp-config)
-;;(require 'php-mode)
-;;(require 'vc-svn)
-;; (use-package  color-theme
-;;   :ensure t
-;;   :init
-;;    (setq color-theme-directory "~/emacs/site/color-theme/themes"))
-(use-package zenburn-theme
-  :ensure t
-  :init
-  (load-theme 'zenburn t))
-(use-package exec-path-from-shell
-  :ensure t
-  :init
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
-  (setq exec-path-from-shell-check-startup-files nil))
-(use-package inf-ruby
-  :ensure t)
-(require 'ruby-mode)
-(use-package  ruby-electric
-  :ensure t)
-(use-package coffee-mode
-  :ensure t)
-(use-package feature-mode
-  :ensure t)
-(require 'rcodetools)
-(use-package yasnippet
-  :ensure t)
-(yas-global-mode t)
-(yas-global-mode)
-(require 'auto-complete)
-(require 'auto-complete-config)
-(ac-config-default)
-;;    (require 'auto-complete-yasnippet)
-(use-package haml-mode
-  :ensure t)
-(use-package rvm
-  :ensure t
-  :hook
-  (ruby-mode . rvm-activate-corresponding-ruby))
-(rvm-use-default)
-(require 'ruby-config-new)
+  ;;(require 'js2-mode)
+  (use-package ag
+    :ensure t)
+  (require 'highline)
+  (require 'dired-details)
+  (dired-details-install)
+  (require 'uniquify)
+  ;;(require 'sawzall)
+  (use-package boxquote
+    :ensure t)
+  ;;(require 'rs-info)
+  (require 'tex-site)
+  (require 'tramp)
+  (use-package gist
+    :ensure t)
+  (use-package web-mode
+    :ensure t)
+  ;;(require 'xslt-process)
+  (require 'ls-lisp)
+  ;;(require 'cmd-mode)
+  (use-package puppet-mode
+    :ensure t)
+  (require 'blog)
+  ;;(require 'erc)
+  ;;(require 'erc-menu)
+  (use-package htmlize
+    :ensure t)
+  ;;(require 'jdee-config)
+  (require 'cl)
+  ;;(require 'misc)
+  ;;  (require 'remember)
+  ;;(require 'skeleton-conf)
+  (require 'keys-config-new)
+  ;;(require 'html-config)
+  ;;(require 'vb-config)
+  ;;(require 'xml-config)
+  ;;(require 'sql-config)
+  ;;(require 'mail-config)
+  ;;(require 'erc-config)
+  ;;(require 'gnus-config)
+  ;;(require 'css-mode)
+  (require 'ari-custom-new)
+  ;;(require 'csharp-config)
+  ;;(require 'php-mode)
+  ;;(require 'vc-svn)
+  ;; (use-package  color-theme
+  ;;   :ensure t
+  ;;   :init
+  ;;    (setq color-theme-directory "~/emacs/site/color-theme/themes"))
+  (use-package zenburn-theme
+    :ensure t
+    :init
+    (load-theme 'zenburn t))
+  (use-package exec-path-from-shell
+    :ensure t
+    :init
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize))
+    (setq exec-path-from-shell-check-startup-files nil))
+  (use-package inf-ruby
+    :ensure t)
+  (require 'ruby-mode)
+  (use-package  ruby-electric
+    :ensure t)
+  (use-package coffee-mode
+    :ensure t)
+  (use-package feature-mode
+    :ensure t)
+  (require 'rcodetools)
+  (use-package yasnippet
+    :ensure t)
+  (yas-global-mode t)
+  (yas-global-mode)
+  (require 'auto-complete)
+  (require 'auto-complete-config)
+;;  (ac-config-default)
+  ;;    (require 'auto-complete-yasnippet)
+  (use-package haml-mode
+    :ensure t)
+  (use-package rvm
+    :ensure t
+    :hook
+    (ruby-mode . rvm-activate-corresponding-ruby))
+  (rvm-use-default)
+  (require 'ruby-config-new)
 
 (require 'eclim)
 ;;  (global-eclim-mode)
   (require 'eclimd)
-;;  (use-package ac-emacs-eclim
-;;    :ensure t)
-;;    (require 'ac-emacs-eclim)
-;;  (ac-emacs-eclim-config)
-;;  (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
-  (setq eclim-executable "~/.p2/pool/plugins/org.eclim_2.7.2/bin/eclim")
-  (setq eclimd-executable "~/.p2/pool/plugins/org.eclim_2.7.2/bin/eclimd")
+    (use-package ac-emacs-eclim
+      :ensure t)
+  (require 'ac-emacs-eclim)
+;;(ac-emacs-eclim-config)
+  ;;  (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
+  (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclim")
+  (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclimd")
 
 (use-package projectile
   :ensure t

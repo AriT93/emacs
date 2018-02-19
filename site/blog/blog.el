@@ -113,12 +113,12 @@
   :group 'blog)
 
 (defcustom blog-mode-write-blog-hook nil
-  "Hook run after a blog has been written"
+  "Hook run after a blog has been written."
   :type 'hook
   :group 'blog)
 
 (defun blog-mode-hook-identify()
-  "show that the mode has run"
+  "show that the mode has run."
   (make-local-variable 'blog-title))
 
 (add-hook 'blog-mode-hook 'blog-mode-hook-identify)
@@ -150,13 +150,13 @@ Optional argument BLOG-WORKOUT workout for the day."
   (message "press C-c C-c when done editing %s" blog-name ))
 
 (defun write-blog-daily(blog-name blog-weight blog-workout)
-  "Write a daily blog this will have the section with weight and workout"
+  "Write a daily blog this will have the section with weight and workout."
   (interactive "sTitle: \nsWeight: \nsWorkout: ")
   (write-blog blog-name blog-weight blog-workout))
 
 (defun wrap-blog-mmm-mode()
   "Wrap the blog entry in <blog></blog> tags so mmm-mode will font-lock the
-entry "
+entry."
   (interactive)
   (save-excursion
   (goto-char (point-min))
