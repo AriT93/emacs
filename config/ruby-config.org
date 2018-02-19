@@ -53,6 +53,16 @@ first a little housekeeping for the linter
  (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
  (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
     #+END_SRC
+** Ruby Tools
+   convenience stuff, mostly string to symbol, single to double qouts
+   and such
+#+BEGIN_SRC elisp
+  (use-package ruby-tools
+    :ensure t
+    :hook
+    (ruby-mode . ruby-tools-mode)
+    :diminish ruby-tools-mode)
+#+END_SRC
 ** Ruby Debugging
    I've never really used it but might be fun to try!
 #+BEGIN_SRC
@@ -109,6 +119,7 @@ is going on while you write code.
               ))
 #+END_SRC
 ** File associations
+
 #+BEGIN_SRC elisp
 
 (add-to-list 'auto-mode-alist '("\\.html?" . web-mode))

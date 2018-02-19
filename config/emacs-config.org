@@ -59,7 +59,7 @@
                    ("Other" "" TeX-run-command t t))))
 
    #+END_SRC
-
+p
 ** Get some package goodness
    #+BEGIN_SRC elisp
      (require 'package)
@@ -214,43 +214,42 @@
    currently here but will need to move to it's own config file
    eventually to make it more manageable
 #+BEGIN_SRC elisp
-(require 'org)
-(require 'ox-twbs)
-(require 'use-package)
-(require 'ox-twbs)
-(setq org-ellipsis " ⤵")
-(setq org-src-fontify-natively t)
-(setq org-src-tab-acts-natively t)
-(setq org-src-window-setup 'current-window)
+  (require 'org)
+  (require 'ox-twbs)
+  (require 'use-package)
+  (require 'ox-twbs)
+  (setq org-ellipsis " ⤵")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-src-window-setup 'current-window)
 
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-(setq org-startup-with-inline-images t)
-(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+  (require 'org-bullets)
+  (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+  (setq org-startup-with-inline-images t)
+  (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+  ;;***********remember + Org config*************
+  (setq org-remember-templates
+        '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
+          ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
+  (setq remember-annotation-functions '(org-remember-annotation))
+  (setq remember-handler-functions '(org-remember-handler))
+  (add-hook 'remember-mode-hook 'org-remember-apply-template)
+  (global-set-key (kbd "C-c r") 'remember)
 
-;;***********remember + Org config*************
-(setq org-remember-templates
-      '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
-        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
-(setq remember-annotation-functions '(org-remember-annotation))
-(setq remember-handler-functions '(org-remember-handler))
-(add-hook 'remember-mode-hook 'org-remember-apply-template)
-(global-set-key (kbd "C-c r") 'remember)
-
-(setq org-todo-keywords '((type "TODO" "STARTED" "WAITING" "DONE")))
-(setq org-todo-keywords-1 '((type "TODO" "STARTED" "WAITING" "DONE")))
-(setq org-agenda-include-diary t)
-(setq org-agenda-include-all-todo t)
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((shell  . t)
-   (js  . t)
-   (emacs-lisp . t)
-   (python . t)
-   (ruby . t)
-   (css . t )
-   (java . t)))
-(setq org-confirm-babel-evaluate nil)
+  (setq org-todo-keywords '((type "TODO" "STARTED" "WAITING" "DONE")))
+  (setq org-todo-keywords-1 '((type "TODO" "STARTED" "WAITING" "DONE")))
+  (setq org-agenda-include-diary t)
+  (setq org-agenda-include-all-todo t)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((shell  . t)
+     (js  . t)
+     (emacs-lisp . t)
+     (python . t)
+     (ruby . t)
+     (css . t )
+     (java . t)))
+  (setq org-confirm-babel-evaluate nil)
 
 #+END_SRC
 
@@ -259,6 +258,8 @@
 #+BEGIN_SRC elisp
   ;;(require 'javascript-mode)
   ;;(require 'js2-mode)
+  (use-package ag
+    :ensure t)
   (require 'highline)
   (require 'dired-details)
   (dired-details-install)
@@ -312,14 +313,14 @@
   (use-package exec-path-from-shell
     :ensure t
     :init
-    (when (memq window-system '(mac nx x))
-      (exec-path-from-shell-initialize)))
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize))
+    (setq exec-path-from-shell-check-startup-files nil))
   (use-package inf-ruby
     :ensure t)
   (require 'ruby-mode)
   (use-package  ruby-electric
     :ensure t)
-  (require 'org)
   (use-package coffee-mode
     :ensure t)
   (use-package feature-mode
@@ -331,7 +332,8 @@
   (yas-global-mode)
   (require 'auto-complete)
   (require 'auto-complete-config)
-  ;;      (require 'auto-complete-yasnippet)
+  (ac-config-default)
+  ;;    (require 'auto-complete-yasnippet)
   (use-package haml-mode
     :ensure t)
   (use-package rvm
@@ -346,17 +348,28 @@
    eclim lets you use eclipse as in the background for compilation
    warnings and code completion
 #+BEGIN_SRC elisp
-  ;; (require 'eclim)
-  ;; (global-eclim-mode)
-  ;; (require 'eclimd)
-  ;; (require 'ac-emacs-eclim-source)
-  ;; (ac-emacs-eclim-config)
-  ;; ;;(setq eclim-executable "/Applications/eclipse/eclim")
-  ;; (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
-  ;; (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclim")
-  ;; (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclimd")
+  (require 'eclim)
+;;  (global-eclim-mode)
+  (require 'eclimd)
+;;  (use-package ac-emacs-eclim
+;;    :ensure t)
+    (require 'ac-emacs-eclim)
+;;  (ac-emacs-eclim-config)
+;;  (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
+  (setq eclim-executable "~/.p2/pool/plugins/org.eclim_2.7.2/bin/eclim")
+  (setq eclimd-executable "~/.p2/pool/plugins/org.eclim_2.7.2/bin/eclimd")
 #+END_SRC
 
+** Projectile
+   Projectile helps looking around in projects
+#+BEGIN_SRC elisp
+  (use-package projectile
+    :ensure t
+    :init
+    (projectile-global-mode)
+    (setq projectile-switch-project-action 'projectile-dired)
+    (setq projectile-require-project-root nil))
+#+END_SRC
 ** Auto-Complete
    super nifty and awesone code completion package. This is kind of
    spread around in my configs and will need to be organized better
