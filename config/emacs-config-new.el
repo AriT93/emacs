@@ -159,7 +159,6 @@
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 (setq org-startup-with-inline-images t)
 (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-
 ;;***********remember + Org config*************
 (setq org-remember-templates
       '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
@@ -186,6 +185,8 @@
 
 ;;(require 'javascript-mode)
 ;;(require 'js2-mode)
+(use-package ag
+  :ensure t)
 (require 'highline)
 (require 'dired-details)
 (dired-details-install)
@@ -239,14 +240,14 @@
 (use-package exec-path-from-shell
   :ensure t
   :init
-  (when (memq window-system '(mac nx x))
-    (exec-path-from-shell-initialize)))
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  (setq exec-path-from-shell-check-startup-files nil))
 (use-package inf-ruby
   :ensure t)
 (require 'ruby-mode)
 (use-package  ruby-electric
   :ensure t)
-(require 'org)
 (use-package coffee-mode
   :ensure t)
 (use-package feature-mode
@@ -258,7 +259,8 @@
 (yas-global-mode)
 (require 'auto-complete)
 (require 'auto-complete-config)
-;;      (require 'auto-complete-yasnippet)
+(ac-config-default)
+;;    (require 'auto-complete-yasnippet)
 (use-package haml-mode
   :ensure t)
 (use-package rvm
@@ -268,15 +270,23 @@
 (rvm-use-default)
 (require 'ruby-config-new)
 
-;; (require 'eclim)
-;; (global-eclim-mode)
-;; (require 'eclimd)
-;; (require 'ac-emacs-eclim-source)
-;; (ac-emacs-eclim-config)
-;; ;;(setq eclim-executable "/Applications/eclipse/eclim")
-;; (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
-;; (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclim")
-;; (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclimd")
+(require 'eclim)
+;;  (global-eclim-mode)
+  (require 'eclimd)
+;;  (use-package ac-emacs-eclim
+;;    :ensure t)
+;;    (require 'ac-emacs-eclim)
+;;  (ac-emacs-eclim-config)
+;;  (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
+  (setq eclim-executable "~/.p2/pool/plugins/org.eclim_2.7.2/bin/eclim")
+  (setq eclimd-executable "~/.p2/pool/plugins/org.eclim_2.7.2/bin/eclimd")
+
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-global-mode)
+  (setq projectile-switch-project-action 'projectile-dired)
+  (setq projectile-require-project-root nil))
 
 (global-auto-complete-mode t)           ;enable global-mode
 (setq ac-auto-start t)                  ;automatically start
