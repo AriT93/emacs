@@ -10,7 +10,7 @@
 ** Looks and Behaviors
    #+BEGIN_SRC elisp
      (if (window-system)
-         (tool-bar-mode t))
+         (tool-bar-mode -1))
      (menu-bar-mode -1)
      (show-paren-mode 1)
      (setq uniquify-buffer-name-style t)
@@ -34,8 +34,8 @@
 (setq mode-line-in-non-selected-windows nil)
 
    #+END_SRC
-   
-   Pop yank gives you a pop up of recent yanks,  a "yank bank" 
+
+   Pop yank gives you a pop up of recent yanks,  a "yank bank"
 #+BEGIN_SRC elisp
 (global-set-key "\C-cy" '(lambda ()
                            (interactive)
@@ -102,13 +102,15 @@
      (use-package js-comint
        :ensure t
        :init
-       (setq inferior-js-program-command "node")
-       :bind
-       (("\C-x\C-e" . js-send-last-sexp)
-        ("\C-\M-x"  . js-send-last-sexp-and-go)
-        ("\C-cb"    . js-send-buffer)
-        ("\C-c\C-b" . js-send-buffer-and-go)
-        ("\C-cl"    . js-load-file-and-go))
+       (setq inferior-js-program-command "node"))
+     (use-package js2-mode
+       :ensure t
+       :bind (:map js2-mode-map
+                   ("\C-x\C-e" . js-send-last-sexp)
+                   ("\C-\M-x"  . js-send-last-sexp-and-go)
+                   ("\C-cb"    . js-send-buffer)
+                   ("\C-c\C-b" . js-send-buffer-and-go)
+                   ("\C-cl"    . js-load-file-and-go))
        )
    #+END_SRC
 
@@ -280,18 +282,18 @@
 (require 'cl)
 (require 'misc)
 (require 'remember)
-(require 'skeleton-conf)
+;;(require 'skeleton-conf)
 (require 'keys-config)
-(require 'html-config)
-(require 'vb-config)
-(require 'xml-config)
-(require 'sql-config)
+;;(require 'html-config)
+;;(require 'vb-config)
+;;(require 'xml-config)
+;;(require 'sql-config)
 ;;(require 'mail-config)
-(require 'erc-config)
-(require 'gnus-config)
+;;(require 'erc-config)
+;;(require 'gnus-config)
 ;;(require 'css-mode)
 (require 'ari-custom)
-(require 'csharp-config)
+;;(require 'csharp-config)
 (require 'php-mode)
 (require 'vc-svn)
 (require 'color-theme)
@@ -310,10 +312,10 @@
 (require 'haml-mode)
 (require 'rvm)
 (rvm-use-default)
-(require 'ruby-config)
+(require 'ruby-config-new)
 #+END_SRC
 
-** Eclim 
+** Eclim
    eclim lets you use eclipse as in the background for compilation
    warnings and code completion
 #+BEGIN_SRC elisp
@@ -482,7 +484,7 @@
 
 #+END_SRC
 ** Disabled For now but could be back anytime soon!
-***   Multiple cursors 
+***   Multiple cursors
     [[https://github.com/magnars/multiple-cursors.el][=mulitple-cursors=]] is a cool tool that can can be used for
     quick and easy refactoring.  However I usually get into trouble
     whe I try to use it
@@ -524,6 +526,25 @@
 ;;   (add-hook hook 'hideshowvis-enable))
 
 #+END_SRC
+** SQL Mode
+   set up sql mode
+#+BEGIN_SRC elisp
+(add-hook 'sql-mode-hook 'my-sql-mode-hook)
+(defun my-sql-mode-hook()
+  (message "SQL mode hook executed")
+  (define-key sql-mode-map [f5] 'sql-send-buffer))
+
+(setq sql-db2-program "db2cmd")
+(setq sql-db2-options '("-c" "-i" "-w" "db2" "-v" ))
+
+
+;;(setq sql-db2-program "db2cmd db2clp.bat db2.exe")
+(setq sql-ms-program "osql")
+(setq sql-mysql-program "c:/cygwin/usr/local/bin/mysql")
+(setq sql-pop-to-buffer-after-send-region nil)
+(setq sql-product (quote ms))
+#+END_SRC
+** 
 ** Tell the world we are providing something useful
     #+BEGIN_SRC elisp
       (provide 'emacs-config-new)
@@ -533,10 +554,8 @@
 
     #+DESCRIPTION: Literate source for my Emacs configuration
     #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
-    #+PROPERTY: header-args:ruby :tangle no 
-    #+PROPERTY: header-args:shell :tangle no 
+    #+PROPERTY: header-args:ruby :tangle no
+    #+PROPERTY: header-args:shell :tangle no
     #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
     #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
     #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
-
-

@@ -1,0 +1,40 @@
+#+TITLE: Add to the emacs load path
+#+AUTHOR: Ari Turetzky
+#+EMAIL: ari@turetzky.org
+#+TAGS: emacs config
+#+PROPERTY: header-args:sh  :results silent :tangle no
+* Load path setting to add stuff that isn't around in a packae yet
+#+BEGIN_SRC elisp
+  (message "loading load-path-config")
+  (add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
+  (add-to-list 'load-path (expand-file-name "~/emacs/site/color-theme/themes"))
+  ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/coffee-mode"))
+  (add-to-list 'load-path (expand-file-name "~/emacs/site/lisp"))
+  ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/feature-mode"))
+  ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/css-mode"))
+  (ad-to-list 'load-path (expand-file-name "~/emacs/site/blog"))
+  ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/html"))
+  ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/dotnet"))
+  ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/java-tools"))
+  ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/php-mode"))
+  ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/ruby"))
+  ;;(add-to-list 'load-path (expand-file-name "~/emacs/site/yaml-mode"))
+#+END_SRC
+* Why are these here?  
+  I don't know I can move them later(never...)
+#+BEGIN_SRC elisp
+ (load "ps-print")
+;;(load-file "~/emacs/site/cedet/common/cedet.elc")
+
+(autoload 'python-mode "python-mode" "Python editing mode." t)
+
+(provide 'load-path-config)
+
+#+END_SRC
+    #+DESCRIPTION: Literate source for my Emacs configuration
+    #+PROPERTY: header-args:elisp :tangle ~/emacs/config/load-path-config-new.el
+    #+PROPERTY: header-args:ruby :tangle no
+    #+PROPERTY: header-args:shell :tangle no
+    #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
+    #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+    #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
