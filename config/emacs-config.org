@@ -31,17 +31,17 @@
      (setq help-at-pt-display-when-idle t)
      (setq help-at-pt-timer-delay 0.1)
      (help-at-pt-set-timer)
-(setq mode-line-in-non-selected-windows nil)
+     (setq mode-line-in-non-selected-windows nil)
 
    #+END_SRC
 
    Pop yank gives you a pop up of recent yanks,  a "yank bank"
-#+BEGIN_SRC elisp
-(global-set-key "\C-cy" '(lambda ()
-                           (interactive)
-                           (popup-menu 'yank-menu)))
+   #+BEGIN_SRC elisp
+     (global-set-key "\C-cy" '(lambda ()
+                                (interactive)
+                                (popup-menu 'yank-menu)))
 
-#+END_SRC
+   #+END_SRC
 
 ** Tex
    #+BEGIN_SRC elisp
@@ -59,7 +59,7 @@
                    ("Other" "" TeX-run-command t t))))
 
    #+END_SRC
-p
+   p
 ** Get some package goodness
    #+BEGIN_SRC elisp
      (require 'package)
@@ -131,6 +131,7 @@ p
        :ensure t
        :init
        (ivy-mode 1)
+       (diminish 'ivy-mode "" )
        (setq ivy-use-virtual-buffers t)
        (setq enable-recursive-minibuffers t)
        (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
@@ -196,6 +197,7 @@ p
 ** Flycheck is fly as hell
    #+BEGIN_SRC elisp
      (use-package flycheck
+       :diminish flycheck-mode
        :ensure t
        :init
        (setq flycheck-emacs-lisp-initialize-packages 1)
@@ -205,324 +207,355 @@ p
 
 ** Start up the emacs server
    Of course it has a server...
-#+BEGIN_SRC elisp
-(server-start)
-#+END_SRC
+   #+BEGIN_SRC elisp
+     (server-start)
+   #+END_SRC
 
 ** Org-Mode
    Pretty meta to talk about =org-mode= in and org doc.  this is
    currently here but will need to move to it's own config file
    eventually to make it more manageable
-#+BEGIN_SRC elisp
-  (require 'org)
-  (require 'ox-twbs)
-  (require 'use-package)
-  (require 'ox-twbs)
-  (setq org-ellipsis " ⤵")
-  (setq org-src-fontify-natively t)
-  (setq org-src-tab-acts-natively t)
-  (setq org-src-window-setup 'current-window)
+   #+BEGIN_SRC elisp
+     (use-package diminish
+       :ensure t
+       :init
+       (diminish 'org-mode  "")
+       )
+     (use-package org
+       :ensure t
+       :diminish  "")
+     (require 'ox-twbs)
+     (require 'ox-twbs)
+     (use-package org-mime
+       :ensure t)
+     (setq org-ellipsis " ⤵")
+     (setq org-src-fontify-natively t)
+     (setq org-src-tab-acts-natively t)
+     (setq org-src-window-setup 'current-window)
 
-  (require 'org-bullets)
-  (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-  (setq org-startup-with-inline-images t)
-  (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-  ;;***********remember + Org config*************
-  (setq org-remember-templates
-        '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
-          ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
-  (setq remember-annotation-functions '(org-remember-annotation))
-  (setq remember-handler-functions '(org-remember-handler))
-  (add-hook 'remember-mode-hook 'org-remember-apply-template)
-  (global-set-key (kbd "C-c r") 'remember)
+     (require 'org-bullets)
+     (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+     (setq org-startup-with-inline-images t)
+     (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+     ;;***********remember + Org config*************
+     (setq org-remember-templates
+           '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
+             ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
+     (setq remember-annotation-functions '(org-remember-annotation))
+     (setq remember-handler-functions '(org-remember-handler))
+     (add-hook 'remember-mode-hook 'org-remember-apply-template)
+     (global-set-key (kbd "C-c r") 'remember)
 
-  (setq org-todo-keywords '((type "TODO" "STARTED" "WAITING" "DONE")))
-  (setq org-todo-keywords-1 '((type "TODO" "STARTED" "WAITING" "DONE")))
-  (setq org-agenda-include-diary t)
-  (setq org-agenda-include-all-todo t)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((shell  . t)
-     (js  . t)
-     (emacs-lisp . t)
-     (python . t)
-     (ruby . t)
-     (css . t )
-     (java . t)))
-  (setq org-confirm-babel-evaluate nil)
+     (setq org-todo-keywords '((type "TODO" "STARTED" "WAITING" "DONE")))
+     (setq org-todo-keywords-1 '((type "TODO" "STARTED" "WAITING" "DONE")))
+     (setq org-agenda-include-diary t)
+     (setq org-agenda-include-all-todo t)
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((shell  . t)
+        (js  . t)
+        (emacs-lisp . t)
+        (python . t)
+        (ruby . t)
+        (css . t )
+        (java . t)))
+     (setq org-confirm-babel-evaluate nil)
 
-#+END_SRC
+   #+END_SRC
 
 ** Teh requires
    This is kinda like that part in the bible with all the begats...
-#+BEGIN_SRC elisp
-  ;;(require 'javascript-mode)
-  ;;(require 'js2-mode)
-  (use-package ag
-    :ensure t)
-  (require 'highline)
-  (require 'dired-details)
-  (dired-details-install)
-  (require 'uniquify)
-  ;;(require 'sawzall)
-  (use-package boxquote
-    :ensure t)
-  ;;(require 'rs-info)
-  (require 'tex-site)
-  (require 'tramp)
-  (use-package gist
-    :ensure t)
-  (use-package web-mode
-    :ensure t)
-  ;;(require 'xslt-process)
-  (require 'ls-lisp)
-  ;;(require 'cmd-mode)
-  (use-package puppet-mode
-    :ensure t)
-  (require 'blog)
-  ;;(require 'erc)
-  ;;(require 'erc-menu)
-  (use-package htmlize
-    :ensure t)
-  ;;(require 'jdee-config)
-  (require 'cl)
-  ;;(require 'misc)
-  ;;  (require 'remember)
-  ;;(require 'skeleton-conf)
-  (require 'keys-config-new)
-  ;;(require 'html-config)
-  ;;(require 'vb-config)
-  ;;(require 'xml-config)
-  ;;(require 'sql-config)
-  ;;(require 'mail-config)
-  ;;(require 'erc-config)
-  ;;(require 'gnus-config)
-  ;;(require 'css-mode)
-  (require 'ari-custom-new)
-  ;;(require 'csharp-config)
-  ;;(require 'php-mode)
-  ;;(require 'vc-svn)
-  ;; (use-package  color-theme
-  ;;   :ensure t
-  ;;   :init
-  ;;    (setq color-theme-directory "~/emacs/site/color-theme/themes"))
-  (use-package zenburn-theme
-    :ensure t
-    :init
-    (load-theme 'zenburn t))
-  (use-package exec-path-from-shell
-    :ensure t
-    :init
-    (when (memq window-system '(mac ns x))
-      (exec-path-from-shell-initialize))
-    (setq exec-path-from-shell-check-startup-files nil))
-  (use-package inf-ruby
-    :ensure t)
-  (require 'ruby-mode)
-  (use-package  ruby-electric
-    :ensure t)
-  (use-package coffee-mode
-    :ensure t)
-  (use-package feature-mode
-    :ensure t)
-  (require 'rcodetools)
-  (use-package yasnippet
-    :ensure t)
-  (yas-global-mode t)
-  (yas-global-mode)
-  (require 'auto-complete)
-  (require 'auto-complete-config)
-;;  (ac-config-default)
-  ;;    (require 'auto-complete-yasnippet)
-  (use-package haml-mode
-    :ensure t)
-  (use-package rvm
-    :ensure t
-    :hook
-    (ruby-mode . rvm-activate-corresponding-ruby))
-  (rvm-use-default)
-  (require 'ruby-config-new)
-#+END_SRC
+   #+BEGIN_SRC elisp
+     ;;(require 'javascript-mode)
+     ;;(require 'js2-mode)
+     (use-package ag
+       :ensure t)
+     (require 'highline)
+     (require 'dired-details)
+     (dired-details-install)
+     (require 'uniquify)
+     ;;(require 'sawzall)
+     (use-package boxquote
+       :ensure t)
+     ;;(require 'rs-info)
+     (require 'tex-site)
+     (require 'tramp)
+     (use-package gist
+       :ensure t)
+     (use-package web-mode
+       :ensure t)
+     ;;(require 'xslt-process)
+     (require 'ls-lisp)
+     ;;(require 'cmd-mode)
+     (use-package puppet-mode
+       :ensure t)
+     (require 'blog)
+     ;;(require 'erc)
+     ;;(require 'erc-menu)
+     (use-package htmlize
+       :ensure t)
+     ;;(require 'jdee-config)
+     (require 'cl)
+     ;;(require 'misc)
+     ;;  (require 'remember)
+     ;;(require 'skeleton-conf)
+     (require 'keys-config-new)
+     ;;(require 'html-config)
+     ;;(require 'vb-config)
+     ;;(require 'xml-config)
+     ;;(require 'sql-config)
+     ;;(require 'mail-config)
+     ;;(require 'erc-config)
+     ;;(require 'gnus-config)
+     ;;(require 'css-mode)
+     (require 'ari-custom-new)
+     ;;(require 'csharp-config)
+     ;;(require 'php-mode)
+     ;;(require 'vc-svn)
+     ;; (use-package  color-theme
+     ;;   :ensure t
+     ;;   :init
+     ;;    (setq color-theme-directory "~/emacs/site/color-theme/themes"))
+     (use-package all-the-icons
+       :ensure t)
+     (use-package powerline
+       :ensure t
+       :init 
+       (setq powerline-image-apple-rgb t)
+       (setq powerline-height 28)
+       )
+     (use-package moe-theme
+       :ensure t
+       :config
+       (load-theme 'moe-dark t)
+       (moe-dark)
+       (powerline-moe-theme))
+     ;;     (require 'moe-dark)
+     ;;     (moe-dark)
+
+     ;; (use-package zenburn-theme
+     ;;   :ensure t
+     ;;   ;;  :init
+     ;;                                         ;  (load-theme 'zenburn t)
+     ;;   )
+     (use-package exec-path-from-shell
+       :ensure t
+       :init
+       (when (memq window-system '(mac ns x))
+         (exec-path-from-shell-initialize))
+       (setq exec-path-from-shell-check-startup-files nil))
+     (use-package inf-ruby
+       :ensure t)
+     (require 'ruby-mode)
+     (use-package  ruby-electric
+       :ensure t)
+     (use-package coffee-mode
+       :ensure t)
+     (use-package feature-mode
+       :ensure t)
+     (require 'rcodetools)
+     (use-package yasnippet
+       :ensure t)
+     (yas-global-mode t)
+     (yas-global-mode)
+     (use-package auto-complete
+       :diminish ()
+       :ensure t)
+     (require 'auto-complete-config)
+     ;;  (ac-config-default)
+     ;;    (require 'auto-complete-yasnippet)
+     (use-package haml-mode
+       :ensure t)
+     (use-package rvm
+       :ensure t
+       :hook
+       (ruby-mode . rvm-activate-corresponding-ruby))
+     (rvm-use-default)
+     (require 'ruby-config-new)
+   #+END_SRC
+
+   #+RESULTS:
+   : ruby-config-new
 
 ** Eclim
    eclim lets you use eclipse as in the background for compilation
    warnings and code completion
-#+BEGIN_SRC elisp
-    (require 'eclim)
-  ;;  (global-eclim-mode)
-    (require 'eclimd)
-      (use-package ac-emacs-eclim
-        :ensure t)
-    (require 'ac-emacs-eclim)
-  ;;(ac-emacs-eclim-config)
-    ;;  (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
-    (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclim")
-    (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclimd")
-#+END_SRC
+   #+BEGIN_SRC elisp
+     (require 'eclim)
+     ;;  (global-eclim-mode)
+     (require 'eclimd)
+     (use-package ac-emacs-eclim
+       :ensure t)
+     (require 'ac-emacs-eclim)
+     ;;(ac-emacs-eclim-config)
+     ;;  (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
+     (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclim")
+     (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclimd")
+   #+END_SRC
 
 ** Projectile
    Projectile helps looking around in projects
-#+BEGIN_SRC elisp
-  (use-package projectile
-    :ensure t
-    :init
-    (projectile-global-mode)
-    (setq projectile-switch-project-action 'projectile-dired)
-    (setq projectile-require-project-root nil))
-#+END_SRC
+   #+BEGIN_SRC elisp
+     (use-package projectile
+       :ensure t
+       :init
+       (projectile-global-mode)
+       (setq projectile-switch-project-action 'projectile-dired)
+       (setq projectile-require-project-root nil))
+   #+END_SRC
 ** Auto-Complete
    super nifty and awesone code completion package. This is kind of
    spread around in my configs and will need to be organized better
-#+BEGIN_SRC elisp
+   #+BEGIN_SRC elisp
 
-(global-auto-complete-mode t)           ;enable global-mode
-(setq ac-auto-start t)                  ;automatically start
-(setq ac-dwim 3)                        ;Do what i mean
-(setq ac-override-local-map nil)        ;don't override local map
-(define-key ac-complete-mode-map "\t" 'ac-expand)
-(define-key ac-complete-mode-map "\r" 'ac-complete)
-(define-key ac-complete-mode-map "\M-n" 'ac-next)
-(define-key ac-complete-mode-map "\M-p" 'ac-previous)
-(set-default 'ac-sources '(ac-source-words-in-buffer ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-files-in-current-dir))
+     (global-auto-complete-mode t)           ;enable global-mode
+     (setq ac-auto-start t)                  ;automatically start
+     (setq ac-dwim 3)                        ;Do what i mean
+     (setq ac-override-local-map nil)        ;don't override local map
+     (define-key ac-complete-mode-map "\t" 'ac-expand)
+     (define-key ac-complete-mode-map "\r" 'ac-complete)
+     (define-key ac-complete-mode-map "\M-n" 'ac-next)
+     (define-key ac-complete-mode-map "\M-p" 'ac-previous)
+     (set-default 'ac-sources '(ac-source-words-in-buffer ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-files-in-current-dir))
 
-(setq ac-modes
-      (append ac-modes
-              '(eshell-mode
-                                        ;org-mode
-                )))
-                                        ;(add-to-list 'ac-trigger-commands 'org-self-insert-command)
+     (setq ac-modes
+           (append ac-modes
+                   '(eshell-mode
+                                             ;org-mode
+                     )))
+                                             ;(add-to-list 'ac-trigger-commands 'org-self-insert-command)
 
-(add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
+     (add-hook 'emacs-lisp-mode-hook
+               (lambda ()
+                 (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
 
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
-(add-hook 'web-mode-hook
-          (lambda ()
-            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
-(add-hook 'yaml-mode-hook
-          (lambda ()
-            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-semantic ac-source-files-in-current-dir ac-source-words-in-buffer ac-source-words-in-same-mode-buffers ))))
-(add-hook 'js2-mode-hook
-          (lambda ()
-            (add-to-list 'ac-sources '(ac-source-files-in-current-dir ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables)(auto-complete-mode))))
-(setq ac-modes
-      (append ac-modes
-              '(sql-mode
-                sqlplus-mode
-                js2-mode
-                coffee-mode
-                JavaSript-IDE-mode
-                text-mode
-                css-mode
-                web-mode
-                perl-mode
-                ruby-mode
-                scala-mode
-                java-mode
-                yaml-mode
-                )))
+     (add-hook 'eshell-mode-hook
+               (lambda ()
+                 (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+     (add-hook 'web-mode-hook
+               (lambda ()
+                 (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+     (add-hook 'yaml-mode-hook
+               (lambda ()
+                 (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-semantic ac-source-files-in-current-dir ac-source-words-in-buffer ac-source-words-in-same-mode-buffers ))))
+     (add-hook 'js2-mode-hook
+               (lambda ()
+                 (add-to-list 'ac-sources '(ac-source-files-in-current-dir ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables)(auto-complete-mode))))
+     (setq ac-modes
+           (append ac-modes
+                   '(sql-mode
+                     sqlplus-mode
+                     js2-mode
+                     coffee-mode
+                     JavaSript-IDE-mode
+                     text-mode
+                     css-mode
+                     web-mode
+                     perl-mode
+                     ruby-mode
+                     scala-mode
+                     java-mode
+                     yaml-mode
+                     )))
 
-#+END_SRC
+   #+END_SRC
 
 ** Color-Theme
    Color Theme really isn't needed any more with the built in theming
    but I still use it because I loves me some zenburn
-#+BEGIN_SRC elisp
-;;  (use-package color-theme
-;;    :ensure t
-;;    :init
-;;    (color-theme-initialize)
-;;    (color-theme-zenburn))
-#+END_SRC
+   #+BEGIN_SRC elisp
+     ;;  (use-package color-theme
+     ;;    :ensure t
+     ;;    :init
+     ;;    (color-theme-initialize)
+     ;;    (color-theme-zenburn))
+   #+END_SRC
 
 ** Auto-Modes
    associate some fiels wit the right modes
-#+BEGIN_SRC elisp
-(add-to-list 'auto-mode-alist
-             (cons
-              (concat "\\." (regexp-opt '("xml" "xsd" "svg" "rss" "rng" "build" "config") t) "\\'" )'nxml-mode))
+   #+BEGIN_SRC elisp
+     (add-to-list 'auto-mode-alist
+                  (cons
+                   (concat "\\." (regexp-opt '("xml" "xsd" "svg" "rss" "rng" "build" "config") t) "\\'" )'nxml-mode))
 
-;;
-;; What files to invoke the new html-mode for?
-(add-to-list 'auto-mode-alist '("\\.inc\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.[sj]?html?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.t\\'" . perl-mode))
-(add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-;;
+     ;;
+     ;; What files to invoke the new html-mode for?
+     (add-to-list 'auto-mode-alist '("\\.inc\\'" . web-mode))
+     (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+     (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+     (add-to-list 'auto-mode-alist '("\\.[sj]?html?\\'" . web-mode))
+     (add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
+     (add-to-list 'auto-mode-alist '("\\.t\\'" . perl-mode))
+     (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+     ;;
 
 
-(add-hook 'html-mode-hook 'abbrev-mode)
-(add-hook 'web-mode-hook 'abbrev-mode)
+     (add-hook 'html-mode-hook 'abbrev-mode)
+     (add-hook 'web-mode-hook 'abbrev-mode)
 
-#+END_SRC
+   #+END_SRC
 
 ** Dash at point
    I use dash for doc looks up and this alows me to call it from emacs
    with =C-c d=
-#+BEGIN_SRC elisp
-(autoload 'dash-at-point "dash-at-point"
-  "Search the word at point with Dash." t nil)
-#+END_SRC
+   #+BEGIN_SRC elisp
+     (autoload 'dash-at-point "dash-at-point"
+       "Search the word at point with Dash." t nil)
+   #+END_SRC
 
 ** Markdown Mode
-#+BEGIN_SRC elisp
-(autoload 'markdown-mode' "markdown-mode" "Major Mode for editing Markdown" t)
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-#+END_SRC
+   #+BEGIN_SRC elisp
+     (autoload 'markdown-mode' "markdown-mode" "Major Mode for editing Markdown" t)
+     (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+   #+END_SRC
 
 ** Ruby stuff that should be in another file actually.
-#+BEGIN_SRC elisp
-   (autoload 'ruby-mode "ruby-mode"
-     "Mode for editing ruby source files" t)
-   (setq auto-mode-alist
-         (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
-   (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
-                     interpreter-mode-alist))
-;;   (autoload 'run-ruby "inf-ruby"
-;;     "Run an inferior Ruby process")
-;;   (autoload 'inf-ruby-keys "inf-ruby"
-;;     "Set local key defs for inf-ruby in ruby-mode")
-;;   (add-hook 'ruby-mode-hook
-;;         '(lambda ()
-;;            (inf-ruby-keys)
-;;   ))
-(load-library "rdebug")
-(setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
-(autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
-(load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
-(setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
-(autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
-(load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
-(setq rct-debug nil)
+   #+BEGIN_SRC elisp
+     (autoload 'ruby-mode "ruby-mode"
+       "Mode for editing ruby source files" t)
+     (setq auto-mode-alist
+           (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
+     (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
+                                          interpreter-mode-alist))
+     ;;   (autoload 'run-ruby "inf-ruby"
+     ;;     "Run an inferior Ruby process")
+     ;;   (autoload 'inf-ruby-keys "inf-ruby"
+     ;;     "Set local key defs for inf-ruby in ruby-mode")
+     ;;   (add-hook 'ruby-mode-hook
+     ;;         '(lambda ()
+     ;;            (inf-ruby-keys)
+     ;;   ))
+     (load-library "rdebug")
+     (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+     (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
+     (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
+     (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+     (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
+     (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
+     (setq rct-debug nil)
 
-#+END_SRC
+   #+END_SRC
 ** Dired-X
    better dir listings
-#+BEGIN_SRC elisp
-(require 'dired-x)
-(setq dired-omit-files
-      (rx(or(seq bol(? ".") "#")
-            (seq bol"."(not(any".")))
-            (seq "~" eol)
-            (seq bol "CVS" eol)
-            (seq bol "svn" eol))))
+   #+BEGIN_SRC elisp
+     (require 'dired-x)
+     (setq dired-omit-files
+           (rx(or(seq bol(? ".") "#")
+                 (seq bol"."(not(any".")))
+                 (seq "~" eol)
+                 (seq bol "CVS" eol)
+                 (seq bol "svn" eol))))
 
-(setq dired-omit-extensions
-      (append dired-latex-unclean-extensions
-              dired-bibtex-unclean-extensions
-              dired-texinfo-unclean-extensions))
+     (setq dired-omit-extensions
+           (append dired-latex-unclean-extensions
+                   dired-bibtex-unclean-extensions
+                   dired-texinfo-unclean-extensions))
 
 
-(add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
+     (add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
 
-#+END_SRC
+   #+END_SRC
 ** Disabled For now but could be back anytime soon!
 ***   Multiple cursors
     [[https://github.com/magnars/multiple-cursors.el][=mulitple-cursors=]] is a cool tool that can can be used for
@@ -554,57 +587,57 @@ p
 *** HideShowvis..
     I'm not sure I remember it but I think this was for code folding
     in buffers
-#+BEGIN_SRC elisp
-;;(autoload 'hideshowvis-enable "hideshowvis" "Highlight foldable regions")
+    #+BEGIN_SRC elisp
+      ;;(autoload 'hideshowvis-enable "hideshowvis" "Highlight foldable regions")
 
-;; (dolist (hook (list 'emacs-lisp-mode-hook
-;;                     'c++-mode-hook
-;;                     'ruby-mode-hook
-;;                     'c-sharp-mode-hook
-;;                     'java-mode-hook
-;;                     ))
-;;   (add-hook hook 'hideshowvis-enable))
+      ;; (dolist (hook (list 'emacs-lisp-mode-hook
+      ;;                     'c++-mode-hook
+      ;;                     'ruby-mode-hook
+      ;;                     'c-sharp-mode-hook
+      ;;                     'java-mode-hook
+      ;;                     ))
+      ;;   (add-hook hook 'hideshowvis-enable))
 
-#+END_SRC
+    #+END_SRC
 ** SQL Mode
    set up sql mode
-#+BEGIN_SRC elisp
-(add-hook 'sql-mode-hook 'my-sql-mode-hook)
-(defun my-sql-mode-hook()
-  (message "SQL mode hook executed")
-  (define-key sql-mode-map [f5] 'sql-send-buffer))
+   #+BEGIN_SRC elisp
+     (add-hook 'sql-mode-hook 'my-sql-mode-hook)
+     (defun my-sql-mode-hook()
+       (message "SQL mode hook executed")
+       (define-key sql-mode-map [f5] 'sql-send-buffer))
 
-(setq sql-db2-program "db2cmd")
-(setq sql-db2-options '("-c" "-i" "-w" "db2" "-v" ))
+     (setq sql-db2-program "db2cmd")
+     (setq sql-db2-options '("-c" "-i" "-w" "db2" "-v" ))
 
 
-;;(setq sql-db2-program "db2cmd db2clp.bat db2.exe")
-(setq sql-ms-program "osql")
-(setq sql-mysql-program "c:/cygwin/usr/local/bin/mysql")
-(setq sql-pop-to-buffer-after-send-region nil)
-(setq sql-product (quote ms))
-#+END_SRC
+     ;;(setq sql-db2-program "db2cmd db2clp.bat db2.exe")
+     (setq sql-ms-program "osql")
+     (setq sql-mysql-program "c:/cygwin/usr/local/bin/mysql")
+     (setq sql-pop-to-buffer-after-send-region nil)
+     (setq sql-product (quote ms))
+   #+END_SRC
 ** Semantic
    Mostly this was used for java and jdee but I rely on eclipse for
    that now
-#+BEGIN_SRC elisp
-;;(require 'semantic-ia)
-;;(if window-system
-;;    (progn
-;;      (setq semantic-load-turn-everything-on t)
-;;      (semantic-load-enable-gaudy-code-helpers)))
-#+END_SRC
+   #+BEGIN_SRC elisp
+     ;;(require 'semantic-ia)
+     ;;(if window-system
+     ;;    (progn
+     ;;      (setq semantic-load-turn-everything-on t)
+     ;;      (semantic-load-enable-gaudy-code-helpers)))
+   #+END_SRC
 ** Tell the world we are providing something useful
-    #+BEGIN_SRC elisp
-      (provide 'emacs-config-new)
-    #+END_SRC
+   #+BEGIN_SRC elisp
+     (provide 'emacs-config-new)
+   #+END_SRC
 
 
 
-    #+DESCRIPTION: Literate source for my Emacs configuration
-    #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
-    #+PROPERTY: header-args:ruby :tangle no
-    #+PROPERTY: header-args:shell :tangle no
-    #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
-    #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
-    #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+   #+DESCRIPTION: Literate source for my Emacs configuration
+   #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
+   #+PROPERTY: header-args:ruby :tangle no
+   #+PROPERTY: header-args:shell :tangle no
+   #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
+   #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+   #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
