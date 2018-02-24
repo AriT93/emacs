@@ -76,18 +76,20 @@ first a little housekeeping for the linter
 evaluate ruby code and add comment with the output so you can see what
 is going on while you write code.
 #+BEGIN_SRC elisp
-    (use-package seeing-is-believing
-      :ensure t
-      :init
-      (setq seeing-is-believing-alignment 'chunk)
-      (setq seeing-is-believing-max-length 150)
-      (setq seeing-is-believing-max-results 15)
-      :bind (:map ruby-mode-map
-      ("\C-c\C-c" . seeing-is-believing-run-as-xmpfilter))
-      :hook
-      (ruby-mode . seeing-is-believing)
+  (use-package seeing-is-believing
+    :diminish ""
+    :ensure t
+    :init
+    (setq seeing-is-believing-alignment 'chunk)
+    (setq seeing-is-believing-max-length 150)
+    (setq seeing-is-believing-max-results 15)
+    :bind (:map ruby-mode-map
+                ("\C-c\C-c" . seeing-is-believing-run-as-xmpfilter))
+    :hook
+    (ruby-mode . seeing-is-believing)
     )
 #+END_SRC
+
 ** Ruby Mode Hook
 #+BEGIN_SRC elisp
 

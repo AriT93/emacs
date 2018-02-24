@@ -29,16 +29,17 @@
   :diminish ruby-tools-mode)
 
 (use-package seeing-is-believing
+  :diminish ""
   :ensure t
   :init
   (setq seeing-is-believing-alignment 'chunk)
   (setq seeing-is-believing-max-length 150)
   (setq seeing-is-believing-max-results 15)
   :bind (:map ruby-mode-map
-  ("\C-c\C-c" . seeing-is-believing-run-as-xmpfilter))
+              ("\C-c\C-c" . seeing-is-believing-run-as-xmpfilter))
   :hook
   (ruby-mode . seeing-is-believing)
-)
+  )
 
 ;; ruby-mode-hook
 (add-hook 'ruby-mode-hook

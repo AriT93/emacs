@@ -24,6 +24,14 @@
 ;; (defvar ac-ruby-sources
 ;;   '(ac-source-rcodetools))
 
+(require 'rdebug)
+(setq rdebug-short-key-mode t)
+
+(require 'seeing-is-believing)
+(use-package seeing-is-believing
+  :bind (:map ruby-mode-map
+              ("C-c C-c" . seeing-is-believing-run-as-xmpfilter)))
+
 (defun try-complete-abbrev (old)
   (if (expand-abbrev) t nil))
 
@@ -51,21 +59,17 @@
                            (delete-trailing-whitespace)
                            )))
             (lambda ()
-              (add-to-list 'ac-sources '(ac-source-rcodetools ac-source-dictionary))
-              (delete "ac-source-emacs-eclim" `ac-sources))
+              (add-to-list 'ac-sources '(ac-source-rcodetools ac-source-dictionary ac-source-yasnippet ac-source-words-in-same-mode-buffers)))
+
               (set (make-local-variable 'indent-tabs-mode) 'nil)
               (set (make-local-variable 'tab-width) 2)
               (imenu-add-to-menubar "IMENU")
             (require 'ruby-electric)
             (ruby-electric-mode t)
-;;            (require 'ruby-block)
+            (require 'ruby-block)
               (ruby-block-mode t)
-              ;;           (local-set-key 'f1 'ri)
-              ;;           (local-set-key "\M-\C-i" 'ri-ruby-complete-symbol)
-              ;;           (local-set-key 'f4 'ri-ruby-show-args)
               (define-key ruby-mode-map "\M-\C-o" 'rct-complete-symbol)
               (local-set-key (kbd "<return>") 'newline-and-indent)
-;;              (add-to-list 'ac-sources 'ac-source-dictionary t)
               ))
 
 (add-to-list 'auto-mode-alist '("\\.html?" . web-mode))
@@ -85,14 +89,15 @@
 (add-hook 'java-mode-hook
           (lambda()
             (add-to-list 'ac-sources '(ac-emacs-eclim-source ac-source-eclim ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables)))
-)
-   (add-hook 'ruby-mode-hook
-             (lambda ()
-               (add-to-list 'ac-sources 'ac-source-rcodetools)
-               (delete "ac-source-emacs-eclim" `ac-sources)
-))
+          )
 
+(add-hook 'ruby-mode-hook
+          (lambda()
+          (add-to-list 'ac-sources 'ac-source-rcodetools)
+          (delete 'ac-sources "ac-source-emacs-eclim")))
 
+(add-hook 'ruby-mode-hook 'seeing-is-believing)
+;;(use-package seeing-is-believing)
 
 (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
 
