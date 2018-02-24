@@ -26,6 +26,18 @@
                            (interactive)
                            (popup-menu 'yank-menu)))
 
+(require 'smtpmail)
+
+(setq send-mail-function 'smtpmail-send-it
+      message-send-mail-function 'smtpmail-send-it
+      smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
+      smtp-smtp-server "https://outlook.office365.com/EWS/Exchange.asmx"
+      smtpmail-stream-type 'starttls
+      smtpmail-smtp-service 587)
+(setq starttls-use-gnutls t)
+(setq user-full-name "Ari Turetzky")
+(setq user-mail-address "aturetzky@quantcast.com")
+
 (setq TeX-command-list
       (quote (
               ("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t)
@@ -81,7 +93,7 @@
   :ensure t
   :init
   (ivy-mode 1)
-  (diminish 'ivy-mode "" )
+  (diminish 'ivy-mode "  " )
   (setq ivy-use-virtual-buffers t)
   (setq enable-recursive-minibuffers t)
   (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
@@ -186,12 +198,21 @@
  'org-babel-load-languages
  '((shell  . t)
    (js  . t)
+   (cypher . t )
    (emacs-lisp . t)
    (python . t)
    (ruby . t)
    (css . t )
    (java . t)))
 (setq org-confirm-babel-evaluate nil)
+
+(use-package virtualenvwrapper
+  :ensure t
+  :init
+  (venv-initialize-interactive-shells)
+  (venv-initialize-eshell)
+  (setq venv-location "~/.virtualenvs")
+  )
 
 ;;(require 'javascript-mode)
 ;;(require 'js2-mode)
@@ -247,7 +268,7 @@
   :ensure t)
 (use-package powerline
   :ensure t
-  :init 
+  :init
   (setq powerline-image-apple-rgb t)
   (setq powerline-height 28)
   )
@@ -286,7 +307,7 @@
 (yas-global-mode t)
 (yas-global-mode)
 (use-package auto-complete
-  :diminish ()
+  :diminish "  "
   :ensure t)
 (require 'auto-complete-config)
 ;;  (ac-config-default)

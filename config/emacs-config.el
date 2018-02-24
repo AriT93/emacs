@@ -17,25 +17,26 @@
 (setq uniquify-buffer-name-style (quote post-forward))
 (setq uniquify-min-dir-content 1)
 (setq cal-tex-diary t)
-(setq blog-root "/abturet@turetzky.org:~/blog/")
+(setq blog-root "/scp:abturet@turetzky.org:~/blog/")
 (add-hook 'diary-display-hook 'fancy-diary-display)
 (add-hook 'text-mode-hook ' turn-on-auto-fill)
 (add-hook 'before-save-hook 'time-stamp)
 (setq dired-omit-files-p t)
 (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
-(setq TeX-command-list (quote (("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t) ("LaTeX" "%l -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("LaTeX PDF" "pdflatex -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("View" "%v" TeX-run-discard nil nil) ("Print" "gsview32 %f" TeX-run-command t nil) ("File" "dvips %d -o %f " TeX-run-command t nil) ("BibTeX" "bibtex %s"</FONT> TeX-run-BibTeX nil nil) ("Index" "makeindex %s" TeX-run-command nil t) ("Check" "lacheck %s" TeX-run-compile nil t) ("Other" "" TeX-run-command t t))))
+;;(setq TeX-command-list (quote (("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t) ("LaTeX" "%l -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("LaTeX PDF" "pdflatex -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t) ("View" "%v" TeX-run-discard nil nil) ("Print" "gsview32 %f" TeX-run-command t nil) ("File" "dvips %d -o %f " TeX-run-command t nil) ("BibTeX" "bibtex %s"</FONT> TeX-run-BibTeX nil nil) ("Index" "makeindex %s" TeX-run-command nil t) ("Check" "lacheck %s" TeX-run-compile nil t) ("Other" "" TeX-run-command t t))))
 
 (require 'package)
 (add-to-list 'package-archives
              '("marmalade" .
                "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
-             '("melpa-stable" .
-               "http://stable.melpa.org/packages/") t )
-(add-to-list 'package-archives
              '("melpa" .
                "http://melpa.org/packages/") t )
+(add-to-list 'package-archives
+             '("org" .
+               "http://orgmode.org/elpa/") t )
 (package-initialize)
+(require 'use-package)
 (cond
  ((string="w32" window-system)
   (set-face-attribute 'mode-line nil :family "Century Gothic" :height 1.0 :weight 'ultra-light ))
@@ -61,7 +62,6 @@
 ;;         (whitespace-tab-width tab-width))
 ;;     ad-do-it))
 ;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
-
 (require 'js-comint)
 (setq inferior-js-program-command "rhino")
 (add-hook 'js2-mode-hook '(lambda ()
@@ -109,18 +109,6 @@
 
 
 (require 'org)
-;; Open links to outlook emails from org
-(defun org-open-outlook-url (uid)
-  "Open an outlook format url"
-  (interactive "sGUID: ")
-  (w32-shell-execute nil (format "Outlook:%s" uid)))
-;; Open links to notes docs from org
-(defun org-open-notes-url (uid)
-  "Open an Notes doclink"
-  (interactive "sLink: ")
-  (w32-shell-execute nil (format "Notes:%s" uid)))
-(org-add-link-type "Notes" 'org-open-notes-url)
-(org-add-link-type "Outlook" 'org-open-outlook-url)
 
 ;;***********remember + Org config*************
 (setq org-remember-templates
@@ -220,7 +208,7 @@
 (rvm-use-default)
 ;;(require 'rails)
 ;;(require 'yasnippet)
-;;(require 'zenburn)
+;;(require 'zenburn
 ;;(require 'vivid-chalk)
 (add-to-list 'load-path "~/emacs/site/emacs-eclim")
 (require 'eclim)
@@ -228,7 +216,7 @@
 (require 'eclimd)
 (require 'ac-emacs-eclim-source)
 (ac-emacs-eclim-config)
-;;(setq eclim-executable "/Applications/eclipse/eclim")
+(setq eclim-executable "/Applications/eclipse/eclim")
 (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
 (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclim")
 (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclimd")
@@ -277,11 +265,13 @@
     (progn (require 'color-theme)
            (color-theme-initialize)
            (color-theme-zenburn))
+;;           (load-theme 'org-beautify))
+
            ;;(color-theme-simple-2)
            ;;(color-theme-calm-forest)
-           ;;(load-file "~/emacs/site/color-theme/themes/LazyCatTheme.el")
-;;    (load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")
-    ;;(vivid-chalk)
+;;           (load-file "~/emacs/site/color-theme/themes/LazyCatTheme.el")
+;;           (load-file "~/emacs/site/color-theme/themes/vivid-chalk.el")
+;;           (color-theme-vivid-chalk))
 ;;    (zenburn)
            ;;(color-theme-hash)
        )
@@ -360,33 +350,27 @@
 
 (autoload 'markdown-mode' "markdown-mode" "Major Mode for editing Markdown" t)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-   (autoload 'ruby-mode "ruby-mode"
+
+(autoload 'ruby-mode "ruby-mode"
      "Mode for editing ruby source files" t)
    (setq auto-mode-alist
          (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
    (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
                      interpreter-mode-alist))
-   (autoload 'run-ruby "inf-ruby"
-     "Run an inferior Ruby process")
-   (autoload 'inf-ruby-keys "inf-ruby"
-     "Set local key defs for inf-ruby in ruby-mode")
-   (add-hook 'ruby-mode-hook
-         '(lambda ()
-            (inf-ruby-keys)
-   ))
+   ;; (autoload 'run-ruby "inf-ruby"
+   ;;   "Run an inferior Ruby process")
+   ;; (autoload 'inf-ruby-keys "inf-ruby"
+   ;;   "Set local key defs for inf-ruby in ruby-mode")
+   ;; (add-hook 'ruby-mode-hook
+   ;;       '(lambda ()
+   ;;          (inf-ruby-keys)
+;; ))
+(autoload 'inf-ruby-minor-mode "inf-ruby" "Run an inferior Ruby process" t)
+(add-hook 'ruby-mode-hook 'inf-ruby-minor-mode)
 (load-library "rdebug")
 
-;;(autoload 'hideshowvis-enable "hideshowvis" "Highlight foldable regions")
 
-;; (dolist (hook (list 'emacs-lisp-mode-hook
-;;                     'c++-mode-hook
-;;                     'ruby-mode-hook
-;;                     'c-sharp-mode-hook
-;;                     'java-mode-hook
-;;                     ))
-;;   (add-hook hook 'hideshowvis-enable))
-
-(setenv "PATH" (concat (getenv "PATH") "/Users/abturet/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin:/usr/local/share/npm/bin;c:/CYGWIN/bin;"))
+(setenv "PATH" (concat (getenv "PATH") "/Users/abturet/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin/:/usr/local/bin:/usr/texbin:/usr/X11/bin:/usr/local/share/npm/bin;c:/CYGWIN/bin;"))
 (setenv "CVSROOT" ":ext:mrpy@cctech:/opt/CC/cvs/cvsroot")
 (setenv "CVS_RSH" "plink")
 (setenv "PLINK_PROTOCOL" "ssh")
@@ -396,22 +380,10 @@
 (set-frame-parameter (selected-frame) 'alpha '(85 50))
 (add-to-list 'default-frame-alist '(alpha 85 50))
 
-;;;autocomplete
-;;(require 'rcodetools)
-;;(require 'auto-complete)
-;;(require 'auto-complete-config)
-;;(require 'auto-complete-ruby)
-;;(require 'auto-complete-yasnippet)
-;; (require 'anything)
-;; (require 'anything-rcodetools)
-;; ;; Command to get all RI entries.
-;; (setq rct-get-all-methods-command "PAGER=cat fri -l")
-;; ;; See docs
-;; (define-key anything-map "\C-z" 'anything-execute-persistent-action)
 (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
 (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
 (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
-;;(setq ac-omni-completion-sources '((ruby-mode .(("\\.\\=" .(ac-source-rcodetools))))))
+
 (setq rct-debug nil)
 
 
@@ -456,30 +428,18 @@
 
 
 (add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
-
-(ido-mode t)
-(setq ido-enable-flex-matching t)
-(setq ido-create-new-buffer 'always)
-
-;; (require 'slime)
-;; ;;(require 'slime-autoloads)
-;; (slime-setup)
-;; (slime-setup '(slime-fancy))
-;; (slime-setup '(slime-repl))
-;; (slime-setup '(slime-asdf))
-;; (setq inferior-lisp-program "/usr/bin/clisp")
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "C-c j") 'counsel-find-file)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
 
 (global-set-key "\C-cy" '(lambda ()
                            (interactive)
                            (popup-menu 'yank-menu)))
-;; kick off flymake for perl
-(defun my-perl-startup ()
-  "setup perl"
-  (interactive)
-  (flymake-mode)
-  )
-(add-hook 'perl-mode-hook 'my-perl-startup)
-
 
 ;; Notes in *scratch* v. 0.2
 ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
@@ -526,35 +486,28 @@ t)))
 (unless (string-equal scratch-file buffer-auto-save-file-name)
 (delete-auto-save-file-if-necessary t))))))
 
+(require 'org-bullets)
+(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+(setq org-startup-with-inline-images t)
+;;(require 'org-plus-contrib)
+(require 'org-mime)
+;; (use-package org-plus-contrib
+;;   :ensure t
+;;   :init (require 'org-mime))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages '(
+                             (C . t)
+                             (shell . t)
+                             (ruby . t)
+                             (js . t)
+                             (python . t)))
+
+(setq org-confirm-babel-evaluate nil)
+
+(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
 
 (setq mode-line-in-non-selected-windows nil)
-;;(setq default-mode-line-format
-;;      (quote
-;;       (" "
-;;        (:propertize global-mode-string
-;;                     face 'mode-line-global-face)
-;;        mode-line-frame-identification
-;;        (:propertize (:eval (if (> (length default-directory) 17)
-;;                   (concat "..." (substring default-directory -20))
-;;                 default-directory))
-;;                     face 'mode-line-folder-face)
-;;        (:propertize mode-line-buffer-identification
-;;                     face 'mode-line-filename-face)
-;;        "   "
-;;        (:propertize mode-line-position
-;;                     face 'mode-line-folder-face)
-;;        "  "
-;;        (:propertize mode-name
-;;                     help-echo (format-mode-line minor-mode-alist)
-;;                     face 'mode-line-mode-face)
-;;        (:propertize mode-line-process
-;;                     face 'mode-line-process-face)
-;;        "   "
-;;        (:propertize urgent-org-mode-line
-;;                     face 'mode-line-tasks-face)
-;;        "   "
-;;        "-%-"
-;;)))
 ;;(color-theme-hash)
 ;;(zenburn)
 ;;(vivid-chalk)
