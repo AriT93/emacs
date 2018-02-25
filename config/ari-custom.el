@@ -107,7 +107,7 @@
 
 (cc-mode-add-keywords 'csharp-mode)
 
-(define-key isearch-mode-map (kbd "C-o")
+n(define-key isearch-mode-map (kbd "C-o")
   (lambda ()
     (interactive)
     (let ((case-fold-search isearch-case-fold-search))
