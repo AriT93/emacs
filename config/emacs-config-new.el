@@ -198,7 +198,6 @@
  'org-babel-load-languages
  '((shell  . t)
    (js  . t)
-   (cypher . t )
    (emacs-lisp . t)
    (python . t)
    (ruby . t)
@@ -272,12 +271,24 @@
   (setq powerline-image-apple-rgb t)
   (setq powerline-height 28)
   )
-(use-package moe-theme
+(use-package hc-zenburn-theme
   :ensure t
-  :config
-  (load-theme 'moe-dark t)
-  (moe-dark)
-  (powerline-moe-theme))
+  :init
+  (powerline-default-theme)
+  (load-theme 'hc-zenburn t)
+  (hc-zenburn-with-color-variables
+    (custom-theme-set-faces
+     'hc-zenburn
+     `(ac-candidate-face ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
+     `(ac-selection-face ((t (:background ,hc-zenburn-cyan  :foreground ,hc-zenburn-blue-4))))
+     `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
+  )
+;;     (use-package moe-theme
+;;       :ensure t
+;;       :config
+;;       (load-theme 'moe-dark t)
+;;       (moe-dark)
+;;       (powerline-moe-theme))
 ;;     (require 'moe-dark)
 ;;     (moe-dark)
 
@@ -308,7 +319,10 @@
 (yas-global-mode)
 (use-package auto-complete
   :diminish "  "
-  :ensure t)
+  :ensure t
+  :init
+  (setq ac-use-menu-map t)
+  (setq ac-use-fuzzy t))
 (require 'auto-complete-config)
 ;;  (ac-config-default)
 ;;    (require 'auto-complete-yasnippet)
