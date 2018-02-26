@@ -22,9 +22,10 @@
 (help-at-pt-set-timer)
 (setq mode-line-in-non-selected-windows nil)
 
-(global-set-key "\C-cy" '(lambda ()
-                           (interactive)
-                           (popup-menu 'yank-menu)))
+(global-set-key "\C-cy" 'popup-kill-ring)
+                ;; '(lambda ()
+                ;;            (interactive)
+                ;;            (popup-menu 'yank-menu)))
 
 (require 'smtpmail)
 
