@@ -37,9 +37,10 @@
 
    Pop yank gives you a pop up of recent yanks,  a "yank bank"
    #+BEGIN_SRC elisp
-     (global-set-key "\C-cy" '(lambda ()
-                                (interactive)
-                                (popup-menu 'yank-menu)))
+     (global-set-key "\C-cy" 'popup-kill-ring)
+                     ;; '(lambda ()
+                     ;;            (interactive)
+                     ;;            (popup-menu 'yank-menu)))
 
    #+END_SRC
 ** Who am i and email
