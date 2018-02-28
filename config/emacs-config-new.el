@@ -475,6 +475,9 @@
 
 (add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
 
+(setq-default indent-tabs-mode nil)
+(setq-default c-basic-offset 4)
+
 ;;(require 'multiple-cursors)
 
 ;;(require 'whitespace)

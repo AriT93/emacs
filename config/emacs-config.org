@@ -593,6 +593,12 @@
      (add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
 
    #+END_SRC
+** Tabs setup
+***  tabs are 4 spaces (no Tabs)
+    #+BEGIN_SRC elisp
+      (setq-default indent-tabs-mode nil)
+      (setq-default c-basic-offset 4)
+    #+END_SRC
 ** Disabled For now but could be back anytime soon!
 ***   Multiple cursors
     [[https://github.com/magnars/multiple-cursors.el][=mulitple-cursors=]] is a cool tool that can can be used for
