@@ -114,7 +114,8 @@
 (setq c-default-style '((java-mode . "java")))
 
 (defun my-java-mode-hook()
-  (setq c-basic-offset 2))
+  (setq c-basic-offset 4)
+  (setq tab-width 4))
 (add-hook 'java-mode-hook 'my-java-mode-hook)
 (add-hook 'c-mode-common-hook
           (lambda () (c-subword-mode 1))
