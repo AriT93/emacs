@@ -117,6 +117,15 @@
   :bind
   ("\M-o" . ace-window))
 
+(use-package git-gutter
+  :ensure t
+  :init
+  (global-git-gutter-mode))
+
+(use-package git-timemachine
+  :ensure t
+  )
+
 ;; Notes in *scratch* v. 0.2
 ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
 ;; Released under GNU GPL
