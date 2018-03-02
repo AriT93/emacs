@@ -7,13 +7,17 @@
 (setq uniquify-min-dir-content 1)
 (electric-pair-mode 1)
 (setq cal-tex-diary t)
-(setq blog-root "/abturet@turetzky.org:~/blog/")
+(setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
 (add-hook 'diary-display-hook 'fancy-diary-display)
 (add-hook 'text-mode-hook ' turn-on-auto-fill)
 (add-hook 'before-save-hook 'time-stamp)
 (setq dired-omit-files-p t)
 (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
 (setq tramp-auto-save-directory "~/tmp")
+(setq backup-directory-alist
+      '((".*" . "~/tmp/")))
+(setq auto-save-file-name-transforms
+      '((".*" "~/tmp")))
 (setq message-log-max 1000)
 (set-default-font "Monaco-13")
 (add-to-list 'default-frame-alist '(font . "Monaco-13"))
@@ -105,6 +109,13 @@
    ("C-c j" . 'counsel-git-grep)
    ("C-c k" . 'counsel-ag)
    ("C-c l" . 'counsel-locate)))
+
+(use-package ace-window
+  :ensure t
+  :config
+  (ace-window-display-mode)
+  :bind
+  ("\M-o" . ace-window))
 
 ;; Notes in *scratch* v. 0.2
 ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
@@ -203,6 +214,7 @@
    (python . t)
    (ruby . t)
    (css . t )
+   (plantuml . t)
    (java . t)))
 (setq org-confirm-babel-evaluate nil)
 
@@ -213,6 +225,13 @@
   (venv-initialize-eshell)
   (setq venv-location "~/.virtualenvs")
   )
+(setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.1/libexec/plantuml.jar")
+(setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.1/libexec/plantuml.jar")
+
+
+(setq org-mime-export-options '(:section-numbers nil
+:with-author nil
+:with-toc nil))
 
 ;;(require 'javascript-mode)
 ;;(require 'js2-mode)
@@ -344,8 +363,8 @@
 (require 'ac-emacs-eclim)
 ;;(ac-emacs-eclim-config)
 ;;  (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
-(setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclim")
-(setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/plugins/org.eclim_2.7.0/bin/eclimd")
+(setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclim")
+(setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclimd")
 
 (use-package projectile
   :ensure t
