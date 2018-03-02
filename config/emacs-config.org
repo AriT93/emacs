@@ -171,6 +171,17 @@
     :bind
     ("\M-o" . ace-window))
 #+END_SRC
+** Git
+#+BEGIN_SRC elisp
+  (use-package git-gutter
+    :ensure t
+    :init
+    (global-git-gutter-mode))
+
+  (use-package git-timemachine
+    :ensure t
+    )
+#+END_SRC
 ** Preserve all the crap I put in the =*scrach*= buffer
    the following was found a while back Not sure where but I can't find
    it online anymore and the author doesn't seem to have it on his git
