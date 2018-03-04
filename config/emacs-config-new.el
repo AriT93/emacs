@@ -224,7 +224,8 @@
    (ruby . t)
    (css . t )
    (plantuml . t)
-   (java . t)))
+   (java . t)
+   (dot . t)))
 (setq org-confirm-babel-evaluate nil)
 
 (use-package virtualenvwrapper
