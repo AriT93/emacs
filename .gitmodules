@@ -1,3 +1,0 @@
-[submodule "site/coffee-mode"]
-	path = site/coffee-mode
-	url = http://github.com/defunkt/coffee-mode.git
