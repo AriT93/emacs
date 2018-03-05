@@ -189,8 +189,11 @@
 (use-package org
   :ensure t
   :diminish  "")
-(require 'ox-twbs)
-(require 'ox-twbs)
+(use-package ox-twbs
+  :ensure t)
+(use-package ox-jira
+  :ensure t)
+
 (use-package org-mime
   :ensure t)
 (setq org-ellipsis " ⤵")
@@ -240,8 +243,8 @@
 
 
 (setq org-mime-export-options '(:section-numbers nil
-:with-author nil
-:with-toc nil))
+                                                 :with-author nil
+                                                 :with-toc nil))
 
 ;;(require 'javascript-mode)
 ;;(require 'js2-mode)
