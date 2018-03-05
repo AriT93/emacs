@@ -94,6 +94,10 @@
   (setq highlin-face '((:background "thistle4")))
   (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
 
+(use-package swiper
+  :ensure t)
+(use-package counsel
+  :ensure t)
 (use-package ivy
   :ensure t
   :init
@@ -200,8 +204,10 @@
 (setq org-src-fontify-natively t)
 (setq org-src-tab-acts-natively t)
 (setq org-src-window-setup 'current-window)
-
-(require 'org-bullets)
+(use-package plantuml-mode
+  :ensure t)
+(use-package org-bullets
+  :ensure t)
 (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 (setq org-startup-with-inline-images t)
 (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
@@ -214,8 +220,7 @@
 (add-hook 'remember-mode-hook 'org-remember-apply-template)
 (global-set-key (kbd "C-c r") 'remember)
 
-(setq org-todo-keywords '((type "TODO" "STARTED" "WAITING" "DONE")))
-(setq org-todo-keywords-1 '((type "TODO" "STARTED" "WAITING" "DONE")))
+(setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 (setq org-agenda-include-diary t)
 (setq org-agenda-include-all-todo t)
 (org-babel-do-load-languages
@@ -280,6 +285,8 @@
 ;;  (require 'remember)
 ;;(require 'skeleton-conf)
 (require 'keys-config-new)
+(use-package yaml-mode
+  :ensure t)
 ;;(require 'html-config)
 ;;(require 'vb-config)
 ;;(require 'xml-config)
