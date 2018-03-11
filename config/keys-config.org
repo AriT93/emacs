@@ -65,6 +65,8 @@ trouble when I do. but these keys are for that
  (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
  (global-set-key (kbd "S-C-<down>") 'shrink-window)
  (global-set-key (kbd "S-C-<up>") 'enlarge-window)
+;; (global-set-key (kbd "M-o") 'ace-window)
+
 #+END_SRC
 ** Dash at point
    open up dash and look up what's at the point
