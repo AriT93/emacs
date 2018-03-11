@@ -50,9 +50,10 @@
                            (untabify (point-min) (point-max))
                            (delete-trailing-whitespace)
                            )))
-            (lambda ()
-              (add-to-list 'ac-sources '(ac-source-rcodetools ac-source-dictionary))
-              (delete 'ac-sources "ac-source-emacs-eclim"))
+           (lambda ()
+             (add-to-list 'ac-sources '(ac-source-rcodetools ac-source-dictionary))
+             (delete 'ac-sources "ac-source-emacs-eclim")
+)
               (set (make-local-variable 'indent-tabs-mode) 'nil)
               (set (make-local-variable 'tab-width) 2)
               (imenu-add-to-menubar "IMENU")
@@ -65,7 +66,7 @@
               ;;           (local-set-key 'f4 'ri-ruby-show-args)
               (define-key ruby-mode-map "\M-\C-o" 'rct-complete-symbol)
               (local-set-key (kbd "<return>") 'newline-and-indent)
-;;              (add-to-list 'ac-sources 'ac-source-dictionary t)
+              (add-to-list 'ac-sources 'ac-source-dictionary t)
               ))
 
 (add-to-list 'auto-mode-alist '("\\.html?" . web-mode))
@@ -88,15 +89,15 @@
 
 (autoload 'ri "ri-ruby.el" nil t)
 (global-auto-complete-mode t)
-;; (define-key ac-complete-mode-map "\C-n" 'ac-next)
-;; (define-key ac-complete-mode-map "\C-p" 'ac-previous)
-;; (setq ac-auto-start 3)
-;; (define-key ac-complete-mode-map "\t" 'ac-complete)
-;; (define-key ac-complete-mode-map "\r" nil)
+(define-key ac-complete-mode-map "\C-n" 'ac-next)
+(define-key ac-complete-mode-map "\C-p" 'ac-previous)
+(setq ac-auto-start 3)
+(define-key ac-complete-mode-map "\t" 'ac-complete)
+(define-key ac-complete-mode-map "\r" nil)
 ;;(require 'unit-test)
 (use-package autotest
   :ensure t
-)
+  )
 
 (add-hook 'ruby-mode-hook
   (lambda () (hs-minor-mode)))
