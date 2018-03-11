@@ -13,6 +13,8 @@
          (tool-bar-mode -1))
      (menu-bar-mode -1)
      (show-paren-mode 1)
+     (setq inhibit-startup-screen t)
+     (setq inhibit-splash-screen t)
      (setq uniquify-buffer-name-style t)
      (setq uniquify-buffer-name-style (quote post-forward))
      (setq uniquify-min-dir-content 1)
@@ -35,6 +37,8 @@
      (setq help-at-pt-display-when-idle t)
      (setq help-at-pt-timer-delay 0.1)
      (help-at-pt-set-timer)
+     (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+     (setq show-paren-style 'mixed)
      (setq mode-line-in-non-selected-windows nil)
 
    #+END_SRC
@@ -60,6 +64,29 @@
   (setq starttls-use-gnutls t)
   (setq user-full-name "Ari Turetzky")
   (setq user-mail-address "aturetzky@quantcast.com")
+
+  ;;mu4e
+  (add-to-list 'load-path "/usr/local/Cellar/mu/1.0/share/emacs/site-lisp/mu/mu4e/")
+  (require 'mu4e)
+
+  (setq mu4e-maildir (expand-file-name "~/mail/qc/"))
+  (setq mu4e-drafts-folder "/Drafts")
+  (setq mu4e-sent-folder "/Sent")
+  (setq mu4e-trash-folder "/Trash")
+
+  (setq mu4e-get-mail-command "mbsync qc"
+        mu4e-html2text-command "w3m -T text/html"
+        mu4e-update-interval 120
+        mu4e-headers-auto-update t
+        mu4e-compose-signature-auto-include nil)
+
+  (setq mu4e-view-show-images t)
+
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+  (setq mu4e-mu-binary "/usr/local/bin/mu")
+  (setq mu4e-compose-reply-to-address "aturetzky@quantcast.com")
+
 
 #+END_SRC
 ** Tex
@@ -139,7 +166,7 @@
        :ensure t
        :init
        (highline-mode t)
-       (setq highlin-face '((:background "thistle4")))
+       (setq highline-face '((:background "DarkOliveGreen")))
        (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
    #+END_SRC
 
@@ -172,8 +199,10 @@
     :ensure t
     :config
     (ace-window-display-mode)
+    (set-face-attribute 'aw-leading-char-face nil :height 3.0)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
     :bind
-    ("\M-o" . ace-window))
+    ("M-o" . 'ace-window))
 #+END_SRC
 ** Git
 #+BEGIN_SRC elisp
@@ -442,8 +471,8 @@
        (setq ac-use-menu-map t)
        (setq ac-use-fuzzy t))
      (require 'auto-complete-config)
-     ;;  (ac-config-default)
-     ;;    (require 'auto-complete-yasnippet)
+     (ac-config-default)
+     (require 'auto-complete-yasnippet)
      (use-package haml-mode
        :ensure t)
      (use-package rvm
@@ -462,13 +491,13 @@
    warnings and code completion
    #+BEGIN_SRC elisp
      (require 'eclim)
-     ;;  (global-eclim-mode)
+;;     (global-eclim-mode)
      (require 'eclimd)
      (use-package ac-emacs-eclim
        :ensure t)
      (require 'ac-emacs-eclim)
-     ;;(ac-emacs-eclim-config)
-     ;;  (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
+;;     (ac-emacs-eclim-config)
+;;      (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
      (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclim")
      (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclimd")
    #+END_SRC
