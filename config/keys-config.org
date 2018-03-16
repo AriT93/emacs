@@ -35,7 +35,7 @@ These keys are a hold over from my very early beginnings with visual
  (global-set-key (kbd "C-c o") 'occur)
 #+END_SRC
 ** Text Embiggening/Debiggening
-#+BEGIN_SRC
+#+BEGIN_SRC elisp
  (global-set-key (kbd "M-+") 'text-scale-adjust)
  (global-set-key (kbd "M--") 'text-scale-adjust)
  (global-set-key (kbd "M-0") 'text-scale-adjust)
