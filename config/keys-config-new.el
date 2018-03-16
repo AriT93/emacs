@@ -16,6 +16,10 @@
 
 (global-set-key (kbd "C-c o") 'occur)
 
+(global-set-key (kbd "M-+") 'text-scale-adjust)
+(global-set-key (kbd "M--") 'text-scale-adjust)
+(global-set-key (kbd "M-0") 'text-scale-adjust)
+
 ;; (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 ;; (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 ;; (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)

@@ -1,34 +1,33 @@
 (if (window-system)
-    (tool-bar-mode -1))
-(menu-bar-mode -1)
-(show-paren-mode 1)
-(setq inhibit-startup-screen t)
-(setq inhibit-splash-screen t)
-(setq uniquify-buffer-name-style t)
-(setq uniquify-buffer-name-style (quote post-forward))
-(setq uniquify-min-dir-content 1)
-(electric-pair-mode 1)
-(setq cal-tex-diary t)
-(setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
-(add-hook 'diary-display-hook 'fancy-diary-display)
-(add-hook 'text-mode-hook ' turn-on-auto-fill)
-(add-hook 'before-save-hook 'time-stamp)
-(setq dired-omit-files-p t)
-(add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
-(setq tramp-auto-save-directory "~/tmp")
-(setq backup-directory-alist
-      '((".*" . "~/tmp/")))
-(setq auto-save-file-name-transforms
-      '((".*" "~/tmp")))
-(setq message-log-max 1000)
-(set-default-font "Monaco-13")
-(add-to-list 'default-frame-alist '(font . "Monaco-13"))
-(setq help-at-pt-display-when-idle t)
-(setq help-at-pt-timer-delay 0.1)
-(help-at-pt-set-timer)
-(set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-(setq show-paren-style 'mixed)
-(setq mode-line-in-non-selected-windows nil)
+         (tool-bar-mode -1))
+     (menu-bar-mode -1)
+     (show-paren-mode 1)
+     (setq inhibit-startup-screen t)
+     (setq inhibit-splash-screen t)
+     (setq uniquify-buffer-name-style t)
+     (setq uniquify-buffer-name-style (quote post-forward))
+     (setq uniquify-min-dir-content 1)
+     (electric-pair-mode 1)
+     (setq cal-tex-diary t)
+     (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
+     (add-hook 'diary-display-hook 'fancy-diary-display)
+     (add-hook 'text-mode-hook ' turn-on-auto-fill)
+     (add-hook 'before-save-hook 'time-stamp)
+     (setq dired-omit-files-p t)
+     (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+     (setq tramp-auto-save-directory "~/tmp")
+     (setq backup-directory-alist
+           '((".*" . "~/tmp/")))
+     (setq auto-save-file-name-transforms
+           '((".*" "~/tmp")))
+     (setq message-log-max 1000)
+     (set-default-font "Monaco-11")
+;;     (add-to-list 'default-frame-alist '(font . "Monaco-18"))
+     (setq help-at-pt-display-when-idle t)
+     (setq help-at-pt-timer-delay 0.1)
+     (help-at-pt-set-timer)
+     (setq show-paren-style 'mixed)
+     (setq mode-line-in-non-selected-windows nil)
 
 (global-set-key "\C-cy" 'popup-kill-ring)
                 ;; '(lambda ()
@@ -115,8 +114,8 @@
 
 (use-package highline
   :ensure t
-  :init
-  (highline-mode t)
+  :config
+  (global-highline-mode t)
   (setq highline-face '((:background "DarkOliveGreen")))
   (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
 
@@ -151,11 +150,13 @@
 
 (use-package git-gutter
   :ensure t
+  :diminish
   :init
   (global-git-gutter-mode))
 
 (use-package git-timemachine
   :ensure t
+  :diminish
   )
 
 ;; Notes in *scratch* v. 0.2
@@ -217,6 +218,12 @@
   :ensure t
   :init
   (diminish 'org-mode  "")
+  (diminish 'auto-revert-mode)
+  (diminish 'yas-minor-mode)
+  (diminish 'eldoc-mode)
+  (diminish 'org-src-mode)
+  (diminish 'eclim-mode)
+  (diminish 'abbrev-mode)
   )
 (use-package org
   :ensure t
@@ -283,7 +290,7 @@
 ;;(require 'js2-mode)
 (use-package ag
   :ensure t)
-(require 'highline)
+;;(require 'highline)
 (require 'dired-details)
 (dired-details-install)
 (require 'uniquify)
@@ -420,6 +427,11 @@
   (projectile-global-mode)
   (setq projectile-switch-project-action 'projectile-dired)
   (setq projectile-require-project-root nil))
+
+(use-package counsel-projectile
+  :ensure t
+  :init
+  (counsel-projectile-mode))
 
 (global-auto-complete-mode t)           ;enable global-mode
 (setq ac-auto-start t)                  ;automatically start
