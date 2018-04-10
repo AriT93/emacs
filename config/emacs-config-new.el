@@ -1,33 +1,34 @@
 (if (window-system)
-         (tool-bar-mode -1))
-     (menu-bar-mode -1)
-     (show-paren-mode 1)
-     (setq inhibit-startup-screen t)
-     (setq inhibit-splash-screen t)
-     (setq uniquify-buffer-name-style t)
-     (setq uniquify-buffer-name-style (quote post-forward))
-     (setq uniquify-min-dir-content 1)
-     (electric-pair-mode 1)
-     (setq cal-tex-diary t)
-     (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
-     (add-hook 'diary-display-hook 'fancy-diary-display)
-     (add-hook 'text-mode-hook ' turn-on-auto-fill)
-     (add-hook 'before-save-hook 'time-stamp)
-     (setq dired-omit-files-p t)
-     (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
-     (setq tramp-auto-save-directory "~/tmp")
-     (setq backup-directory-alist
-           '((".*" . "~/tmp/")))
-     (setq auto-save-file-name-transforms
-           '((".*" "~/tmp")))
-     (setq message-log-max 1000)
-     (set-default-font "Monaco-11")
+    (tool-bar-mode -1))
+(menu-bar-mode -1)
+(show-paren-mode 1)
+(setq inhibit-startup-screen t)
+(setq inhibit-splash-screen t)
+(setq uniquify-buffer-name-style t)
+(setq uniquify-buffer-name-style (quote post-forward))
+(setq uniquify-min-dir-content 1)
+(electric-pair-mode 1)
+(setq cal-tex-diary t)
+(setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
+(add-hook 'diary-display-hook 'fancy-diary-display)
+(add-hook 'text-mode-hook ' turn-on-auto-fill)
+(add-hook 'before-save-hook 'time-stamp)
+(setq dired-omit-files-p t)
+(add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+(setq tramp-auto-save-directory "~/tmp")
+(setq backup-directory-alist
+      '((".*" . "~/tmp/")))
+(setq auto-save-file-name-transforms
+      '((".*" "~/tmp")))
+(setq message-log-max 1000)
+(set-default-font "Monaco-11")
 ;;     (add-to-list 'default-frame-alist '(font . "Monaco-18"))
-     (setq help-at-pt-display-when-idle t)
-     (setq help-at-pt-timer-delay 0.1)
-     (help-at-pt-set-timer)
-     (setq show-paren-style 'mixed)
-     (setq mode-line-in-non-selected-windows nil)
+(setq help-at-pt-display-when-idle t)
+(setq help-at-pt-timer-delay 0.1)
+(help-at-pt-set-timer)
+(setq show-paren-style 'mixed)
+(setq mode-line-in-non-selected-windows nil)
+(set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
 (global-set-key "\C-cy" 'popup-kill-ring)
                 ;; '(lambda ()
@@ -94,14 +95,21 @@
 
 (package-initialize)
 
-(require 'use-package)
+(unless (package-installed-p 'use-package)
+(package-refresh-contents)
+(package-install 'use-package))
+(eval-when-compile
+  (require 'use-package))
 
 (require 'load-path-config-new)
 
+(use-package nvm
+  :ensure t)
 (use-package js-comint
   :ensure t
-  :init
-  (setq inferior-js-program-command "node"))
+  :config
+  (require 'nvm))
+
 (use-package js2-mode
   :ensure t
   :bind (:map js2-mode-map
@@ -408,6 +416,14 @@
   :hook
   (ruby-mode . rvm-activate-corresponding-ruby))
 (rvm-use-default)
+(use-package beacon
+  :ensure t
+  :init
+  (beacon-mode))
+(use-package rainbow-mode
+  :ensure t)
+(use-package rainbow-delimiters
+  :ensure t)
 (require 'ruby-config-new)
 
 (require 'eclim)
@@ -416,8 +432,9 @@
      (use-package ac-emacs-eclim
        :ensure t)
      (require 'ac-emacs-eclim)
-;;     (ac-emacs-eclim-config)
-;;      (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
+  ;;   (ac-emacs-eclim-config)
+     (ac-emacs-eclim-java-setup)
+    ;; (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
      (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclim")
      (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclimd")
 
