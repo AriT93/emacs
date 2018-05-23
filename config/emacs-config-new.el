@@ -19,16 +19,17 @@
 (setq backup-directory-alist
       '((".*" . "~/tmp/")))
 (setq auto-save-file-name-transforms
-      '((".*" "~/tmp")))
+      '((".*" "~/tmp/" t)))
 (setq message-log-max 1000)
-(set-default-font "Monaco-11")
+;;     (set-default-font "Monaco-11")
+(set-face-attribute 'default nil :family "Monaco" :height 110 :weight 'normal)
 ;;     (add-to-list 'default-frame-alist '(font . "Monaco-18"))
 (setq help-at-pt-display-when-idle t)
 (setq help-at-pt-timer-delay 0.1)
 (help-at-pt-set-timer)
 (setq show-paren-style 'mixed)
 (setq mode-line-in-non-selected-windows nil)
-(set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+(fset 'yes-or-no-p 'y-or-n-p)
 
 (global-set-key "\C-cy" 'popup-kill-ring)
                 ;; '(lambda ()
@@ -108,7 +109,8 @@
 (use-package js-comint
   :ensure t
   :config
-  (require 'nvm))
+  (require 'nvm)
+  (js-do-use-nvm))
 
 (use-package js2-mode
   :ensure t
@@ -120,13 +122,6 @@
               ("\C-cl"    . js-load-file-and-go))
   )
 
-(use-package highline
-  :ensure t
-  :config
-  (global-highline-mode t)
-  (setq highline-face '((:background "DarkOliveGreen")))
-  (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
-
 (use-package swiper
   :ensure t)
 (use-package counsel
@@ -137,6 +132,7 @@
   (ivy-mode 1)
   (diminish 'ivy-mode "  " )
   (setq ivy-use-virtual-buffers t)
+  (setq ivy-use-selectable-prompt t)
   (setq enable-recursive-minibuffers t)
   (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
   :bind
@@ -294,58 +290,30 @@
                                                  :with-author nil
                                                  :with-toc nil))
 
-;;(require 'javascript-mode)
-;;(require 'js2-mode)
 (use-package ag
   :ensure t)
-;;(require 'highline)
 (require 'dired-details)
 (dired-details-install)
 (require 'uniquify)
-;;(require 'sawzall)
 (use-package boxquote
   :ensure t)
-;;(require 'rs-info)
 (require 'tex-site)
 (require 'tramp)
 (use-package gist
   :ensure t)
 (use-package web-mode
   :ensure t)
-;;(require 'xslt-process)
 (require 'ls-lisp)
-;;(require 'cmd-mode)
 (use-package puppet-mode
   :ensure t)
 (require 'blog)
-;;(require 'erc)
-;;(require 'erc-menu)
 (use-package htmlize
   :ensure t)
-;;(require 'jdee-config)
 (require 'cl)
-;;(require 'misc)
-;;  (require 'remember)
-;;(require 'skeleton-conf)
 (require 'keys-config-new)
 (use-package yaml-mode
   :ensure t)
-;;(require 'html-config)
-;;(require 'vb-config)
-;;(require 'xml-config)
-;;(require 'sql-config)
-;;(require 'mail-config)
-;;(require 'erc-config)
-;;(require 'gnus-config)
-;;(require 'css-mode)
 (require 'ari-custom-new)
-;;(require 'csharp-config)
-;;(require 'php-mode)
-;;(require 'vc-svn)
-;; (use-package  color-theme
-;;   :ensure t
-;;   :init
-;;    (setq color-theme-directory "~/emacs/site/color-theme/themes"))
 (use-package all-the-icons
   :ensure t)
 (use-package powerline
@@ -423,8 +391,18 @@
 (use-package rainbow-mode
   :ensure t)
 (use-package rainbow-delimiters
-  :ensure t)
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 (require 'ruby-config-new)
+
+(use-package highline
+  :ensure t
+  :config
+  (global-highline-mode t)
+  (setq highline-face '((:background "gray32")))
+  (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
+(set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
 (require 'eclim)
 ;;     (global-eclim-mode)
