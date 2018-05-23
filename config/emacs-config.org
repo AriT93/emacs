@@ -30,16 +30,17 @@
      (setq backup-directory-alist
            '((".*" . "~/tmp/")))
      (setq auto-save-file-name-transforms
-           '((".*" "~/tmp")))
+           '((".*" "~/tmp/" t)))
      (setq message-log-max 1000)
-     (set-default-font "Monaco-11")
+     ;;     (set-default-font "Monaco-11")
+     (set-face-attribute 'default nil :family "Monaco" :height 110 :weight 'normal)
      ;;     (add-to-list 'default-frame-alist '(font . "Monaco-18"))
      (setq help-at-pt-display-when-idle t)
      (setq help-at-pt-timer-delay 0.1)
      (help-at-pt-set-timer)
      (setq show-paren-style 'mixed)
      (setq mode-line-in-non-selected-windows nil)
-     (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+     (fset 'yes-or-no-p 'y-or-n-p)
 
    #+END_SRC
 
@@ -168,16 +169,6 @@
             )
    #+END_SRC
 
-** Set up HighLine mode
-   #+BEGIN_SRC elisp
-     (use-package highline
-       :ensure t
-       :config
-       (global-highline-mode t)
-       (setq highline-face '((:background "DarkOliveGreen")))
-       (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
-   #+END_SRC
-
 ** Ivy for isearcing
    Use Ivy, counsel and Swiper(no swiping!) for isearch
    #+BEGIN_SRC elisp
@@ -191,6 +182,7 @@
        (ivy-mode 1)
        (diminish 'ivy-mode "  " )
        (setq ivy-use-virtual-buffers t)
+       (setq ivy-use-selectable-prompt t)
        (setq enable-recursive-minibuffers t)
        (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
        :bind
@@ -374,142 +366,128 @@
 ** Teh requires
    This is kinda like that part in the bible with all the begats...
    #+BEGIN_SRC elisp
-     ;;(require 'javascript-mode)
-     ;;(require 'js2-mode)
-     (use-package ag
-       :ensure t)
-     ;;(require 'highline)
-     (require 'dired-details)
-     (dired-details-install)
-     (require 'uniquify)
-     ;;(require 'sawzall)
-     (use-package boxquote
-       :ensure t)
-     ;;(require 'rs-info)
-     (require 'tex-site)
-     (require 'tramp)
-     (use-package gist
-       :ensure t)
-     (use-package web-mode
-       :ensure t)
-     ;;(require 'xslt-process)
-     (require 'ls-lisp)
-     ;;(require 'cmd-mode)
-     (use-package puppet-mode
-       :ensure t)
-     (require 'blog)
-     ;;(require 'erc)
-     ;;(require 'erc-menu)
-     (use-package htmlize
-       :ensure t)
-     ;;(require 'jdee-config)
-     (require 'cl)
-     ;;(require 'misc)
-     ;;  (require 'remember)
-     ;;(require 'skeleton-conf)
-     (require 'keys-config-new)
-     (use-package yaml-mode
-       :ensure t)
-     ;;(require 'html-config)
-     ;;(require 'vb-config)
-     ;;(require 'xml-config)
-     ;;(require 'sql-config)
-     ;;(require 'mail-config)
-     ;;(require 'erc-config)
-     ;;(require 'gnus-config)
-     ;;(require 'css-mode)
-     (require 'ari-custom-new)
-     ;;(require 'csharp-config)
-     ;;(require 'php-mode)
-     ;;(require 'vc-svn)
-     ;; (use-package  color-theme
-     ;;   :ensure t
-     ;;   :init
-     ;;    (setq color-theme-directory "~/emacs/site/color-theme/themes"))
-     (use-package all-the-icons
-       :ensure t)
-     (use-package powerline
-       :ensure t
-       :init
-       (setq powerline-image-apple-rgb t)
-       (setq powerline-height 28)
-       )
-     (use-package hc-zenburn-theme
-       :ensure t
-       :init
-       (powerline-default-theme)
-       (load-theme 'hc-zenburn t)
-       (hc-zenburn-with-color-variables
-         (custom-theme-set-faces
-          'hc-zenburn
-          `(ac-candidate-face ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
-          `(ac-selection-face ((t (:background ,hc-zenburn-cyan  :foreground ,hc-zenburn-blue-4))))
-          `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
-       )
-     ;;     (use-package moe-theme
-     ;;       :ensure t
-     ;;       :config
-     ;;       (load-theme 'moe-dark t)
-     ;;       (moe-dark)
-     ;;       (powerline-moe-theme))
-     ;;     (require 'moe-dark)
-     ;;     (moe-dark)
+          (use-package ag
+            :ensure t)
+          (require 'dired-details)
+          (dired-details-install)
+          (require 'uniquify)
+          (use-package boxquote
+            :ensure t)
+          (require 'tex-site)
+          (require 'tramp)
+          (use-package gist
+            :ensure t)
+          (use-package web-mode
+            :ensure t)
+          (require 'ls-lisp)
+          (use-package puppet-mode
+            :ensure t)
+          (require 'blog)
+          (use-package htmlize
+            :ensure t)
+          (require 'cl)
+          (require 'keys-config-new)
+          (use-package yaml-mode
+            :ensure t)
+          (require 'ari-custom-new)
+          (use-package all-the-icons
+            :ensure t)
+          (use-package powerline
+            :ensure t
+            :init
+            (setq powerline-image-apple-rgb t)
+            (setq powerline-height 28)
+            )
+          (use-package hc-zenburn-theme
+            :ensure t
+            :init
+            (powerline-default-theme)
+            (load-theme 'hc-zenburn t)
+            (hc-zenburn-with-color-variables
+              (custom-theme-set-faces
+               'hc-zenburn
+               `(ac-candidate-face ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
+               `(ac-selection-face ((t (:background ,hc-zenburn-cyan  :foreground ,hc-zenburn-blue-4))))
+               `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
+            )
+          ;;     (use-package moe-theme
+          ;;       :ensure t
+          ;;       :config
+          ;;       (load-theme 'moe-dark t)
+          ;;       (moe-dark)
+          ;;       (powerline-moe-theme))
+          ;;     (require 'moe-dark)
+          ;;     (moe-dark)
 
-     ;; (use-package zenburn-theme
-     ;;   :ensure t
-     ;;   ;;  :init
-     ;;                                         ;  (load-theme 'zenburn t)
-     ;;   )
-     (use-package exec-path-from-shell
-       :ensure t
-       :init
-       (when (memq window-system '(mac ns x))
-         (exec-path-from-shell-initialize))
-       (setq exec-path-from-shell-check-startup-files nil))
-     (use-package inf-ruby
-       :ensure t)
-     (require 'ruby-mode)
-     (use-package  ruby-electric
-       :ensure t)
-     (use-package coffee-mode
-       :ensure t)
-     (use-package feature-mode
-       :ensure t)
-     (require 'rcodetools)
-     (use-package yasnippet
-       :ensure t)
-     (yas-global-mode t)
-     (yas-global-mode)
-     (use-package auto-complete
-       :diminish "  "
-       :ensure t
-       :init
-       (setq ac-use-menu-map t)
-       (setq ac-use-fuzzy t))
-     (require 'auto-complete-config)
-     (ac-config-default)
-     (require 'auto-complete-yasnippet)
-     (use-package haml-mode
-       :ensure t)
-     (use-package rvm
-       :ensure t
-       :hook
-       (ruby-mode . rvm-activate-corresponding-ruby))
-     (rvm-use-default)
-     (use-package beacon
-       :ensure t
-       :init
-       (beacon-mode))
-     (use-package rainbow-mode
-       :ensure t)
-     (use-package rainbow-delimiters
-       :ensure t)
-     (require 'ruby-config-new)
+          ;; (use-package zenburn-theme
+          ;;   :ensure t
+          ;;   ;;  :init
+          ;;                                         ;  (load-theme 'zenburn t)
+          ;;   )
+          (use-package exec-path-from-shell
+            :ensure t
+            :init
+            (when (memq window-system '(mac ns x))
+              (exec-path-from-shell-initialize))
+            (setq exec-path-from-shell-check-startup-files nil))
+          (use-package inf-ruby
+            :ensure t)
+          (require 'ruby-mode)
+          (use-package  ruby-electric
+            :ensure t)
+          (use-package coffee-mode
+            :ensure t)
+          (use-package feature-mode
+            :ensure t)
+          (require 'rcodetools)
+          (use-package yasnippet
+            :ensure t)
+          (yas-global-mode t)
+          (yas-global-mode)
+          (use-package auto-complete
+            :diminish "  "
+            :ensure t
+            :init
+            (setq ac-use-menu-map t)
+            (setq ac-use-fuzzy t))
+          (require 'auto-complete-config)
+          (ac-config-default)
+          (require 'auto-complete-yasnippet)
+          (use-package haml-mode
+            :ensure t)
+          (use-package rvm
+            :ensure t
+            :hook
+            (ruby-mode . rvm-activate-corresponding-ruby))
+          (rvm-use-default)
+          (use-package beacon
+            :ensure t
+            :init
+            (beacon-mode))
+          (use-package rainbow-mode
+            :ensure t)
+          (use-package rainbow-delimiters
+            :ensure t
+            :config
+            (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+          (require 'ruby-config-new)
 
    #+END_SRC
 
    #+RESULTS:
    : ruby-config-new
+
+** Set up HighLine mode
+   #+BEGIN_SRC elisp
+     (use-package highline
+       :ensure t
+       :config
+       (global-highline-mode t)
+       (setq highline-face '((:background "gray32")))
+       (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
+     (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+
+   #+END_SRC
 
 ** Eclim
    eclim lets you use eclipse as in the background for compilation
