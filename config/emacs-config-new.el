@@ -120,6 +120,9 @@
               ("\C-cb"    . js-send-buffer)
               ("\C-c\C-b" . js-send-buffer-and-go)
               ("\C-cl"    . js-load-file-and-go))
+  :config
+  (setq js2-strict-missing-semi-warning nil)
+  (setq js2-missing-semi-one-line-override nil)
   )
 
 (use-package swiper
@@ -368,22 +371,22 @@
   :ensure t)
 (yas-global-mode t)
 (yas-global-mode)
-(use-package auto-complete
-  :diminish "  "
-  :ensure t
-  :init
-  (setq ac-use-menu-map t)
-  (setq ac-use-fuzzy t))
-(require 'auto-complete-config)
-(ac-config-default)
-(require 'auto-complete-yasnippet)
+;; (use-package auto-complete
+;;   :diminish "  "
+;;   :ensure t
+;;   :init
+;;   (setq ac-use-menu-map t)
+;;   (setq ac-use-fuzzy t))
+;; (require 'auto-complete-config)
+;; (ac-config-default)
+;; (require 'auto-complete-yasnippet)
 (use-package haml-mode
   :ensure t)
-(use-package rvm
-  :ensure t
-  :hook
-  (ruby-mode . rvm-activate-corresponding-ruby))
-(rvm-use-default)
+;; (use-package rvm
+;;   :ensure t
+;;   :hook
+;;   (ruby-mode . rvm-activate-corresponding-ruby))
+;; (rvm-use-default)
 (use-package beacon
   :ensure t
   :init
@@ -401,26 +404,64 @@
   :config
   (global-highline-mode t)
   (setq highline-face '((:background "gray32")))
+  (set-face-attribute 'region nil :background "DarkOliveGreen")
   (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
-(require 'eclim)
-;;     (global-eclim-mode)
-     (require 'eclimd)
-     (use-package ac-emacs-eclim
-       :ensure t)
-     (require 'ac-emacs-eclim)
-  ;;   (ac-emacs-eclim-config)
-     (ac-emacs-eclim-java-setup)
-    ;; (setq eclim-eclipse-dirs '("~/eclipse/java-oxygen-tar/"))
-     (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclim")
-     (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclimd")
+(require 'company)
+(add-hook  'after-init-hook 'global-company-mode)
+
+(require 'company-lsp)
+(push 'company-lsp company-backends)
+(setq company-lsp-enable-snippet t)
+(setq company-lsp-cache-candidates t)
+(require 'lsp-mode)
+(setq lsp-inhibit-message t)
+(setq lsp-eldoc-render-all nil)
+
+(setq lsp-highlight-symbol-at-point t)
+(setq  lsp-java--workspace-folders (list "/Users/aturetzky/dev/git/permission-center/api"))
+(setq lsp-java-format-settings-profile "Quantcast")
+(setq lsp-java-format-settings-url "~/Users/aturetzky/eclipse-java-google-style.xml")
+(require 'lsp-java)
+(add-hook 'java-mode-hook #'lsp-java-enable)
+(add-hook 'java-mode-hook 'flycheck-mode)
+(add-hook 'java-mode-hook 'company-mode)
+(add-hook 'java-mode-hook (lambda ()(lsp-ui-flycheck-enable t)))
+(add-hook 'java-mode-hook 'lsp-ui-mode)
+(add-hook 'java-mode-hook 'lsp-ui-sideline-mode)
+(require 'lsp-ui)
+(setq lsp-ui-sideline-enable t)
+(setq lsp-ui-sideline-show-symbol t)
+(setq lsp-ui-sideline-show-hover nil)
+(setq lsp-ui-sideline-show-code-actions t)
+(setq lsp-ui-sideline-update-mode 'point)
+(setq lsp-java-import-maven-enabled nil)
+(setq lsp-java-import-gradle-enabled t)
+(setq lsp-java-progress-report t)
+(setq lsp-java-auto-build t)
+(setq lsp-ui-doc-mode nil)
+(setq lsp-ui-doc-enable nil)
+(define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
+(define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+(define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+(define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
+
+;;     (require 'eclim)
+;;     (require 'eclimd)
+;;     (use-package ac-emacs-eclim
+;;       :ensure t)
+;;     (require 'ac-emacs-eclim)
+;;     (ac-emacs-eclim-java-setup)
+;;     (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclim")
+;;     (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclimd")
 
 (use-package projectile
   :ensure t
   :init
   (projectile-global-mode)
   (setq projectile-switch-project-action 'projectile-dired)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-require-project-root nil))
 
 (use-package counsel-projectile
@@ -428,55 +469,55 @@
   :init
   (counsel-projectile-mode))
 
-(global-auto-complete-mode t)           ;enable global-mode
-(setq ac-auto-start t)                  ;automatically start
-(setq ac-dwim 3)                        ;Do what i mean
-(setq ac-override-local-map nil)        ;don't override local map
-(define-key ac-complete-mode-map "\t" 'ac-expand)
-(define-key ac-complete-mode-map "\r" 'ac-complete)
-(define-key ac-complete-mode-map "\M-n" 'ac-next)
-(define-key ac-complete-mode-map "\M-p" 'ac-previous)
-(set-default 'ac-sources '(ac-source-words-in-buffer ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-files-in-current-dir))
+;;    (global-auto-complete-mode t)           ;enable global-mode
+;;    (setq ac-auto-start t)                  ;automatically start
+;;    (setq ac-dwim 3)                        ;Do what i mean
+;;    (setq ac-override-local-map nil)        ;don't override local map
+;;    (define-key ac-complete-mode-map "\t" 'ac-expand)
+;;    (define-key ac-complete-mode-map "\r" 'ac-complete)
+;;    (define-key ac-complete-mode-map "\M-n" 'ac-next)
+;;    (define-key ac-complete-mode-map "\M-p" 'ac-previous)
+;;    (set-default 'ac-sources '(ac-source-words-in-buffer ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-files-in-current-dir))
 
-(setq ac-modes
-      (append ac-modes
-              '(eshell-mode
-                                        ;org-mode
-                )))
-                                        ;(add-to-list 'ac-trigger-commands 'org-self-insert-command)
+;;    (setq ac-modes
+;;          (append ac-modes
+;;                  '(eshell-mode
+;;                                            ;org-mode
+;;                    )))
+;;                                            ;(add-to-list 'ac-trigger-commands 'org-self-insert-command)
 
-(add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
+;;    (add-hook 'emacs-lisp-mode-hook
+;;              (lambda ()
+;;                (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
 
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
-(add-hook 'web-mode-hook
-          (lambda ()
-            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
-(add-hook 'yaml-mode-hook
-          (lambda ()
-            (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-semantic ac-source-files-in-current-dir ac-source-words-in-buffer ac-source-words-in-same-mode-buffers ))))
-(add-hook 'js2-mode-hook
-          (lambda ()
-            (add-to-list 'ac-sources '(ac-source-files-in-current-dir ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables)(auto-complete-mode))))
-(setq ac-modes
-      (append ac-modes
-              '(sql-mode
-                sqlplus-mode
-                js2-mode
-                coffee-mode
-                JavaSript-IDE-mode
-                text-mode
-                css-mode
-                web-mode
-                perl-mode
-                ruby-mode
-                scala-mode
-                java-mode
-                yaml-mode
-                )))
+;;    (add-hook 'eshell-mode-hook
+;;              (lambda ()
+;;                (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+;;    (add-hook 'web-mode-hook
+;;              (lambda ()
+;;                (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+;;    (add-hook 'yaml-mode-hook
+;;              (lambda ()
+;;                (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-semantic ac-source-files-in-current-dir ac-source-words-in-buffer ac-source-words-in-same-mode-buffers ))))
+;;    (add-hook 'js2-mode-hook
+;;              (lambda ()
+;;                (add-to-list 'ac-sources '(ac-source-files-in-current-dir ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables)(auto-complete-mode))))
+;;    (setq ac-modes
+;;          (append ac-modes
+;;                  '(sql-mode
+;;                    sqlplus-mode
+;;                    js2-mode
+;;                    coffee-mode
+;;                    JavaSript-IDE-mode
+;;                    text-mode
+;;                    css-mode
+;;                    web-mode
+;;                    perl-mode
+;;                    ruby-mode
+;;                    scala-mode
+;; ;;                   java-mode
+;;                    yaml-mode
+;;                    )))
 
 ;;  (use-package color-theme
 ;;    :ensure t

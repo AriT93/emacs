@@ -138,12 +138,12 @@ is going on while you write code.
 ** Set up some autocomplete goodnes
    #+BEGIN_SRC elisp
 
-     (add-hook 'java-mode-hook
-               (lambda()
-                 (add-to-list 'ac-sources '(ac-emacs-eclim-source ac-source-eclim ac-source-symbols
-                                                                  ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables))
-                 (ac-emacs-eclim-java-setup))
-               )
+     ;; (add-hook 'java-mode-hook
+     ;;           (lambda()
+     ;;             (add-to-list 'ac-sources '(ac-emacs-eclim-source ac-source-eclim ac-source-symbols
+     ;;                                                              ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables))
+     ;;             (ac-emacs-eclim-java-setup))
+     ;;           )
      (add-hook 'ruby-mode-hook
                (lambda ()
                  (add-to-list 'ac-sources 'ac-source-rcodetools)
@@ -160,7 +160,7 @@ damn this is a mess
 
 
   (autoload 'ri "ri-ruby.el" nil t)
-  (global-auto-complete-mode t)
+;;  (global-auto-complete-mode t)
   (define-key ac-complete-mode-map "\C-n" 'ac-next)
   (define-key ac-complete-mode-map "\C-p" 'ac-previous)
   (setq ac-auto-start 3)

@@ -29,6 +29,7 @@ These keys are a hold over from my very early beginnings with visual
  (define-key comint-mode-map [f5]   'gud-cont)
  (define-key comint-mode-map [f9]   'gud-break)
  (define-key comint-mode-map [f10]  'gud-next)
+ (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 #+END_SRC
 ** Occur
 #+BEGIN_SRC elisp
