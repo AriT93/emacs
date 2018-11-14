@@ -1,3 +1,4 @@
+
 #+TITLE: General Emacs Configuration options
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
@@ -57,36 +58,36 @@
   (require 'smtpmail)
 
   (setq send-mail-function 'smtpmail-send-it
-        message-send-mail-function 'smtpmail-send-it
-        smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
-        smtp-smtp-server "https://outlook.office365.com/EWS/Exchange.asmx"
-        smtpmail-stream-type 'starttls
-        smtpmail-smtp-service 587)
+	message-send-mail-function 'smtpmail-send-it
+	smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
+	smtp-smtp-server "https://outlook.office365.com/EWS/Exchange.asmx"
+	smtpmail-stream-type 'starttls
+	smtpmail-smtp-service 587)
   (setq starttls-use-gnutls t)
   (setq user-full-name "Ari Turetzky")
   (setq user-mail-address "aturetzky@quantcast.com")
 
-  ;;mu4e
-  (add-to-list 'load-path "/usr/local/Cellar/mu/1.0/share/emacs/site-lisp/mu/mu4e/")
-  (require 'mu4e)
+  ;; ;;mu4e
+  ;; (add-to-list 'load-path "/usr/local/Cellar/mu/1.0/share/emacs/site-lisp/mu/mu4e/")
+  ;; (require 'mu4e)
 
-  (setq mu4e-maildir (expand-file-name "~/mail/qc/"))
-  (setq mu4e-drafts-folder "/Drafts")
-  (setq mu4e-sent-folder "/Sent")
-  (setq mu4e-trash-folder "/Trash")
+  ;; (setq mu4e-maildir (expand-file-name "~/mail/qc/"))
+  ;; (setq mu4e-drafts-folder "/Drafts")
+  ;; (setq mu4e-sent-folder "/Sent")
+  ;; (setq mu4e-trash-folder "/Trash")
 
-  (setq mu4e-get-mail-command "mbsync qc"
-        mu4e-html2text-command "w3m -T text/html"
-        mu4e-update-interval 120
-        mu4e-headers-auto-update t
-        mu4e-compose-signature-auto-include nil)
+  ;; (setq mu4e-get-mail-command "mbsync qc"
+  ;;       mu4e-html2text-command "w3m -T text/html"
+  ;;       mu4e-update-interval 120
+  ;;       mu4e-headers-auto-update t
+  ;;       mu4e-compose-signature-auto-include nil)
 
-  (setq mu4e-view-show-images t)
+  ;; (setq mu4e-view-show-images t)
 
-  (when (fboundp 'imagemagick-register-types)
-    (imagemagick-register-types))
-  (setq mu4e-mu-binary "/usr/local/bin/mu")
-  (setq mu4e-compose-reply-to-address "aturetzky@quantcast.com")
+  ;; (when (fboundp 'imagemagick-register-types)
+  ;;   (imagemagick-register-types))
+  ;; (setq mu4e-mu-binary "/usr/local/bin/mu")
+  ;; (setq mu4e-compose-reply-to-address "aturetzky@quantcast.com")
 
 
 #+END_SRC
@@ -126,7 +127,6 @@
 
    And now we can get kick off the package manager
    #+BEGIN_SRC elisp
-     (package-initialize)
    #+END_SRC
 ** Use Package
    =use-package= makes it easy to require a file without a bunch of
@@ -376,7 +376,7 @@
      (require 'uniquify)
      (use-package boxquote
        :ensure t)
-     (require 'tex-site)
+;;     (require 'tex-site)
      (require 'tramp)
      (use-package gist
        :ensure t)
