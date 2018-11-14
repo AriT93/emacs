@@ -48,27 +48,27 @@
 (setq user-full-name "Ari Turetzky")
 (setq user-mail-address "aturetzky@quantcast.com")
 
-;;mu4e
-(add-to-list 'load-path "/usr/local/Cellar/mu/1.0/share/emacs/site-lisp/mu/mu4e/")
-(require 'mu4e)
+;; ;;mu4e
+;; (add-to-list 'load-path "/usr/local/Cellar/mu/1.0/share/emacs/site-lisp/mu/mu4e/")
+;; (require 'mu4e)
 
-(setq mu4e-maildir (expand-file-name "~/mail/qc/"))
-(setq mu4e-drafts-folder "/Drafts")
-(setq mu4e-sent-folder "/Sent")
-(setq mu4e-trash-folder "/Trash")
+;; (setq mu4e-maildir (expand-file-name "~/mail/qc/"))
+;; (setq mu4e-drafts-folder "/Drafts")
+;; (setq mu4e-sent-folder "/Sent")
+;; (setq mu4e-trash-folder "/Trash")
 
-(setq mu4e-get-mail-command "mbsync qc"
-      mu4e-html2text-command "w3m -T text/html"
-      mu4e-update-interval 120
-      mu4e-headers-auto-update t
-      mu4e-compose-signature-auto-include nil)
+;; (setq mu4e-get-mail-command "mbsync qc"
+;;       mu4e-html2text-command "w3m -T text/html"
+;;       mu4e-update-interval 120
+;;       mu4e-headers-auto-update t
+;;       mu4e-compose-signature-auto-include nil)
 
-(setq mu4e-view-show-images t)
+;; (setq mu4e-view-show-images t)
 
-(when (fboundp 'imagemagick-register-types)
-  (imagemagick-register-types))
-(setq mu4e-mu-binary "/usr/local/bin/mu")
-(setq mu4e-compose-reply-to-address "aturetzky@quantcast.com")
+;; (when (fboundp 'imagemagick-register-types)
+;;   (imagemagick-register-types))
+;; (setq mu4e-mu-binary "/usr/local/bin/mu")
+;; (setq mu4e-compose-reply-to-address "aturetzky@quantcast.com")
 
 (setq TeX-command-list
       (quote (
@@ -94,7 +94,7 @@
 (add-to-list 'package-archives
              '("org" . "https://orgmode.org/elpa/"))
 
-(package-initialize)
+
 
 (unless (package-installed-p 'use-package)
 (package-refresh-contents)
@@ -294,110 +294,110 @@
                                                  :with-toc nil))
 
 (use-package ag
-  :ensure t)
-(require 'dired-details)
-(dired-details-install)
-(require 'uniquify)
-(use-package boxquote
-  :ensure t)
-(require 'tex-site)
-(require 'tramp)
-(use-package gist
-  :ensure t)
-(use-package web-mode
-  :ensure t)
-(require 'ls-lisp)
-(use-package puppet-mode
-  :ensure t)
-(require 'blog)
-(use-package htmlize
-  :ensure t)
-(require 'cl)
-(require 'keys-config-new)
-(use-package yaml-mode
-  :ensure t)
-(require 'ari-custom-new)
-(use-package all-the-icons
-  :ensure t)
-(use-package powerline
-  :ensure t
-  :init
-  (setq powerline-image-apple-rgb t)
-  (setq powerline-height 28)
-  )
-(use-package hc-zenburn-theme
-  :ensure t
-  :init
-  (powerline-default-theme)
-  (load-theme 'hc-zenburn t)
-  (hc-zenburn-with-color-variables
-    (custom-theme-set-faces
-     'hc-zenburn
-     `(ac-candidate-face ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
-     `(ac-selection-face ((t (:background ,hc-zenburn-cyan  :foreground ,hc-zenburn-blue-4))))
-     `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
-  )
-;;     (use-package moe-theme
-;;       :ensure t
-;;       :config
-;;       (load-theme 'moe-dark t)
-;;       (moe-dark)
-;;       (powerline-moe-theme))
-;;     (require 'moe-dark)
-;;     (moe-dark)
+       :ensure t)
+     (require 'dired-details)
+     (dired-details-install)
+     (require 'uniquify)
+     (use-package boxquote
+       :ensure t)
+;;     (require 'tex-site)
+     (require 'tramp)
+     (use-package gist
+       :ensure t)
+     (use-package web-mode
+       :ensure t)
+     (require 'ls-lisp)
+     (use-package puppet-mode
+       :ensure t)
+     (require 'blog)
+     (use-package htmlize
+       :ensure t)
+     (require 'cl)
+     (require 'keys-config-new)
+     (use-package yaml-mode
+       :ensure t)
+     (require 'ari-custom-new)
+     (use-package all-the-icons
+       :ensure t)
+     (use-package powerline
+       :ensure t
+       :init
+       (setq powerline-image-apple-rgb t)
+       (setq powerline-height 28)
+       )
+     (use-package hc-zenburn-theme
+       :ensure t
+       :init
+       (powerline-default-theme)
+       (load-theme 'hc-zenburn t)
+       (hc-zenburn-with-color-variables
+         (custom-theme-set-faces
+          'hc-zenburn
+          `(ac-candidate-face ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
+          `(ac-selection-face ((t (:background ,hc-zenburn-cyan  :foreground ,hc-zenburn-blue-4))))
+          `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
+       )
+     ;;     (use-package moe-theme
+     ;;       :ensure t
+     ;;       :config
+     ;;       (load-theme 'moe-dark t)
+     ;;       (moe-dark)
+     ;;       (powerline-moe-theme))
+     ;;     (require 'moe-dark)
+     ;;     (moe-dark)
 
-;; (use-package zenburn-theme
-;;   :ensure t
-;;   ;;  :init
-;;                                         ;  (load-theme 'zenburn t)
-;;   )
-(use-package exec-path-from-shell
-  :ensure t
-  :init
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
-  (setq exec-path-from-shell-check-startup-files nil))
-(use-package inf-ruby
-  :ensure t)
-(require 'ruby-mode)
-(use-package  ruby-electric
-  :ensure t)
-(use-package coffee-mode
-  :ensure t)
-(use-package feature-mode
-  :ensure t)
-(require 'rcodetools)
-(use-package yasnippet
-  :ensure t)
-(yas-global-mode t)
-(yas-global-mode)
-;; (use-package auto-complete
-;;   :diminish "  "
-;;   :ensure t
-;;   :init
-;;   (setq ac-use-menu-map t)
-;;   (setq ac-use-fuzzy t))
-;; (require 'auto-complete-config)
-;; (ac-config-default)
-;; (require 'auto-complete-yasnippet)
-(use-package haml-mode
-  :ensure t)
-;; (use-package rvm
-;;   :ensure t
-;;   :hook
-;;   (ruby-mode . rvm-activate-corresponding-ruby))
-;; (rvm-use-default)
-(use-package beacon
-  :ensure t
-  :init
-  (beacon-mode))
-(use-package rainbow-mode
-  :ensure t)
-(use-package rainbow-delimiters
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-(require 'ruby-config-new)
+     ;; (use-package zenburn-theme
+     ;;   :ensure t
+     ;;   ;;  :init
+     ;;                                         ;  (load-theme 'zenburn t)
+     ;;   )
+     (use-package exec-path-from-shell
+       :ensure t
+       :init
+       (when (memq window-system '(mac ns x))
+         (exec-path-from-shell-initialize))
+       (setq exec-path-from-shell-check-startup-files nil))
+     (use-package inf-ruby
+       :ensure t)
+     (require 'ruby-mode)
+     (use-package  ruby-electric
+       :ensure t)
+     (use-package coffee-mode
+       :ensure t)
+     (use-package feature-mode
+       :ensure t)
+     (require 'rcodetools)
+     (use-package yasnippet
+       :ensure t)
+     (yas-global-mode t)
+     (yas-global-mode)
+     ;; (use-package auto-complete
+     ;;   :diminish "  "
+     ;;   :ensure t
+     ;;   :init
+     ;;   (setq ac-use-menu-map t)
+     ;;   (setq ac-use-fuzzy t))
+     ;; (require 'auto-complete-config)
+     ;; (ac-config-default)
+     ;; (require 'auto-complete-yasnippet)
+     (use-package haml-mode
+       :ensure t)
+     ;; (use-package rvm
+     ;;   :ensure t
+     ;;   :hook
+     ;;   (ruby-mode . rvm-activate-corresponding-ruby))
+     ;; (rvm-use-default)
+     (use-package beacon
+       :ensure t
+       :init
+       (beacon-mode))
+     (use-package rainbow-mode
+       :ensure t)
+     (use-package rainbow-delimiters
+       :ensure t
+       :config
+       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+     (require 'ruby-config-new)
 
 (use-package highline
   :ensure t
