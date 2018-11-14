@@ -408,6 +408,19 @@
   (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
+(use-package company
+  :defer 2
+  :diminish
+  :custom
+  (company-minimum-prefix-length 2)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t))
+
+(use-package company-box
+  :after company
+  :diminish
+  :hook (company-mode . company-box-mode))
 (require 'company)
 (add-hook  'after-init-hook 'global-company-mode)
 
@@ -462,7 +475,8 @@
   (projectile-global-mode)
   (setq projectile-switch-project-action 'projectile-dired)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  (setq projectile-require-project-root nil))
+  (setq projectile-require-project-root nil)
+  (setq projectile-indexing-method 'alien))
 
 (use-package counsel-projectile
   :ensure t
