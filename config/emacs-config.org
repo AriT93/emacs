@@ -58,11 +58,11 @@
   (require 'smtpmail)
 
   (setq send-mail-function 'smtpmail-send-it
-	message-send-mail-function 'smtpmail-send-it
-	smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
-	smtp-smtp-server "https://outlook.office365.com/EWS/Exchange.asmx"
-	smtpmail-stream-type 'starttls
-	smtpmail-smtp-service 587)
+        message-send-mail-function 'smtpmail-send-it
+        smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
+        smtp-smtp-server "https://outlook.office365.com/EWS/Exchange.asmx"
+        smtpmail-stream-type 'starttls
+        smtpmail-smtp-service 587)
   (setq starttls-use-gnutls t)
   (setq user-full-name "Ari Turetzky")
   (setq user-mail-address "aturetzky@quantcast.com")
@@ -357,8 +357,8 @@
        (venv-initialize-eshell)
        (setq venv-location "~/.virtualenvs")
        )
-     (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.1/libexec/plantuml.jar")
-     (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.1/libexec/plantuml.jar")
+     (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+     (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
 
 
      (setq org-mime-export-options '(:section-numbers nil
