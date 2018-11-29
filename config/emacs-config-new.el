@@ -285,8 +285,8 @@
   (venv-initialize-eshell)
   (setq venv-location "~/.virtualenvs")
   )
-(setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.1/libexec/plantuml.jar")
-(setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.1/libexec/plantuml.jar")
+(setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+(setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
 
 
 (setq org-mime-export-options '(:section-numbers nil
