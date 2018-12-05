@@ -31,10 +31,15 @@
 (setq mode-line-in-non-selected-windows nil)
 (fset 'yes-or-no-p 'y-or-n-p)
 
+(use-package popup
+  :ensure t)
+(use-package popup-kill-ring
+  :ensure t)
+
 (global-set-key "\C-cy" 'popup-kill-ring)
-                ;; '(lambda ()
-                ;;            (interactive)
-                ;;            (popup-menu 'yank-menu)))
+;; '(lambda ()
+;;            (interactive)
+;;            (popup-menu 'yank-menu)))
 
 (require 'smtpmail)
 
@@ -294,110 +299,114 @@
                                                  :with-toc nil))
 
 (use-package ag
-       :ensure t)
-     (require 'dired-details)
-     (dired-details-install)
-     (require 'uniquify)
-     (use-package boxquote
-       :ensure t)
+  :ensure t)
+(require 'dired-details)
+(dired-details-install)
+(require 'uniquify)
+(use-package boxquote
+  :ensure t)
 ;;     (require 'tex-site)
-     (require 'tramp)
-     (use-package gist
-       :ensure t)
-     (use-package web-mode
-       :ensure t)
-     (require 'ls-lisp)
-     (use-package puppet-mode
-       :ensure t)
-     (require 'blog)
-     (use-package htmlize
-       :ensure t)
-     (require 'cl)
-     (require 'keys-config-new)
-     (use-package yaml-mode
-       :ensure t)
-     (require 'ari-custom-new)
-     (use-package all-the-icons
-       :ensure t)
-     (use-package powerline
-       :ensure t
-       :init
-       (setq powerline-image-apple-rgb t)
-       (setq powerline-height 28)
-       )
-     (use-package hc-zenburn-theme
-       :ensure t
-       :init
-       (powerline-default-theme)
-       (load-theme 'hc-zenburn t)
-       (hc-zenburn-with-color-variables
-         (custom-theme-set-faces
-          'hc-zenburn
-          `(ac-candidate-face ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
-          `(ac-selection-face ((t (:background ,hc-zenburn-cyan  :foreground ,hc-zenburn-blue-4))))
-          `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
-       )
-     ;;     (use-package moe-theme
-     ;;       :ensure t
-     ;;       :config
-     ;;       (load-theme 'moe-dark t)
-     ;;       (moe-dark)
-     ;;       (powerline-moe-theme))
-     ;;     (require 'moe-dark)
-     ;;     (moe-dark)
+(require 'tramp)
+(use-package gist
+  :ensure t)
+(use-package web-mode
+  :ensure t)
+(require 'ls-lisp)
+(use-package puppet-mode
+  :ensure t)
+(require 'blog)
+(use-package htmlize
+  :ensure t)
+(require 'cl)
+(require 'keys-config-new)
+(use-package yaml-mode
+  :ensure t)
+(require 'ari-custom-new)
+(use-package all-the-icons
+  :ensure t)
+(use-package all-the-icons-dired
+  :ensure t)
+(use-package all-the-icons-ivy
+  :ensure t)
+(use-package powerline
+  :ensure t
+  :init
+  (setq powerline-image-apple-rgb t)
+  (setq powerline-height 28)
+  )
+(use-package hc-zenburn-theme
+  :ensure t
+  :init
+  (powerline-default-theme)
+  (load-theme 'hc-zenburn t)
+  (hc-zenburn-with-color-variables
+    (custom-theme-set-faces
+     'hc-zenburn
+     `(ac-candidate-face ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
+     `(ac-selection-face ((t (:background ,hc-zenburn-cyan  :foreground ,hc-zenburn-blue-4))))
+     `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
+  )
+;;     (use-package moe-theme
+;;       :ensure t
+;;       :config
+;;       (load-theme 'moe-dark t)
+;;       (moe-dark)
+;;       (powerline-moe-theme))
+;;     (require 'moe-dark)
+;;     (moe-dark)
 
-     ;; (use-package zenburn-theme
-     ;;   :ensure t
-     ;;   ;;  :init
-     ;;                                         ;  (load-theme 'zenburn t)
-     ;;   )
-     (use-package exec-path-from-shell
-       :ensure t
-       :init
-       (when (memq window-system '(mac ns x))
-         (exec-path-from-shell-initialize))
-       (setq exec-path-from-shell-check-startup-files nil))
-     (use-package inf-ruby
-       :ensure t)
-     (require 'ruby-mode)
-     (use-package  ruby-electric
-       :ensure t)
-     (use-package coffee-mode
-       :ensure t)
-     (use-package feature-mode
-       :ensure t)
-     (require 'rcodetools)
-     (use-package yasnippet
-       :ensure t)
-     (yas-global-mode t)
-     (yas-global-mode)
-     ;; (use-package auto-complete
-     ;;   :diminish "  "
-     ;;   :ensure t
-     ;;   :init
-     ;;   (setq ac-use-menu-map t)
-     ;;   (setq ac-use-fuzzy t))
-     ;; (require 'auto-complete-config)
-     ;; (ac-config-default)
-     ;; (require 'auto-complete-yasnippet)
-     (use-package haml-mode
-       :ensure t)
-     ;; (use-package rvm
-     ;;   :ensure t
-     ;;   :hook
-     ;;   (ruby-mode . rvm-activate-corresponding-ruby))
-     ;; (rvm-use-default)
-     (use-package beacon
-       :ensure t
-       :init
-       (beacon-mode))
-     (use-package rainbow-mode
-       :ensure t)
-     (use-package rainbow-delimiters
-       :ensure t
-       :config
-       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-     (require 'ruby-config-new)
+;; (use-package zenburn-theme
+;;   :ensure t
+;;   ;;  :init
+;;                                         ;  (load-theme 'zenburn t)
+;;   )
+(use-package exec-path-from-shell
+  :ensure t
+  :init
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  (setq exec-path-from-shell-check-startup-files nil))
+(use-package inf-ruby
+  :ensure t)
+(require 'ruby-mode)
+(use-package  ruby-electric
+  :ensure t)
+(use-package coffee-mode
+  :ensure t)
+(use-package feature-mode
+  :ensure t)
+(require 'rcodetools)
+(use-package yasnippet
+  :ensure t)
+(yas-global-mode t)
+(yas-global-mode)
+;; (use-package auto-complete
+;;   :diminish "  "
+;;   :ensure t
+;;   :init
+;;   (setq ac-use-menu-map t)
+;;   (setq ac-use-fuzzy t))
+;; (require 'auto-complete-config)
+;; (ac-config-default)
+;; (require 'auto-complete-yasnippet)
+(use-package haml-mode
+  :ensure t)
+;; (use-package rvm
+;;   :ensure t
+;;   :hook
+;;   (ruby-mode . rvm-activate-corresponding-ruby))
+;; (rvm-use-default)
+(use-package beacon
+  :ensure t
+  :init
+  (beacon-mode))
+(use-package rainbow-mode
+  :ensure t)
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+(require 'ruby-config-new)
 
 (use-package highline
   :ensure t
@@ -417,48 +426,57 @@
   (company-tooltip-align-annotations 't)
   (global-company-mode t))
 
-(use-package company-box
-  :after company
-  :diminish
-  :hook (company-mode . company-box-mode))
 (require 'company)
 (add-hook  'after-init-hook 'global-company-mode)
 
+(use-package lsp
+  :ensure lsp-mode)
+(require 'lsp)
+(require 'lsp-clients)
+;;     (require 'lsp-mode)
+(setq lsp-inhibit-message t)
+(use-package company-lsp
+  :ensure t)
 (require 'company-lsp)
 (push 'company-lsp company-backends)
-(setq company-lsp-enable-snippet t)
-(setq company-lsp-cache-candidates t)
-(require 'lsp-mode)
-(setq lsp-inhibit-message t)
-(setq lsp-eldoc-render-all nil)
+                                        ;  ; (setq lsp-eldoc-render-all nil)
 
 (setq lsp-highlight-symbol-at-point t)
-(setq  lsp-java--workspace-folders (list "/Users/aturetzky/dev/git/permission-center/api"))
-(setq lsp-java-format-settings-profile "Quantcast")
-(setq lsp-java-format-settings-url "~/Users/aturetzky/eclipse-java-google-style.xml")
-(require 'lsp-java)
-(add-hook 'java-mode-hook #'lsp-java-enable)
-(add-hook 'java-mode-hook 'flycheck-mode)
-(add-hook 'java-mode-hook 'company-mode)
-(add-hook 'java-mode-hook (lambda ()(lsp-ui-flycheck-enable t)))
-(add-hook 'java-mode-hook 'lsp-ui-mode)
-(add-hook 'java-mode-hook 'lsp-ui-sideline-mode)
+;; (setq  lsp-java--workspace-folders (list "/Users/aturetzky/dev/git/permission-center/api"))
+;; (setq lsp-java-format-settings-profile "Quantcast")
+;; (setq lsp-java-format-settings-url "~/Users/aturetzky/eclipse-java-google-style.xml")
+;; (require 'lsp-java)
+;; (add-hook 'java-mode-hook #'lsp-java-enable)
+;; (add-hook 'java-mode-hook 'flycheck-mode)
+;; (add-hook 'java-mode-hook 'company-mode)
+;; (add-hook 'java-mode-hook (lambda ()(lsp-ui-flycheck-enable t)))
+;; (add-hook 'java-mode-hook 'lsp-ui-mode)
+;; (add-hook 'java-mode-hook 'lsp-ui-sideline-mode)
 (require 'lsp-ui)
 (setq lsp-ui-sideline-enable t)
 (setq lsp-ui-sideline-show-symbol t)
 (setq lsp-ui-sideline-show-hover nil)
 (setq lsp-ui-sideline-show-code-actions t)
 (setq lsp-ui-sideline-update-mode 'point)
-(setq lsp-java-import-maven-enabled nil)
-(setq lsp-java-import-gradle-enabled t)
-(setq lsp-java-progress-report t)
-(setq lsp-java-auto-build t)
-(setq lsp-ui-doc-mode nil)
-(setq lsp-ui-doc-enable nil)
+;; (setq lsp-java-import-maven-enabled nil)
+;; (setq lsp-java-import-gradle-enabled t)
+;; (setq lsp-java-progress-report t)
+;; (setq lsp-java-auto-build t)
+;; (setq lsp-ui-doc-mode nil)
+;; (setq lsp-ui-doc-enable nil)
 (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
 (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
 (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
 (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
+
+(setq lsp-message-project-root-warning t)
+
+(define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+(define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+(use-package company-box
+  :ensure t
+  :hook
+  (company-mode . company-box-mode))
 
 ;;     (require 'eclim)
 ;;     (require 'eclimd)
@@ -579,14 +597,12 @@
 ;;         '(lambda ()
 ;;            (inf-ruby-keys)
 ;;   ))
-(load-library "rdebug")
-(setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
-(autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
-(load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
-(setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
-(autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
-(load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
-(setq rct-debug nil)
+;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+;; (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
+;; (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
+;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+;; (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
+;; (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
 
 (require 'dired-x)
 (setq dired-omit-files
@@ -652,5 +668,12 @@
 ;;    (progn
 ;;      (setq semantic-load-turn-everything-on t)
 ;;      (semantic-load-enable-gaudy-code-helpers)))
+
+(use-package cypher-mode
+  :ensure t)
+(setq n4js-cli-program "~/Downloads/cypher-shell/cypher-shell")
+(setq n4js-cli-arguments '("-u" "neo4j"))
+(setq n4js-pop-to-buffer t)
+(setq n4js-font-lock-keywords cypher-font-lock-keywords)
 
 (provide 'emacs-config-new)

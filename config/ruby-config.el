@@ -79,8 +79,8 @@
 
 ;;(load "~/emacs/site/yasnippets-rails/setup.el")
 
-(require 'rinari)
-(setq rinari-tags-file-name "TAGS")
+;; (require 'rinari)
+;; (setq rinari-tags-file-name "TAGS")
 
 ;;(require 'auto-complete-ruby)
 ;;(require 'auto-complete-css)
@@ -109,7 +109,7 @@
 ;; (setq ac-auto-start 3)
 ;; (define-key ac-complete-mode-map "\t" 'ac-complete)
 ;; (define-key ac-complete-mode-map "\r" nil)
-(require 'unit-test)
+;;(require 'unit-test)
 (require 'autotest)
 
 (provide 'ruby-config)
