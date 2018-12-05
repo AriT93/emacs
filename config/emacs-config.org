@@ -47,10 +47,15 @@
 
    Pop yank gives you a pop up of recent yanks,  a "yank bank"
    #+BEGIN_SRC elisp
+     (use-package popup
+       :ensure t)
+     (use-package popup-kill-ring
+       :ensure t)
+
      (global-set-key "\C-cy" 'popup-kill-ring)
-                     ;; '(lambda ()
-                     ;;            (interactive)
-                     ;;            (popup-menu 'yank-menu)))
+     ;; '(lambda ()
+     ;;            (interactive)
+     ;;            (popup-menu 'yank-menu)))
 
    #+END_SRC
 ** Who am i and email
@@ -376,7 +381,7 @@
      (require 'uniquify)
      (use-package boxquote
        :ensure t)
-;;     (require 'tex-site)
+     ;;     (require 'tex-site)
      (require 'tramp)
      (use-package gist
        :ensure t)
@@ -394,6 +399,10 @@
        :ensure t)
      (require 'ari-custom-new)
      (use-package all-the-icons
+       :ensure t)
+     (use-package all-the-icons-dired
+       :ensure t)
+     (use-package all-the-icons-ivy
        :ensure t)
      (use-package powerline
        :ensure t
@@ -504,50 +513,57 @@
        (company-tooltip-align-annotations 't)
        (global-company-mode t))
 
-     (use-package company-box
-       :after company
-       :diminish
-       :hook (company-mode . company-box-mode))
      (require 'company)
      (add-hook  'after-init-hook 'global-company-mode)
 
+     (use-package lsp
+       :ensure lsp-mode)
+     (require 'lsp)
+     (require 'lsp-clients)
+     ;;     (require 'lsp-mode)
+     (setq lsp-inhibit-message t)
+     (use-package company-lsp
+       :ensure t)
      (require 'company-lsp)
      (push 'company-lsp company-backends)
-     (setq company-lsp-enable-snippet t)
-     (setq company-lsp-cache-candidates t)
-     (require 'lsp-mode)
-     (setq lsp-inhibit-message t)
-     (setq lsp-eldoc-render-all nil)
+                                             ;  ; (setq lsp-eldoc-render-all nil)
 
      (setq lsp-highlight-symbol-at-point t)
-     (setq  lsp-java--workspace-folders (list "/Users/aturetzky/dev/git/permission-center/api"))
-     (setq lsp-java-format-settings-profile "Quantcast")
-     (setq lsp-java-format-settings-url "~/Users/aturetzky/eclipse-java-google-style.xml")
-     (require 'lsp-java)
-     (add-hook 'java-mode-hook #'lsp-java-enable)
-     (add-hook 'java-mode-hook 'flycheck-mode)
-     (add-hook 'java-mode-hook 'company-mode)
-     (add-hook 'java-mode-hook (lambda ()(lsp-ui-flycheck-enable t)))
-     (add-hook 'java-mode-hook 'lsp-ui-mode)
-     (add-hook 'java-mode-hook 'lsp-ui-sideline-mode)
+     ;; (setq  lsp-java--workspace-folders (list "/Users/aturetzky/dev/git/permission-center/api"))
+     ;; (setq lsp-java-format-settings-profile "Quantcast")
+     ;; (setq lsp-java-format-settings-url "~/Users/aturetzky/eclipse-java-google-style.xml")
+     ;; (require 'lsp-java)
+     ;; (add-hook 'java-mode-hook #'lsp-java-enable)
+     ;; (add-hook 'java-mode-hook 'flycheck-mode)
+     ;; (add-hook 'java-mode-hook 'company-mode)
+     ;; (add-hook 'java-mode-hook (lambda ()(lsp-ui-flycheck-enable t)))
+     ;; (add-hook 'java-mode-hook 'lsp-ui-mode)
+     ;; (add-hook 'java-mode-hook 'lsp-ui-sideline-mode)
      (require 'lsp-ui)
      (setq lsp-ui-sideline-enable t)
      (setq lsp-ui-sideline-show-symbol t)
      (setq lsp-ui-sideline-show-hover nil)
      (setq lsp-ui-sideline-show-code-actions t)
      (setq lsp-ui-sideline-update-mode 'point)
-     (setq lsp-java-import-maven-enabled nil)
-     (setq lsp-java-import-gradle-enabled t)
-     (setq lsp-java-progress-report t)
-     (setq lsp-java-auto-build t)
-     (setq lsp-ui-doc-mode nil)
-     (setq lsp-ui-doc-enable nil)
+     ;; (setq lsp-java-import-maven-enabled nil)
+     ;; (setq lsp-java-import-gradle-enabled t)
+     ;; (setq lsp-java-progress-report t)
+     ;; (setq lsp-java-auto-build t)
+     ;; (setq lsp-ui-doc-mode nil)
+     ;; (setq lsp-ui-doc-enable nil)
      (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
      (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
      (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
      (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
 
+     (setq lsp-message-project-root-warning t)
 
+     (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+     (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+     (use-package company-box
+       :ensure t
+       :hook
+       (company-mode . company-box-mode))
 
    #+END_SRC
 
@@ -705,14 +721,13 @@
      ;;         '(lambda ()
      ;;            (inf-ruby-keys)
      ;;   ))
-     (load-library "rdebug")
-     (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
-     (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
-     (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
-     (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
-     (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
-     (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
-     (setq rct-debug nil)
+     ;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+     ;; (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
+     ;; (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
+     ;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+     ;; (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
+     ;; (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
+
 
    #+END_SRC
 ** Dired-X
@@ -811,6 +826,15 @@
      ;;    (progn
      ;;      (setq semantic-load-turn-everything-on t)
      ;;      (semantic-load-enable-gaudy-code-helpers)))
+   #+END_SRC
+** Cypher Mode
+   #+BEGIN_SRC elisp
+     (use-package cypher-mode
+       :ensure t)
+     (setq n4js-cli-program "~/Downloads/cypher-shell/cypher-shell")
+     (setq n4js-cli-arguments '("-u" "neo4j"))
+     (setq n4js-pop-to-buffer t)
+     (setq n4js-font-lock-keywords cypher-font-lock-keywords)
    #+END_SRC
 ** Tell the world we are providing something useful
    #+BEGIN_SRC elisp
