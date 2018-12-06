@@ -138,7 +138,6 @@
   :ensure t
   :init
   (ivy-mode 1)
-  (diminish 'ivy-mode "  " )
   (setq ivy-use-virtual-buffers t)
   (setq ivy-use-selectable-prompt t)
   (setq enable-recursive-minibuffers t)
@@ -239,6 +238,12 @@
   (diminish 'org-src-mode)
   (diminish 'eclim-mode)
   (diminish 'abbrev-mode)
+  (diminish 'ivy-mode)
+  (diminish 'global-highline-mode)
+  (diminish 'ruby-block-mode)
+  (diminish 'ruby-electric-mode)
+  (diminish "seeing-is-believing")
+  (diminish 'hs-minor-mode)
   )
 (use-package org
   :ensure t
@@ -461,12 +466,17 @@
 (setq lsp-ui-sideline-show-hover nil)
 (setq lsp-ui-sideline-show-code-actions t)
 (setq lsp-ui-sideline-update-mode 'point)
+(setq lsp-ui-flycheck-live-reporting t)
+(setq lsp-ui-flycheck-enable t)
+(setq lsp-ui-sideline-enable t)
+(setq lsp-ui-sideline-mode t)
+
 ;; (setq lsp-java-import-maven-enabled nil)
 ;; (setq lsp-java-import-gradle-enabled t)
 ;; (setq lsp-java-progress-report t)
 ;; (setq lsp-java-auto-build t)
-;; (setq lsp-ui-doc-mode nil)
-;; (setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc-mode t)
+(setq lsp-ui-doc-enable nil)
 (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
 (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
 (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
@@ -478,6 +488,7 @@
 (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
 (use-package company-box
   :ensure t
+  :diminish
   :hook
   (company-mode . company-box-mode))
 
