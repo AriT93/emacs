@@ -29,7 +29,7 @@
   :diminish ruby-tools-mode)
 
 (use-package seeing-is-believing
-  :diminish ""
+  :diminish seeing-is-believing
   :ensure t
   :init
   (setq seeing-is-believing-alignment 'chunk)
@@ -42,24 +42,26 @@
   )
 
 ;; ruby-mode-hook
+(require 'ruby-block)
+(diminish ruby-block-mode)
+(require 'ruby-electric)
+(diminish ruby-electric-mode)
 (add-hook 'ruby-mode-hook
-          (lambda()
-            (add-hook 'write-file-functions
-                      '(lambda()
-                         (save-excursion
-                           (untabify (point-min) (point-max))
-                           (delete-trailing-whitespace)
-                           )))
-            (set (make-local-variable 'indent-tabs-mode) 'nil)
-            (set (make-local-variable 'tab-width) 2)
-            (imenu-add-to-menubar "IMENU")
-            (require 'ruby-electric)
-            (ruby-electric-mode t)
-            (require 'ruby-block)
-            (ruby-block-mode t)
-            (define-key ruby-mode-map "\M-\C-o" 'rct-complete-symbol)
-            (local-set-key (kbd "<return>") 'newline-and-indent)
-            ))
+            (lambda()
+              (add-hook 'write-file-functions
+                        '(lambda()
+                           (save-excursion
+                             (untabify (point-min) (point-max))
+                             (delete-trailing-whitespace)
+                             )))
+              (set (make-local-variable 'indent-tabs-mode) 'nil)
+              (set (make-local-variable 'tab-width) 2)
+              (imenu-add-to-menubar "IMENU")
+              (ruby-electric-mode t)
+              (ruby-block-mode t)
+              (define-key ruby-mode-map "\M-\C-o" 'rct-complete-symbol)
+              (local-set-key (kbd "<return>") 'newline-and-indent)
+              ))
 
 (add-to-list 'auto-mode-alist '("\\.html?" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\.erb" . web-mode))

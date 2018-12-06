@@ -77,7 +77,7 @@ evaluate ruby code and add comment with the output so you can see what
 is going on while you write code.
 #+BEGIN_SRC elisp
   (use-package seeing-is-believing
-    :diminish ""
+    :diminish seeing-is-believing
     :ensure t
     :init
     (setq seeing-is-believing-alignment 'chunk)
@@ -90,28 +90,30 @@ is going on while you write code.
     )
 #+END_SRC
 
+
 ** Ruby Mode Hook
 #+BEGIN_SRC elisp
-
-  ;; ruby-mode-hook
+    ;; ruby-mode-hook
+  (require 'ruby-block)
+  (diminish ruby-block-mode)
+  (require 'ruby-electric)
+  (diminish ruby-electric-mode)
   (add-hook 'ruby-mode-hook
-            (lambda()
-              (add-hook 'write-file-functions
-                        '(lambda()
-                           (save-excursion
-                             (untabify (point-min) (point-max))
-                             (delete-trailing-whitespace)
-                             )))
-              (set (make-local-variable 'indent-tabs-mode) 'nil)
-              (set (make-local-variable 'tab-width) 2)
-              (imenu-add-to-menubar "IMENU")
-              (require 'ruby-electric)
-              (ruby-electric-mode t)
-              (require 'ruby-block)
-              (ruby-block-mode t)
-              (define-key ruby-mode-map "\M-\C-o" 'rct-complete-symbol)
-              (local-set-key (kbd "<return>") 'newline-and-indent)
-              ))
+              (lambda()
+                (add-hook 'write-file-functions
+                          '(lambda()
+                             (save-excursion
+                               (untabify (point-min) (point-max))
+                               (delete-trailing-whitespace)
+                               )))
+                (set (make-local-variable 'indent-tabs-mode) 'nil)
+                (set (make-local-variable 'tab-width) 2)
+                (imenu-add-to-menubar "IMENU")
+                (ruby-electric-mode t)
+                (ruby-block-mode t)
+                (define-key ruby-mode-map "\M-\C-o" 'rct-complete-symbol)
+                (local-set-key (kbd "<return>") 'newline-and-indent)
+                ))
 #+END_SRC
 
 ** File associations
