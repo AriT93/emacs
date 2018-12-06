@@ -214,6 +214,9 @@
 #+END_SRC
 ** Git
 #+BEGIN_SRC elisp
+  (use-package magit
+    :ensure t)
+  (require 'magit)
   (use-package git-gutter
     :ensure t
     :diminish

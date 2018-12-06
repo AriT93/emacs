@@ -160,6 +160,9 @@
   :bind
   ("M-o" . 'ace-window))
 
+(use-package magit
+  :ensure t)
+(require 'magit)
 (use-package git-gutter
   :ensure t
   :diminish
