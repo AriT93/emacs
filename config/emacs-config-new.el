@@ -476,7 +476,7 @@
 ;; (setq lsp-java-progress-report t)
 ;; (setq lsp-java-auto-build t)
 (setq lsp-ui-doc-mode t)
-(setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc-enable t)
 (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
 (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
 (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
@@ -676,6 +676,12 @@
 (setq sql-mysql-program "c:/cygwin/usr/local/bin/mysql")
 (setq sql-pop-to-buffer-after-send-region nil)
 (setq sql-product (quote ms))
+
+(exec-path-from-shell-initialize)
+(use-package rjsx-mode
+  :ensure t)
+(add-hook 'js2-mode-hook 'lsp)
+(add-hook 'rjsx-mode-hook 'lsp)
 
 ;;(require 'semantic-ia)
 ;;(if window-system
