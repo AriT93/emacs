@@ -229,22 +229,24 @@
 (server-start)
 
 (use-package diminish
-  :ensure t
-  :init
-  (diminish 'org-mode  "")
-  (diminish 'auto-revert-mode)
-  (diminish 'yas-minor-mode)
-  (diminish 'eldoc-mode)
-  (diminish 'org-src-mode)
-  (diminish 'eclim-mode)
-  (diminish 'abbrev-mode)
-  (diminish 'ivy-mode)
-  (diminish 'global-highline-mode)
-  (diminish 'ruby-block-mode)
-  (diminish 'ruby-electric-mode)
-  (diminish "seeing-is-believing")
-  (diminish 'hs-minor-mode)
-  )
+  :ensure t)
+
+(diminish 'org-mode  "")
+(diminish 'auto-revert-mode)
+(diminish 'yas-minor-mode)
+(diminish 'eldoc-mode)
+(diminish 'org-src-mode)
+(diminish 'eclim-mode)
+(diminish 'abbrev-mode)
+(diminish 'ivy-mode)
+(diminish 'global-highline-mode)
+(diminish 'ruby-block-mode)
+(diminish 'ruby-electric-mode)
+(diminish "seeing-is-believing")
+(diminish 'hs-minor-mode)
+(diminish 'ruby-block-mode)
+(diminish 'global-highline-mode)
+
 (use-package org
   :ensure t
   :diminish  "")
@@ -330,6 +332,12 @@
 (use-package yaml-mode
   :ensure t)
 (require 'ari-custom-new)
+(use-package ruby-block
+  :ensure t)
+(use-package popup
+  :ensure t)
+(use-package popup-kill-ring
+  :ensure t)
 (use-package all-the-icons
   :ensure t)
 (use-package all-the-icons-dired
@@ -342,18 +350,27 @@
   (setq powerline-image-apple-rgb t)
   (setq powerline-height 28)
   )
-(use-package hc-zenburn-theme
+(use-package doom-modeline
   :ensure t
+  :config
+  (doom-modeline-init)
   :init
-  (powerline-default-theme)
-  (load-theme 'hc-zenburn t)
-  (hc-zenburn-with-color-variables
-    (custom-theme-set-faces
-     'hc-zenburn
-     `(ac-candidate-face ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
-     `(ac-selection-face ((t (:background ,hc-zenburn-cyan  :foreground ,hc-zenburn-blue-4))))
-     `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
+  (load-theme 'doom-spacegrey t)
+  (doom-themes-org-config)
   )
+
+;; (use-package hc-zenburn-theme
+;;   :ensure t
+;;   :init
+;;   (powerline-default-theme)
+;;   (load-theme 'hc-zenburn t)
+;;   (hc-zenburn-with-color-variables
+;;     (custom-theme-set-faces
+;;      'hc-zenburn
+;;      `(ac-candidate-face ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
+;;      `(ac-selection-face ((t (:background ,hc-zenburn-cyan  :foreground ,hc-zenburn-blue-4))))
+;;      `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
+;;   )
 ;;     (use-package moe-theme
 ;;       :ensure t
 ;;       :config
@@ -426,6 +443,7 @@
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
 (use-package company
+  :ensure t
   :defer 2
   :diminish
   :custom
@@ -437,19 +455,27 @@
 (require 'company)
 (add-hook  'after-init-hook 'global-company-mode)
 
-(use-package lsp
-  :ensure lsp-mode)
+(use-package lsp-mode
+  :commands lsp
+  :ensure t)
+(use-package lsp-ui
+  :commands lsp-ui-mode)
 (require 'lsp)
+(require 'lsp-mode)
 (require 'lsp-clients)
+(require 'lsp-ui-flycheck)
 ;;     (require 'lsp-mode)
 (setq lsp-inhibit-message t)
+(setq lsp-prefer-flymake nil)
 (use-package company-lsp
-  :ensure t)
+  :commands company-lsp
+  :ensure t)t
 (require 'company-lsp)
 (push 'company-lsp company-backends)
                                         ;  ; (setq lsp-eldoc-render-all nil)
+(setq lsp-eldoc-render-all nil)
 
-(setq lsp-highlight-symbol-at-point t)
+;;      (setq lsp-highlight-symbol-at-point t)
 ;; (setq  lsp-java--workspace-folders (list "/Users/aturetzky/dev/git/permission-center/api"))
 ;; (setq lsp-java-format-settings-profile "Quantcast")
 ;; (setq lsp-java-format-settings-url "~/Users/aturetzky/eclipse-java-google-style.xml")
@@ -461,22 +487,26 @@
 ;; (add-hook 'java-mode-hook 'lsp-ui-mode)
 ;; (add-hook 'java-mode-hook 'lsp-ui-sideline-mode)
 (require 'lsp-ui)
-(setq lsp-ui-sideline-enable t)
-(setq lsp-ui-sideline-show-symbol t)
-(setq lsp-ui-sideline-show-hover nil)
-(setq lsp-ui-sideline-show-code-actions t)
-(setq lsp-ui-sideline-update-mode 'point)
-(setq lsp-ui-flycheck-live-reporting t)
-(setq lsp-ui-flycheck-enable t)
-(setq lsp-ui-sideline-enable t)
-(setq lsp-ui-sideline-mode t)
+(require 'lsp-ui-flycheck)
+(setq lsp-auto-configure nil)
+(setq lsp-prefer-flymake nil)
+;;     (setq lsp-ui-doc-enable-eldoc nil)
+;; (setq lsp-ui-sideline-enable t)
+;;       (setq lsp-ui-sideline-show-symbol nil)
+;;       (setq lsp-ui-sideline-show-hover nil)
+;;       (setq lsp-ui-sideline-show-code-actions t)
+;;       (setq lsp-ui-sideline-update-mode 'point)
+;;      (setq lsp-ui-flycheck-live-reporting t)
+;;      (setq lsp-ui-flycheck-enable t)
+;;      (setq lsp-ui-sideline-enable nil)
+;;      (lsp-ui-sideline-mode t)
 
-;; (setq lsp-java-import-maven-enabled nil)
+;; (setq lsp-java-import-maven-enabled nil);
 ;; (setq lsp-java-import-gradle-enabled t)
 ;; (setq lsp-java-progress-report t)
 ;; (setq lsp-java-auto-build t)
-(setq lsp-ui-doc-mode t)
-(setq lsp-ui-doc-enable t)
+;;      (setq lsp-ui-doc-mode nil)
+;;      (setq lsp-ui-doc-enable t)
 (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
 (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
 (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
