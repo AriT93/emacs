@@ -148,7 +148,13 @@
    ("C-x C-f" . 'counsel-find-file)
    ("C-c j" . 'counsel-git-grep)
    ("C-c k" . 'counsel-ag)
-   ("C-c l" . 'counsel-locate)))
+   ("C-c l" . 'counsel-locate)
+   ("M-x" . 'counsel-M-x)))
+(use-package ivy-rich
+  :init
+  (ivy-rich-mode 1)
+  :config
+  (setq ivy-format-function #'ivy-format-function-line))
 
 (use-package ace-window
   :ensure t
@@ -162,11 +168,11 @@
 (use-package magit
   :ensure t)
 (require 'magit)
-(use-package git-gutter
+(use-package git-gutter-fringe+
   :ensure t
   :diminish
   :init
-  (global-git-gutter-mode))
+  (global-git-gutter+-mode))
 
 (use-package git-timemachine
   :ensure t
@@ -224,6 +230,9 @@
   :init
   (setq flycheck-emacs-lisp-initialize-packages 1)
   (setq flycheck-emacs-lisp-load-path 'inherit)
+  :config
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-jshint 'rjsx-mode)
   )
 
 (server-start)
@@ -254,7 +263,7 @@
   :ensure t)
 (use-package ox-jira
   :ensure t)
-
+(require 'org-tempo)
 (use-package org-mime
   :ensure t)
 (setq org-ellipsis " ⤵")
@@ -343,7 +352,9 @@
 (use-package all-the-icons-dired
   :ensure t)
 (use-package all-the-icons-ivy
-  :ensure t)
+  :ensure t
+  :config
+  (all-the-icons-ivy-setup))
 (use-package powerline
   :ensure t
   :init
@@ -355,9 +366,9 @@
   :config
   (doom-modeline-init)
   :init
-  (load-theme 'doom-spacegrey t)
+  (load-theme 'doom-Iosvkem t)
   (doom-themes-org-config)
-  )
+  )t
 
 ;; (use-package hc-zenburn-theme
 ;;   :ensure t
@@ -442,6 +453,14 @@
   (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
+(use-package hlinum
+  :ensure t)
+(use-package linum-relative
+  :ensure t)
+
+  (global-linum-mode)
+  (hlinum-activate)
+
 (use-package company
   :ensure t
   :defer 2
@@ -454,7 +473,10 @@
 
 (require 'company)
 (add-hook  'after-init-hook 'global-company-mode)
-
+(use-package company-quickhelp
+  :config
+  :init
+  (company-quickhelp-mode))
 (use-package lsp-mode
   :commands lsp
   :ensure t)
@@ -513,6 +535,7 @@
 (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
 
 (setq lsp-message-project-root-warning t)
+(setq lsp-auto-guess-root t)
 
 (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
 (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
@@ -535,7 +558,7 @@
   :ensure t
   :init
   (projectile-global-mode)
-  (setq projectile-switch-project-action 'projectile-dired)
+  (setq projectile-switch-project-action #'projectile-dired)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-require-project-root nil)
   (setq projectile-indexing-method 'alien))
@@ -712,6 +735,15 @@
   :ensure t)
 (add-hook 'js2-mode-hook 'lsp)
 (add-hook 'rjsx-mode-hook 'lsp)
+(add-hook 'rjsx-mode-hook 'emmet-mode)
+
+(use-package prettier-js
+  :config
+  (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+  )
+
+(setq emmet-expand-jsx-className? t)
 
 ;;(require 'semantic-ia)
 ;;(if window-system
