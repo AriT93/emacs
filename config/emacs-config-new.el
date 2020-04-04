@@ -22,7 +22,8 @@
       '((".*" "~/tmp/" t)))
 (setq message-log-max 1000)
 ;;     (set-default-font "Monaco-11")
-(set-face-attribute 'default nil :family "Monaco" :height 110 :weight 'normal)
+;;(set-face-attribute 'default nil :family "Monaco" :height 110 :weight 'normal)
+(set-face-attribute 'default nil :family "JetBrains Mono" :height 110 :weight 'normal)
 ;;     (add-to-list 'default-frame-alist '(font . "Monaco-18"))
 (setq help-at-pt-display-when-idle t)
 (setq help-at-pt-timer-delay 0.1)
@@ -32,6 +33,8 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (use-package popup
+  :ensure t)
+(use-package pos-tip
   :ensure t)
 (use-package popup-kill-ring
   :ensure t)
@@ -180,50 +183,122 @@
   )
 
 ;; Notes in *scratch* v. 0.2
-;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
-;; Released under GNU GPL
+     ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
+     ;; Released under GNU GPL
 
-(defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
-  "File where content of *scratch* buffer will be read from and saved to.")
-(defconst scratch-file-autosave (concat scratch-file ".autosave")
-  "File where to autosave content of *scratch* buffer.")
+     (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
+       "File where content of *scratch* buffer will be read from and saved to.")
+     (defconst scratch-file-autosave (concat scratch-file ".autosave")
+       "File where to autosave content of *scratch* buffer.")
 
-(save-excursion
-  (set-buffer (get-buffer-create "*scratch*"))
-  (if (file-readable-p scratch-file)
-      (if (and (file-readable-p scratch-file-autosave)
-               (file-newer-than-file-p scratch-file-autosave scratch-file)t)
-          (insert-file-contents scratch-file-autosave nil nil nil t)
-        (insert-file-contents scratch-file nil nil nil t)
-        (set-buffer-modified-p nil)))
-  (auto-save-mode 1)
-  (setq buffer-auto-save-file-name scratch-file-autosave)
-                                        ; (setq revert-buffer-function 'scratch-revert)
-  (fundamental-mode))
-(add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
-(add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
+     (save-excursion
+       (set-buffer (get-buffer-create "*scratch*"))
+       (if (file-readable-p scratch-file)
+           (if (and (file-readable-p scratch-file-autosave)
+                    (file-newer-than-file-p scratch-file-autosave scratch-file)t)
+               (insert-file-contents scratch-file-autosave nil nil nil t)
+             (insert-file-contents scratch-file nil nil nil t)
+             (set-buffer-modified-p nil)))
+       (auto-save-mode 1)
+       (setq buffer-auto-save-file-name scratch-file-autosave)
+                                             ; (setq revert-buffer-function 'scratch-revert)
+       (fundamental-mode))
+     (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
+     (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
 
-(defun scratch-revert (ignore-auto noconfirm)
-  (when (file-readable-p scratch-file)
-    (insert-file-contents scratch-file nil nil nil t)
-    (set-buffer-modified-p nil)))
+     (defun scratch-revert (ignore-auto noconfirm)
+       (when (file-readable-p scratch-file)
+         (insert-file-contents scratch-file nil nil nil t)
+         (set-buffer-modified-p nil)))
 
-(defun kill-scratch-buffer ()
-  (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
-         (delete-region (point-min) (point-max))
-         (set-buffer-modified-p nil)
-         (next-buffer)
-         t)))
+     (defun kill-scratch-buffer ()
+       (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
+              (delete-region (point-min) (point-max))
+              (set-buffer-modified-p nil)
+              (next-buffer)
+              t)))
 
-(defun kill-emacs-scratch-save ()
-  (let ((buffer (get-buffer-create "*scratch*")))
-    (if buffer
-        (save-excursion
-          (set-buffer buffer)
-          (write-region nil nil scratch-file)
-          (unless (string-equal scratch-file buffer-auto-save-file-name)
-            (delete-auto-save-file-if-necessary t))))))
+     (defun kill-emacs-scratch-save ()
+       (let ((buffer (get-buffer-create "*scratch*")))
+         (if buffer
+             (save-excursion
+               (set-buffer buffer)
+               (write-region nil nil scratch-file)
+               (unless (string-equal scratch-file buffer-auto-save-file-name)
+                 (delete-auto-save-file-if-necessary t))))))
 
+(use-package treemacs-projectile
+  :after treemacs projectile
+  :ensure t)
+(use-package treemacs-magit
+  :after treemacs magit
+  :ensure t)
+(use-package treemacs
+  :ensure t
+  :defer t
+  :config
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode t)
+  (doom-themes-treemacs-config)
+  (setq doom-themes-treemacs-theme "doom-colors")
+  (global-set-key (kbd "M-0") 'treemacs-select-window))
+
+(setq sh-basic-offset 2)
+(setq sh-indentation 2)
+(setq smie-indent-basic 2)
+
+;; (use-package composite
+;;   :defer t
+;;   :init
+;;   (defvar composition-ligature-table (make-char-table nil))
+;;   :hook
+;;   (((prog-mode conf-mode nxml-mode markdown-mode help-mode rjsx-mode)
+;;     . (lambda () (setq-local composition-function-table composition-ligature-table))))
+;;   :config
+;;   ;; support ligatures, some toned down to prevent hang
+;;   (when (version<= "27.0" emacs-version)
+;;     (let ((alist
+;;            '((33 . ".\\(?:\\(==\\|[!=]\\)[!=]?\\)")
+;;              (35 . ".\\(?:\\(###?\\|_(\\|[(:=?[_{]\\)[#(:=?[_{]?\\)")
+;;              (36 . ".\\(?:\\(>\\)>?\\)")
+;;              (37 . ".\\(?:\\(%\\)%?\\)")
+;;              (38 . ".\\(?:\\(&\\)&?\\)")
+;;              (42 . ".\\(?:\\(\\*\\*\\|[*>]\\)[*>]?\\)")
+;;              ;; (42 . ".\\(?:\\(\\*\\*\\|[*/>]\\).?\\)")
+;;              (43 . ".\\(?:\\([>]\\)>?\\)")
+;;              ;; (43 . ".\\(?:\\(\\+\\+\\|[+>]\\).?\\)")
+;;              ;; (45 . ".\\(?:\\(-[->]\\|<<\\|>>\\|[-<>|~]\\)[-<>|~]?\\)")
+;;              ;; (46 . ".\\(?:\\(\\.[.<]\\|[-.=]\\)[-.<=]?\\)")
+;;              ;; (46 . ".\\(?:\\(\\.<\\|[-=]\\)[-<=]?\\)")
+;;              ;; (47 . ".\\(?:\\(//\\|==\\|[=>]\\)[/=>]?\\)")
+;;              ;; (47 . ".\\(?:\\(//\\|==\\|[*/=>]\\).?\\)")
+;;              (48 . ".\\(?:\\(x[a-fA-F0-9]\\).?\\)")
+;;              (58 . ".\\(?:\\(::\\|[:<=>]\\)[:<=>]?\\)")
+;;              (59 . ".\\(?:\\(;\\);?\\)")
+;;              (60 . ".\\(?:\\(!--\\|\\$>\\|\\*>\\|\\+>\\|-[-<>|]\\|/>\\|<[-<=]\\|=[<>|]\\|==>?\\||>\\||||?\\|~[>~]\\|[$*+/:<=>|~-]\\)[$*+/:<=>|~-]?\\)")
+;;              (61 . ".\\(?:\\(!=\\|/=\\|:=\\|<<\\|=[=>]\\|>>\\|[=>]\\)[=<>]?\\)")
+;;              (62 . ".\\(?:\\(->\\|=>\\|>[-=>]\\|[-:=>]\\)[-:=>]?\\)")
+;;              ;; t(63 . ".\\(?:\\([.:=?]\\)[.:=?]?\\)")
+;;              (91 . ".\\(?:\\(|\\)[]|]?\\)")
+;;              ;; (92 . ".\\(?:\\([\\n]\\)[\\]?\\)")
+;;              (94 . ".\\(?:\\(=\\)=?\\)")
+;;              (95 . ".\\(?:\\(|_\\|[_]\\)_?\\)")
+;;              (119 . ".\\(?:\\(ww\\)w?\\)")
+;;              (123 . ".\\(?:\\(|\\)[|}]?\\)")
+;;              (124 . ".\\(?:\\(->\\|=>\\||[-=>]\\||||*>\\|[]=>|}-]\\).?\\)")
+;;              (126 . ".\\(?:\\(~>\\|[-=>@~]\\)[-=>@~]?\\)"))))
+;;       (dolist (char-regexp alist)
+;;         (set-char-table-range composition-ligature-table (car char-regexp)
+;;                               `([,(cdr char-regexp) 0 font-shape-gstring]))))
+;;     (set-char-table-parent composition-ligature-table composition-function-table))
+;;   )
+
+(use-package flycheck-pos-tip
+  :after flycheck
+  :config
+  (flycheck-pos-tip-mode)
+  )
 (use-package flycheck
   :diminish flycheck-mode
   :ensure t
@@ -245,7 +320,6 @@
 (diminish 'yas-minor-mode)
 (diminish 'eldoc-mode)
 (diminish 'org-src-mode)
-(diminish 'eclim-mode)
 (diminish 'abbrev-mode)
 (diminish 'ivy-mode)
 (diminish 'global-highline-mode)
@@ -298,6 +372,7 @@
    (ruby . t)
    (css . t )
    (plantuml . t)
+   (sql . t)
    (java . t)
    (dot . t)))
 (setq org-confirm-babel-evaluate nil)
@@ -361,17 +436,30 @@
   (setq powerline-image-apple-rgb t)
   (setq powerline-height 28)
   )
-(use-package doom-modeline
-  :ensure t
-  :config
-  (doom-modeline-init)
-  :init
-  (load-theme 'doom-Iosvkem t)
-  (doom-themes-org-config)
-  )t
-
-;; (use-package hc-zenburn-theme
+;; (use-package panda-theme
 ;;   :ensure t
+;;   :config
+;;   ;;(load-theme 'panda t)
+;;   )
+(use-package spaceline
+    :ensure t
+    :config
+    (require 'spaceline-config)
+    (spaceline-emacs-theme)
+    (load-theme 'spacemacs-dark t))
+
+;; (use-package doom-modeline
+;; :ensure t
+;;   :config
+;;   (doom-modeline-init)
+;;   :init
+;;   ;;(load-theme 'doom-Iosvkem t)
+;;   (doom-themes-org-config)
+;;   )
+
+;; ;; (use-package hc-zenburn-theme
+;; ;;   :
+;;  ensure t
 ;;   :init
 ;;   (powerline-default-theme)
 ;;   (load-theme 'hc-zenburn t)
@@ -462,88 +550,108 @@
   (hlinum-activate)
 
 (use-package company
-  :ensure t
-  :defer 2
-  :diminish
-  :custom
-  (company-minimum-prefix-length 2)
-  (company-show-numbers t)
-  (company-tooltip-align-annotations 't)
-  (global-company-mode t))
+            :ensure t
+            :defer 2
+            :diminish
+            :custom
+            (company-minimum-prefix-length 1)
+            (company-idle-begin 0.0)
+            (company-show-numbers t)
+            (company-tooltip-align-annotations 't)
+            (global-company-mode t))
 
-(require 'company)
-(add-hook  'after-init-hook 'global-company-mode)
-(use-package company-quickhelp
-  :config
-  :init
-  (company-quickhelp-mode))
-(use-package lsp-mode
-  :commands lsp
-  :ensure t)
+          (require 'company)
+          (add-hook  'after-init-hook 'global-company-mode)
+          (use-package company-quickhelp
+            :config
+            :init
+            (company-quickhelp-mode))
+          (use-package lsp-mode
+            :commands lsp
+            :hook ((ruby-mode . lsp))
+            :custom          (lsp-auto-configure t)
+                              (lsp-prefer-flymake nil)
+                              (lsp-inhibit-message t)
+                              (lsp-eldoc-render-all nil)
+
+            :ensure t)
 (use-package lsp-ui
-  :commands lsp-ui-mode)
-(require 'lsp)
-(require 'lsp-mode)
-(require 'lsp-clients)
-(require 'lsp-ui-flycheck)
-;;     (require 'lsp-mode)
-(setq lsp-inhibit-message t)
-(setq lsp-prefer-flymake nil)
-(use-package company-lsp
-  :commands company-lsp
-  :ensure t)t
-(require 'company-lsp)
-(push 'company-lsp company-backends)
-                                        ;  ; (setq lsp-eldoc-render-all nil)
-(setq lsp-eldoc-render-all nil)
+  :commands lsp-ui-mode
+  :after lsp-mode
+  :config
+  (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+  (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
+  )
 
-;;      (setq lsp-highlight-symbol-at-point t)
-;; (setq  lsp-java--workspace-folders (list "/Users/aturetzky/dev/git/permission-center/api"))
-;; (setq lsp-java-format-settings-profile "Quantcast")
-;; (setq lsp-java-format-settings-url "~/Users/aturetzky/eclipse-java-google-style.xml")
-;; (require 'lsp-java)
-;; (add-hook 'java-mode-hook #'lsp-java-enable)
-;; (add-hook 'java-mode-hook 'flycheck-mode)
-;; (add-hook 'java-mode-hook 'company-mode)
-;; (add-hook 'java-mode-hook (lambda ()(lsp-ui-flycheck-enable t)))
-;; (add-hook 'java-mode-hook 'lsp-ui-mode)
-;; (add-hook 'java-mode-hook 'lsp-ui-sideline-mode)
-(require 'lsp-ui)
-(require 'lsp-ui-flycheck)
-(setq lsp-auto-configure nil)
-(setq lsp-prefer-flymake nil)
-;;     (setq lsp-ui-doc-enable-eldoc nil)
-;; (setq lsp-ui-sideline-enable t)
-;;       (setq lsp-ui-sideline-show-symbol nil)
-;;       (setq lsp-ui-sideline-show-hover nil)
-;;       (setq lsp-ui-sideline-show-code-actions t)
-;;       (setq lsp-ui-sideline-update-mode 'point)
-;;      (setq lsp-ui-flycheck-live-reporting t)
-;;      (setq lsp-ui-flycheck-enable t)
-;;      (setq lsp-ui-sideline-enable nil)
-;;      (lsp-ui-sideline-mode t)
+(use-package lsp-treemacs
+  :after lsp-mode
+  :config
+  (lsp-treemacs-sync-mode t)
+  )
 
-;; (setq lsp-java-import-maven-enabled nil);
-;; (setq lsp-java-import-gradle-enabled t)
-;; (setq lsp-java-progress-report t)
-;; (setq lsp-java-auto-build t)
-;;      (setq lsp-ui-doc-mode nil)
-;;      (setq lsp-ui-doc-enable t)
-(define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
-(define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-(define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-(define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
+          ;;(require 'lsp)
+          ;;(require 'lsp-mode)
+          (require 'lsp-clients)
+          (require 'lsp-ui-flycheck)
+          (require 'lsp-solargraph)
+          ;;     (require 'lsp-mode)
+          (setq lsp-inhibit-message t)
+          (setq lsp-prefer-flymake nil)
+          (use-package company-lsp
+            :commands company-lsp
+            :ensure t)
+          (require 'company-lsp)
+          (push 'company-lsp company-backends)
+                                                  ;  ; (setq lsp-eldoc-render-all nil)
+          (setq lsp-eldoc-render-all nil)
 
-(setq lsp-message-project-root-warning t)
-(setq lsp-auto-guess-root t)
+          ;;      (setq lsp-highlight-symbol-at-point t)
+          ;; (setq  lsp-java--workspace-folders (list "/Users/aturetzky/dev/git/permission-center/api"))
+          ;; (setq lsp-java-format-settings-profile "Quantcast")
+          ;; (setq lsp-java-format-settings-url "~/Users/aturetzky/eclipse-java-google-style.xml")
+          ;; (require 'lsp-java)
+          ;; (add-hook 'java-mode-hook #'lsp-java-enable)
+          ;; (add-hook 'java-mode-hook 'flycheck-mode)
+          ;; (add-hook 'java-mode-hook 'company-mode)
+          ;; (add-hook 'java-mode-hook (lambda ()(lsp-ui-flycheck-enable t)))
+          ;; (add-hook 'java-mode-hook 'lsp-ui-mode)
+          ;; (add-hook 'java-mode-hook 'lsp-ui-sideline-mode)
+;;          (require 'lsp-ui)
+;;          (require 'lsp-ui-flycheck)
+;;          (setq lsp-prefer-flymake nil)
+          ;;     (setq lsp-ui-doc-enable-eldoc nil)
+          ;; (setq lsp-ui-sideline-enable t)
+          ;;       (setq lsp-ui-sideline-show-symbol nil)
+          ;;       (setq lsp-ui-sideline-show-hover nil)
+          ;;       (setq lsp-ui-sideline-show-code-actions t)
+          ;;       (setq lsp-ui-sideline-update-mode 'point)
+          ;;      (setq lsp-ui-flycheck-live-reporting t)
+          ;;      (setq lsp-ui-flycheck-enable t)
+          ;;      (setq lsp-ui-sideline-enable nil)
+          ;;      (lsp-ui-sideline-mode t)
 
-(define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-(define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
-(use-package company-box
-  :ensure t
-  :diminish
-  :hook
-  (company-mode . company-box-mode))
+          ;; (setq lsp-java-import-maven-enabled nil);
+          ;; (setq lsp-java-import-gradle-enabled t)
+          ;; (setq lsp-java-progress-report t)
+          ;; (setq lsp-java-auto-build t)
+          ;;      (setq lsp-ui-doc-mode nil)
+          ;;      (setq lsp-ui-doc-enable t)
+
+
+          (setq lsp-message-project-root-warning t)
+          (setq lsp-auto-guess-root t)
+
+          (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+          (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+          ;; (use-package company-box
+          ;;   :after company
+          ;;   :ensure t
+          ;;   :diminish
+          ;;   :hook
+          ;;   (company-mode . company-box-mode)
+          ;;   :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
 
 ;;     (require 'eclim)
 ;;     (require 'eclimd)
@@ -726,9 +834,11 @@
 
 ;;(setq sql-db2-program "db2cmd db2clp.bat db2.exe")
 (setq sql-ms-program "osql")
-(setq sql-mysql-program "c:/cygwin/usr/local/bin/mysql")
+(require 'sql)
+(setq sql-mysql-program "mysql")
 (setq sql-pop-to-buffer-after-send-region nil)
 (setq sql-product (quote ms))
+(setq sql-mysql-login-params (append sql-mysql-login-params '(port)))
 
 (exec-path-from-shell-initialize)
 (use-package rjsx-mode
