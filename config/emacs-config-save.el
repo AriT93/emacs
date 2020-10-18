@@ -2,8 +2,6 @@
     (tool-bar-mode -1))
 (menu-bar-mode -1)
 (show-paren-mode 1)
-(setq gc-cons-threshold 100000000)
-(setq read-process-output-max (* 1024 1024))
 (setq inhibit-startup-screen t)
 (setq inhibit-splash-screen t)
 (setq uniquify-buffer-name-style t)
@@ -185,164 +183,138 @@
   )
 
 ;; Notes in *scratch* v. 0.2
-                    ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
-                    ;; Released under GNU GPL
+          ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
+          ;; Released under GNU GPL
 
-                    (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
-                      "File where content of *scratch* buffer will be read from and saved to.")
-                    (defconst scratch-file-autosave (concat scratch-file ".autosave")
-                      "File where to autosave content of *scratch* buffer.")
+          (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
+            "File where content of *scratch* buffer will be read from and saved to.")
+          (defconst scratch-file-autosave (concat scratch-file ".autosave")
+            "File where to autosave content of *scratch* buffer.")
 
-                    (save-excursion
-                      (set-buffer (get-buffer-create "*scratch*"))
-                      (if (file-readable-p scratch-file)
-                          (if (and (file-readable-p scratch-file-autosave)
-                                   (file-newer-than-file-p scratch-file-autosave scratch-file)t)
-                              (insert-file-contents scratch-file-autosave nil nil nil t)
-                            (insert-file-contents scratch-file nil nil nil t)
-                            (set-buffer-modified-p nil)))
-                      (auto-save-mode 1)
-                      (setq buffer-auto-save-file-name scratch-file-autosave)
-                                                            ; (setq revert-buffer-function 'scratch-revert)
-                      (fundamental-mode))
-                    (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
-                    (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
+          (save-excursion
+            (set-buffer (get-buffer-create "*scratch*"))
+            (if (file-readable-p scratch-file)
+                (if (and (file-readable-p scratch-file-autosave)
+                         (file-newer-than-file-p scratch-file-autosave scratch-file)t)
+                    (insert-file-contents scratch-file-autosave nil nil nil t)
+                  (insert-file-contents scratch-file nil nil nil t)
+                  (set-buffer-modified-p nil)))
+            (auto-save-mode 1)
+            (setq buffer-auto-save-file-name scratch-file-autosave)
+                                                  ; (setq revert-buffer-function 'scratch-revert)
+            (fundamental-mode))
+          (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
+          (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
 
-                    (defun scratch-revert (ignore-auto noconfirm)
-                      (when (file-readable-p scratch-file)
-                        (insert-file-contents scratch-file nil nil nil t)
-                        (set-buffer-modified-p nil)))
+          (defun scratch-revert (ignore-auto noconfirm)
+            (when (file-readable-p scratch-file)
+              (insert-file-contents scratch-file nil nil nil t)
+              (set-buffer-modified-p nil)))
 
-                    (defun kill-scratch-buffer ()
-                      (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
-                             (delete-region (point-min) (point-max))
-                             (set-buffer-modified-p nil)
-                             (next-buffer)
-                             t)))
+          (defun kill-scratch-buffer ()
+            (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
+                   (delete-region (point-min) (point-max))
+                   (set-buffer-modified-p nil)
+                   (next-buffer)
+                   t)))
 
-                    (defun kill-emacs-scratch-save ()
-                      (let ((buffer (get-buffer-create "*scratch*")))
-                        (if buffer
-                            (save-excursion
-                              (set-buffer buffer)
-                              (write-region nil nil scratch-file)
-                              (unless (string-equal scratch-file buffer-auto-save-file-name)
-                                (delete-auto-save-file-if-necessary t))))))
+          (defun kill-emacs-scratch-save ()
+            (let ((buffer (get-buffer-create "*scratch*")))
+              (if buffer
+                  (save-excursion
+                    (set-buffer buffer)
+                    (write-region nil nil scratch-file)
+                    (unless (string-equal scratch-file buffer-auto-save-file-name)
+                      (delete-auto-save-file-if-necessary t))))))
 
-               (use-package treemacs-projectile
-                 :after treemacs projectile
-                 :ensure t)
-               (use-package treemacs-magit
-                 :after treemacs magit
-                 :ensure t)
-               (use-package treemacs
-                 :ensure t
-                 :defer t
-                 :config
-                 (setq treemacs-space-between-root-nodes nil)
-                 (treemacs-follow-mode t)
-                 (treemacs-filewatch-mode t)
-                 (treemacs-fringe-indicator-mode t)
-                 (doom-themes-treemacs-config)
-                 ;;(setq doom-themes-treemacs-theme "doom-colors")
-                 (global-set-key (kbd "M-0") 'treemacs-select-window))
+     (use-package treemacs-projectile
+       :after treemacs projectile
+       :ensure t)
+     (use-package treemacs-magit
+       :after treemacs magit
+       :ensure t)
+     (use-package treemacs
+       :ensure t
+       :defer t
+       :config
+       (treemacs-follow-mode t)
+       (treemacs-filewatch-mode t)
+       (treemacs-fringe-indicator-mode t)
+       (doom-themes-treemacs-config)
+       ;;(setq doom-themes-treemacs-theme "doom-colors")
+       (global-set-key (kbd "M-0") 'treemacs-select-window))
 
-          ;;(require 'spaceline-config)
-          ;;(spaceline-spacemacs-theme)
-          ;;(spaceline-emacs-theme)
-          (doom-modeline-init)
-          (require 'doom-themes)
-          (setq doom-themes-enable-bold t)
-          (setq doom-themes-enable-italic t)
-          (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+;;(require 'spaceline-config)
+;;(spaceline-spacemacs-theme)
+;;(spaceline-emacs-theme)
+(doom-modeline-init)
+(require 'doom-themes)
+(setq doom-themes-enable-bold t)
+(setq doom-themes-enable-italic t)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
-          ;;(load-theme 'tron-legacy t)
-          ;;(load-theme 'doom-zenburn t)
-          ;;(powerline-default-theme)
-          (doom-modeline-def-modeline 'abt/my-doom-modeline
-            '(window-number bar buffer-info vcs matches )
-            '(misc-info input-method checker buffer-position " "))
+;;(load-theme 'tron-legacy t)
+;;(load-theme 'doom-zenburn t)
+;;(powerline-default-theme)
+(doom-modeline-def-modeline 'abt/my-doom-modeline
+  '(window-number bar buffer-info vcs matches )
+  '(misc-info input-method checker buffer-position " "))
 
-          (defun setup-custom-doom-modeline()
-            (doom-modeline-set-modeline 'abt/my-doom-modeline 'default))
+(defun setup-custom-doom-modeline()
+  (doom-modeline-set-modeline 'abt/my-doom-modeline 'default))
 
-          (add-hook 'doom-modeline-mode-hook ' setup-custom-doom-modeline)
+(add-hook 'doom-modeline-mode-hook ' setup-custom-doom-modeline)
 
 
-               (setq sh-basic-offset 2)
-               (setq sh-indentation 2)
-               (setq smie-indent-basic 2)
-(use-package ligature
-  :load-path "/Users/ari.turetzky/dev/git/ligature.el"
-  :config
-  ;; Enable the "www" ligature in every possible major mode
-  (ligature-set-ligatures 't '("www"))
-  ;; Enable traditional ligature support in eww-mode, if the
-  ;; `variable-pitch' face supports it
-  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-  ;; Enable all Cascadia Code ligatures in programming modes
-  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                       "\\" "://"))
-  ;; Enables ligature checks globally in all buffers. You can also do it
-  ;; per mode with `ligature-mode'.
-  (global-ligature-mode t))
+     (setq sh-basic-offset 2)
+     (setq sh-indentation 2)
+     (setq smie-indent-basic 2)
 
-               ;; (use-package composite
-               ;;   :defer t
-               ;;   :init
-               ;;   (defvar composition-ligature-table (make-char-table nil))
-               ;;   :hook
-               ;;   (((prog-mode conf-mode nxml-mode markdown-mode help-mode rjsx-mode)
-               ;;     . (lambda () (setq-local composition-function-table composition-ligature-table))))
-               ;;   :config
-               ;;   ;; support ligatures, some toned down to prevent hang
-               ;;   (when (version<= "27.0" emacs-version)
-               ;;     (let ((alist
-               ;;            '((33 . ".\\(?:\\(==\\|[!=]\\)[!=]?\\)")
-               ;;              (35 . ".\\(?:\\(###?\\|_(\\|[(:=?[_{]\\)[#(:=?[_{]?\\)")
-               ;;              (36 . ".\\(?:\\(>\\)>?\\)")
-               ;;              (37 . ".\\(?:\\(%\\)%?\\)")
-               ;;              (38 . ".\\(?:\\(&\\)&?\\)")
-               ;;              (42 . ".\\(?:\\(\\*\\*\\|[*>]\\)[*>]?\\)")
-               ;;              ;; (42 . ".\\(?:\\(\\*\\*\\|[*/>]\\).?\\)")
-               ;;              (43 . ".\\(?:\\([>]\\)>?\\)")
-               ;;              ;; (43 . ".\\(?:\\(\\+\\+\\|[+>]\\).?\\)")
-               ;;              ;; (45 . ".\\(?:\\(-[->]\\|<<\\|>>\\|[-<>|~]\\)[-<>|~]?\\)")
-               ;;              ;; (46 . ".\\(?:\\(\\.[.<]\\|[-.=]\\)[-.<=]?\\)")
-               ;;              ;; (46 . ".\\(?:\\(\\.<\\|[-=]\\)[-<=]?\\)")
-               ;;              ;; (47 . ".\\(?:\\(//\\|==\\|[=>]\\)[/=>]?\\)")
-               ;;              ;; (47 . ".\\(?:\\(//\\|==\\|[*/=>]\\).?\\)")
-               ;;              (48 . ".\\(?:\\(x[a-fA-F0-9]\\).?\\)")
-               ;;              (58 . ".\\(?:\\(::\\|[:<=>]\\)[:<=>]?\\)")
-               ;;              (59 . ".\\(?:\\(;\\);?\\)")
-               ;;              (60 . ".\\(?:\\(!--\\|\\$>\\|\\*>\\|\\+>\\|-[-<>|]\\|/>\\|<[-<=]\\|=[<>|]\\|==>?\\||>\\||||?\\|~[>~]\\|[$*+/:<=>|~-]\\)[$*+/:<=>|~-]?\\)")
-               ;;              (61 . ".\\(?:\\(!=\\|/=\\|:=\\|<<\\|=[=>]\\|>>\\|[=>]\\)[=<>]?\\)")
-               ;;              (62 . ".\\(?:\\(->\\|=>\\|>[-=>]\\|[-:=>]\\)[-:=>]?\\)")
-               ;;              ;; t(63 . ".\\(?:\\([.:=?]\\)[.:=?]?\\)")
-               ;;              (91 . ".\\(?:\\(|\\)[]|]?\\)")
-               ;;              ;; (92 . ".\\(?:\\([\\n]\\)[\\]?\\)")
-               ;;              (94 . ".\\(?:\\(=\\)=?\\)")
-               ;;              (95 . ".\\(?:\\(|_\\|[_]\\)_?\\)")
-               ;;              (119 . ".\\(?:\\(ww\\)w?\\)")
-               ;;              (123 . ".\\(?:\\(|\\)[|}]?\\)")
-               ;;              (124 . ".\\(?:\\(->\\|=>\\||[-=>]\\||||*>\\|[]=>|}-]\\).?\\)")
-               ;;              (126 . ".\\(?:\\(~>\\|[-=>@~]\\)[-=>@~]?\\)"))))
-               ;;       (dolist (char-regexp alist)
-               ;;         (set-char-table-range composition-ligature-table (car char-regexp)
-               ;;                               `([,(cdr char-regexp) 0 font-shape-gstring]))))
-               ;;     (set-char-table-parent composition-ligature-table composition-function-table))
-               ;;   )
+     ;; (use-package composite
+     ;;   :defer t
+     ;;   :init
+     ;;   (defvar composition-ligature-table (make-char-table nil))
+     ;;   :hook
+     ;;   (((prog-mode conf-mode nxml-mode markdown-mode help-mode rjsx-mode)
+     ;;     . (lambda () (setq-local composition-function-table composition-ligature-table))))
+     ;;   :config
+     ;;   ;; support ligatures, some toned down to prevent hang
+     ;;   (when (version<= "27.0" emacs-version)
+     ;;     (let ((alist
+     ;;            '((33 . ".\\(?:\\(==\\|[!=]\\)[!=]?\\)")
+     ;;              (35 . ".\\(?:\\(###?\\|_(\\|[(:=?[_{]\\)[#(:=?[_{]?\\)")
+     ;;              (36 . ".\\(?:\\(>\\)>?\\)")
+     ;;              (37 . ".\\(?:\\(%\\)%?\\)")
+     ;;              (38 . ".\\(?:\\(&\\)&?\\)")
+     ;;              (42 . ".\\(?:\\(\\*\\*\\|[*>]\\)[*>]?\\)")
+     ;;              ;; (42 . ".\\(?:\\(\\*\\*\\|[*/>]\\).?\\)")
+     ;;              (43 . ".\\(?:\\([>]\\)>?\\)")
+     ;;              ;; (43 . ".\\(?:\\(\\+\\+\\|[+>]\\).?\\)")
+     ;;              ;; (45 . ".\\(?:\\(-[->]\\|<<\\|>>\\|[-<>|~]\\)[-<>|~]?\\)")
+     ;;              ;; (46 . ".\\(?:\\(\\.[.<]\\|[-.=]\\)[-.<=]?\\)")
+     ;;              ;; (46 . ".\\(?:\\(\\.<\\|[-=]\\)[-<=]?\\)")
+     ;;              ;; (47 . ".\\(?:\\(//\\|==\\|[=>]\\)[/=>]?\\)")
+     ;;              ;; (47 . ".\\(?:\\(//\\|==\\|[*/=>]\\).?\\)")
+     ;;              (48 . ".\\(?:\\(x[a-fA-F0-9]\\).?\\)")
+     ;;              (58 . ".\\(?:\\(::\\|[:<=>]\\)[:<=>]?\\)")
+     ;;              (59 . ".\\(?:\\(;\\);?\\)")
+     ;;              (60 . ".\\(?:\\(!--\\|\\$>\\|\\*>\\|\\+>\\|-[-<>|]\\|/>\\|<[-<=]\\|=[<>|]\\|==>?\\||>\\||||?\\|~[>~]\\|[$*+/:<=>|~-]\\)[$*+/:<=>|~-]?\\)")
+     ;;              (61 . ".\\(?:\\(!=\\|/=\\|:=\\|<<\\|=[=>]\\|>>\\|[=>]\\)[=<>]?\\)")
+     ;;              (62 . ".\\(?:\\(->\\|=>\\|>[-=>]\\|[-:=>]\\)[-:=>]?\\)")
+     ;;              ;; t(63 . ".\\(?:\\([.:=?]\\)[.:=?]?\\)")
+     ;;              (91 . ".\\(?:\\(|\\)[]|]?\\)")
+     ;;              ;; (92 . ".\\(?:\\([\\n]\\)[\\]?\\)")
+     ;;              (94 . ".\\(?:\\(=\\)=?\\)")
+     ;;              (95 . ".\\(?:\\(|_\\|[_]\\)_?\\)")
+     ;;              (119 . ".\\(?:\\(ww\\)w?\\)")
+     ;;              (123 . ".\\(?:\\(|\\)[|}]?\\)")
+     ;;              (124 . ".\\(?:\\(->\\|=>\\||[-=>]\\||||*>\\|[]=>|}-]\\).?\\)")
+     ;;              (126 . ".\\(?:\\(~>\\|[-=>@~]\\)[-=>@~]?\\)"))))
+     ;;       (dolist (char-regexp alist)
+     ;;         (set-char-table-range composition-ligature-table (car char-regexp)
+     ;;                               `([,(cdr char-regexp) 0 font-shape-gstring]))))
+     ;;     (set-char-table-parent composition-ligature-table composition-function-table))
+     ;;   )
 
 (use-package flycheck-pos-tip
   :after flycheck
@@ -382,10 +354,7 @@
 
 (use-package org
   :ensure t
-  :diminish  ""
-  :config
-  (setq org-default-notes-file "~/Documents/notes/notes.org")
-  (require 'org-capture))
+  :diminish  "")
 (use-package ox-twbs
   :ensure t)
 (use-package ox-jira
@@ -445,87 +414,11 @@
                                                  :with-author nil
                                                  :with-toc nil))
 
-   (use-package hc-zenburn-theme
-     :ensure t
-    :init
-    (powerline-default-theme)
-    (load-theme 'hc-zenburn t)
-    (hc-zenburn-with-color-variables
-      (custom-theme-set-faces
-       'hc-zenburn
-       `(company-tooltip-common ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
-       `(company-tooltip-selection ((t (:background ,"gray40" :foreground ,"LightBlue3"))))
-       `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
-    )
-
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
-  (setq exec-path-from-shell-check-startup-files t)
-  (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER")
-  ))
-(use-package inf-ruby
-  :ensure t)
-(require 'ruby-mode)
-(use-package  ruby-electric
-  :ensure t)
-(use-package coffee-mode
-  :ensure t)
-(use-package feature-mode
-  :ensure t)
-(require 'rcodetools)
-(use-package yasnippet
-  :ensure t
-  :config
-  (yas-global-mode t)
-  (yas-global-mode))
-(use-package yasnippet-snippets
-  :ensure t)
-(use-package tree-mode
-  :ensure t)
-(use-package rake
-  :ensure t)
-(use-package inflections
-  :ensure t)
-(use-package graphql
-  :ensure t)
-(require 'org-protocol)
-;; (use-package auto-complete
-;;   :diminish "  "
-;;   :ensure t
-;;   :init
-;;   (setq ac-use-menu-map t)
-;;   (setq ac-use-fuzzy t))
-;; (require 'auto-complete-config)
-;; (ac-config-default)
-;; (require 'auto-complete-yasnippet)
-(use-package haml-mode
-  :ensure t)
-;; (use-package rvm
-;;   :ensure t
-;;   :hook
-;;   (ruby-mode . rvm-activate-corresponding-ruby))
-;; (rvm-use-default)
-(use-package beacon
-  :ensure t
-  :init
-  (beacon-mode))
-(use-package rainbow-mode
-  :ensure t)
-(use-package rainbow-delimiters
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-(require 'ruby-config-new)
-(require 'keys-config-new)
-
 (use-package highline
   :ensure t
   :config
   (global-highline-mode t)
-  (setq highline-face '((:background "gray40")))
+  (setq highline-face '((:background "gray32")))
   (set-face-attribute 'region nil :background "DarkOliveGreen")
   (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
@@ -661,6 +554,62 @@
   :init
   (counsel-projectile-mode))
 
+;;    (global-auto-complete-mode t)           ;enable global-mode
+;;    (setq ac-auto-start t)                  ;automatically start
+;;    (setq ac-dwim 3)                        ;Do what i mean
+;;    (setq ac-override-local-map nil)        ;don't override local map
+;;    (define-key ac-complete-mode-map "\t" 'ac-expand)
+;;    (define-key ac-complete-mode-map "\r" 'ac-complete)
+;;    (define-key ac-complete-mode-map "\M-n" 'ac-next)
+;;    (define-key ac-complete-mode-map "\M-p" 'ac-previous)
+;;    (set-default 'ac-sources '(ac-source-words-in-buffer ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-dictionary ac-source-files-in-current-dir))
+
+;;    (setq ac-modes
+;;          (append ac-modes
+;;                  '(eshell-mode
+;;                                            ;org-mode
+;;                    )))
+;;                                            ;(add-to-list 'ac-trigger-commands 'org-self-insert-command)
+
+;;    (add-hook 'emacs-lisp-mode-hook
+;;              (lambda ()
+;;                (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer ac-source-symbols))))
+
+;;    (add-hook 'eshell-mode-hook
+;;              (lambda ()
+;;                (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+;;    (add-hook 'web-mode-hook
+;;              (lambda ()
+;;                (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-files-in-current-dir ac-source-words-in-buffer))))
+;;    (add-hook 'yaml-mode-hook
+;;              (lambda ()
+;;                (setq ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-semantic ac-source-files-in-current-dir ac-source-words-in-buffer ac-source-words-in-same-mode-buffers ))))
+;;    (add-hook 'js2-mode-hook
+;;              (lambda ()
+;;                (add-to-list 'ac-sources '(ac-source-files-in-current-dir ac-source-symbols ac-source-abbrev ac-source-yasnippet ac-source-words-in-same-mode-buffers ac-source-variables)(auto-complete-mode))))
+;;    (setq ac-modes
+;;          (append ac-modes
+;;                  '(sql-mode
+;;                    sqlplus-mode
+;;                    js2-mode
+;;                    coffee-mode
+;;                    JavaSript-IDE-mode
+;;                    text-mode
+;;                    css-mode
+;;                    web-mode
+;;                    perl-mode
+;;                    ruby-mode
+;;                    scala-mode
+;; ;;                   java-mode
+;;                    yaml-mode
+;;                    )))
+
+;;  (use-package color-theme
+;;    :ensure t
+;;    :init
+;;    (color-theme-initialize)
+;;    (color-theme-zenburn))
+
 (add-to-list 'auto-mode-alist
              (cons
               (concat "\\." (regexp-opt '("xml" "xsd" "svg" "rss" "rng" "build" "config") t) "\\'" )'nxml-mode))
@@ -693,6 +642,20 @@
       (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
 (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
                                      interpreter-mode-alist))
+;;   (autoload 'run-ruby "inf-ruby"
+;;     "Run an inferior Ruby process")
+;;   (autoload 'inf-ruby-keys "inf-ruby"
+;;     "Set local key defs for inf-ruby in ruby-mode")
+;;   (add-hook 'ruby-mode-hook
+;;         '(lambda ()
+;;            (inf-ruby-keys)
+;;   ))
+;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+;; (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
+;; (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
+;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+;; (autoload 'ri (expand-file-name "~/emacs/site/lisp/ri-ruby.el") nil t)
+;; (load  (expand-file-name "~/emacs/site/lisp/ri-ruby.el"))
 
 (require 'dired-x)
 (setq dired-omit-files
@@ -728,11 +691,26 @@
 ;;     ad-do-it))
 ;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
 
+;;(autoload 'hideshowvis-enable "hideshowvis" "Highlight foldable regions")
+
+;; (dolist (hook (list 'emacs-lisp-mode-hook
+;;                     'c++-mode-hook
+;;                     'ruby-mode-hook
+;;                     'c-sharp-mode-hook
+;;                     'java-mode-hook
+;;                     ))
+;;   (add-hook hook 'hideshowvis-enable))
+
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook()
   (message "SQL mode hook executed")
   (define-key sql-mode-map [f5] 'sql-send-buffer))
 
+(setq sql-db2-program "db2cmd")
+(setq sql-db2-options '("-c" "-i" "-w" "db2" "-v" ))
+
+
+;;(setq sql-db2-program "db2cmd db2clp.bat db2.exe")
 (setq sql-ms-program "osql")
 (require 'sql)
 (setq sql-mysql-program "mysql")
@@ -755,22 +733,11 @@
 
 (setq emmet-expand-jsx-className? t)
 
-(use-package deft
-  :ensure t
-  :config
-  (setq deft-extensions'("org" "txt" "md"))
-  (setq deft-default-extension "org")
-  (setq deft-recursive t)
-  (setq deft-directory "~/Documents/notes")
-  (setq deft-use-filename-as-title nil)
-  (setq deft-use-filter-string-for-filename t)
-  (setq deft-auto-save-interval 0)
-  (setq deft-file-naming-rules '((noslash . "-")
-                                  (nospace . "-")
-                                  (case-fn . downcase)))
-  (setq deft-text-mode 'org-mode)
-  (global-set-key (kbd "<f8>") 'deft)
-  )
+;;(require 'semantic-ia)
+;;(if window-system
+;;    (progn
+;;      (setq semantic-load-turn-everything-on t)
+;;      (semantic-load-enable-gaudy-code-helpers)))
 
 (use-package cypher-mode
   :ensure t)
