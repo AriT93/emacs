@@ -363,100 +363,106 @@
 (server-start)
 
 (use-package diminish
-  :ensure t)
+            :ensure t)
 
-(diminish 'org-mode  "")
-(diminish 'auto-revert-mode)
-(diminish 'yas-minor-mode)
-(diminish 'eldoc-mode)
-(diminish 'org-src-mode)
-(diminish 'abbrev-mode)
-(diminish 'ivy-mode)
-(diminish 'global-highline-mode)
-(diminish 'ruby-block-mode)
-(diminish 'ruby-electric-mode)
-(diminish "seeing-is-believing")
-(diminish 'hs-minor-mode)
-(diminish 'ruby-block-mode)
-(diminish 'global-highline-mode)
+          (diminish 'org-mode  "")
+          (diminish 'auto-revert-mode)
+          (diminish 'yas-minor-mode)
+          (diminish 'eldoc-mode)
+          (diminish 'org-src-mode)
+          (diminish 'abbrev-mode)
+          (diminish 'ivy-mode)
+          (diminish 'global-highline-mode)
+          (diminish 'ruby-block-mode)
+          (diminish 'ruby-electric-mode)
+          (diminish "seeing-is-believing")
+          (diminish 'hs-minor-mode)
+          (diminish 'ruby-block-mode)
+          (diminish 'global-highline-mode)
 
 (use-package org
-  :ensure t
-  :diminish  ""
-  :config
-  (setq org-default-notes-file "~/Documents/notes/notes.org")
-  (require 'org-capture))
-(use-package ox-twbs
-  :ensure t)
-(use-package ox-jira
-  :ensure t)
-(require 'org-tempo)
-(use-package org-mime
-  :ensure t)
-(setq org-ellipsis " ⤵")
-(setq org-src-fontify-natively t)
-(setq org-src-tab-acts-natively t)
-(setq org-src-window-setup 'current-window)
-(use-package plantuml-mode
-  :ensure t)
-(use-package org-bullets
-  :ensure t)
-(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-(setq org-startup-with-inline-images t)
-(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-;;***********remember + Org config*************
-(setq org-remember-templates
-      '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
-        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
-(setq remember-annotation-functions '(org-remember-annotation))
-(setq remember-handler-functions '(org-remember-handler))
-(add-hook 'remember-mode-hook 'org-remember-apply-template)
-(global-set-key (kbd "C-c r") 'remember)
+            :ensure t
+            :diminish  ""
+            :config
+            (setq org-default-notes-file "~/Documents/notes/notes.org")
+            (require 'org-capture)
+            (setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+         "* TODO %?\n  %i\n  %a")
+        ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+         "* %?\nEntered on %U\n  %i\n  %a")))
+)
+          (use-package ox-twbs
+            :ensure t)
+          (use-package ox-jira
+            :ensure t)
+          (require 'org-tempo)
+          (use-package org-mime
+            :ensure t)
+          (setq org-ellipsis " ⤵")
+          (setq org-src-fontify-natively t)
+          (setq org-src-tab-acts-natively t)
+          (setq org-src-window-setup 'current-window)
+          (use-package plantuml-mode
+            :ensure t)
+          (use-package org-bullets
+            :ensure t)
+          (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+          (setq org-startup-with-inline-images t)
+          (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+          ;;***********remember + Org config*************
+          (setq org-remember-templates
+                '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
+                  ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
+          (setq remember-annotation-functions '(org-remember-annotation))
+          (setq remember-handler-functions '(org-remember-handler))
+          (add-hook 'remember-mode-hook 'org-remember-apply-template)
+          (global-set-key (kbd "C-c r") 'remember)
 
-(setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-(setq org-agenda-include-diary t)
-(setq org-agenda-include-all-todo t)
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((shell  . t)
-   (js  . t)
-   (emacs-lisp . t)
-   (python . t)
-   (ruby . t)
-   (css . t )
-   (plantuml . t)
-   (sql . t)
-   (java . t)
-   (dot . t)))
-(setq org-confirm-babel-evaluate nil)
+          (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+          (setq org-agenda-include-diary t)
+          (setq org-agenda-include-all-todo t)
+          (org-babel-do-load-languages
+           'org-babel-load-languages
+           '((shell  . t)
+             (js  . t)
+             (emacs-lisp . t)
+             (python . t)
+             (ruby . t)
+             (css . t )
+             (plantuml . t)
+             (sql . t)
+             (java . t)
+             (dot . t)))
+          (setq org-confirm-babel-evaluate nil)
 
-(use-package virtualenvwrapper
-  :ensure t
-  :init
-  (venv-initialize-interactive-shells)
-  (venv-initialize-eshell)
-  (setq venv-location "~/.virtualenvs")
-  )
-(setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
-(setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+          (use-package virtualenvwrapper
+            :ensure t
+            :init
+            (venv-initialize-interactive-shells)
+            (venv-initialize-eshell)
+            (setq venv-location "~/.virtualenvs")
+            )
+          (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+          (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
 
 
-(setq org-mime-export-options '(:section-numbers nil
-                                                 :with-author nil
-                                                 :with-toc nil))
+          (setq org-mime-export-options '(:section-numbers nil
+                                                           :with-author nil
+                                                           :with-toc nil))
 
-   (use-package hc-zenburn-theme
-     :ensure t
-    :init
-    (powerline-default-theme)
-    (load-theme 'hc-zenburn t)
-    (hc-zenburn-with-color-variables
-      (custom-theme-set-faces
-       'hc-zenburn
-       `(company-tooltip-common ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
-       `(company-tooltip-selection ((t (:background ,"gray40" :foreground ,"LightBlue3"))))
-       `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
-    )
+             (use-package hc-zenburn-theme
+               :ensure t
+              :init
+              (powerline-default-theme)
+              (load-theme 'hc-zenburn t)
+              (hc-zenburn-with-color-variables
+                (custom-theme-set-faces
+                 'hc-zenburn
+                 `(company-tooltip-common ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
+                 `(company-tooltip-selection ((t (:background ,"gray40" :foreground ,"LightBlue3"))))
+                 `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
+              )
 
 (use-package exec-path-from-shell
   :ensure t
