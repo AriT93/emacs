@@ -33,6 +33,7 @@
 (setq show-paren-style 'mixed)
 (setq mode-line-in-non-selected-windows nil)
 (fset 'yes-or-no-p 'y-or-n-p)
+(add-hook 'eww-after-render-hook 'eww-readable)
 
 ;; (use-package popup
 ;;   :ensure t)
@@ -95,14 +96,14 @@
 
 (require 'package)
 
-(add-to-list 'package-archives
-             '("marmalade" . "https://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives
-             '("elpa" . "https://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives
-             '("org" . "https://orgmode.org/elpa/"))
+;     (add-to-list 'package-archives
+ ;                 '("marmalade" . "https://marmalade-repo.org/packages/"))
+     (add-to-list 'package-archives
+                  '("melpa" . "https://melpa.org/packages/"))
+     (add-to-list 'package-archives
+                  '("elpa" . "https://elpa.gnu.org/packages/"))
+     (add-to-list 'package-archives
+                  '("org" . "https://orgmode.org/elpa/"))
 
 
 
@@ -153,7 +154,7 @@
    ("C-x C-f" . 'counsel-find-file)
    ("C-c j" . 'counsel-git-grep)
    ("C-c k" . 'counsel-ag)
-   ("C-c l" . 'counsel-locate)
+   ("C-x l" . 'counsel-locate)
    ("M-x" . 'counsel-M-x)))
 (use-package ivy-rich
   :init
@@ -163,9 +164,11 @@
 
 (use-package ace-window
   :ensure t
+  :after (zenburn-theme)
   :config
+  (set-face-attribute 'aw-leading-char-face nil :height 3.0
+  :foreground "dodgerblue")
   (ace-window-display-mode)
-  (set-face-attribute 'aw-leading-char-face nil :height 3.0)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind
   ("M-o" . 'ace-window))
@@ -185,164 +188,197 @@
   )
 
 ;; Notes in *scratch* v. 0.2
-                    ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
-                    ;; Released under GNU GPL
+                         ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
+                         ;; Released under GNU GPL
 
-                    (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
-                      "File where content of *scratch* buffer will be read from and saved to.")
-                    (defconst scratch-file-autosave (concat scratch-file ".autosave")
-                      "File where to autosave content of *scratch* buffer.")
+                         (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
+                           "File where content of *scratch* buffer will be read from and saved to.")
+                         (defconst scratch-file-autosave (concat scratch-file ".autosave")
+                           "File where to autosave content of *scratch* buffer.")
 
-                    (save-excursion
-                      (set-buffer (get-buffer-create "*scratch*"))
-                      (if (file-readable-p scratch-file)
-                          (if (and (file-readable-p scratch-file-autosave)
-                                   (file-newer-than-file-p scratch-file-autosave scratch-file)t)
-                              (insert-file-contents scratch-file-autosave nil nil nil t)
-                            (insert-file-contents scratch-file nil nil nil t)
-                            (set-buffer-modified-p nil)))
-                      (auto-save-mode 1)
-                      (setq buffer-auto-save-file-name scratch-file-autosave)
-                                                            ; (setq revert-buffer-function 'scratch-revert)
-                      (fundamental-mode))
-                    (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
-                    (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
+                         (save-excursion
+                           (set-buffer (get-buffer-create "*scratch*"))
+                           (if (file-readable-p scratch-file)
+                               (if (and (file-readable-p scratch-file-autosave)
+                                        (file-newer-than-file-p scratch-file-autosave scratch-file)t)
+                                   (insert-file-contents scratch-file-autosave nil nil nil t)
+                                 (insert-file-contents scratch-file nil nil nil t)
+                                 (set-buffer-modified-p nil)))
+                           (auto-save-mode 1)
+                           (setq buffer-auto-save-file-name scratch-file-autosave)
+                                                                 ; (setq revert-buffer-function 'scratch-revert)
+                           (fundamental-mode))
+                         (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
+                         (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
 
-                    (defun scratch-revert (ignore-auto noconfirm)
-                      (when (file-readable-p scratch-file)
-                        (insert-file-contents scratch-file nil nil nil t)
-                        (set-buffer-modified-p nil)))
+                         (defun scratch-revert (ignore-auto noconfirm)
+                           (when (file-readable-p scratch-file)
+                             (insert-file-contents scratch-file nil nil nil t)
+                             (set-buffer-modified-p nil)))
 
-                    (defun kill-scratch-buffer ()
-                      (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
-                             (delete-region (point-min) (point-max))
-                             (set-buffer-modified-p nil)
-                             (next-buffer)
-                             t)))
+                         (defun kill-scratch-buffer ()
+                           (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
+                                  (delete-region (point-min) (point-max))
+                                  (set-buffer-modified-p nil)
+                                  (next-buffer)
+                                  t)))
 
-                    (defun kill-emacs-scratch-save ()
-                      (let ((buffer (get-buffer-create "*scratch*")))
-                        (if buffer
-                            (save-excursion
-                              (set-buffer buffer)
-                              (write-region nil nil scratch-file)
-                              (unless (string-equal scratch-file buffer-auto-save-file-name)
-                                (delete-auto-save-file-if-necessary t))))))
+                         (defun kill-emacs-scratch-save ()
+                           (let ((buffer (get-buffer-create "*scratch*")))
+                             (if buffer
+                                 (save-excursion
+                                   (set-buffer buffer)
+                                   (write-region nil nil scratch-file)
+                                   (unless (string-equal scratch-file buffer-auto-save-file-name)
+                                     (delete-auto-save-file-if-necessary t))))))
 
-               (use-package treemacs-projectile
-                 :after treemacs projectile
-                 :ensure t)
-               (use-package treemacs-magit
-                 :after treemacs magit
-                 :ensure t)
-               (use-package treemacs
-                 :ensure t
-                 :defer t
-                 :config
-                 (setq treemacs-space-between-root-nodes nil)
-                 (treemacs-follow-mode t)
-                 (treemacs-filewatch-mode t)
-                 (treemacs-fringe-indicator-mode t)
-                 (doom-themes-treemacs-config)
-                 ;;(setq doom-themes-treemacs-theme "doom-colors")
-                 (global-set-key (kbd "M-0") 'treemacs-select-window))
+                    (use-package treemacs-projectile
+                      :after treemacs projectile
+                      :ensure t)
+                    (use-package treemacs-magit
+                      :after treemacs magit
+                      :ensure t)
+                    (use-package treemacs
+                      :ensure t
+                      :defer t
+                      :config
+                      (setq treemacs-space-between-root-nodes nil)
+                      (treemacs-follow-mode t)
+                      (treemacs-filewatch-mode t)
+                      (treemacs-fringe-indicator-mode t)
+                      (doom-themes-treemacs-config)
+                      ;;(setq doom-themes-treemacs-theme "doom-colors")
+                      (global-set-key (kbd "M-0") 'treemacs-select-window))
 
-          ;;(require 'spaceline-config)
-          ;;(spaceline-spacemacs-theme)
-          ;;(spaceline-emacs-theme)
-          (doom-modeline-init)
-          (require 'doom-themes)
-          (setq doom-themes-enable-bold t)
-          (setq doom-themes-enable-italic t)
-          (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+               ;;(require 'spaceline-config)
+               ;;(spaceline-spacemacs-theme)
+               ;;(spaceline-emacs-theme)
+     ;;(doom-modeline-init)
+               (require 'doom-themes)
+               (setq doom-themes-enable-bold t)
+               (setq doom-themes-enable-italic t)
+               (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
-          ;;(load-theme 'tron-legacy t)
-          ;;(load-theme 'doom-zenburn t)
-          ;;(powerline-default-theme)
-          (doom-modeline-def-modeline 'abt/my-doom-modeline
-            '(window-number bar buffer-info vcs matches )
-            '(misc-info input-method checker buffer-position " "))
+               ;;(load-theme 'tron-legacy t)
+     ;;(load-theme 'doom-zenburn t)
+     ;; (load-theme 'doom-dark+ t)
+               ;;(powerline-default-theme)
+               ;; (doom-modeline-def-modeline 'abt/my-doom-modeline
+               ;;   '(window-number bar buffer-info vcs matches )
+               ;;   '(misc-info input-method checker buffer-position " "))
 
-          (defun setup-custom-doom-modeline()
-            (doom-modeline-set-modeline 'abt/my-doom-modeline 'default))
+               ;; (defun setup-custom-doom-modeline()
+               ;;   (doom-modeline-set-modeline 'abt/my-doom-modeline 'default))
 
-          (add-hook 'doom-modeline-mode-hook ' setup-custom-doom-modeline)
+               ;; (add-hook 'doom-modeline-mode-hook ' setup-custom-doom-modeline)
 
 
-               (setq sh-basic-offset 2)
-               (setq sh-indentation 2)
-               (setq smie-indent-basic 2)
-(use-package ligature
-  :load-path "/Users/ari.turetzky/dev/git/ligature.el"
+               ;;      (setq sh-basic-offset 2)
+               ;;      (setq sh-indentation 2)
+               ;;      (setq smie-indent-basic 2)
+
+(use-package smart-mode-line
+  :ensure t
   :config
-  ;; Enable the "www" ligature in every possible major mode
-  (ligature-set-ligatures 't '("www"))
-  ;; Enable traditional ligature support in eww-mode, if the
-  ;; `variable-pitch' face supports it
-  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-  ;; Enable all Cascadia Code ligatures in programming modes
-  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                       "\\" "://"))
-  ;; Enables ligature checks globally in all buffers. You can also do it
-  ;; per mode with `ligature-mode'.
-  (global-ligature-mode t))
+  (setq sml/no-confirm-load-theme t)
+  (sml/setup)
+  (sml/apply-theme 'respectful)  ; Respect the theme colors
+  (setq sml/mode-width 'right
+        sml/name-width 60))
 
-               ;; (use-package composite
-               ;;   :defer t
-               ;;   :init
-               ;;   (defvar composition-ligature-table (make-char-table nil))
-               ;;   :hook
-               ;;   (((prog-mode conf-mode nxml-mode markdown-mode help-mode rjsx-mode)
-               ;;     . (lambda () (setq-local composition-function-table composition-ligature-table))))
-               ;;   :config
-               ;;   ;; support ligatures, some toned down to prevent hang
-               ;;   (when (version<= "27.0" emacs-version)
-               ;;     (let ((alist
-               ;;            '((33 . ".\\(?:\\(==\\|[!=]\\)[!=]?\\)")
-               ;;              (35 . ".\\(?:\\(###?\\|_(\\|[(:=?[_{]\\)[#(:=?[_{]?\\)")
-               ;;              (36 . ".\\(?:\\(>\\)>?\\)")
-               ;;              (37 . ".\\(?:\\(%\\)%?\\)")
-               ;;              (38 . ".\\(?:\\(&\\)&?\\)")
-               ;;              (42 . ".\\(?:\\(\\*\\*\\|[*>]\\)[*>]?\\)")
-               ;;              ;; (42 . ".\\(?:\\(\\*\\*\\|[*/>]\\).?\\)")
-               ;;              (43 . ".\\(?:\\([>]\\)>?\\)")
-               ;;              ;; (43 . ".\\(?:\\(\\+\\+\\|[+>]\\).?\\)")
-               ;;              ;; (45 . ".\\(?:\\(-[->]\\|<<\\|>>\\|[-<>|~]\\)[-<>|~]?\\)")
-               ;;              ;; (46 . ".\\(?:\\(\\.[.<]\\|[-.=]\\)[-.<=]?\\)")
-               ;;              ;; (46 . ".\\(?:\\(\\.<\\|[-=]\\)[-<=]?\\)")
-               ;;              ;; (47 . ".\\(?:\\(//\\|==\\|[=>]\\)[/=>]?\\)")
-               ;;              ;; (47 . ".\\(?:\\(//\\|==\\|[*/=>]\\).?\\)")
-               ;;              (48 . ".\\(?:\\(x[a-fA-F0-9]\\).?\\)")
-               ;;              (58 . ".\\(?:\\(::\\|[:<=>]\\)[:<=>]?\\)")
-               ;;              (59 . ".\\(?:\\(;\\);?\\)")
-               ;;              (60 . ".\\(?:\\(!--\\|\\$>\\|\\*>\\|\\+>\\|-[-<>|]\\|/>\\|<[-<=]\\|=[<>|]\\|==>?\\||>\\||||?\\|~[>~]\\|[$*+/:<=>|~-]\\)[$*+/:<=>|~-]?\\)")
-               ;;              (61 . ".\\(?:\\(!=\\|/=\\|:=\\|<<\\|=[=>]\\|>>\\|[=>]\\)[=<>]?\\)")
-               ;;              (62 . ".\\(?:\\(->\\|=>\\|>[-=>]\\|[-:=>]\\)[-:=>]?\\)")
-               ;;              ;; t(63 . ".\\(?:\\([.:=?]\\)[.:=?]?\\)")
-               ;;              (91 . ".\\(?:\\(|\\)[]|]?\\)")
-               ;;              ;; (92 . ".\\(?:\\([\\n]\\)[\\]?\\)")
-               ;;              (94 . ".\\(?:\\(=\\)=?\\)")
-               ;;              (95 . ".\\(?:\\(|_\\|[_]\\)_?\\)")
-               ;;              (119 . ".\\(?:\\(ww\\)w?\\)")
-               ;;              (123 . ".\\(?:\\(|\\)[|}]?\\)")
-               ;;              (124 . ".\\(?:\\(->\\|=>\\||[-=>]\\||||*>\\|[]=>|}-]\\).?\\)")
-               ;;              (126 . ".\\(?:\\(~>\\|[-=>@~]\\)[-=>@~]?\\)"))))
-               ;;       (dolist (char-regexp alist)
-               ;;         (set-char-table-range composition-ligature-table (car char-regexp)
-               ;;                               `([,(cdr char-regexp) 0 font-shape-gstring]))))
-               ;;     (set-char-table-parent composition-ligature-table composition-function-table))
-               ;;   )
+(use-package minions
+  :ensure t
+  :hook (doom-modeline-mode . minions-mode)
+  )
+(use-package doom-modeline
+  :after eshell     ;; Make sure it gets hooked after eshell
+  :hook (after-init . doom-modeline-init)
+  :custom-face
+  (mode-line ((t (:height 0.85))))
+  (mode-line-inactive ((t (:height 0.85))))
+  :custom
+  (doom-modeline-height 15)
+  (doom-modeline-bar-width 6)
+  (doom-modeline-lsp t)
+  (doom-modeline-github nil)
+  (doom-modeline-mu4e nil)
+  (doom-modeline-irc nil)
+  (doom-modeline-minor-modes t)
+  (doom-modeline-persp-name nil)
+  (doom-modeline-buffer-file-name-style 'truncate-except-project)
+  (doom-modeline-major-mode-icon nil))
+
+     (use-package ligature
+       :load-path "/Users/ari.turetzky/dev/git/ligature.el"
+       :config
+       ;; Enable the "www" ligature in every possible major mode
+       (ligature-set-ligatures 't '("www"))
+       ;; Enable traditional ligature support in eww-mode, if the
+       ;; `variable-pitch' face supports it
+       (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+       ;; Enable all Cascadia Code ligatures in programming modes
+       (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                            ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                            "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                            "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                            "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                            "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                            "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                            "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                            ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                            "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                            "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                            "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                            "\\" "://"))
+       ;; Enables ligature checks globally in all buffers. You can also do it
+       ;; per mode with `ligature-mode'.
+       (global-ligature-mode t))
+
+                    ;; (use-package composite
+                    ;;   :defer t
+                    ;;   :init
+                    ;;   (defvar composition-ligature-table (make-char-table nil))
+                    ;;   :hook
+                    ;;   (((prog-mode conf-mode nxml-mode markdown-mode help-mode rjsx-mode)
+                    ;;     . (lambda () (setq-local composition-function-table composition-ligature-table))))
+                    ;;   :config
+                    ;;   ;; support ligatures, some toned down to prevent hang
+                    ;;   (when (version<= "27.0" emacs-version)
+                    ;;     (let ((alist
+                    ;;            '((33 . ".\\(?:\\(==\\|[!=]\\)[!=]?\\)")
+                    ;;              (35 . ".\\(?:\\(###?\\|_(\\|[(:=?[_{]\\)[#(:=?[_{]?\\)")
+                    ;;              (36 . ".\\(?:\\(>\\)>?\\)")
+                    ;;              (37 . ".\\(?:\\(%\\)%?\\)")
+                    ;;              (38 . ".\\(?:\\(&\\)&?\\)")
+                    ;;              (42 . ".\\(?:\\(\\*\\*\\|[*>]\\)[*>]?\\)")
+                    ;;              ;; (42 . ".\\(?:\\(\\*\\*\\|[*/>]\\).?\\)")
+                    ;;              (43 . ".\\(?:\\([>]\\)>?\\)")
+                    ;;              ;; (43 . ".\\(?:\\(\\+\\+\\|[+>]\\).?\\)")
+                    ;;              ;; (45 . ".\\(?:\\(-[->]\\|<<\\|>>\\|[-<>|~]\\)[-<>|~]?\\)")
+                    ;;              ;; (46 . ".\\(?:\\(\\.[.<]\\|[-.=]\\)[-.<=]?\\)")
+                    ;;              ;; (46 . ".\\(?:\\(\\.<\\|[-=]\\)[-<=]?\\)")
+                    ;;              ;; (47 . ".\\(?:\\(//\\|==\\|[=>]\\)[/=>]?\\)")
+                    ;;              ;; (47 . ".\\(?:\\(//\\|==\\|[*/=>]\\).?\\)")
+                    ;;              (48 . ".\\(?:\\(x[a-fA-F0-9]\\).?\\)")
+                    ;;              (58 . ".\\(?:\\(::\\|[:<=>]\\)[:<=>]?\\)")
+                    ;;              (59 . ".\\(?:\\(;\\);?\\)")
+                    ;;              (60 . ".\\(?:\\(!--\\|\\$>\\|\\*>\\|\\+>\\|-[-<>|]\\|/>\\|<[-<=]\\|=[<>|]\\|==>?\\||>\\||||?\\|~[>~]\\|[$*+/:<=>|~-]\\)[$*+/:<=>|~-]?\\)")
+                    ;;              (61 . ".\\(?:\\(!=\\|/=\\|:=\\|<<\\|=[=>]\\|>>\\|[=>]\\)[=<>]?\\)")
+                    ;;              (62 . ".\\(?:\\(->\\|=>\\|>[-=>]\\|[-:=>]\\)[-:=>]?\\)")
+                    ;;              ;; t(63 . ".\\(?:\\([.:=?]\\)[.:=?]?\\)")
+                    ;;              (91 . ".\\(?:\\(|\\)[]|]?\\)")
+                    ;;              ;; (92 . ".\\(?:\\([\\n]\\)[\\]?\\)")
+                    ;;              (94 . ".\\(?:\\(=\\)=?\\)")
+                    ;;              (95 . ".\\(?:\\(|_\\|[_]\\)_?\\)")
+                    ;;              (119 . ".\\(?:\\(ww\\)w?\\)")
+                    ;;              (123 . ".\\(?:\\(|\\)[|}]?\\)")
+                    ;;              (124 . ".\\(?:\\(->\\|=>\\||[-=>]\\||||*>\\|[]=>|}-]\\).?\\)")
+                    ;;              (126 . ".\\(?:\\(~>\\|[-=>@~]\\)[-=>@~]?\\)"))))
+                    ;;       (dolist (char-regexp alist)
+                    ;;         (set-char-table-range composition-ligature-table (car char-regexp)
+                    ;;                               `([,(cdr char-regexp) 0 font-shape-gstring]))))
+                    ;;     (set-char-table-parent composition-ligature-table composition-function-table))
+                    ;;   )
 
 (use-package flycheck-pos-tip
   :after flycheck
@@ -363,106 +399,142 @@
 (server-start)
 
 (use-package diminish
-            :ensure t)
+       :ensure t)
 
-          (diminish 'org-mode  "")
-          (diminish 'auto-revert-mode)
-          (diminish 'yas-minor-mode)
-          (diminish 'eldoc-mode)
-          (diminish 'org-src-mode)
-          (diminish 'abbrev-mode)
-          (diminish 'ivy-mode)
-          (diminish 'global-highline-mode)
-          (diminish 'ruby-block-mode)
-          (diminish 'ruby-electric-mode)
-          (diminish "seeing-is-believing")
-          (diminish 'hs-minor-mode)
-          (diminish 'ruby-block-mode)
-          (diminish 'global-highline-mode)
+     (diminish 'org-mode  "")
+     (diminish 'auto-revert-mode)
+     (diminish 'yas-minor-mode)
+     (diminish 'eldoc-mode)
+     (diminish 'org-src-mode)
+     (diminish 'abbrev-mode)
+     (diminish 'ivy-mode)
+     (diminish 'global-highline-mode)
+     (diminish 'ruby-block-mode)
+     (diminish 'ruby-electric-mode)
+     (diminish "seeing-is-believing")
+     (diminish 'hs-minor-mode)
+     (diminish 'ruby-block-mode)
+     (diminish 'global-highline-mode)
 
-(use-package org
-            :ensure t
-            :diminish  ""
-            :config
-            (setq org-default-notes-file "~/Documents/notes/notes.org")
-            (require 'org-capture)
-            (setq org-capture-templates
-      '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
-         "* TODO %?\n  %i\n  %a")
-        ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
-         "* %?\nEntered on %U\n  %i\n  %a")))
-)
-          (use-package ox-twbs
-            :ensure t)
-          (use-package ox-jira
-            :ensure t)
-          (require 'org-tempo)
-          (use-package org-mime
-            :ensure t)
-          (setq org-ellipsis " ⤵")
-          (setq org-src-fontify-natively t)
-          (setq org-src-tab-acts-natively t)
-          (setq org-src-window-setup 'current-window)
-          (use-package plantuml-mode
-            :ensure t)
-          (use-package org-bullets
-            :ensure t)
-          (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-          (setq org-startup-with-inline-images t)
-          (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-          ;;***********remember + Org config*************
-          (setq org-remember-templates
-                '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
-                  ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
-          (setq remember-annotation-functions '(org-remember-annotation))
-          (setq remember-handler-functions '(org-remember-handler))
-          (add-hook 'remember-mode-hook 'org-remember-apply-template)
-          (global-set-key (kbd "C-c r") 'remember)
-
-          (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-          (setq org-agenda-include-diary t)
-          (setq org-agenda-include-all-todo t)
-          (org-babel-do-load-languages
-           'org-babel-load-languages
-           '((shell  . t)
-             (js  . t)
-             (emacs-lisp . t)
-             (python . t)
-             (ruby . t)
-             (css . t )
-             (plantuml . t)
-             (sql . t)
-             (java . t)
-             (dot . t)))
-          (setq org-confirm-babel-evaluate nil)
-
-          (use-package virtualenvwrapper
-            :ensure t
-            :init
-            (venv-initialize-interactive-shells)
-            (venv-initialize-eshell)
-            (setq venv-location "~/.virtualenvs")
-            )
-          (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
-          (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+     (use-package org
+       :ensure t
+       :diminish  ""
+       :config
+       (setq org-default-notes-file "~/Documents/notes/notes.org")
+       (require 'org-capture)
+       (setq org-capture-templates
+             '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+                "* TODO %?\n  %i\n  %a")
+               ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+                "* %?\nEntered on %U\n  %i\n  %a")
+               ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
+                "* %?\nEntered on %U\n  %i\n  %a")))
+       )
 
 
-          (setq org-mime-export-options '(:section-numbers nil
-                                                           :with-author nil
-                                                           :with-toc nil))
+     ;; This is needed as of Org 9.2
+     (require 'org-tempo)
 
-             (use-package hc-zenburn-theme
-               :ensure t
-              :init
-              (powerline-default-theme)
-              (load-theme 'hc-zenburn t)
-              (hc-zenburn-with-color-variables
-                (custom-theme-set-faces
-                 'hc-zenburn
-                 `(company-tooltip-common ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
-                 `(company-tooltip-selection ((t (:background ,"gray40" :foreground ,"LightBlue3"))))
-                 `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
-              )
+     (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+     (add-to-list 'org-structure-template-alist '("py" . "src python"))
+
+     ;; Automatically tangle our Emacs.org config file when we save it
+     (defun efs/org-babel-tangle-config ()
+       (when (string-equal (buffer-file-name)
+                           (expand-file-name "~/emacs/config/emacs-config.org"))
+         ;; Dynamic scoping to the rescue
+         (let ((org-confirm-babel-evaluate nil))
+           (org-babel-tangle))))
+
+     (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+     (fset 'capture-tweet
+           (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
+     (use-package ox-twbs
+       :ensure t)
+     (use-package ox-jira
+       :ensure t)
+     (require 'org-tempo)
+     (use-package org-mime
+       :ensure t)
+     (setq org-ellipsis " ⤵")
+     (setq org-src-fontify-natively t)
+     (setq org-src-tab-acts-natively t)
+     (setq org-src-window-setup 'current-window)
+     (use-package plantuml-mode
+       :ensure t)
+     (use-package org-bullets
+       :ensure t)
+     (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+     (setq org-startup-with-inline-images t)
+     (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+     ;;***********remember + Org config*************
+     (setq org-remember-templates
+           '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
+             ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
+     (setq remember-annotation-functions '(org-remember-annotation))
+     (setq remember-handler-functions '(org-remember-handler))
+     (add-hook 'remember-mode-hook 'org-remember-apply-template)
+     (global-set-key (kbd "C-c r") 'remember)
+
+     (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+     (setq org-agenda-include-diary t)
+     (setq org-agenda-include-all-todo t)
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((shell  . t)
+        (js  . t)
+        (emacs-lisp . t)
+        (python . t)
+        (ruby . t)
+        (css . t )
+        (plantuml . t)
+        (sql . t)
+        (java . t)
+        (dot . t)))
+     (setq org-confirm-babel-evaluate nil)
+
+     (use-package virtualenvwrapper
+       :ensure t
+       :init
+       (venv-initialize-interactive-shells)
+       (venv-initialize-eshell)
+       (setq venv-location "~/.virtualenvs")
+       )
+     (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+     (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+
+
+     (setq org-mime-export-options '(:section-numbers nil
+                                                      :with-author nil
+                                                      :with-toc nil))
+
+      (use-package zenburn-theme
+        :ensure t
+        :init
+;;        (powerline-default-theme)
+           (setq zenburn-override-colors-alist '(
+                                                 ("zenburn-bg" . "gray16")
+                                                 ("zenburn-bg-1" . "#5F7F5F")))
+        (load-theme 'zenburn t)
+        :config
+        (setq zenburn-use-variable-pitch t)
+        (setq zenburn-scale-org-headlines t)
+        (setq zenburn-scale-outline-headlines t)
+       (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")  )
+     ;;( use-package hc-zenburn-theme
+     ;;  :ensure t
+     ;; :init
+     ;; (powerline-default-theme)
+     ;; (load-theme 'hc-zenburn t)
+     ;; (hc-zenburn-with-color-variables
+     ;;   (custom-theme-set-faces
+     ;;    'hc-zenburn
+     ;;    `(company-tooltip-common ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
+     ;;    `(company-tooltip-selection ((t (:background ,"gray40" :foreground ,"LightBlue3"))))
+     ;;    `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
+     ;; )
 
 (use-package exec-path-from-shell
   :ensure t
@@ -528,21 +600,39 @@
 (require 'keys-config-new)
 
 (use-package highline
-  :ensure t
-  :config
-  (global-highline-mode t)
-  (setq highline-face '((:background "gray40")))
-  (set-face-attribute 'region nil :background "DarkOliveGreen")
-  (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
-(set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+       :ensure t
+       :config
+       (global-highline-mode t)
+       (setq highline-face '((:background "gray40")))
+       (set-face-attribute 'region nil :background "DarkOliveGreen")
+       (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
+     (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
-(use-package hlinum
-  :ensure t)
-(use-package linum-relative
-  :ensure t)
+     (use-package hlinum
+       :ensure t)
+     (use-package linum-relative
+       :ensure t)
 
-  (global-linum-mode)
-  (hlinum-activate)
+      ;; (global-linum-mode)
+       (hlinum-activate)
+
+
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+                erc-mode-hook
+                term-mode-hook
+                eshell-mode-hook
+                vterm-mode-hook
+                neotree-mode-hook
+                telega-chat-mode-hook
+                telega-root-mode-hook
+                telega-webpage-mode-hook
+                treemacs-mode-hook
+                dashboard-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package company
             :ensure t
@@ -562,14 +652,19 @@
             :init
             (company-quickhelp-mode))
           (use-package lsp-mode
-            :commands lsp
+            :commands (lsp lsp-deferred)
             :hook ((ruby-mode . lsp))
-            :custom          (lsp-auto-configure t)
-                              (lsp-prefer-flymake nil)
-                              (lsp-inhibit-message t)
-                              (lsp-eldoc-render-all nil)
-
+            :custom
+            (lsp-auto-configure t)
+            (lsp-prefer-flymake nil)
+            (lsp-inhibit-message t)
+            (lsp-eldoc-render-all nil)
+            :config
+            (lsp-enable-which-key-integration t)
+       (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
             :ensure t)
+(use-package lsp-ivy
+  :ensure t)
 (use-package lsp-ui
   :commands lsp-ui-mode
   :after lsp-mode
@@ -581,7 +676,7 @@
   )
 
 (use-package lsp-treemacs
-  :after lsp-mode
+  :after lsp
   :config
   (lsp-treemacs-sync-mode t)
   )
@@ -660,7 +755,9 @@
   (setq projectile-switch-project-action #'projectile-dired)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-require-project-root nil)
-  (setq projectile-indexing-method 'alien))
+  (setq projectile-indexing-method 'alien)
+  :custom
+  ((projectile-completion-system 'ivy)))
 
 (use-package counsel-projectile
   :ensure t
