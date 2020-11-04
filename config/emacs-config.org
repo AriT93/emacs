@@ -34,10 +34,7 @@
      (setq auto-save-file-name-transforms
            '((".*" "~/tmp/" t)))
      (setq message-log-max 1000)
-     ;;     (set-default-font "Monaco-11")
-     ;;(set-face-attribute 'default nil :family "Monaco" :height 110 :weight 'normal)
-     (set-face-attribute 'default nil :family "JetBrains Mono" :height 110 :weight 'normal)
-     ;;     (add-to-list 'default-frame-alist '(font . "Monaco-18"))
+     (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120 :weight 'normal)
      (setq help-at-pt-display-when-idle t)
      (setq help-at-pt-timer-delay 0.1)
      (help-at-pt-set-timer)
@@ -45,63 +42,14 @@
      (setq mode-line-in-non-selected-windows nil)
      (fset 'yes-or-no-p 'y-or-n-p)
      (add-hook 'eww-after-render-hook 'eww-readable)
-
-
    #+END_SRC
 
    Pop yank gives you a pop up of recent yanks,  a "yank bank"
    #+BEGIN_SRC elisp
-               ;; (use-package popup
-               ;;   :ensure t)
-               (use-package pos-tip
-                 :ensure t)
-               ;; (use-package popup-kill-ring
-               ;;   :ensure t)
-
-               (global-set-key "\C-cy" 'popup-kill-ring)
-               ;; '(lambda ()
-               ;;            (interactive)
-               ;;            (popup-menu 'yank-menu)))
-
+     (use-package pos-tip
+       :ensure t)
+     (global-set-key "\C-cy" 'popup-kill-ring)
    #+END_SRC
-** Who am i and email
-#+BEGIN_SRC elisp
-  (require 'smtpmail)
-
-  (setq send-mail-function 'smtpmail-send-it
-        message-send-mail-function 'smtpmail-send-it
-        smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
-        smtp-smtp-server "https://outlook.office365.com/EWS/Exchange.asmx"
-        smtpmail-stream-type 'starttls
-        smtpmail-smtp-service 587)
-  (setq starttls-use-gnutls t)
-  (setq user-full-name "Ari Turetzky")
-  (setq user-mail-address "aturetzky@quantcast.com")
-
-  ;; ;;mu4e
-  ;; (add-to-list 'load-path "/usr/local/Cellar/mu/1.0/share/emacs/site-lisp/mu/mu4e/")
-  ;; (require 'mu4e)
-
-  ;; (setq mu4e-maildir (expand-file-name "~/mail/qc/"))
-  ;; (setq mu4e-drafts-folder "/Drafts")
-  ;; (setq mu4e-sent-folder "/Sent")
-  ;; (setq mu4e-trash-folder "/Trash")
-
-  ;; (setq mu4e-get-mail-command "mbsync qc"
-  ;;       mu4e-html2text-command "w3m -T text/html"
-  ;;       mu4e-update-interval 120
-  ;;       mu4e-headers-auto-update t
-  ;;       mu4e-compose-signature-auto-include nil)
-
-  ;; (setq mu4e-view-show-images t)
-
-  ;; (when (fboundp 'imagemagick-register-types)
-  ;;   (imagemagick-register-types))
-  ;; (setq mu4e-mu-binary "/usr/local/bin/mu")
-  ;; (setq mu4e-compose-reply-to-address "aturetzky@quantcast.com")
-
-
-#+END_SRC
 ** Tex
    #+BEGIN_SRC elisp
      (setq TeX-command-list
@@ -118,7 +66,6 @@
                    ("Other" "" TeX-run-command t t))))
 
    #+END_SRC
-   p
 ** Get some package goodness
    #+BEGIN_SRC elisp
      (require 'package)
@@ -126,8 +73,6 @@
 
    find our packages in the more reputable places
    #+BEGIN_SRC elisp
-;     (add-to-list 'package-archives
- ;                 '("marmalade" . "https://marmalade-repo.org/packages/"))
      (add-to-list 'package-archives
                   '("melpa" . "https://melpa.org/packages/"))
      (add-to-list 'package-archives
@@ -161,26 +106,26 @@
 ** JS Comint using node to eval javascript code
    And here we have the first use of use-pacakge!
    #+BEGIN_SRC elisp
-               (use-package nvm
-                 :ensure t)
-               (use-package js-comint
-                 :ensure t
-                 :config
-                 (require 'nvm)
-                 (js-do-use-nvm))
+     (use-package nvm
+       :ensure t)
+     (use-package js-comint
+       :ensure t
+       :config
+       (require 'nvm)
+       (js-do-use-nvm))
 
-               (use-package js2-mode
-                 :ensure t
-                 :bind (:map js2-mode-map
-                             ("\C-x\C-e" . js-send-last-sexp)
-                             ("\C-\M-x"  . js-send-last-sexp-and-go)
-                             ("\C-cb"    . js-send-buffer)
-                             ("\C-c\C-b" . js-send-buffer-and-go)
-                             ("\C-cl"    . js-load-file-and-go))
-                 :config
-                 (setq js2-strict-missing-semi-warning nil)
-                 (setq js2-missing-semi-one-line-override nil)
-                 )
+     (use-package js2-mode
+       :ensure t
+       :bind (:map js2-mode-map
+                   ("\C-x\C-e" . js-send-last-sexp)
+                   ("\C-\M-x"  . js-send-last-sexp-and-go)
+                   ("\C-cb"    . js-send-buffer)
+                   ("\C-c\C-b" . js-send-buffer-and-go)
+                   ("\C-cl"    . js-load-file-and-go))
+       :config
+       (setq js2-strict-missing-semi-warning nil)
+       (setq js2-missing-semi-one-line-override nil)
+       )
    #+END_SRC
 
 ** Ivy for isearcing
@@ -204,7 +149,7 @@
         ("C-x C-f" . 'counsel-find-file)
         ("C-c j" . 'counsel-git-grep)
         ("C-c k" . 'counsel-ag)
-        ("C-x l" . 'counsel-locate)
+        ("C-x L" . 'counsel-locate)
         ("M-x" . 'counsel-M-x)))
      (use-package ivy-rich
        :init
@@ -246,95 +191,83 @@
    it online anymore and the author doesn't seem to have it on his git
    hub but Thanks Michal!
    #+BEGIN_SRC  elisp
-                               ;; Notes in *scratch* v. 0.2
-                               ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
-                               ;; Released under GNU GPL
+     ;; Notes in *scratch* v. 0.2
+     ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
+     ;; Released under GNU GPL
 
-                               (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
-                                 "File where content of *scratch* buffer will be read from and saved to.")
-                               (defconst scratch-file-autosave (concat scratch-file ".autosave")
-                                 "File where to autosave content of *scratch* buffer.")
+     (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
+       "File where content of *scratch* buffer will be read from and saved to.")
+     (defconst scratch-file-autosave (concat scratch-file ".autosave")
+       "File where to autosave content of *scratch* buffer.")
 
-                               (save-excursion
-                                 (set-buffer (get-buffer-create "*scratch*"))
-                                 (if (file-readable-p scratch-file)
-                                     (if (and (file-readable-p scratch-file-autosave)
-                                              (file-newer-than-file-p scratch-file-autosave scratch-file)t)
-                                         (insert-file-contents scratch-file-autosave nil nil nil t)
-                                       (insert-file-contents scratch-file nil nil nil t)
-                                       (set-buffer-modified-p nil)))
-                                 (auto-save-mode 1)
-                                 (setq buffer-auto-save-file-name scratch-file-autosave)
-                                                                       ; (setq revert-buffer-function 'scratch-revert)
-                                 (fundamental-mode))
-                               (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
-                               (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
+     (save-excursion
+       (set-buffer (get-buffer-create "*scratch*"))
+       (if (file-readable-p scratch-file)
+           (if (and (file-readable-p scratch-file-autosave)
+                    (file-newer-than-file-p scratch-file-autosave scratch-file)t)
+               (insert-file-contents scratch-file-autosave nil nil nil t)
+             (insert-file-contents scratch-file nil nil nil t)
+             (set-buffer-modified-p nil)))
+       (auto-save-mode 1)
+       (setq buffer-auto-save-file-name scratch-file-autosave)
+                                             ; (setq revert-buffer-function 'scratch-revert)
+       (fundamental-mode))
+     (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
+     (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
 
-                               (defun scratch-revert (ignore-auto noconfirm)
-                                 (when (file-readable-p scratch-file)
-                                   (insert-file-contents scratch-file nil nil nil t)
-                                   (set-buffer-modified-p nil)))
+     (defun scratch-revert (ignore-auto noconfirm)
+       (when (file-readable-p scratch-file)
+         (insert-file-contents scratch-file nil nil nil t)
+         (set-buffer-modified-p nil)))
 
-                               (defun kill-scratch-buffer ()
-                                 (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
-                                        (delete-region (point-min) (point-max))
-                                        (set-buffer-modified-p nil)
-                                        (next-buffer)
-                                        t)))
+     (defun kill-scratch-buffer ()
+       (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
+              (delete-region (point-min) (point-max))
+              (set-buffer-modified-p nil)
+              (next-buffer)
+              t)))
 
-                               (defun kill-emacs-scratch-save ()
-                                 (let ((buffer (get-buffer-create "*scratch*")))
-                                   (if buffer
-                                       (save-excursion
-                                         (set-buffer buffer)
-                                         (write-region nil nil scratch-file)
-                                         (unless (string-equal scratch-file buffer-auto-save-file-name)
-                                           (delete-auto-save-file-if-necessary t))))))
+     (defun kill-emacs-scratch-save ()
+       (let ((buffer (get-buffer-create "*scratch*")))
+         (if buffer
+             (save-excursion
+               (set-buffer buffer)
+               (write-region nil nil scratch-file)
+               (unless (string-equal scratch-file buffer-auto-save-file-name)
+                 (delete-auto-save-file-if-necessary t))))))
+#+END_SRC
+** Treemacs
+   #+BEGIN_SRC elisp
+     (use-package treemacs-projectile
+       :after treemacs projectile
+       :ensure t)
+     (use-package treemacs-magit
+       :after treemacs magit
+       :ensure t)
+     (use-package treemacs
+       :ensure t
+       :defer t
+       :config
+       (setq treemacs-space-between-root-nodes nil)
+       (treemacs-follow-mode t)
+       (treemacs-filewatch-mode t)
+       (treemacs-fringe-indicator-mode t)
+       (doom-themes-treemacs-config)
+       (setq doom-themes-treemacs-theme "doom-colors")
+       (global-set-key (kbd "M-0") 'treemacs-select-window))
 
-                          (use-package treemacs-projectile
-                            :after treemacs projectile
-                            :ensure t)
-                          (use-package treemacs-magit
-                            :after treemacs magit
-                            :ensure t)
-                          (use-package treemacs
-                            :ensure t
-                            :defer t
-                            :config
-                            (setq treemacs-space-between-root-nodes nil)
-                            (treemacs-follow-mode t)
-                            (treemacs-filewatch-mode t)
-                            (treemacs-fringe-indicator-mode t)
-                            (doom-themes-treemacs-config)
-                            ;;(setq doom-themes-treemacs-theme "doom-colors")
-                            (global-set-key (kbd "M-0") 'treemacs-select-window))
+     (require 'doom-themes)
+     (setq doom-themes-enable-bold t)
+     (setq doom-themes-enable-italic t)
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
-                     ;;(require 'spaceline-config)
-                     ;;(spaceline-spacemacs-theme)
-                     ;;(spaceline-emacs-theme)
-           ;;(doom-modeline-init)
-                     (require 'doom-themes)
-                     (setq doom-themes-enable-bold t)
-                     (setq doom-themes-enable-italic t)
-                     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-
-                     ;;(load-theme 'tron-legacy t)
-           ;;(load-theme 'doom-zenburn t)
-           ;; (load-theme 'doom-dark+ t)
-                     ;;(powerline-default-theme)
-                     ;; (doom-modeline-def-modeline 'abt/my-doom-modeline
-                     ;;   '(window-number bar buffer-info vcs matches )
-                     ;;   '(misc-info input-method checker buffer-position " "))
-
-                     ;; (defun setup-custom-doom-modeline()
-                     ;;   (doom-modeline-set-modeline 'abt/my-doom-modeline 'default))
-
-                     ;; (add-hook 'doom-modeline-mode-hook ' setup-custom-doom-modeline)
-
-
-                     ;;      (setq sh-basic-offset 2)
-                     ;;      (setq sh-indentation 2)
-                     ;;      (setq smie-indent-basic 2)
+     ;; (load-theme 'tron-legacy t)
+     ;; (load-theme 'doom-zenburn t)
+     ;; (load-theme 'doom-dark+ t)
+     ;; (powerline-default-theme)
+#+END_SRC
+** SpaceLine
+   #+BEGIN_SRC elisp
      (use-package spaceline
        :ensure t)
      (use-package spaceline-all-the-icons
@@ -343,98 +276,38 @@
        :config
        (setq spaceline-all-the-icons-separator-type 'arrow)
        (spaceline-all-the-icons-theme)
-     )
-      (require 'spaceline-config)
-      (spaceline-all-the-icons-theme)
-      ;; (spaceline-spacemacs-theme)
-      ;; (use-package smart-mode-line
-      ;;   :ensure t
-      ;;   :config
-      ;;   (setq sml/no-confirm-load-theme t)
-      ;;   (sml/setup)
-      ;;   (sml/apply-theme 'respectful)  ; Respect the theme colors
-      ;;   (setq sml/mode-width 'full
-      ;;         sml/name-width 60))
+       )
+     (require 'spaceline-config)
+     (spaceline-all-the-icons-theme)
+#+END_SRC
+** Font Ligatures
+   #+BEGIN_SRC elisp
+   (use-package ligature
+       :load-path "/Users/ari.turetzky/dev/git/ligature.el"
+       :config
+       ;; Enable the "www" ligature in every possible major mode
+       (ligature-set-ligatures 't '("www"))
+       ;; Enable traditional ligature support in eww-mode, if the
+       ;; `variable-pitch' face supports it
+       (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+       ;; Enable all Cascadia Code ligatures in programming modes
+       (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                            ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                            "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                            "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                            "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                            "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                            "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                            "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                            ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                            "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                            "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                            "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                            "\\" "://"))
+       ;; Enables ligature checks globally in all buffers. You can also do it
+       ;; per mode with `ligature-mode'.
+       (global-ligature-mode t))
 
-      ;; (use-package minions
-      ;;   :ensure t
-      ;;   :hook (doom-modeline-mode . minions-mode)
-      ;;   )
-      ;; (use-package doom-modeline
-      ;;   :init (doom-modeline-mode 1)
-      ;; )
-
-           (use-package ligature
-             :load-path "/Users/ari.turetzky/dev/git/ligature.el"
-             :config
-             ;; Enable the "www" ligature in every possible major mode
-             (ligature-set-ligatures 't '("www"))
-             ;; Enable traditional ligature support in eww-mode, if the
-             ;; `variable-pitch' face supports it
-             (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-             ;; Enable all Cascadia Code ligatures in programming modes
-             (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                                  ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                                  "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                                  "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                                  "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                                  "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                                  "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                                  "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                                  ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                                  "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                                  "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                                  "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                                  "\\" "://"))
-             ;; Enables ligature checks globally in all buffers. You can also do it
-             ;; per mode with `ligature-mode'.
-             (global-ligature-mode t))
-
-                          ;; (use-package composite
-                          ;;   :defer t
-                          ;;   :init
-                          ;;   (defvar composition-ligature-table (make-char-table nil))
-                          ;;   :hook
-                          ;;   (((prog-mode conf-mode nxml-mode markdown-mode help-mode rjsx-mode)
-                          ;;     . (lambda () (setq-local composition-function-table composition-ligature-table))))
-                          ;;   :config
-                          ;;   ;; support ligatures, some toned down to prevent hang
-                          ;;   (when (version<= "27.0" emacs-version)
-                          ;;     (let ((alist
-                          ;;            '((33 . ".\\(?:\\(==\\|[!=]\\)[!=]?\\)")
-                          ;;              (35 . ".\\(?:\\(###?\\|_(\\|[(:=?[_{]\\)[#(:=?[_{]?\\)")
-                          ;;              (36 . ".\\(?:\\(>\\)>?\\)")
-                          ;;              (37 . ".\\(?:\\(%\\)%?\\)")
-                          ;;              (38 . ".\\(?:\\(&\\)&?\\)")
-                          ;;              (42 . ".\\(?:\\(\\*\\*\\|[*>]\\)[*>]?\\)")
-                          ;;              ;; (42 . ".\\(?:\\(\\*\\*\\|[*/>]\\).?\\)")
-                          ;;              (43 . ".\\(?:\\([>]\\)>?\\)")
-                          ;;              ;; (43 . ".\\(?:\\(\\+\\+\\|[+>]\\).?\\)")
-                          ;;              ;; (45 . ".\\(?:\\(-[->]\\|<<\\|>>\\|[-<>|~]\\)[-<>|~]?\\)")
-                          ;;              ;; (46 . ".\\(?:\\(\\.[.<]\\|[-.=]\\)[-.<=]?\\)")
-                          ;;              ;; (46 . ".\\(?:\\(\\.<\\|[-=]\\)[-<=]?\\)")
-                          ;;              ;; (47 . ".\\(?:\\(//\\|==\\|[=>]\\)[/=>]?\\)")
-                          ;;              ;; (47 . ".\\(?:\\(//\\|==\\|[*/=>]\\).?\\)")
-                          ;;              (48 . ".\\(?:\\(x[a-fA-F0-9]\\).?\\)")
-                          ;;              (58 . ".\\(?:\\(::\\|[:<=>]\\)[:<=>]?\\)")
-                          ;;              (59 . ".\\(?:\\(;\\);?\\)")
-                          ;;              (60 . ".\\(?:\\(!--\\|\\$>\\|\\*>\\|\\+>\\|-[-<>|]\\|/>\\|<[-<=]\\|=[<>|]\\|==>?\\||>\\||||?\\|~[>~]\\|[$*+/:<=>|~-]\\)[$*+/:<=>|~-]?\\)")
-                          ;;              (61 . ".\\(?:\\(!=\\|/=\\|:=\\|<<\\|=[=>]\\|>>\\|[=>]\\)[=<>]?\\)")
-                          ;;              (62 . ".\\(?:\\(->\\|=>\\|>[-=>]\\|[-:=>]\\)[-:=>]?\\)")
-                          ;;              ;; t(63 . ".\\(?:\\([.:=?]\\)[.:=?]?\\)")
-                          ;;              (91 . ".\\(?:\\(|\\)[]|]?\\)")
-                          ;;              ;; (92 . ".\\(?:\\([\\n]\\)[\\]?\\)")
-                          ;;              (94 . ".\\(?:\\(=\\)=?\\)")
-                          ;;              (95 . ".\\(?:\\(|_\\|[_]\\)_?\\)")
-                          ;;              (119 . ".\\(?:\\(ww\\)w?\\)")
-                          ;;              (123 . ".\\(?:\\(|\\)[|}]?\\)")
-                          ;;              (124 . ".\\(?:\\(->\\|=>\\||[-=>]\\||||*>\\|[]=>|}-]\\).?\\)")
-                          ;;              (126 . ".\\(?:\\(~>\\|[-=>@~]\\)[-=>@~]?\\)"))))
-                          ;;       (dolist (char-regexp alist)
-                          ;;         (set-char-table-range composition-ligature-table (car char-regexp)
-                          ;;                               `([,(cdr char-regexp) 0 font-shape-gstring]))))
-                          ;;     (set-char-table-parent composition-ligature-table composition-function-table))
-                          ;;   )
    #+END_SRC
 
 ** Flycheck is fly as hell
@@ -467,7 +340,7 @@
    currently here but will need to move to it's own config file
    eventually to make it more manageable
    #+BEGIN_SRC elisp
-          (use-package diminish
+     (use-package diminish
             :ensure t)
 
           (diminish 'org-mode  "")
@@ -507,6 +380,7 @@
           (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
           (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
           (add-to-list 'org-structure-template-alist '("py" . "src python"))
+          (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
 
           ;; Automatically tangle our Emacs.org config file when we save it
           (defun efs/org-babel-tangle-config ()
@@ -540,8 +414,8 @@
           (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
           ;;***********remember + Org config*************
           (setq org-remember-templates
-                '(("Tasks" ?t "* TODO %?\n %i\n %a" "H://todo.org")
-                  ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "H://todo.org")))
+                '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
+                  ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
           (setq remember-annotation-functions '(org-remember-annotation))
           (setq remember-handler-functions '(org-remember-handler))
           (add-hook 'remember-mode-hook 'org-remember-apply-template)
@@ -582,7 +456,6 @@
            (use-package zenburn-theme
              :ensure t
              :init
-     ;;        (powerline-default-theme)
                 (setq zenburn-override-colors-alist '(
                                                       ("zenburn-bg" . "gray16")
                                                       ("zenburn-bg-1" . "#5F7F5F")))
@@ -591,8 +464,8 @@
              (setq zenburn-use-variable-pitch t)
              (setq zenburn-scale-org-headlines t)
              (setq zenburn-scale-outline-headlines t)
-             (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")  )
-     (set-face-attribute 'ivy-current-match nil :height 1.1 :foreground "wheat" :background "#5f7f5f" :underline nil)
+             (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
+             (set-face-attribute 'ivy-current-match nil :height 1.1 :foreground "wheat" :background "#5f7f5f" :underline nil))
           ;;( use-package hc-zenburn-theme
           ;;  :ensure t
           ;; :init
@@ -645,22 +518,8 @@
      (use-package graphql
        :ensure t)
      (require 'org-protocol)
-     ;; (use-package auto-complete
-     ;;   :diminish "  "
-     ;;   :ensure t
-     ;;   :init
-     ;;   (setq ac-use-menu-map t)
-     ;;   (setq ac-use-fuzzy t))
-     ;; (require 'auto-complete-config)
-     ;; (ac-config-default)
-     ;; (require 'auto-complete-yasnippet)
      (use-package haml-mode
        :ensure t)
-     ;; (use-package rvm
-     ;;   :ensure t
-     ;;   :hook
-     ;;   (ruby-mode . rvm-activate-corresponding-ruby))
-     ;; (rvm-use-default)
      (use-package beacon
        :ensure t
        :init
@@ -693,7 +552,6 @@
           (use-package linum-relative
             :ensure t)
 
-           ;; (global-linum-mode)
             (hlinum-activate)
 
 
@@ -763,51 +621,10 @@
        :config
        (lsp-treemacs-sync-mode t)
        )
-
-               ;;(require 'lsp)
-               ;;(require 'lsp-mode)
-               ;;(require 'lsp-clients)
-
                (require 'lsp-ui-flycheck)
-               ;;(require 'lsp-solargraph)
-               ;;     (require 'lsp-mode)
                (setq lsp-inhibit-message t)
                (setq lsp-prefer-flymake nil)
-                                                       ;  ; (setq lsp-eldoc-render-all nil)
                (setq lsp-eldoc-render-all nil)
-
-               ;;      (setq lsp-highlight-symbol-at-point t)
-               ;; (setq  lsp-java--workspace-folders (list "/Users/aturetzky/dev/git/permission-center/api"))
-               ;; (setq lsp-java-format-settings-profile "Quantcast")
-               ;; (setq lsp-java-format-settings-url "~/Users/aturetzky/eclipse-java-google-style.xml")
-               ;; (require 'lsp-java)
-               ;; (add-hook 'java-mode-hook #'lsp-java-enable)
-               ;; (add-hook 'java-mode-hook 'flycheck-mode)
-               ;; (add-hook 'java-mode-hook 'company-mode)
-               ;; (add-hook 'java-mode-hook (lambda ()(lsp-ui-flycheck-enable t)))
-               ;; (add-hook 'java-mode-hook 'lsp-ui-mode)
-               ;; (add-hook 'java-mode-hook 'lsp-ui-sideline-mode)
-     ;;          (require 'lsp-ui)
-     ;;          (require 'lsp-ui-flycheck)
-     ;;          (setq lsp-prefer-flymake nil)
-               ;;     (setq lsp-ui-doc-enable-eldoc nil)
-               ;; (setq lsp-ui-sideline-enable t)
-               ;;       (setq lsp-ui-sideline-show-symbol nil)
-               ;;       (setq lsp-ui-sideline-show-hover nil)
-               ;;       (setq lsp-ui-sideline-show-code-actions t)
-               ;;       (setq lsp-ui-sideline-update-mode 'point)
-               ;;      (setq lsp-ui-flycheck-live-reporting t)
-               ;;      (setq lsp-ui-flycheck-enable t)
-               ;;      (setq lsp-ui-sideline-enable nil)
-               ;;      (lsp-ui-sideline-mode t)
-
-               ;; (setq lsp-java-import-maven-enabled nil);
-               ;; (setq lsp-java-import-gradle-enabled t)
-               ;; (setq lsp-java-progress-report t)
-               ;; (setq lsp-java-auto-build t)
-               ;;      (setq lsp-ui-doc-mode nil)
-               ;;      (setq lsp-ui-doc-enable t)
-
 
                (setq lsp-message-project-root-warning t)
                (setq lsp-auto-guess-root t)
@@ -823,20 +640,6 @@
                  :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
 
 
-   #+END_SRC
-
-** Eclim
-   eclim lets you use eclipse as in the background for compilation
-   warnings and code completion
-   #+BEGIN_SRC elisp
-     ;;     (require 'eclim)
-     ;;     (require 'eclimd)
-     ;;     (use-package ac-emacs-eclim
-     ;;       :ensure t)
-     ;;     (require 'ac-emacs-eclim)
-     ;;     (ac-emacs-eclim-java-setup)
-     ;;     (setq eclim-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclim")
-     ;;     (setq eclimd-executable "~/eclipse/java-oxygen-tar/Eclipse.app/Contents/Eclipse/eclimd")
    #+END_SRC
 
 ** Projectile
@@ -1038,29 +841,34 @@
 ** Helpful
    #+begin_src emacs-lisp
      (use-package helpful
-       :ensure t
-       :custom
-       (counsel-describe-function-function #'helpful-callable)
-       (counsel-describe-variable-function #'helpful-variable)
-       :bind
-       ([remap describe-function] . counsel-describe-function)
-       ([remap describe-command] . helpful-command)
-       ([remap describe-variable] . counsel-describe-variable)
-       ([remap describe-key] . helpful-key))
+       :ensure t)
    #+end_src
 ** Elfeed
    #+begin_src emacs-lisp
      (use-package elfeed
+          :ensure t)
+        (use-package elfeed-org
+          :ensure t
+          :after elfeed
+          :init
+          (elfeed-org))
+        (use-package elfeed-goodies
+          :after elfeed
+          :ensure t
+          :init
+          (elfeed-goodies/setup))
+
+     (use-package visual-fill
        :ensure t)
-     (use-package elfeed-org
-       :ensure t
-       :after elfeed
-       :init
-       (elfeed-org))
-     (use-package elfeed-goodies
-       :ensure t
-       :init
-       (elfeed-goodies/setup))
+     (use-package visual-fill-column
+       :ensure t)
+     (add-hook 'elfeed-show-mode-hook (lambda()
+                                        (set-face-attribute 'variable-pitch (selected-frame) :font (font-spec :family "Helvetica" :size 14))
+                                        (setq fill-column 100)
+                                        (visual-fill-mode t)
+                                        (adaptive-wrap-prefix-mode t)
+                                        (toggle-word-wrap)
+                                        (visual-fill-column-mode)))
    #+end_src
 ** End
    #+BEGIN_SRC elisp

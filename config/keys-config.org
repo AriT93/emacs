@@ -68,6 +68,17 @@ trouble when I do. but these keys are for that
 ;; (global-set-key (kbd "M-o") 'ace-window)
 
 #+END_SRC
+** Helpful
+   #+begin_src emacs-lisp
+     (global-set-key (kbd "C-h f") #'helpful-callable)
+     (global-set-key (kbd "C-h F") #'helpful-function)
+     (global-set-key (kbd "C-h C") #'helpful-command)
+     (global-set-key (kbd "C-h v") #'helpful-variable)
+     (global-set-key (kbd "C-h k") #'helpful-key)
+     (global-set-key (kbd "C-c C-d") #'helpful-at-point)
+     (setq counsel-describe-function-function #'helpful-callable)
+     (setq counsel-describe-variable-function #'helpful-variable)
+   #+end_src
 ** Dash at point
    open up dash and look up what's at the point
 #+BEGIN_SRC elisp
