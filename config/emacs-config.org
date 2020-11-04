@@ -869,6 +869,17 @@
                                         (adaptive-wrap-prefix-mode t)
                                         (toggle-word-wrap)
                                         (visual-fill-column-mode)))
+
+(setq twittering-use-master-password t)
+(setq twittering-icon-mode t)
+(setq twittering-use-icon-storage t)
+(s(setq twittering-status-format "%RT{%FACE[bold]{RT}}%i %s,  %@:
+%FOLD[  ]{%FACE[default]{%FILL[ ]{%T}} %QT{
++----
+%FOLD[|]{%i %s,  %@:
+%FOLD[  ]{%FILL[]{%T} }}
++----}}
+")
    #+end_src
 ** End
    #+BEGIN_SRC elisp
