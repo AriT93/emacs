@@ -307,7 +307,7 @@
      (require 'org-tempo)
 
      (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+     (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
      (add-to-list 'org-structure-template-alist '("py" . "src python"))
      (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
 
@@ -688,5 +688,63 @@
 (setq n4js-cli-arguments '("-u" "neo4j"))
 (setq n4js-pop-to-buffer t)
 (setq n4js-font-lock-keywords cypher-font-lock-keywords)
+
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 1))
+
+(use-package helpful
+  :ensure t)
+
+(use-package elfeed
+                            :ensure t)
+                          (use-package elfeed-org
+                            :ensure t
+                            :after elfeed
+                            :init
+                            (elfeed-org))
+                          (use-package elfeed-goodies
+                            :after elfeed
+                            :ensure t
+                            :init
+                            (elfeed-goodies/setup))
+
+                       (use-package visual-fill
+                         :ensure t)
+                       (use-package visual-fill-column
+                         :ensure t)
+                       (add-hook 'elfeed-show-mode-hook (lambda()
+                                                          (set-face-attribute 'variable-pitch (selected-frame) :font (font-spec :family "Helvetica" :size 14))
+                                                          (setq fill-column 100)
+                                                          (visual-fill-mode t)
+                                                          (adaptive-wrap-prefix-mode t)
+                                                          (toggle-word-wrap)
+                                                          (visual-fill-column-mode)))
+
+
+   (use-package twittering-mode
+     :ensure t
+     :config
+     (defface my-twit-face
+       '((t :family "Helvetica"
+            :height 160
+            ))
+       "face for twitter")
+(defalias 'epa--decode-coding-string 'decode-coding-string)
+     (setq twittering-use-master-password t)
+     (setq twittering-icon-mode t)
+     (setq twittering-use-icon-storage t)
+
+     (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
+   %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
+   +----
+   %FOLD[|]{%i %S (%s),  %@:
+   %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
+   +----}}
+   "))
 
 (provide 'emacs-config-new)
