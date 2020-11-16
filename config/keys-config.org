@@ -69,7 +69,7 @@ trouble when I do. but these keys are for that
 
 #+END_SRC
 ** Helpful
-   #+begin_src emacs-lisp
+   #+begin_src elisp
      (global-set-key (kbd "C-h f") #'helpful-callable)
      (global-set-key (kbd "C-h F") #'helpful-function)
      (global-set-key (kbd "C-h C") #'helpful-command)

@@ -38,6 +38,15 @@
  (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 ;; (global-set-key (kbd "M-o") 'ace-window)
 
+(global-set-key (kbd "C-h f") #'helpful-callable)
+(global-set-key (kbd "C-h F") #'helpful-function)
+(global-set-key (kbd "C-h C") #'helpful-command)
+(global-set-key (kbd "C-h v") #'helpful-variable)
+(global-set-key (kbd "C-h k") #'helpful-key)
+(global-set-key (kbd "C-c C-d") #'helpful-at-point)
+(setq counsel-describe-function-function #'helpful-callable)
+(setq counsel-describe-variable-function #'helpful-variable)
+
 (global-set-key "\C-cd" `dash-at-point)
 
 (provide 'keys-config-new)
