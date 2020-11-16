@@ -9,39 +9,42 @@
   configuration  *This is a Work in Progress*
 ** Looks and Behaviors
    #+BEGIN_SRC elisp
-     (if (window-system)
-         (tool-bar-mode -1))
-     (menu-bar-mode -1)
-     (show-paren-mode 1)
-     (setq gc-cons-threshold 100000000)
-     (setq read-process-output-max (* 1024 1024))
-     (setq inhibit-startup-screen t)
-     (setq inhibit-splash-screen t)
-     (setq uniquify-buffer-name-style t)
-     (setq uniquify-buffer-name-style (quote post-forward))
-     (setq uniquify-min-dir-content 1)
-     (electric-pair-mode 1)
-     (setq cal-tex-diary t)
-     (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
-     (add-hook 'diary-display-hook 'fancy-diary-display)
-     (add-hook 'text-mode-hook ' turn-on-auto-fill)
-     (add-hook 'before-save-hook 'time-stamp)
-     (setq dired-omit-files-p t)
-     (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
-     (setq tramp-auto-save-directory "~/tmp")
-     (setq backup-directory-alist
-           '((".*" . "~/tmp/")))
-     (setq auto-save-file-name-transforms
-           '((".*" "~/tmp/" t)))
-     (setq message-log-max 1000)
-     (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120 :weight 'normal)
-     (setq help-at-pt-display-when-idle t)
-     (setq help-at-pt-timer-delay 0.1)
-     (help-at-pt-set-timer)
-     (setq show-paren-style 'mixed)
-     (setq mode-line-in-non-selected-windows nil)
-     (fset 'yes-or-no-p 'y-or-n-p)
-     (add-hook 'eww-after-render-hook 'eww-readable)
+          (if (window-system)
+              (tool-bar-mode -1))
+          (menu-bar-mode -1)
+          (show-paren-mode 1)
+          (setq gc-cons-threshold 100000000)
+          (setq undo-limit 8000000)
+          (setq undo-strong-limit 12000000)
+          (setq undo-outer-limit 12000000)
+          (setq read-process-output-max (* 1024 1024))
+          (setq inhibit-startup-screen t)
+          (setq inhibit-splash-screen t)
+          (setq uniquify-buffer-name-style t)
+          (setq uniquify-buffer-name-style (quote post-forward))
+          (setq uniquify-min-dir-content 1)
+          (electric-pair-mode 1)
+          (setq cal-tex-diary t)
+          (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
+          (add-hook 'diary-display-hook 'fancy-diary-display)
+          (add-hook 'text-mode-hook ' turn-on-auto-fill)
+          (add-hook 'before-save-hook 'time-stamp)
+          (setq dired-omit-files-p t)
+          (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+          (setq tramp-auto-save-directory "~/tmp")
+          (setq backup-directory-alist
+                '((".*" . "~/tmp/")))
+          (setq auto-save-file-name-transforms
+                '((".*" "~/tmp/" t)))
+          (setq message-log-max 1000)
+          (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120 :weight 'normal)
+          (setq help-at-pt-display-when-idle t)
+          (setq help-at-pt-timer-delay 0.1)
+          (help-at-pt-set-timer)
+          (setq show-paren-style 'mixed)
+          (setq mode-line-in-non-selected-windows nil)
+          (fset 'yes-or-no-p 'y-or-n-p)
+          (add-hook 'eww-after-render-hook 'eww-readable)
    #+END_SRC
 
    Pop yank gives you a pop up of recent yanks,  a "yank bank"
@@ -156,6 +159,16 @@
        (ivy-rich-mode 1)
        :config
        (setq ivy-format-function #'ivy-format-function-line))
+     (use-package ivy-posframe
+       :ensure t
+       :after ivy
+       :init
+       (setq ivy-posframe-hide-minibuffer t)
+       (setq ivy-posframe-min-width 120)
+       (setq ivy-posframe-width 120)
+       (setq ivy-posframe-border-width 1)
+       (ivy-posframe-mode t)
+       )
    #+END_SRC
 ** Moving Around
 #+BEGIN_SRC elisp
@@ -341,143 +354,167 @@
    eventually to make it more manageable
    #+BEGIN_SRC elisp
      (use-package diminish
-            :ensure t)
+       :ensure t)
 
-          (diminish 'org-mode  "")
-          (diminish 'auto-revert-mode)
-          (diminish 'yas-minor-mode)
-          (diminish 'eldoc-mode)
-          (diminish 'org-src-mode)
-          (diminish 'abbrev-mode)
-          (diminish 'ivy-mode)
-          (diminish 'global-highline-mode)
-          (diminish 'ruby-block-mode)
-          (diminish 'ruby-electric-mode)
-          (diminish "seeing-is-believing")
-          (diminish 'hs-minor-mode)
-          (diminish 'ruby-block-mode)
-          (diminish 'global-highline-mode)
+     (diminish 'org-mode  "")
+     (diminish 'auto-revert-mode)
+     (diminish 'yas-minor-mode)
+     (diminish 'eldoc-mode)
+     (diminish 'org-src-mode)
+     (diminish 'abbrev-mode)
+     (diminish 'ivy-mode)
+     (diminish 'global-highline-mode)
+     (diminish 'ruby-block-mode)
+     (diminish 'ruby-electric-mode)
+     (diminish "seeing-is-believing")
+     (diminish 'hs-minor-mode)
+     (diminish 'ruby-block-mode)
+     (diminish 'global-highline-mode)
 
-          (use-package org
-            :ensure t
-            :diminish  ""
-            :config
-            (setq org-default-notes-file "~/Documents/notes/notes.org")
-            (require 'org-capture)
-            (setq org-capture-templates
-                  '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
-                     "* TODO %?\n  %i\n  %a")
-                    ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
-                     "* %?\nEntered on %U\n  %i\n  %a")
-                    ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
-                     "* %?\nEntered on %U\n  %i\n  %a")))
-            )
-
-
-          ;; This is needed as of Org 9.2
-          (require 'org-tempo)
-
-          (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-          (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
-          (add-to-list 'org-structure-template-alist '("py" . "src python"))
-          (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
-
-          ;; Automatically tangle our Emacs.org config file when we save it
-          (defun efs/org-babel-tangle-config ()
-            (when (string-equal (buffer-file-name)
-                                (expand-file-name "~/emacs/config/emacs-config.org"))
-              ;; Dynamic scoping to the rescue
-              (let ((org-confirm-babel-evaluate nil))
-                (org-babel-tangle))))
-
-          (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-
-          (fset 'capture-tweet
-                (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
-          (use-package ox-twbs
-            :ensure t)
-          (use-package ox-jira
-            :ensure t)
-          (require 'org-tempo)
-          (use-package org-mime
-            :ensure t)
-          (setq org-ellipsis " ⤵")
-          (setq org-src-fontify-natively t)
-          (setq org-src-tab-acts-natively t)
-          (setq org-src-window-setup 'current-window)
-          (use-package plantuml-mode
-            :ensure t)
-          (use-package org-bullets
-            :ensure t)
-          (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-          (setq org-startup-with-inline-images t)
-          (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-          ;;***********remember + Org config*************
-          (setq org-remember-templates
-                '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
-                  ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
-          (setq remember-annotation-functions '(org-remember-annotation))
-          (setq remember-handler-functions '(org-remember-handler))
-          (add-hook 'remember-mode-hook 'org-remember-apply-template)
-          (global-set-key (kbd "C-c r") 'remember)
-
-          (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-          (setq org-agenda-include-diary t)
-          (setq org-agenda-include-all-todo t)
-          (org-babel-do-load-languages
-           'org-babel-load-languages
-           '((shell  . t)
-             (js  . t)
-             (emacs-lisp . t)
-             (python . t)
-             (ruby . t)
-             (css . t )
-             (plantuml . t)
-             (sql . t)
-             (java . t)
-             (dot . t)))
-          (setq org-confirm-babel-evaluate nil)
-
-          (use-package virtualenvwrapper
-            :ensure t
-            :init
-            (venv-initialize-interactive-shells)
-            (venv-initialize-eshell)
-            (setq venv-location "~/.virtualenvs")
-            )
-          (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
-          (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+     (use-package org
+       :ensure org-plus-contrib
+       :diminish  ""
+       :config
+       (setq org-default-notes-file "~/Documents/notes/notes.org")
+       (require 'org-capture)
+       (setq org-capture-templates
+             '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+                "* TODO %?\n  %i\n  %a")
+               ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+                "* %?\nEntered on %U\n  %i\n  %a")
+               ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
+                "* %?\nEntered on %U\n  %i\n  %a")))
+       )
 
 
-          (setq org-mime-export-options '(:section-numbers nil
-                                                           :with-author nil
-                                                           :with-toc nil))
+     ;; This is needed as of Org 9.2
+     (require 'org-tempo)
 
-           (use-package zenburn-theme
-             :ensure t
-             :init
-                (setq zenburn-override-colors-alist '(
-                                                      ("zenburn-bg" . "gray16")
-                                                      ("zenburn-bg-1" . "#5F7F5F")))
-             (load-theme 'zenburn t)
-             :config
-             (setq zenburn-use-variable-pitch t)
-             (setq zenburn-scale-org-headlines t)
-             (setq zenburn-scale-outline-headlines t)
-             (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
-             (set-face-attribute 'ivy-current-match nil :height 1.1 :foreground "wheat" :background "#5f7f5f" :underline nil))
-          ;;( use-package hc-zenburn-theme
-          ;;  :ensure t
-          ;; :init
-          ;; (powerline-default-theme)
-          ;; (load-theme 'hc-zenburn t)
-          ;; (hc-zenburn-with-color-variables
-          ;;   (custom-theme-set-faces
-          ;;    'hc-zenburn
-          ;;    `(company-tooltip-common ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
-          ;;    `(company-tooltip-selection ((t (:background ,"gray40" :foreground ,"LightBlue3"))))
-          ;;    `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
-          ;; )
+     (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+     (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
+     (add-to-list 'org-structure-template-alist '("py" . "src python"))
+     (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
+
+     ;; Automatically tangle our Emacs.org config file when we save it
+     (defun efs/org-babel-tangle-config ()
+       (when (string-equal (buffer-file-name)
+                           (expand-file-name "~/emacs/config/emacs-config.org"))
+         ;; Dynamic scoping to the rescue
+         (let ((org-confirm-babel-evaluate nil))
+           (org-babel-tangle))))
+
+     (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+     (fset 'capture-tweet
+           (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
+     (use-package ox-twbs
+       :ensure t)
+     (use-package ox-jira
+       :ensure t)
+     (require 'org-tempo)
+     (use-package org-mime
+       :ensure t)
+     (setq org-ellipsis " ⤵")
+     (setq org-src-fontify-natively t)
+     (setq org-src-tab-acts-natively t)
+     (setq org-src-window-setup 'current-window)
+     (use-package plantuml-mode
+       :ensure t)
+     (use-package org-bullets
+       :ensure t)
+     (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+     (setq org-startup-with-inline-images t)
+     (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+     ;;***********remember + Org config*************
+     (setq org-remember-templates
+           '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
+             ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
+     (setq remember-annotation-functions '(org-remember-annotation))
+     (setq remember-handler-functions '(org-remember-handler))
+     (add-hook 'remember-mode-hook 'org-remember-apply-template)
+     (global-set-key (kbd "C-c r") 'remember)
+
+     (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+     (setq org-agenda-include-diary t)
+     (setq org-agenda-include-all-todo t)
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((shell  . t)
+        (js  . t)
+        (emacs-lisp . t)
+        (python . t)
+        (ruby . t)
+        (css . t )
+        (plantuml . t)
+        (sql . t)
+        (scheme . t) 
+        (java . t)
+        (dot . t)))
+     (setq org-confirm-babel-evaluate nil)
+
+     (use-package geiser
+       :ensure t
+       :config
+       (setq geiser-active-implementations '(mit))
+       (setq geiser-mit-binary "/usr/local/bin/scheme")
+     )
+
+     (use-package ox-pandoc
+       :ensure t
+       :config
+       (setq org-pandoc-options '((standalone . t))))
+
+     (use-package org-variable-pitch
+       :ensure t
+       :config
+       (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
+       (add-hook 'after-init-hook #'org-variable-pitch-setup))
+
+     (use-package olivetti
+       :ensure t
+       :config
+       (setq olivetti-minimum-body-width 120)
+       (add-hook 'org-mode-hook 'olivetti-mode))
+     (use-package virtualenvwrapper
+       :ensure t
+       :init
+       (venv-initialize-interactive-shells)
+       (venv-initialize-eshell)
+       (setq venv-location "~/.virtualenvs")
+       )
+     (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+     (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+
+
+     (setq org-mime-export-options '(:section-numbers nil
+                                                      :with-author nil
+                                                      :with-toc nil))
+
+     (use-package zenburn-theme
+       :ensure t
+       :init
+       (setq zenburn-override-colors-alist '(
+                                             ("zenburn-bg" . "gray16")
+                                             ("zenburn-bg-1" . "#5F7F5F")))
+       (load-theme 'zenburn t)
+       :config
+       (setq zenburn-use-variable-pitch t)
+       (setq zenburn-scale-org-headlines t)
+       (setq zenburn-scale-outline-headlines t)
+       (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
+       (set-face-attribute 'ivy-current-match nil :height 1.1 :foreground "wheat" :background "#5f7f5f" :underline nil))
+     ;;( use-package hc-zenburn-theme
+     ;;  :ensure t
+     ;; :init
+     ;; (powerline-default-theme)
+     ;; (load-theme 'hc-zenburn t)
+     ;; (hc-zenburn-with-color-variables
+     ;;   (custom-theme-set-faces
+     ;;    'hc-zenburn
+     ;;    `(company-tooltip-common ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
+     ;;    `(company-tooltip-selection ((t (:background ,"gray40" :foreground ,"LightBlue3"))))
+     ;;    `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
+     ;; )
 
    #+END_SRC
 
