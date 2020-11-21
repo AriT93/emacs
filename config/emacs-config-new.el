@@ -123,10 +123,15 @@
   :init
   (setq ivy-posframe-hide-minibuffer t)
   (setq ivy-posframe-min-width 120)
-  (setq ivy-posframe-width 120)
+  (setq ivy-posframe-width nil)
   (setq ivy-posframe-border-width 1)
   (ivy-posframe-mode t)
   )
+(use-package all-the-icons-ivy-rich
+  :ensure t
+  :init(all-the-icons-ivy-rich-mode 1))
+(use-package all-the-icons-ivy
+  :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
 
 (use-package ace-window
   :ensure t
@@ -323,6 +328,7 @@
 (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
 (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
+(add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
 
 ;; Automatically tangle our Emacs.org config file when we save it
 (defun efs/org-babel-tangle-config ()
@@ -376,7 +382,7 @@
    (css . t )
    (plantuml . t)
    (sql . t)
-   (scheme . t) 
+   (scheme . t)
    (java . t)
    (dot . t)))
 (setq org-confirm-babel-evaluate nil)
@@ -385,6 +391,8 @@
   :ensure t
   :config
   (setq geiser-active-implementations '(mit))
+  (setq geiser-default-implementation 'mit)
+  (setq scheme-program-name "scheme")
   (setq geiser-mit-binary "/usr/local/bin/scheme")
 )
 
