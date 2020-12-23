@@ -318,6 +318,13 @@
            "* %?\nEntered on %U\n  %i\n  %a")
           ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
            "* %?\nEntered on %U\n  %i\n  %a")))
+  (require 'org-habit)
+  (setq org-habit-show-all-today t)
+  (setq org-habit-show-habits t)
+  (require 'ox-gfm)
+  (require 'ox-md)
+  (require 'ox-confluence)
+  (require 'ox-jira)
   )
 
 
@@ -344,6 +351,9 @@
       (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
 (use-package ox-twbs
   :ensure t)
+(use-package ox-gfm
+  :ensure t)
+
 (use-package ox-jira
   :ensure t)
 (require 'org-tempo)
@@ -381,6 +391,7 @@
    (ruby . t)
    (css . t )
    (plantuml . t)
+   (cypher . t)
    (sql . t)
    (scheme . t)
    (java . t)
