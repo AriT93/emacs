@@ -122,7 +122,7 @@
   :after ivy
   :init
   (setq ivy-posframe-hide-minibuffer t)
-  (setq ivy-posframe-min-width 120)
+  (setq ivy-posframe-min-width nil)
   (setq ivy-posframe-width nil)
   (setq ivy-posframe-border-width 1)
   (ivy-posframe-mode t)
@@ -802,5 +802,31 @@
    %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
    +----}}
    "))
+
+(use-package prescient
+  :ensure t
+  :config
+  (prescient-persist-mode 1))
+
+(use-package ivy-prescient
+  :ensure t
+  :after counsel
+  :config
+  (ivy-prescient-mode 1)
+  (setq  prescient-sort-length-enable nil))
+
+(use-package company-prescient
+  :ensure t
+  :after company
+  :config
+  (company-prescient-mode 1))
+
+(use-package general
+  :ensure t
+  :config
+  (general-create-definer my-leader-def
+    :prefix "C-c")
+  (my-leader-def
+    "t" 'projectile-find-file))
 
 (provide 'emacs-config-new)

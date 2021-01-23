@@ -111,9 +111,11 @@
 (add-to-list 'auto-mode-alist '("\\.html\\.erb" . web-mode))
 
 (use-package rbenv
-  :ensure t)
-(require 'rbenv)
-(global-rbenv-mode)
+  :ensure t
+  :config
+  (setq rbenv-installation-dir "/usr/local/opt/rbenv")
+  :init
+  (global-rbenv-mode))
 (require 'lsp)
 (add-hook 'ruby-mode-hook 'lsp)
  ;; (use-package lsp-ruby
