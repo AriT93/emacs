@@ -34,10 +34,11 @@
 (setq mode-line-in-non-selected-windows nil)
 (fset 'yes-or-no-p 'y-or-n-p)
 (add-hook 'eww-after-render-hook 'eww-readable)
+(setq comp-speed 3)
+(setq package-native-compile t)
 
 (use-package pos-tip
   :ensure t)
-(global-set-key "\C-cy" 'popup-kill-ring)
 
 (setq TeX-command-list
       (quote (
@@ -124,7 +125,10 @@
   (setq ivy-posframe-hide-minibuffer t)
   (setq ivy-posframe-min-width nil)
   (setq ivy-posframe-width nil)
-  (setq ivy-posframe-border-width 1)
+  (setq ivy-posframe-border-width 2)
+  (setq ivy-posframe-parameters
+        '((left-fringe . 8)
+          (right-fringe .8)))
   (ivy-posframe-mode t)
   )
 (use-package all-the-icons-ivy-rich
@@ -132,6 +136,28 @@
   :init(all-the-icons-ivy-rich-mode 1))
 (use-package all-the-icons-ivy
   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+(use-package quelpa
+  :ensure t)
+(use-package quelpa-use-package
+  :ensure t)
+(use-package consult :quelpa (consult :fetcher github :repo "minad/consult")
+  :after projectile
+  :ensure t
+  :init
+  (setq register-preview-delay 0
+        register-preview-function #'consult-register-format)
+  :config
+  (setq consult-project-root-function #'projectile-project-root)
+  (setq consult-narrow-key "<")
+  )
+(global-set-key "\C-cy" 'counsel-yank-pop)
+(use-package marginalia
+  :ensure t
+  :init
+  (marginalia-mode)
+  :bind
+  (:map minibuffer-local-map
+        ("M-A" . marginalia-cycle)))
 
 (use-package ace-window
   :ensure t
@@ -241,7 +267,6 @@
   (spaceline-all-the-icons-theme)
   )
 (require 'spaceline-config)
-(spaceline-all-the-icons-theme)
 
 (use-package ligature
     :load-path "/Users/ari.turetzky/dev/git/ligature.el"
@@ -465,53 +490,56 @@
 ;; )
 
 (use-package exec-path-from-shell
-  :ensure t
-  :config
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
-  (setq exec-path-from-shell-check-startup-files t)
-  (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER")
-  ))
-(use-package inf-ruby
-  :ensure t)
-(require 'ruby-mode)
-(use-package  ruby-electric
-  :ensure t)
-(use-package coffee-mode
-  :ensure t)
-(use-package feature-mode
-  :ensure t)
-(require 'rcodetools)
-(use-package yasnippet
-  :ensure t
-  :config
-  (yas-global-mode t)
-  (yas-global-mode))
-(use-package yasnippet-snippets
-  :ensure t)
-(use-package tree-mode
-  :ensure t)
-(use-package rake
-  :ensure t)
-(use-package inflections
-  :ensure t)
-(use-package graphql
-  :ensure t)
-(require 'org-protocol)
-(use-package haml-mode
-  :ensure t)
-(use-package beacon
-  :ensure t
-  :init
-  (beacon-mode))
-(use-package rainbow-mode
-  :ensure t)
-(use-package rainbow-delimiters
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-(require 'ruby-config-new)
-(require 'keys-config-new)
+       :ensure t
+       :config
+       (when (memq window-system '(mac ns x))
+         (exec-path-from-shell-initialize))
+       (setq exec-path-from-shell-check-startup-files t)
+       (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER")
+       ))
+     (use-package inf-ruby
+       :ensure t)
+     (require 'ruby-mode)
+     (use-package  ruby-electric
+       :ensure t)
+     (use-package coffee-mode
+       :ensure t)
+     (use-package feature-mode
+       :ensure t
+       :config
+       (setq feature-use-docker-compose nil)
+       (setq feature-rake-command "cucumber --format progress {feature}"))
+;;     (require 'rcodetools)
+     (use-package yasnippet
+       :ensure t
+       :config
+       (yas-global-mode t)
+       (yas-global-mode))
+     (use-package yasnippet-snippets
+       :ensure t)
+     (use-package tree-mode
+       :ensure t)
+     (use-package rake
+       :ensure t)
+     (use-package inflections
+       :ensure t)
+     (use-package graphql
+       :ensure t)
+     (require 'org-protocol)
+     (use-package haml-mode
+       :ensure t)
+     (use-package beacon
+       :ensure t
+       :init
+       (beacon-mode))
+     (use-package rainbow-mode
+       :ensure t)
+     (use-package rainbow-delimiters
+       :ensure t
+       :config
+       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+     (require 'ruby-config-new)
+     (require 'keys-config-new)
 
 (use-package highline
        :ensure t
@@ -813,7 +841,10 @@
   :after counsel
   :config
   (ivy-prescient-mode 1)
-  (setq  prescient-sort-length-enable nil))
+  (setq  prescient-sort-length-enable nil)
+  (setq ivy-re-builders-alist
+ '((counsel-ag . ivy--regex)
+   (t . ivy-prescient-re-builder))))
 
 (use-package company-prescient
   :ensure t
@@ -827,6 +858,13 @@
   (general-create-definer my-leader-def
     :prefix "C-c")
   (my-leader-def
-    "t" 'projectile-find-file))
+    "t" 'projectile-find-file
+    "a" 'ace-jump-mode
+    "f" '(:ignore t :which-key "cucumber")
+    "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
+    "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
+    "fv" '(feature-verify-all-scenarios-in-buffer :which-key "run all cukes in buffer")
+    "fg" '(feature-goto-step-definition :which-key "goto step definition")
+    "fr" '(feature-register-verify-redo :which-key "repeat last cuke")))
 
 (provide 'emacs-config-new)
