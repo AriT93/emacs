@@ -40,9 +40,12 @@
 
 (use-package rspec-mode
   :ensure t
+  :init
+  (add-hook 'after-init-hook  'inf-ruby-switch-setup)
   :config
   (setq rspec-use-spring-when-possible nil)
-  (setq rspec-command-options "--format progress")    )
+  (setq rspec-command-options "--format progress"))
+
   (require 'ruby-block)
   (diminish 'ruby-block-mode)
   (require 'ruby-electric)
