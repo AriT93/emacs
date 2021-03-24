@@ -73,44 +73,46 @@ is going on while you write code.
 
 ** Ruby Mode Hook
 #+BEGIN_SRC elisp
-    (use-package rspec-mode
-      :ensure t
-      :config
-      (setq rspec-use-spring-when-possible nil)
-      (setq rspec-command-options "--format progress")    )
-      (require 'ruby-block)
-      (diminish 'ruby-block-mode)
-      (require 'ruby-electric)
-      (diminish 'ruby-electric-mode)
-      (add-hook 'ruby-mode-hook
-                (lambda()
-                  (add-hook 'write-file-functions
-                            '(lambda()
-                               (save-excursion
-                                 (untabify (point-min) (point-max))
-                                 (delete-trailing-whitespace)
-                                 )))
-                  (set (make-local-variable 'indent-tabs-mode) 'nil)
-                  (set (make-local-variable 'tab-width) 2)
-                  (ruby-electric-mode t)
-                  (ruby-block-mode t)
-                  (local-set-key (kbd "<return>") 'newline-and-indent)
-                  (diminish 'org-mode  "")
-                  (diminish 'auto-revert-mode)
-                  (diminish 'yas-minor-mode)
-                  (diminish 'eldoc-mode)
-                  (diminish 'org-src-mode)
-                  (diminish 'eclim-mode)
-                  (diminish 'abbrev-mode)
-                  (diminish 'ivy-mode)
-                  (diminish 'global-highline-mode)
-                  (diminish 'ruby-block-mode)
-                  (diminish 'ruby-electric-mode)
-                  (diminish "seeing-is-believing")
-                  (diminish 'hs-minor-mode)
-                  (diminish 'ruby-block-mode)
-                  (diminish 'global-highline-mode)
-                  ))
+  (use-package rspec-mode
+    :ensure t
+    :config
+    (setq rspec-use-spring-when-possible nil)
+    (setq rspec-command-options "--format progress"))
+    (add-hook 'after-init-hook  'inf-ruby-switch-setup)
+
+    (require 'ruby-block)
+    (diminish 'ruby-block-mode)
+    (require 'ruby-electric)
+    (diminish 'ruby-electric-mode)
+    (add-hook 'ruby-mode-hook
+              (lambda()
+                (add-hook 'write-file-functions
+                          '(lambda()
+                             (save-excursion
+                               (untabify (point-min) (point-max))
+                               (delete-trailing-whitespace)
+                               )))
+                (set (make-local-variable 'indent-tabs-mode) 'nil)
+                (set (make-local-variable 'tab-width) 2)
+                (ruby-electric-mode t)
+                (ruby-block-mode t)
+                (local-set-key (kbd "<return>") 'newline-and-indent)
+                (diminish 'org-mode  "")
+                (diminish 'auto-revert-mode)
+                (diminish 'yas-minor-mode)
+                (diminish 'eldoc-mode)
+                (diminish 'org-src-mode)
+                (diminish 'eclim-mode)
+                (diminish 'abbrev-mode)
+                (diminish 'ivy-mode)
+                (diminish 'global-highline-mode)
+                (diminish 'ruby-block-mode)
+                (diminish 'ruby-electric-mode)
+                (diminish "seeing-is-believing")
+                (diminish 'hs-minor-mode)
+                (diminish 'ruby-block-mode)
+                (diminish 'global-highline-mode)
+                ))
 #+END_SRC
 
 ** File associations

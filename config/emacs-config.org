@@ -404,6 +404,7 @@
 
      (use-package org
        :ensure org-plus-contrib
+       :ensure t
        :diminish  ""
        :config
        (setq org-default-notes-file "~/Documents/notes/notes.org")
@@ -1011,6 +1012,8 @@
        (my-leader-def
          "t" 'projectile-find-file
          "a" 'ace-jump-mode
+         "g" '(:ignore t :which-key "rspec")
+         "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
          "f" '(:ignore t :which-key "cucumber")
          "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
          "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
