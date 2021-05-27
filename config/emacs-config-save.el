@@ -49,12 +49,12 @@
 (setq send-mail-function 'smtpmail-send-it
       message-send-mail-function 'smtpmail-send-it
       smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
-      smtp-smtp-server "https://outlook.office365.com/EWS/Exchange.asmx"
+      smtp-smtp-server "smtp.gmail.com"
       smtpmail-stream-type 'starttls
       smtpmail-smtp-service 587)
 (setq starttls-use-gnutls t)
 (setq user-full-name "Ari Turetzky")
-(setq user-mail-address "aturetzky@quantcast.com")
+(setq user-mail-address "arit93@gmail.com")
 
 ;; ;;mu4e
 ;; (add-to-list 'load-path "/usr/local/Cellar/mu/1.0/share/emacs/site-lisp/mu/mu4e/")
