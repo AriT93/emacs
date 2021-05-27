@@ -1,3 +1,4 @@
+
 #+TITLE: General Emacs Configuration options
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
@@ -149,30 +150,33 @@
        (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
        :bind
        (
-        ("\C-s" . 'swiper)
+        ("\C-s" . 'swiper-isearch)
         ("C-x C-f" . 'counsel-find-file)
         ("C-c j" . 'counsel-git-grep)
         ("C-c k" . 'counsel-ag)
         ("C-x L" . 'counsel-locate)
-        ("M-x" . 'counsel-M-x)))
+        ("M-x" . 'counsel-M-x))
+       :config
+       (setq swiper-use-visual-line nil)
+       (setq swiper-use-visual-line-p (lambda (a) nil)))
      (use-package ivy-rich
        :init
        (ivy-rich-mode 1)
        :config
        (setq ivy-format-function #'ivy-format-function-line))
-     (use-package ivy-posframe
-       :ensure t
-       :after ivy
-       :init
-       (setq ivy-posframe-hide-minibuffer t)
-       (setq ivy-posframe-min-width nil)
-       (setq ivy-posframe-width nil)
-       (setq ivy-posframe-border-width 2)
-       (setq ivy-posframe-parameters
-             '((left-fringe . 8)
-               (right-fringe .8)))
-       (ivy-posframe-mode t)
-       )
+     ;; (use-package ivy-posframe
+     ;;   :ensure t
+     ;;   :after ivy
+     ;;   :init
+     ;;   (setq ivy-posframe-hide-minibuffer t)
+     ;;   (setq ivy-posframe-min-width nil)
+     ;;   (setq ivy-posframe-width nil)
+     ;;   (setq ivy-posframe-border-width 2)
+     ;;   (setq ivy-posframe-parameters
+     ;;         '((left-fringe . 8)
+     ;;           (right-fringe .8)))
+     ;;   (ivy-posframe-mode t)
+     ;;   )
      (use-package all-the-icons-ivy-rich
        :ensure t
        :init(all-the-icons-ivy-rich-mode 1))
@@ -322,7 +326,8 @@
        (spaceline-all-the-icons-theme)
        )
      (require 'spaceline-config)
-
+(setq starttls-use-gnutls t)
+(require 'gnutls)
 #+END_SRC
 ** Font Ligatures
    #+BEGIN_SRC elisp
@@ -333,7 +338,7 @@
        (ligature-set-ligatures 't '("www"))
        ;; Enable traditional ligature support in eww-mode, if the
        ;; `variable-pitch' face supports it
-       (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+;;       (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
        ;; Enable all Cascadia Code ligatures in programming modes
        (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
                                             ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
@@ -444,6 +449,15 @@
            (org-babel-tangle))))
 
      (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+(defun ek/babel-ansi ()
+  (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+    (save-excursion
+      (goto-char beg)
+      (when (looking-at org-babel-result-regexp)
+        (let ((end (org-babel-result-end))
+              (ansi-color-context-region nil))
+          (ansi-color-apply-on-region beg end))))))
+(add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
 
      (fset 'capture-tweet
            (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
@@ -680,7 +694,7 @@
        (company-show-numbers t)
        (company-tooltip-align-annotations 't)
        (global-company-mode t))
-
+     
      (require 'company)
      (add-hook  'after-init-hook 'global-company-mode)
      (use-package company-quickhelp
@@ -689,7 +703,7 @@
        (company-quickhelp-mode))
      (use-package lsp-mode
        :commands (lsp lsp-deferred)
-       :hook ((ruby-mode . lsp) (python-mode . lsp))
+       :hook ((ruby-mode . lsp) (python-mode . lsp)(lsp-mode . lsp-enable-which-key-integration))
        :custom
        (lsp-auto-configure t)
        (lsp-prefer-flymake nil)
@@ -714,7 +728,7 @@
        (setq lsp-ui-sideline-enable nil)
        (setq lsp-lens-enable t)
        )
-
+     
      (use-package lsp-treemacs
        :after lsp
        :config
@@ -724,10 +738,10 @@
      (setq lsp-inhibit-message t)
      (setq lsp-prefer-flymake nil)
      (setq lsp-eldoc-render-all nil)
-
+     
      (setq lsp-message-project-root-warning t)
      (setq lsp-auto-guess-root t)
-
+     
      (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
      (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
      (use-package company-box
@@ -737,8 +751,8 @@
        :hook
        (company-mode . company-box-mode)
        :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
-
-
+     
+     
    #+END_SRC
 
 ** Projectile
@@ -944,52 +958,52 @@
    #+end_src
 ** Elfeed
    #+begin_src elisp
-                         (use-package elfeed
-                              :ensure t)
-                            (use-package elfeed-org
-                              :ensure t
-                              :after elfeed
-                              :init
-                              (elfeed-org))
-                            (use-package elfeed-goodies
-                              :after elfeed
-                              :ensure t
-                              :init
-                              (elfeed-goodies/setup))
+                                         (use-package elfeed
+                                              :ensure t)
+                                            (use-package elfeed-org
+                                              :ensure t
+                                              :after elfeed
+                                              :init
+                                              (elfeed-org))
+                                            ;; (use-package elfeed-goodies
+                                            ;;   :after elfeed
+                                            ;;   :ensure t
+                                            ;;   :init
+                                            ;;   (elfeed-goodies/setup))
 
-                         (use-package visual-fill
-                           :ensure t)
-                         (use-package visual-fill-column
-                           :ensure t)
-                         (add-hook 'elfeed-show-mode-hook (lambda()
-                                                            (set-face-attribute 'variable-pitch (selected-frame) :font (font-spec :family "Helvetica" :size 14))
-                                                            (setq fill-column 100)
-                                                            (visual-fill-mode t)
-                                                            (adaptive-wrap-prefix-mode t)
-                                                            (toggle-word-wrap)
-                                                            (visual-fill-column-mode)))
+                                         (use-package visual-fill
+                                           :ensure t)
+                                         (use-package visual-fill-column
+                                           :ensure t)
+                                         (add-hook 'elfeed-show-mode-hook (lambda()
+                                                                            (set-face-attribute 'variable-pitch (selected-frame) :font (font-spec :family "Helvetica" :size 14))
+                                                                            (setq fill-column 100)
+                                                                            (visual-fill-mode t)
+                                                                            (adaptive-wrap-prefix-mode t)
+                                                                            (toggle-word-wrap)
+                                                                            (visual-fill-column-mode)))
 
 
-     (use-package twittering-mode
-       :ensure t
-       :config
-       (defface my-twit-face
-         '((t :family "Helvetica"
-              :height 160
-              ))
-         "face for twitter")
-  (defalias 'epa--decode-coding-string 'decode-coding-string)
-       (setq twittering-use-master-password t)
-       (setq twittering-icon-mode t)
-       (setq twittering-use-icon-storage t)
+                     (use-package twittering-mode
+                       :ensure t
+                       :config
+                       (defface my-twit-face
+                         '((t :family "Helvetica"
+                              :height 160
+                              ))
+                         "face for twitter")
+                  (defalias 'epa--decode-coding-string 'decode-coding-string)
+                       (setq twittering-use-master-password t)
+                       (setq twittering-icon-mode t)
+                       (setq twittering-use-icon-storage t)
 
-       (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
-     %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
-     +----
-     %FOLD[|]{%i %S (%s),  %@:
-     %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
-     +----}}
-     "))
+                       (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
+                     %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
+                     +----
+                     %FOLD[|]{%i %S (%s),  %@:
+                     %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
+                     +----}}
+                     "))
 
    #+end_src
 ** Prescient
@@ -1027,6 +1041,10 @@
          "a" 'ace-jump-mode
          "g" '(:ignore t :which-key "rspec")
          "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
+         "ga" '(rspec-verify-all :which-key "run all specs")
+         "gs" '(rspec-verify-single :which-key "run single spec")
+         "gr" '(rspec-rerun :which-key "rerun spec")
+         "gf" '(rspec-run-last-failed :which-key "rerun last failed")
          "f" '(:ignore t :which-key "cucumber")
          "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
          "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
@@ -1035,6 +1053,72 @@
          "fr" '(feature-register-verify-redo :which-key "repeat last cuke")))
 
    #+end_src
+** Email
+   #+begin_src elisp
+        (require 'smtpmail)
+     
+     (setq send-mail-function 'smtpmail-send-it
+           message-send-mail-function 'smtpmail-send-it
+           smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
+           smtp-smtp-server "smtp.gmail.com"
+           smtpmail-stream-type 'starttls
+           smtpmail-smtp-service 587)
+     (setq starttls-use-gnutls t)
+     (setq user-full-name "Ari Turetzky")
+     (setq user-mail-address "arit93@gmail.com")
+     
+     ;; ;;mu4e
+      (add-to-list 'load-path "/usr/local/Cellar/mu/1.4.15/share/emacs/site-lisp/mu/mu4e/")
+      (require 'mu4e)
+     
+     (setq mu4e-maildir (expand-file-name "~/Maildir"))
+     (setq mu4e-completing-read-function #'ivy-completing-read)
+     (setq mu4e-drafts-folder "/[Gmail].Drafts")
+     (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+     (setq mu4e-trash-folder  "/[Gmail].Trash")
+     (setq 
+           mu4e-html2text-command "w3m -T text/html"
+           mu4e-update-interval 
+           mu4e-headers-auto-update t
+           mu4e-compose-signature-auto-include nil
+           mu4e-change-filenames-when-moving t
+           )
+     
+     (setq mu4e-view-show-images t
+           mu4e-view-show-addresses t)
+     (require 'org-mu4e)
+     
+     (when (fboundp 'imagemagick-register-types)
+       (imagemagick-register-types))
+     ;; (setq mu4e-mu-binary "/usr/local/bin/mu")
+     (setq mu4e-compose-reply-to-address "arit93@gmail.com")
+     
+     ;; don't save message to Sent Messages, GMail/IMAP will take care of this
+     (setq mu4e-sent-messages-behavior 'delete)
+     
+     
+     ;; setup some handy shortcuts
+     (setq mu4e-maildir-shortcuts
+           '(("/INBOX"             . ?i)
+             ("/[Gmail].Sent Mail" . ?s)
+             ("/[Gmail].Trash"     . ?t)))
+     
+     ;; allow for updating mail using 'U' in the main view:
+     (setq mu4e-get-mail-command "offlineimap")
+     (setq message-kill-buffer-on-exit t)
+     
+     (setq abt/mu4e-inbox-query
+           "(maildir:/INBOX) AND flag:unread")
+     
+     (use-package mu4e-alert
+       :after mu4e
+       :ensure t
+       :config
+       (setq mu4e-alert-interesting-mail-query abt/mu4e-inbox-query)
+       (setq mu4e-alert-notify-repeated-mails nil)
+       (mu4e-alert-enable-notifications))
+     
+#+end_src
 ** End
    #+BEGIN_SRC elisp
      (provide 'emacs-config-new)

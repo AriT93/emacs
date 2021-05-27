@@ -107,30 +107,33 @@
   (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
   :bind
   (
-   ("\C-s" . 'swiper)
+   ("\C-s" . 'swiper-isearch)
    ("C-x C-f" . 'counsel-find-file)
    ("C-c j" . 'counsel-git-grep)
    ("C-c k" . 'counsel-ag)
    ("C-x L" . 'counsel-locate)
-   ("M-x" . 'counsel-M-x)))
+   ("M-x" . 'counsel-M-x))
+  :config
+  (setq swiper-use-visual-line nil)
+  (setq swiper-use-visual-line-p (lambda (a) nil)))
 (use-package ivy-rich
   :init
   (ivy-rich-mode 1)
   :config
   (setq ivy-format-function #'ivy-format-function-line))
-(use-package ivy-posframe
-  :ensure t
-  :after ivy
-  :init
-  (setq ivy-posframe-hide-minibuffer t)
-  (setq ivy-posframe-min-width nil)
-  (setq ivy-posframe-width nil)
-  (setq ivy-posframe-border-width 2)
-  (setq ivy-posframe-parameters
-        '((left-fringe . 8)
-          (right-fringe .8)))
-  (ivy-posframe-mode t)
-  )
+;; (use-package ivy-posframe
+;;   :ensure t
+;;   :after ivy
+;;   :init
+;;   (setq ivy-posframe-hide-minibuffer t)
+;;   (setq ivy-posframe-min-width nil)
+;;   (setq ivy-posframe-width nil)
+;;   (setq ivy-posframe-border-width 2)
+;;   (setq ivy-posframe-parameters
+;;         '((left-fringe . 8)
+;;           (right-fringe .8)))
+;;   (ivy-posframe-mode t)
+;;   )
 (use-package all-the-icons-ivy-rich
   :ensure t
   :init(all-the-icons-ivy-rich-mode 1))
@@ -258,41 +261,43 @@
 ;; (powerline-default-theme)
 
 (use-package spaceline
-  :ensure t)
-(use-package spaceline-all-the-icons
-  :ensure t
-  :after spaceline
-  :config
-  (setq spaceline-all-the-icons-separator-type 'arrow)
-  (spaceline-all-the-icons-theme)
-  )
-(require 'spaceline-config)
+       :ensure t)
+     (use-package spaceline-all-the-icons
+       :ensure t
+       :after spaceline
+       :config
+       (setq spaceline-all-the-icons-separator-type 'arrow)
+       (spaceline-all-the-icons-theme)
+       )
+     (require 'spaceline-config)
+(setq starttls-use-gnutls t)
+(require 'gnutls)
 
 (use-package ligature
-    :load-path "/Users/ari.turetzky/dev/git/ligature.el"
-    :config
-    ;; Enable the "www" ligature in every possible major mode
-    (ligature-set-ligatures 't '("www"))
-    ;; Enable traditional ligature support in eww-mode, if the
-    ;; `variable-pitch' face supports it
-    (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-    ;; Enable all Cascadia Code ligatures in programming modes
-    (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                         ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                         "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                         "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                         "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                         "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                         "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                         "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                         ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                         "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                         "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                         "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                         "\\" "://"))
-    ;; Enables ligature checks globally in all buffers. You can also do it
-    ;; per mode with `ligature-mode'.
-    (global-ligature-mode t))
+       :load-path "/Users/ari.turetzky/dev/git/ligature.el"
+       :config
+       ;; Enable the "www" ligature in every possible major mode
+       (ligature-set-ligatures 't '("www"))
+       ;; Enable traditional ligature support in eww-mode, if the
+       ;; `variable-pitch' face supports it
+;;       (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+       ;; Enable all Cascadia Code ligatures in programming modes
+       (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                            ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                            "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                            "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                            "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                            "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                            "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                            "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                            ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                            "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                            "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                            "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                            "\\" "://"))
+       ;; Enables ligature checks globally in all buffers. You can also do it
+       ;; per mode with `ligature-mode'.
+       (global-ligature-mode t))
 
 (use-package flycheck-pos-tip
   :after flycheck
@@ -313,191 +318,200 @@
 (server-start)
 
 (use-package diminish
-  :ensure t)
+       :ensure t)
 
-(diminish 'org-mode  "")
-(diminish 'auto-revert-mode)
-(diminish 'yas-minor-mode)
-(diminish 'eldoc-mode)
-(diminish 'org-src-mode)
-(diminish 'abbrev-mode)
-(diminish 'ivy-mode)
-(diminish 'global-highline-mode)
-(diminish 'ruby-block-mode)
-(diminish 'ruby-electric-mode)
-(diminish "seeing-is-believing")
-(diminish 'hs-minor-mode)
-(diminish 'ruby-block-mode)
-(diminish 'global-highline-mode)
+     (diminish 'org-mode  "")
+     (diminish 'auto-revert-mode)
+     (diminish 'yas-minor-mode)
+     (diminish 'eldoc-mode)
+     (diminish 'org-src-mode)
+     (diminish 'abbrev-mode)
+     (diminish 'ivy-mode)
+     (diminish 'global-highline-mode)
+     (diminish 'ruby-block-mode)
+     (diminish 'ruby-electric-mode)
+     (diminish "seeing-is-believing")
+     (diminish 'hs-minor-mode)
+     (diminish 'ruby-block-mode)
+     (diminish 'global-highline-mode)
 
-(use-package org
-  :ensure org-plus-contrib
-  :ensure t
-  :diminish  ""
-  :config
-  (setq org-default-notes-file "~/Documents/notes/notes.org")
-  (require 'org-capture)
-  (setq org-capture-templates
-        '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
-           "* TODO %?\n  %i\n  %a")
-          ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
-           "* %?\nEntered on %U\n  %i\n  %a")
-          ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
-           "* %?\nEntered on %U\n  %i\n  %a")))
-  (require 'org-habit)
-  (setq org-habit-show-all-today t)
-  (setq org-habit-show-habits t)
-  (require 'ox-gfm)
-  (require 'ox-md)
-  (require 'ox-confluence)
-  (require 'ox-jira)
-  )
-
-
-;; This is needed as of Org 9.2
-(require 'org-tempo)
-
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src elisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
-(add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
-(add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
-
-;; Automatically tangle our Emacs.org config file when we save it
-(defun efs/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/emacs/config/emacs-config.org"))
-    ;; Dynamic scoping to the rescue
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-
-(fset 'capture-tweet
-      (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
-(use-package ox-twbs
-  :ensure t)
-(use-package ox-gfm
-  :ensure t)
-
-(use-package ox-jira
-  :ensure t)
-(require 'org-tempo)
-(use-package org-mime
-  :ensure t)
-(setq org-ellipsis " ⤵")
-(setq org-src-fontify-natively t)
-(setq org-src-tab-acts-natively t)
-(setq org-src-window-setup 'current-window)
-(use-package plantuml-mode
-  :ensure t)
-(use-package org-bullets
-  :ensure t)
-(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-(setq org-startup-with-inline-images t)
-(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-;;***********remember + Org config*************
-(setq org-remember-templates
-      '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
-        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
-(setq remember-annotation-functions '(org-remember-annotation))
-(setq remember-handler-functions '(org-remember-handler))
-(add-hook 'remember-mode-hook 'org-remember-apply-template)
-(global-set-key (kbd "C-c r") 'remember)
-
-(setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-(setq org-agenda-include-diary t)
-(setq org-agenda-include-all-todo t)
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((shell  . t)
-   (js  . t)
-   (emacs-lisp . t)
-   (python . t)
-   (ruby . t)
-   (css . t )
-   (plantuml . t)
-   (cypher . t)
-   (sql . t)
-   (scheme . t)
-   (java . t)
-   (dot . t)))
-(setq org-confirm-babel-evaluate nil)
-
-(use-package geiser
-  :ensure t
-  :config
-  (setq geiser-active-implementations '(mit))
-  (setq geiser-default-implementation 'mit)
-  (setq scheme-program-name "scheme")
-  (setq geiser-mit-binary "/usr/local/bin/scheme")
-)
-
-(use-package ox-pandoc
-  :ensure t
-  :config
-  (setq org-pandoc-options '((standalone . t))))
-
-(use-package org-variable-pitch
-  :ensure t
-  :config
-  (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
-  (add-hook 'after-init-hook #'org-variable-pitch-setup))
-
-(use-package olivetti
-  :ensure t
-  :config
-  (setq olivetti-minimum-body-width 120)
-  (add-hook 'org-mode-hook 'olivetti-mode))
-(use-package virtualenvwrapper
-  :ensure t
-  :init
-  (venv-initialize-interactive-shells)
-  (venv-initialize-eshell)
-  (setq venv-location "~/.virtualenvs")
-  )
-(setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
-(setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+     (use-package org
+       :ensure org-plus-contrib
+       :ensure t
+       :diminish  ""
+       :config
+       (setq org-default-notes-file "~/Documents/notes/notes.org")
+       (require 'org-capture)
+       (setq org-capture-templates
+             '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+                "* TODO %?\n  %i\n  %a")
+               ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+                "* %?\nEntered on %U\n  %i\n  %a")
+               ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
+                "* %?\nEntered on %U\n  %i\n  %a")))
+       (require 'org-habit)
+       (setq org-habit-show-all-today t)
+       (setq org-habit-show-habits t)
+       (require 'ox-gfm)
+       (require 'ox-md)
+       (require 'ox-confluence)
+       (require 'ox-jira)
+       )
 
 
-(setq org-mime-export-options '(:section-numbers nil
-                                                 :with-author nil
-                                                 :with-toc nil))
+     ;; This is needed as of Org 9.2
+     (require 'org-tempo)
 
-(use-package zenburn-theme
-  :ensure t
-  :init
-  (setq zenburn-override-colors-alist '(
-                                        ("zenburn-bg" . "gray16")
-                                        ("zenburn-bg-1" . "#5F7F5F")))
-;;  (load-theme 'zenburn t)
-  :config
-  (setq zenburn-use-variable-pitch t)
-  (setq zenburn-scale-org-headlines t)
-  (setq zenburn-scale-outline-headlines t)
-  (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
-  (set-face-attribute 'ivy-current-match nil :height 1.1 :foreground "wheat" :background "#5f7f5f" :underline nil))
+     (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+     (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
+     (add-to-list 'org-structure-template-alist '("py" . "src python"))
+     (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
+     (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
 
-(use-package vscode-dark-plus-theme
-  :ensure t
-  :init
-  (load-theme 'vscode-dark-plus t)
-  :config
-  (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
-  (set-face-attribute 'ivy-current-match nil :height 1.1 :foreground "wheat" :background "#5f7f5f" :underline nil)
-  )
-;;( use-package hc-zenburn-theme
-;;  :ensure t
-;; :init
-;; (powerline-default-theme)
-;; (load-theme 'hc-zenburn t)
-;; (hc-zenburn-with-color-variables
-;;   (custom-theme-set-faces
-;;    'hc-zenburn
-;;    `(company-tooltip-common ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
-;;    `(company-tooltip-selection ((t (:background ,"gray40" :foreground ,"LightBlue3"))))
-;;    `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
-;; )
+     ;; Automatically tangle our Emacs.org config file when we save it
+     (defun efs/org-babel-tangle-config ()
+       (when (string-equal (buffer-file-name)
+                           (expand-file-name "~/emacs/config/emacs-config.org"))
+         ;; Dynamic scoping to the rescue
+         (let ((org-confirm-babel-evaluate nil))
+           (org-babel-tangle))))
+
+     (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+(defun ek/babel-ansi ()
+  (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+    (save-excursion
+      (goto-char beg)
+      (when (looking-at org-babel-result-regexp)
+        (let ((end (org-babel-result-end))
+              (ansi-color-context-region nil))
+          (ansi-color-apply-on-region beg end))))))
+(add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
+
+     (fset 'capture-tweet
+           (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
+     (use-package ox-twbs
+       :ensure t)
+     (use-package ox-gfm
+       :ensure t)
+
+     (use-package ox-jira
+       :ensure t)
+     (require 'org-tempo)
+     (use-package org-mime
+       :ensure t)
+     (setq org-ellipsis " ⤵")
+     (setq org-src-fontify-natively t)
+     (setq org-src-tab-acts-natively t)
+     (setq org-src-window-setup 'current-window)
+     (use-package plantuml-mode
+       :ensure t)
+     (use-package org-bullets
+       :ensure t)
+     (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+     (setq org-startup-with-inline-images t)
+     (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+     ;;***********remember + Org config*************
+     (setq org-remember-templates
+           '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
+             ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
+     (setq remember-annotation-functions '(org-remember-annotation))
+     (setq remember-handler-functions '(org-remember-handler))
+     (add-hook 'remember-mode-hook 'org-remember-apply-template)
+     (global-set-key (kbd "C-c r") 'remember)
+
+     (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+     (setq org-agenda-include-diary t)
+     (setq org-agenda-include-all-todo t)
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((shell  . t)
+        (js  . t)
+        (emacs-lisp . t)
+        (python . t)
+        (ruby . t)
+        (css . t )
+        (plantuml . t)
+        (cypher . t)
+        (sql . t)
+        (scheme . t)
+        (java . t)
+        (dot . t)))
+     (setq org-confirm-babel-evaluate nil)
+
+     (use-package geiser
+       :ensure t
+       :config
+       (setq geiser-active-implementations '(mit))
+       (setq geiser-default-implementation 'mit)
+       (setq scheme-program-name "scheme")
+       (setq geiser-mit-binary "/usr/local/bin/scheme")
+     )
+
+     (use-package ox-pandoc
+       :ensure t
+       :config
+       (setq org-pandoc-options '((standalone . t))))
+
+     (use-package org-variable-pitch
+       :ensure t
+       :config
+       (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
+       (add-hook 'after-init-hook #'org-variable-pitch-setup))
+
+     (use-package olivetti
+       :ensure t
+       :config
+       (setq olivetti-minimum-body-width 120)
+       (add-hook 'org-mode-hook 'olivetti-mode))
+     (use-package virtualenvwrapper
+       :ensure t
+       :init
+       (venv-initialize-interactive-shells)
+       (venv-initialize-eshell)
+       (setq venv-location "~/.virtualenvs")
+       )
+     (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+     (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+
+
+     (setq org-mime-export-options '(:section-numbers nil
+                                                      :with-author nil
+                                                      :with-toc nil))
+
+     (use-package zenburn-theme
+       :ensure t
+       :init
+       (setq zenburn-override-colors-alist '(
+                                             ("zenburn-bg" . "gray16")
+                                             ("zenburn-bg-1" . "#5F7F5F")))
+     ;;  (load-theme 'zenburn t)
+       :config
+       (setq zenburn-use-variable-pitch t)
+       (setq zenburn-scale-org-headlines t)
+       (setq zenburn-scale-outline-headlines t)
+       (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
+       (set-face-attribute 'ivy-current-match nil :height 1.1 :foreground "wheat" :background "#5f7f5f" :underline nil))
+
+     (use-package vscode-dark-plus-theme
+       :ensure t
+       :init
+       (load-theme 'vscode-dark-plus t)
+       :config
+       (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
+       (set-face-attribute 'ivy-current-match nil :height 1.1 :foreground "wheat" :background "#5f7f5f" :underline nil)
+       )
+     ;;( use-package hc-zenburn-theme
+     ;;  :ensure t
+     ;; :init
+     ;; (powerline-default-theme)
+     ;; (load-theme 'hc-zenburn t)
+     ;; (hc-zenburn-with-color-variables
+     ;;   (custom-theme-set-faces
+     ;;    'hc-zenburn
+     ;;    `(company-tooltip-common ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
+     ;;    `(company-tooltip-selection ((t (:background ,"gray40" :foreground ,"LightBlue3"))))
+     ;;    `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
+     ;; )
 
 (use-package exec-path-from-shell
        :ensure t
@@ -604,7 +618,7 @@
   (company-quickhelp-mode))
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
-  :hook ((ruby-mode . lsp) (python-mode . lsp))
+  :hook ((ruby-mode . lsp) (python-mode . lsp)(lsp-mode . lsp-enable-which-key-integration))
   :custom
   (lsp-auto-configure t)
   (lsp-prefer-flymake nil)
@@ -805,11 +819,11 @@
                             :after elfeed
                             :init
                             (elfeed-org))
-                          (use-package elfeed-goodies
-                            :after elfeed
-                            :ensure t
-                            :init
-                            (elfeed-goodies/setup))
+                          ;; (use-package elfeed-goodies
+                          ;;   :after elfeed
+                          ;;   :ensure t
+                          ;;   :init
+                          ;;   (elfeed-goodies/setup))
 
                        (use-package visual-fill
                          :ensure t)
@@ -876,11 +890,78 @@
     "a" 'ace-jump-mode
     "g" '(:ignore t :which-key "rspec")
     "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
+    "ga" '(rspec-verify-all :which-key "run all specs")
+    "gs" '(rspec-verify-single :which-key "run single spec")
+    "gr" '(rspec-rerun :which-key "rerun spec")
+    "gf" '(rspec-run-last-failed :which-key "rerun last failed")
     "f" '(:ignore t :which-key "cucumber")
     "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
     "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
     "fv" '(feature-verify-all-scenarios-in-buffer :which-key "run all cukes in buffer")
     "fg" '(feature-goto-step-definition :which-key "goto step definition")
     "fr" '(feature-register-verify-redo :which-key "repeat last cuke")))
+
+(require 'smtpmail)
+
+(setq send-mail-function 'smtpmail-send-it
+      message-send-mail-function 'smtpmail-send-it
+      smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
+      smtp-smtp-server "smtp.gmail.com"
+      smtpmail-stream-type 'starttls
+      smtpmail-smtp-service 587)
+(setq starttls-use-gnutls t)
+(setq user-full-name "Ari Turetzky")
+(setq user-mail-address "arit93@gmail.com")
+
+;; ;;mu4e
+ (add-to-list 'load-path "/usr/local/Cellar/mu/1.4.15/share/emacs/site-lisp/mu/mu4e/")
+ (require 'mu4e)
+
+(setq mu4e-maildir (expand-file-name "~/Maildir"))
+(setq mu4e-completing-read-function #'ivy-completing-read)
+(setq mu4e-drafts-folder "/[Gmail].Drafts")
+(setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+(setq mu4e-trash-folder  "/[Gmail].Trash")
+(setq 
+      mu4e-html2text-command "w3m -T text/html"
+      mu4e-update-interval 
+      mu4e-headers-auto-update t
+      mu4e-compose-signature-auto-include nil
+      mu4e-change-filenames-when-moving t
+      )
+
+(setq mu4e-view-show-images t
+      mu4e-view-show-addresses t)
+(require 'org-mu4e)
+
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types))
+;; (setq mu4e-mu-binary "/usr/local/bin/mu")
+(setq mu4e-compose-reply-to-address "arit93@gmail.com")
+
+;; don't save message to Sent Messages, GMail/IMAP will take care of this
+(setq mu4e-sent-messages-behavior 'delete)
+
+
+;; setup some handy shortcuts
+(setq mu4e-maildir-shortcuts
+      '(("/INBOX"             . ?i)
+        ("/[Gmail].Sent Mail" . ?s)
+        ("/[Gmail].Trash"     . ?t)))
+
+;; allow for updating mail using 'U' in the main view:
+(setq mu4e-get-mail-command "offlineimap")
+(setq message-kill-buffer-on-exit t)
+
+(setq abt/mu4e-inbox-query
+      "(maildir:/INBOX) AND flag:unread")
+
+(use-package mu4e-alert
+  :after mu4e
+  :ensure t
+  :config
+  (setq mu4e-alert-interesting-mail-query abt/mu4e-inbox-query)
+  (setq mu4e-alert-notify-repeated-mails nil)
+  (mu4e-alert-enable-notifications))
 
 (provide 'emacs-config-new)
