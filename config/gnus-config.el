@@ -1,13 +1,15 @@
 (message "loading gnus-config")
 (require 'smtpmail)
 
-(setq send-mail-function 'smtpmail-send-it
-      message-send-mail-function 'smtpmail-send-it
-      smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
-      smtp-smtp-server "https://outlook.office365.com/EWS/Exchange.asmx"
-      smtpmail-stream-type 'starttls
-      smtpmail-smtp-service 587)
+
+(setq send-mail-function 'smtpmail-send-it)
+(setq message-send-mail-function 'smtpmail-send-it)
+(setq smtpmail-default-smtp-server  "smtp.gmail.com")
+(setq smtpmail-smtp-server  "smtp.gmail.com")
+(setq smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
+(setq smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
+(setq smtpmail-smtp-service   587)
 (setq user-full-name "Ari Turetzky")
-(setq user-mail-address "aturetzky@quantcast.com")
+(setq user-mail-address "arit93@gmail.com")
 (setq starttls-use-gnutls t)
 (provide 'gnus-config)
