@@ -45,7 +45,7 @@
      (setq show-paren-style 'mixed)
      (setq mode-line-in-non-selected-windows nil)
      (fset 'yes-or-no-p 'y-or-n-p)
-     (add-hook 'eww-after-render-hook 'eww-readable)
+;;     (add-hook 'eww-after-render-hook 'eww-readable)
      (setq comp-speed 3)
      (setq package-native-compile t)
    #+END_SRC
@@ -84,6 +84,8 @@
                   '("elpa" . "https://elpa.gnu.org/packages/"))
      (add-to-list 'package-archives
                   '("org" . "https://orgmode.org/elpa/"))
+          (add-to-list 'package-archives
+                  '("nongnu" . "https://elpa.nongnu.org/nongnu/"))
    #+END_SRC
 
    And now we can get kick off the package manager
@@ -326,8 +328,11 @@
        (spaceline-all-the-icons-theme)
        )
      (require 'spaceline-config)
-(setq starttls-use-gnutls t)
-(require 'gnutls)
+  ;; (use-package doom-modeline
+  ;;   :ensure t
+  ;;   :init (doom-modeline-mode 1))
+    (setq starttls-use-gnutls t)
+    (require 'gnutls)
 #+END_SRC
 ** Font Ligatures
    #+BEGIN_SRC elisp
@@ -683,7 +688,7 @@
        (add-hook mode (lambda () (display-line-numbers-mode 0))))
    #+END_SRC
 
-** Company
+** COMMENT Company
    #+BEGIN_SRC elisp
      (use-package company
        :ensure t
@@ -740,8 +745,7 @@
      (setq lsp-prefer-flymake nil)
      (setq lsp-eldoc-render-all nil)
 
-     (setq lsp-message-project-root-warning t)
-     (setq lsp-auto-guess-root t)
+     (setq lsp-auto-guess-root nil)
 
      (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
      (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
