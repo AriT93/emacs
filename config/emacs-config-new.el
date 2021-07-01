@@ -569,6 +569,7 @@
        (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
      (require 'ruby-config-new)
      (require 'keys-config-new)
+     (require 'erc-config)
      (require 'mail-config)
 
 (use-package highline
@@ -837,6 +838,9 @@
     "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
     "fv" '(feature-verify-all-scenarios-in-buffer :which-key "run all cukes in buffer")
     "fg" '(feature-goto-step-definition :which-key "goto step definition")
-    "fr" '(feature-register-verify-redo :which-key "repeat last cuke")))
+    "fr" '(feature-register-verify-redo :which-key "repeat last cuke")
+    "m" 'mu4e
+    "b" '(:ignore t :which-key "eww")
+    "bf" '(eww-follow-link :which-key "eww-follow-link")))
 
 (provide 'emacs-config-new)

@@ -1,4 +1,5 @@
 
+
 #+TITLE: General Emacs Configuration options
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
@@ -646,6 +647,7 @@
             (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
           (require 'ruby-config-new)
           (require 'keys-config-new)
+          (require 'erc-config)
           (require 'mail-config)
 
    #+END_SRC
@@ -690,72 +692,74 @@
 
 ** COMMENT Company
    #+BEGIN_SRC elisp
-     (use-package company
-       :ensure t
-       :defer 2
-       :diminish
-       :custom
-       (company-minimum-prefix-length 1)
-       (company-idle-begin 0.0)
-       (company-show-numbers t)
-       (company-tooltip-align-annotations 't)
-       (global-company-mode t))
+          (use-package company
+            :ensure t
+            :defer 2
+            :diminish
+            :custom
+            (company-minimum-prefix-length 1)
+            (company-idle-begin 0.0)
+            (company-show-numbers t)
+            (company-tooltip-align-annotations 't)
+            (global-company-mode t))
 
-     (require 'company)
-     (add-hook  'after-init-hook 'global-company-mode)
-     (use-package company-quickhelp
-       :config
-       :init
-       (company-quickhelp-mode))
-     (use-package lsp-mode
-       :commands (lsp lsp-deferred)
-       :hook ((ruby-mode . lsp) (python-mode . lsp)(lsp-mode . lsp-enable-which-key-integration))
-       :custom
-       (lsp-auto-configure t)
-       (lsp-prefer-flymake nil)
-       (lsp-inhibit-message t)
-       (lsp-eldoc-render-all nil)
-       :config
-       (lsp-enable-which-key-integration t)
-       (setq lsp-enable-symbol-highlighting t)
-       (setq lsp-modeline-code-actions-enable t)
-       (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-       :ensure t)
-     (use-package lsp-ivy
-       :ensure t)
-     (use-package lsp-ui
-       :commands lsp-ui-mode
-       :after lsp-mode
-       :config
-       (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
-       (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-       (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-       (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
-       (setq lsp-ui-sideline-enable nil)
-       (setq lsp-lens-enable t)
-       )
+          (require 'company)
+          (add-hook  'after-init-hook 'global-company-mode)
+          (use-package company-quickhelp
+            :config
+            :init
+            (company-quickhelp-mode))
+          (use-package terraform-mode
+            :ensure t)
+          (use-package lsp-mode
+            :commands (lsp lsp-deferred)
+            :hook ((ruby-mode . lsp) (python-mode . lsp)(lsp-mode . lsp-enable-which-key-integration)
+            :custom
+            (lsp-auto-configure t)
+            (lsp-prefer-flymake nil)
+            (lsp-inhibit-message t)
+            (lsp-eldoc-render-all nil)
+            :config
+            (lsp-enable-which-key-integration t)
+            (setq lsp-enable-symbol-highlighting t)
+            (setq lsp-modeline-code-actions-enable t)
+            (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+            :ensure t)
+          (use-package lsp-ivy
+            :ensure t)
+          (use-package lsp-ui
+            :commands lsp-ui-mode
+            :after lsp-mode
+            :config
+            (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
+            (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+            (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+            (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
+            (setq lsp-ui-sideline-enable nil)
+            (setq lsp-lens-enable t)
+            )
 
-     (use-package lsp-treemacs
-       :after lsp
-       :config
-       (lsp-treemacs-sync-mode t)
-       )
-     (require 'lsp-ui-flycheck)
-     (setq lsp-inhibit-message t)
-     (setq lsp-prefer-flymake nil)
-     (setq lsp-eldoc-render-all nil)
+          (use-package lsp-treemacs
+            :after lsp
+            :config
+            (lsp-treemacs-sync-mode t)
+            )
+          (require 'lsp-ui-flycheck)
+          (setq lsp-inhibit-message t)
+          (setq lsp-prefer-flymake nil)
+          (setq lsp-eldoc-render-all nil)
 
-     (setq lsp-auto-guess-root nil)
+          (setq lsp-auto-guess-root nil)
 
-     (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-     (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
-     (use-package company-box
-       :after company
-       :ensure t
-       :diminish
-       :hook
-       (company-mode . company-box-mode)
-       :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
+          (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+          (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+          (use-package company-box
+            :after company
+            :ensure t
+            :diminish
+            :hook
+            (company-mode . company-box-mode)
+            :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
 
 
    #+END_SRC
@@ -1036,26 +1040,29 @@
 #+end_src
 ** General
    #+begin_src elisp
-     (use-package general
-       :ensure t
-       :config
-       (general-create-definer my-leader-def
-         :prefix "C-c")
-       (my-leader-def
-         "t" 'projectile-find-file
-         "a" 'ace-jump-mode
-         "g" '(:ignore t :which-key "rspec")
-         "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
-         "ga" '(rspec-verify-all :which-key "run all specs")
-         "gs" '(rspec-verify-single :which-key "run single spec")
-         "gr" '(rspec-rerun :which-key "rerun spec")
-         "gf" '(rspec-run-last-failed :which-key "rerun last failed")
-         "f" '(:ignore t :which-key "cucumber")
-         "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
-         "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
-         "fv" '(feature-verify-all-scenarios-in-buffer :which-key "run all cukes in buffer")
-         "fg" '(feature-goto-step-definition :which-key "goto step definition")
-         "fr" '(feature-register-verify-redo :which-key "repeat last cuke")))
+               (use-package general
+                 :ensure t
+                 :config
+                 (general-create-definer my-leader-def
+                   :prefix "C-c")
+                 (my-leader-def
+                   "t" 'projectile-find-file
+                   "a" 'ace-jump-mode
+                   "g" '(:ignore t :which-key "rspec")
+                   "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
+                   "ga" '(rspec-verify-all :which-key "run all specs")
+                   "gs" '(rspec-verify-single :which-key "run single spec")
+                   "gr" '(rspec-rerun :which-key "rerun spec")
+                   "gf" '(rspec-run-last-failed :which-key "rerun last failed")
+                   "f" '(:ignore t :which-key "cucumber")
+                   "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
+                   "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
+                   "fv" '(feature-verify-all-scenarios-in-buffer :which-key "run all cukes in buffer")
+                   "fg" '(feature-goto-step-definition :which-key "goto step definition")
+                   "fr" '(feature-register-verify-redo :which-key "repeat last cuke")
+                   "m" 'mu4e
+                   "b" '(:ignore t :which-key "eww")
+                   "bf" '(eww-follow-link :which-key "eww-follow-link")))
 
    #+end_src
 
