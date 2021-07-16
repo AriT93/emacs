@@ -689,6 +689,7 @@
           (require 'ruby-config-new)
           (require 'keys-config-new)
           (require 'erc-config)
+          (require 'gnus-config)
           (require 'mail-config)
           (require 'gnus-config)
 
@@ -698,27 +699,30 @@
 ** Set up HighLine mode
    #+BEGIN_SRC elisp
           (use-package highline
+<<<<<<< Updated upstream
        :defer 2
             :ensure t
+=======
+>>>>>>> Stashed changes
             :config
             (global-highline-mode t)
             (setq highline-face '((:background "gray40")))
             (set-face-attribute 'region nil :background "DarkOliveGreen")
             (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
           (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-
+     
           (use-package hlinum
        :defer 2
             :ensure t)
           (use-package linum-relative
             :ensure t)
-
+     
             (hlinum-activate)
-
-
+     
+     
      (column-number-mode)
      (global-display-line-numbers-mode t)
-
+     
      ;; Disable line numbers for some modes
      (dolist (mode '(org-mode-hook
                      erc-mode-hook
