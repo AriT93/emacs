@@ -610,44 +610,48 @@
      (require 'ruby-config-new)
      (require 'keys-config-new)
      (require 'erc-config)
+     (require 'gnus-config)
      (require 'mail-config)
      (require 'gnus-config)
 
 (use-package highline
-  :defer 2
-       :ensure t
-       :config
-       (global-highline-mode t)
-       (setq highline-face '((:background "gray40")))
-       (set-face-attribute 'region nil :background "DarkOliveGreen")
-       (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
-     (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-
-     (use-package hlinum
-  :defer 2
-       :ensure t)
-     (use-package linum-relative
-       :ensure t)
-
-       (hlinum-activate)
-
-
-(column-number-mode)
-(global-display-line-numbers-mode t)
-
-;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
-                erc-mode-hook
-                term-mode-hook
-                eshell-mode-hook
-                vterm-mode-hook
-                neotree-mode-hook
-                telega-chat-mode-hook
-                telega-root-mode-hook
-                telega-webpage-mode-hook
-                treemacs-mode-hook
-                dashboard-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+<<<<<<< Updated upstream
+       :defer 2
+            :ensure t
+=======
+>>>>>>> Stashed changes
+            :config
+            (global-highline-mode t)
+            (setq highline-face '((:background "gray40")))
+            (set-face-attribute 'region nil :background "DarkOliveGreen")
+            (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
+          (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+     
+          (use-package hlinum
+       :defer 2
+            :ensure t)
+          (use-package linum-relative
+            :ensure t)
+     
+            (hlinum-activate)
+     
+     
+     (column-number-mode)
+     (global-display-line-numbers-mode t)
+     
+     ;; Disable line numbers for some modes
+     (dolist (mode '(org-mode-hook
+                     erc-mode-hook
+                     term-mode-hook
+                     eshell-mode-hook
+                     vterm-mode-hook
+                     neotree-mode-hook
+                     telega-chat-mode-hook
+                     telega-root-mode-hook
+                     telega-webpage-mode-hook
+                     treemacs-mode-hook
+                     dashboard-mode-hook))
+       (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package projectile
   :ensure t

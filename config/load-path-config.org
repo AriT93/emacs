@@ -12,6 +12,7 @@
   (add-to-list 'load-path (expand-file-name "~/emacs/site/blog"))
   (add-to-list 'load-path (expand-file-name "~/emacs/site/rcodeools"))
   (add-to-list 'load-path (expand-file-name "~/emacs/site/rdebug"))
+  (add-to-list 'load-path (expand-file-name "~/emacs/site/ruby-block"))
 #+END_SRC
 * Why are these here?
   I don't know I can move them later(never...)
