@@ -11,54 +11,51 @@
   configuration  *This is a Work in Progress*
 ** Looks and Behaviors
    #+BEGIN_SRC elisp
-     (if (window-system)
-         (tool-bar-mode -1))
-     (show-paren-mode 1)
-     (setq gc-cons-threshold 100000000)
-     (setq undo-limit 8000000)
-     (setq undo-strong-limit 12000000)
-     (setq undo-outer-limit 12000000)
-     (setq read-process-output-max (* 1024 1024))
-     (setq inhibit-startup-screen t)
-     (setq inhibit-splash-screen t)
-     (setq uniquify-buffer-name-style t)
-     (setq uniquify-buffer-name-style (quote post-forward))
-     (setq uniquify-min-dir-content 1)
-     (electric-pair-mode 1)
-     (setq cal-tex-diary t)
-     (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
-     (add-hook 'diary-display-hook 'fancy-diary-display)
-     (add-hook 'text-mode-hook ' turn-on-auto-fill)
-     (add-hook 'before-save-hook 'time-stamp)
-     (setq dired-omit-files-p t)
-     (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
-     (setq tramp-auto-save-directory "~/tmp")
-     (setq backup-directory-alist
-           '((".*" . "~/tmp/")))
-     (setq auto-save-file-name-transforms
-           '((".*" "~/tmp/" t)))
-     (setq message-log-max 1000)
-     (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120 :weight 'normal)
-     (setq help-at-pt-display-when-idle t)
-     (setq help-at-pt-timer-delay 0.1)
-     (help-at-pt-set-timer)
-     (setq show-paren-style 'mixed)
-     (setq mode-line-in-non-selected-windows nil)
-     (fset 'yes-or-no-p 'y-or-n-p)
-     (setq browse-url-browser-function 'eww-browse-url)
-     (add-hook 'eww-after-render-hook 'eww-readable)
-     (add-hook 'eww-after-render-hook 'visual-line-mode)
-     (setq comp-speed 3)
-     (setq package-native-compile t)
+        (if (window-system)
+            (tool-bar-mode -1))
+        (show-paren-mode 1)
+        (setq gc-cons-threshold 100000000)
+        (setq undo-limit 8000000)
+        (setq undo-strong-limit 12000000)
+        (setq undo-outer-limit 12000000)
+        (setq read-process-output-max (* 1024 1024))
+        (setq inhibit-startup-screen t)
+        (setq inhibit-splash-screen t)
+        (setq uniquify-buffer-name-style t)
+        (setq uniquify-buffer-name-style (quote post-forward))
+        (setq uniquify-min-dir-content 1)
+        (electric-pair-mode 1)
+        (setq cal-tex-diary t)
+        (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
+        (add-hook 'diary-display-hook 'fancy-diary-display)
+        (add-hook 'text-mode-hook ' turn-on-auto-fill)
+        (add-hook 'before-save-hook 'time-stamp)
+        (setq dired-omit-files-p t)
+        (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+        (setq tramp-auto-save-directory "~/tmp")
+        (setq backup-directory-alist
+              '((".*" . "~/tmp/")))
+        (setq auto-save-file-name-transforms
+              '((".*" "~/tmp/" t)))
+        (setq message-log-max 1000)
+        (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120 :weight 'normal)
+        (setq help-at-pt-display-when-idle t)
+        (setq help-at-pt-timer-delay 0.1)
+        (help-at-pt-set-timer)
+        (setq show-paren-style 'mixed)
+        (setq mode-line-in-non-selected-windows nil)
+        (fset 'yes-or-no-p 'y-or-n-p)
+        (setq browse-url-browser-function 'eww-browse-url)
+        (add-hook 'eww-after-render-hook 'eww-readable)
+        (setq comp-speed 3)
+        (setq package-native-compile t)
         ;;; follow links in xwidgets
      (use-package xwwp-follow-link
        :custom
        (xwwp-follow-link-completion-backend 'ivy)
        :bind (:map xwidget-webkit-mode-map
                    ("v" . xwwp-follow-link)))
-     (use-package string-inflection
-       :ensure t)
-     
+
    #+END_SRC
 
    Pop yank gives you a pop up of recent yanks,  a "yank bank"
