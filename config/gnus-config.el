@@ -3,17 +3,18 @@
 
 
 (setq send-mail-function 'smtpmail-send-it)
-(setq message-send-mail-function 'smtpmail-send-it)
+;;(setq message-send-mail-function 'smtpmail-send-it)
 (setq smtpmail-default-smtp-server  "smtp.gmail.com")
 (setq smtpmail-smtp-server  "smtp.gmail.com")
-(setq smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
-(setq smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
+(setq smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))(
+setq smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
 (setq smtpmail-smtp-service   587)
 (setq user-full-name "Ari Turetzky")
 (setq user-mail-address "arit93@gmail.com")
 (setq starttls-use-gnutls t)
 (setq gnus-nntp-server "news.eternal-september.org")
 (setq nntp-authinfo-file "~/.authinfo.gpg")
+(add-hook 'gnus-article-mode-hook 'visual-line-mode)
 
 (use-package nnreddit
   :ensure t)
