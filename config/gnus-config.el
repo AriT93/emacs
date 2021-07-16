@@ -1,6 +1,6 @@
 (message "loading gnus-config")
 (require 'smtpmail)
-        
+
 
 (setq send-mail-function 'smtpmail-send-it)
 (setq message-send-mail-function 'smtpmail-send-it)
@@ -18,7 +18,7 @@
 (use-package nnreddit
   :ensure t)
 (setq nnreddit-python-command "python3")
-(setq gnus-select-method '(nnreddit ""))
+(add-to-list 'gnus-secondary-select-methods '(nnreddit ""))
 
 
 ;; Set the default value of mm-discouraged-alternatives.

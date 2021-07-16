@@ -8,7 +8,6 @@
 ;;; Code:
 (if (window-system)
     (tool-bar-mode -1))
-(menu-bar-mode -1)
 (message "loading emacs-config")
 (show-paren-mode 1)
 (electric-pair-mode 1)
@@ -43,7 +42,7 @@
  ((string="x" window-system)
   (set-face-attribute 'mode-line nil :family "Liberation Mono:bold" :height 1.0 ))
 ((string="ns" window-system)
- (set-face-attribute 'mode-line nil :family "Monaco" :height 1.0)))
+ (set-face-attribute 'mode-line nil :family "Helvetica" :height 1.2)))
 
 (setq-default compile-command "nmake")
 (setq tramp-auto-save-directory "~/tmp")

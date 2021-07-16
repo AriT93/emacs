@@ -1,43 +1,50 @@
 (if (window-system)
-         (tool-bar-mode -1))
-     (menu-bar-mode -1)
-     (show-paren-mode 1)
-     (setq gc-cons-threshold 100000000)
-     (setq undo-limit 8000000)
-     (setq undo-strong-limit 12000000)
-     (setq undo-outer-limit 12000000)
-     (setq read-process-output-max (* 1024 1024))
-     (setq inhibit-startup-screen t)
-     (setq inhibit-splash-screen t)
-     (setq uniquify-buffer-name-style t)
-     (setq uniquify-buffer-name-style (quote post-forward))
-     (setq uniquify-min-dir-content 1)
-     (electric-pair-mode 1)
-     (setq cal-tex-diary t)
-     (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
-     (add-hook 'diary-display-hook 'fancy-diary-display)
-     (add-hook 'text-mode-hook ' turn-on-auto-fill)
-     (add-hook 'before-save-hook 'time-stamp)
-     (setq dired-omit-files-p t)
-     (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
-     (setq tramp-auto-save-directory "~/tmp")
-     (setq backup-directory-alist
-           '((".*" . "~/tmp/")))
-     (setq auto-save-file-name-transforms
-           '((".*" "~/tmp/" t)))
-     (setq message-log-max 1000)
-     (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120 :weight 'normal)
-     (setq help-at-pt-display-when-idle t)
-     (setq help-at-pt-timer-delay 0.1)
-     (help-at-pt-set-timer)
-     (setq show-paren-style 'mixed)
-     (setq mode-line-in-non-selected-windows nil)
-     (fset 'yes-or-no-p 'y-or-n-p)
-;;     (add-hook 'eww-after-render-hook 'eww-readable)
-     (setq comp-speed 3)
-     (setq package-native-compile t)
+       (tool-bar-mode -1))
+   (show-paren-mode 1)
+   (setq gc-cons-threshold 100000000)
+   (setq undo-limit 8000000)
+   (setq undo-strong-limit 12000000)
+   (setq undo-outer-limit 12000000)
+   (setq read-process-output-max (* 1024 1024))
+   (setq inhibit-startup-screen t)
+   (setq inhibit-splash-screen t)
+   (setq uniquify-buffer-name-style t)
+   (setq uniquify-buffer-name-style (quote post-forward))
+   (setq uniquify-min-dir-content 1)
+   (electric-pair-mode 1)
+   (setq cal-tex-diary t)
+   (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
+   (add-hook 'diary-display-hook 'fancy-diary-display)
+   (add-hook 'text-mode-hook ' turn-on-auto-fill)
+   (add-hook 'before-save-hook 'time-stamp)
+   (setq dired-omit-files-p t)
+   (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+   (setq tramp-auto-save-directory "~/tmp")
+   (setq backup-directory-alist
+         '((".*" . "~/tmp/")))
+   (setq auto-save-file-name-transforms
+         '((".*" "~/tmp/" t)))
+   (setq message-log-max 1000)
+   (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120 :weight 'normal)
+   (setq help-at-pt-display-when-idle t)
+   (setq help-at-pt-timer-delay 0.1)
+   (help-at-pt-set-timer)
+   (setq show-paren-style 'mixed)
+   (setq mode-line-in-non-selected-windows nil)
+   (fset 'yes-or-no-p 'y-or-n-p)
+   (setq browse-url-browser-function 'eww-browse-url)
+   (add-hook 'eww-after-render-hook 'eww-readable)
+   (setq comp-speed 3)
+   (setq package-native-compile t)
+   ;;; follow links in xwidgets
+(use-package xwwp-follow-link
+  :custom
+  (xwwp-follow-link-completion-backend 'ivy)
+  :bind (:map xwidget-webkit-mode-map
+              ("v" . xwwp-follow-link)))
 
 (use-package pos-tip
+  :defer 2
   :ensure t)
 
 (setq TeX-command-list
@@ -75,15 +82,18 @@
 (require 'load-path-config-new)
 
 (use-package nvm
+  :defer 2
   :ensure t)
 (use-package js-comint
   :ensure t
+  :defer 2
   :config
   (require 'nvm)
   (js-do-use-nvm))
 
 (use-package js2-mode
   :ensure t
+  :defer 2
   :bind (:map js2-mode-map
               ("\C-x\C-e" . js-send-last-sexp)
               ("\C-\M-x"  . js-send-last-sexp-and-go)
@@ -137,26 +147,30 @@
 ;;   (ivy-posframe-mode t)
 ;;   )
 (use-package all-the-icons-ivy-rich
+  :defer 2
   :ensure t
   :init(all-the-icons-ivy-rich-mode 1))
 (use-package all-the-icons-ivy
+  :defer 2
   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
-(use-package quelpa
-  :ensure t)
-(use-package quelpa-use-package
-  :ensure t)
-(use-package consult :quelpa (consult :fetcher github :repo "minad/consult")
-  :after projectile
-  :ensure t
-  :init
-  (setq register-preview-delay 0
-        register-preview-function #'consult-register-format)
-  :config
-  (setq consult-project-root-function #'projectile-project-root)
-  (setq consult-narrow-key "<")
-  )
+;; (use-package quelpa
+;;   :defer 2
+;;   :ensure t)
+;; (use-package quelpa-use-package
+;;   :ensure t)
+;; (use-package consult :quelpa (consult :fetcher github :repo "minad/consult")
+;;   :after projectile
+;;   :ensure t
+;;   :init
+;;   (setq register-preview-delay 0
+;;         register-preview-function #'consult-register-format)
+;;   :config
+;;   (setq consult-project-root-function #'projectile-project-root)
+;;   (setq consult-narrow-key "<")
+;;   )
 (global-set-key "\C-cy" 'counsel-yank-pop)
 (use-package marginalia
+  :defer 2
   :ensure t
   :init
   (marginalia-mode)
@@ -165,6 +179,7 @@
         ("M-A" . marginalia-cycle)))
 
 (use-package ace-window
+     :defer  2
   :ensure t
   :after (zenburn-theme)
   :config
@@ -176,15 +191,18 @@
   ("M-o" . 'ace-window))
 
 (use-package magit
+     :defer 2
   :ensure t)
 (require 'magit)
 (use-package git-gutter-fringe+
+     :defer 2
   :ensure t
   :diminish
   :init
   (global-git-gutter+-mode))
 
 (use-package git-timemachine
+     :defer 2
   :ensure t
   :diminish
   )
@@ -242,7 +260,7 @@
   :ensure t)
 (use-package treemacs
   :ensure t
-  :defer t
+  :defer 2
   :config
   (setq treemacs-space-between-root-nodes nil)
   (treemacs-follow-mode t)
@@ -263,8 +281,10 @@
 ;; (powerline-default-theme)
 
 (use-package spaceline
+     :defer 2
      :ensure t)
    (use-package spaceline-all-the-icons
+     :defer 2
      :ensure t
      :after spaceline
      :config
@@ -279,7 +299,7 @@
   (require 'gnutls)
 
 (use-package ligature
-       :load-path "/Users/ari.turetzky/dev/git/ligature.el"
+       :load-path "~/dev/git/ligature.el"
        :config
        ;; Enable the "www" ligature in every possible major mode
        (ligature-set-ligatures 't '("www"))
@@ -305,11 +325,13 @@
        (global-ligature-mode t))
 
 (use-package flycheck-pos-tip
+  :defer 2
   :after flycheck
   :config
   (flycheck-pos-tip-mode)
   )
 (use-package flycheck
+  :defer 2
   :diminish flycheck-mode
   :ensure t
   :init
@@ -444,6 +466,7 @@
      (setq org-confirm-babel-evaluate nil)
 
      (use-package geiser
+       :defer 2
        :ensure t
        :config
        (setq geiser-active-implementations '(mit))
@@ -453,22 +476,26 @@
      )
 
      (use-package ox-pandoc
+       :defer 2
        :ensure t
        :config
        (setq org-pandoc-options '((standalone . t))))
 
      (use-package org-variable-pitch
+       :defer 2
        :ensure t
        :config
        (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
        (add-hook 'after-init-hook #'org-variable-pitch-setup))
 
      (use-package olivetti
+       :defer 2
        :ensure t
        :config
        (setq olivetti-minimum-body-width 120)
        (add-hook 'org-mode-hook 'olivetti-mode))
      (use-package virtualenvwrapper
+       :defer 2
        :ensure t
        :init
        (venv-initialize-interactive-shells)
@@ -484,6 +511,7 @@
                                                       :with-toc nil))
 
      (use-package zenburn-theme
+       :defer 2
        :ensure t
        :init
        (setq zenburn-override-colors-alist '(
@@ -527,41 +555,53 @@
        (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER")
        ))
      (use-package inf-ruby
+  :defer 2
        :ensure t)
      (require 'ruby-mode)
      (use-package  ruby-electric
        :ensure t)
      (use-package coffee-mode
+  :defer 2
        :ensure t)
      (use-package feature-mode
+  :defer 2
        :ensure t
        :config
        (setq feature-use-docker-compose nil)
-       (setq feature-rake-command "cucumber --format progress {feature}"))
+       (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
 ;;     (require 'rcodetools)
      (use-package yasnippet
+  :defer 2
        :ensure t
        :config
        (yas-global-mode t)
        (yas-global-mode))
      (use-package yasnippet-snippets
+  :defer 2
        :ensure t)
      (use-package tree-mode
+  :defer 2
        :ensure t)
      (use-package rake
+  :defer 2
        :ensure t)
      (use-package inflections
+  :defer 2
        :ensure t)
      (use-package graphql
+  :defer 2
        :ensure t)
      (require 'org-protocol)
      (use-package haml-mode
+  :defer 2
        :ensure t)
      (use-package beacon
+  :defer 2
        :ensure t
        :init
        (beacon-mode))
      (use-package rainbow-mode
+  :defer 2
        :ensure t)
      (use-package rainbow-delimiters
        :ensure t
@@ -571,8 +611,10 @@
      (require 'keys-config-new)
      (require 'erc-config)
      (require 'mail-config)
+     (require 'gnus-config)
 
 (use-package highline
+  :defer 2
        :ensure t
        :config
        (global-highline-mode t)
@@ -582,6 +624,7 @@
      (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
      (use-package hlinum
+  :defer 2
        :ensure t)
      (use-package linum-relative
        :ensure t)
@@ -703,6 +746,7 @@
 
 (exec-path-from-shell-initialize)
 (use-package rjsx-mode
+   :defer 2
   :ensure t)
 (add-hook 'js2-mode-hook 'lsp)
 (add-hook 'rjsx-mode-hook 'lsp)
