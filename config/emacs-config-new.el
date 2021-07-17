@@ -590,13 +590,9 @@
        (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
      (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
-     (use-package hlinum
-  :defer 2
-       :ensure t)
      (use-package linum-relative
        :ensure t)
 
-(hlinum-activate)
 
 
 (column-number-mode)
@@ -608,10 +604,6 @@
                 term-mode-hook
                 eshell-mode-hook
                 vterm-mode-hook
-                neotree-mode-hook
-                telega-chat-mode-hook
-                telega-root-mode-hook
-                telega-webpage-mode-hook
                 treemacs-mode-hook
                 dashboard-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
