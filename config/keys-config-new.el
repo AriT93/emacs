@@ -25,9 +25,9 @@
 ;; (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 ;; (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
 
-(global-set-key (kbd "C-9") '(lambda()(interactive)(djcb-opacity-modify)))
-(global-set-key (kbd "C-8") '(lambda()(interactive)(djcb-opacity-modify t)))
-(global-set-key (kbd "C-0") '(lambda()(interactive)
+(global-set-key (kbd "C-9") (lambda()(interactive)(djcb-opacity-modify)))
+(global-set-key (kbd "C-8") (lambda()(interactive)(djcb-opacity-modify t)))
+(global-set-key (kbd "C-0") (lambda()(interactive)
                                (modify-frame-parameters nil `((alpha . 100)))))
 
 ;; S-C-left and right will horizontally resize windows

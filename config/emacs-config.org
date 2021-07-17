@@ -1,18 +1,55 @@
 
-
 #+TITLE: General Emacs Configuration options
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
+#+Time-stamp: <2021-07-17 08:26:43 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
   Contained herein are my general non-mode specific(mostly)
   configuration  *This is a Work in Progress*
+** Get some package goodness
+   #+BEGIN_SRC elisp
+     (require 'package)
+   #+END_SRC
+
+   find our packages in the more reputable places
+   #+BEGIN_SRC elisp
+     
+     
+     (setq package-archives '(
+                                      ("melpa"  . "https://melpa.org/packages/")
+                                      ("elpa"   . "https://elpa.gnu.org/packages/")
+                                      ("org"    . "https://orgmode.org/elpa/")
+                                      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                                      ))
+     (package-initialize)
+   #+END_SRC
+
+** Use Package
+   =use-package= makes it easy to require a file without a bunch of
+   requires like you'll find just below a bit and it will also ensure it
+   gets installed from a repository we defined above
+
+   #+BEGIN_SRC elisp
+     (unless (package-installed-p 'use-package)
+     (package-refresh-contents)
+     (package-install 'use-package))
+     (require 'use-package)
+   #+END_SRC
+
+   I store the load paths to locally downloaded package in their own
+   config file [[file:load-path-config.org][load-path-config]]
+
+   #+BEGIN_SRC elisp
+     (require 'load-path-config-new)
+   #+END_SRC
 ** Looks and Behaviors
    #+BEGIN_SRC elisp
      (if (window-system)
-         (tool-bar-mode -1))
+         (tool-bar-mode -1)
+         (menu-bar-mode -1))
      (show-paren-mode 1)
      (setq gc-cons-threshold 100000000)
      (setq undo-limit 8000000)
@@ -31,12 +68,10 @@
      (add-hook 'text-mode-hook ' turn-on-auto-fill)
      (add-hook 'before-save-hook 'time-stamp)
      (setq dired-omit-files-p t)
-     (add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+     (require 'dired-x)
      (setq tramp-auto-save-directory "~/tmp")
      (setq backup-directory-alist
            '((".*" . "~/tmp/")))
-     (setq auto-save-file-name-transforms
-           '((".*" "~/tmp/" t)))
      (setq message-log-max 1000)
      (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120 :weight 'normal)
      (setq help-at-pt-display-when-idle t)
@@ -62,10 +97,19 @@
    #+END_SRC
 
    Pop yank gives you a pop up of recent yanks,  a "yank bank"
+
    #+BEGIN_SRC elisp
-     (use-package pos-tip
-       :defer 2
-       :ensure t)
+          (global-set-key "\C-cy" 'counsel-yank-pop)
+          (use-package no-littering
+            :ensure t)
+          
+          (setq auto-save-file-name-transforms
+           `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+          
+          (use-package pos-tip
+            :defer 2
+            :ensure t)
+          
    #+END_SRC
 ** Tex
    #+BEGIN_SRC elisp
@@ -82,45 +126,6 @@
                    ("Check" "lacheck %s" TeX-run-compile nil t)
                    ("Other" "" TeX-run-command t t))))
 
-   #+END_SRC
-** Get some package goodness
-   #+BEGIN_SRC elisp
-     (require 'package)
-   #+END_SRC
-
-   find our packages in the more reputable places
-   #+BEGIN_SRC elisp
-     (add-to-list 'package-archives
-                  '("melpa" . "https://melpa.org/packages/"))
-     (add-to-list 'package-archives
-                  '("elpa" . "https://elpa.gnu.org/packages/"))
-     (add-to-list 'package-archives
-                  '("org" . "https://orgmode.org/elpa/"))
-          (add-to-list 'package-archives
-                  '("nongnu" . "https://elpa.nongnu.org/nongnu/"))
-   #+END_SRC
-
-   And now we can get kick off the package manager
-   #+BEGIN_SRC elisp
-   #+END_SRC
-** Use Package
-   =use-package= makes it easy to require a file without a bunch of
-   requires like you'll find just below a bit and it will also ensure it
-   gets installed from a repository we defined above
-
-   #+BEGIN_SRC elisp
-     (unless (package-installed-p 'use-package)
-     (package-refresh-contents)
-     (package-install 'use-package))
-     (eval-when-compile
-       (require 'use-package))
-   #+END_SRC
-
-   I store the load paths to locally downloaded package in their own
-   config file [[file:load-path-config.org][load-path-config]]
-
-   #+BEGIN_SRC elisp
-     (require 'load-path-config-new)
    #+END_SRC
 ** JS Comint using node to eval javascript code
    And here we have the first use of use-pacakge!
@@ -201,22 +206,6 @@
      (use-package all-the-icons-ivy
        :defer 2
        :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
-     ;; (use-package quelpa
-     ;;   :defer 2
-     ;;   :ensure t)
-     ;; (use-package quelpa-use-package
-     ;;   :ensure t)
-     ;; (use-package consult :quelpa (consult :fetcher github :repo "minad/consult")
-     ;;   :after projectile
-     ;;   :ensure t
-     ;;   :init
-     ;;   (setq register-preview-delay 0
-     ;;         register-preview-function #'consult-register-format)
-     ;;   :config
-     ;;   (setq consult-project-root-function #'projectile-project-root)
-     ;;   (setq consult-narrow-key "<")
-     ;;   )
-     (global-set-key "\C-cy" 'counsel-yank-pop)
      (use-package marginalia
        :defer 2
        :ensure t
@@ -267,12 +256,12 @@
      ;; Notes in *scratch* v. 0.2
      ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
      ;; Released under GNU GPL
-
+     
      (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
        "File where content of *scratch* buffer will be read from and saved to.")
      (defconst scratch-file-autosave (concat scratch-file ".autosave")
        "File where to autosave content of *scratch* buffer.")
-
+     
      (save-excursion
        (set-buffer (get-buffer-create "*scratch*"))
        (if (file-readable-p scratch-file)
@@ -287,19 +276,19 @@
        (fundamental-mode))
      (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
      (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
-
+     
      (defun scratch-revert (ignore-auto noconfirm)
        (when (file-readable-p scratch-file)
          (insert-file-contents scratch-file nil nil nil t)
          (set-buffer-modified-p nil)))
-
+     
      (defun kill-scratch-buffer ()
        (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
               (delete-region (point-min) (point-max))
               (set-buffer-modified-p nil)
               (next-buffer)
               t)))
-
+     
      (defun kill-emacs-scratch-save ()
        (let ((buffer (get-buffer-create "*scratch*")))
          (if buffer
@@ -308,6 +297,11 @@
                (write-region nil nil scratch-file)
                (unless (string-equal scratch-file buffer-auto-save-file-name)
                  (delete-auto-save-file-if-necessary t))))))
+     
+     (use-package persistent-scratch
+       :ensure t
+       :config
+       (persistent-scratch-setup-default))
 #+END_SRC
 ** Treemacs
    #+BEGIN_SRC elisp
@@ -691,23 +685,21 @@
             (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
           (require 'ruby-config-new)
           (require 'keys-config-new)
+          (require 'ari-custom-new)
           (require 'erc-config)
           (require 'gnus-config)
           (require 'mail-config)
           (require 'gnus-config)
-
+     
    #+END_SRC
 
 
 ** Set up HighLine mode
    #+BEGIN_SRC elisp
           (use-package highline
-<<<<<<< Updated upstream
-       :defer 2
-            :ensure t
-=======
->>>>>>> Stashed changes
-            :config
+             :ensure t
+          :defer 2
+          :config
             (global-highline-mode t)
             (setq highline-face '((:background "gray40")))
             (set-face-attribute 'region nil :background "DarkOliveGreen")
@@ -720,7 +712,7 @@
           (use-package linum-relative
             :ensure t)
      
-            (hlinum-activate)
+     (hlinum-activate)
      
      
      (column-number-mode)

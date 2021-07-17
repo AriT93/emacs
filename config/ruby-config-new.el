@@ -40,11 +40,10 @@
 
 (use-package rspec-mode
   :ensure t
-  :init
-  (add-hook 'after-init-hook  'inf-ruby-switch-setup)
   :config
   (setq rspec-use-spring-when-possible nil)
   (setq rspec-command-options "--format progress"))
+  (add-hook 'after-init-hook  'inf-ruby-switch-setup)
 
   (require 'ruby-block)
   (diminish 'ruby-block-mode)
@@ -53,7 +52,7 @@
   (add-hook 'ruby-mode-hook
             (lambda()
               (add-hook 'write-file-functions
-                        '(lambda()
+                        #'(lambda()
                            (save-excursion
                              (untabify (point-min) (point-max))
                              (delete-trailing-whitespace)
@@ -92,10 +91,8 @@
 (require 'lsp)
 (add-hook 'ruby-mode-hook #'lsp)
 
-(setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
-
-
-(autoload 'ri "ri-ruby.el" nil t)
+;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+  ;; (autoload 'ri "ri-ruby.el" nil t)
 (use-package autotest
   :ensure t
   )
