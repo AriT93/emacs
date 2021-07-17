@@ -143,6 +143,15 @@
     (setq mu4e-alert-interesting-mail-query abt/mu4e-inbox-query)
     (setq mu4e-alert-notify-repeated-mails nil)
     (mu4e-alert-enable-notifications))
+  
+  
+  (defun abt/mu4e-view-settings ()
+    "settings for mu4e-view-mode"
+    (visual-line-mode)
+    (olivetti-mode)
+    (variable-pitch-mode)
+    )
+  (add-hook 'mu4e-view-mode-hook #'abt/mu4e-view-settings)
   (provide 'mail-config)
 #+END_SRC
 
