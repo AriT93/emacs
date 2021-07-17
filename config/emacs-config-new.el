@@ -1,5 +1,23 @@
+(require 'package)
+
+(setq package-archives '(
+                                 ("melpa"  . "https://melpa.org/packages/")
+                                 ("elpa"   . "https://elpa.gnu.org/packages/")
+                                 ("org"    . "https://orgmode.org/elpa/")
+                                 ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                                 ))
+(package-initialize)
+
+(unless (package-installed-p 'use-package)
+(package-refresh-contents)
+(package-install 'use-package))
+(require 'use-package)
+
+(require 'load-path-config-new)
+
 (if (window-system)
-    (tool-bar-mode -1))
+    (tool-bar-mode -1)
+    (menu-bar-mode -1))
 (show-paren-mode 1)
 (setq gc-cons-threshold 100000000)
 (setq undo-limit 8000000)
@@ -18,12 +36,10 @@
 (add-hook 'text-mode-hook ' turn-on-auto-fill)
 (add-hook 'before-save-hook 'time-stamp)
 (setq dired-omit-files-p t)
-(add-hook 'dired-load-hook '(lambda () (require 'dired-x)))
+(require 'dired-x)
 (setq tramp-auto-save-directory "~/tmp")
 (setq backup-directory-alist
       '((".*" . "~/tmp/")))
-(setq auto-save-file-name-transforms
-      '((".*" "~/tmp/" t)))
 (setq message-log-max 1000)
 (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 120 :weight 'normal)
 (setq help-at-pt-display-when-idle t)
@@ -46,6 +62,13 @@
 (use-package string-inflection
   :ensure t)
 
+(global-set-key "\C-cy" 'counsel-yank-pop)
+(use-package no-littering
+  :ensure t)
+
+(setq auto-save-file-name-transforms
+ `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+
 (use-package pos-tip
   :defer 2
   :ensure t)
@@ -62,27 +85,6 @@
               ("Index" "makeindex %s" TeX-run-command nil t)
               ("Check" "lacheck %s" TeX-run-compile nil t)
               ("Other" "" TeX-run-command t t))))
-
-(require 'package)
-
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives
-             '("elpa" . "https://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives
-             '("org" . "https://orgmode.org/elpa/"))
-     (add-to-list 'package-archives
-             '("nongnu" . "https://elpa.nongnu.org/nongnu/"))
-
-
-
-(unless (package-installed-p 'use-package)
-(package-refresh-contents)
-(package-install 'use-package))
-(eval-when-compile
-  (require 'use-package))
-
-(require 'load-path-config-new)
 
 (use-package nvm
   :defer 2
@@ -156,22 +158,6 @@
 (use-package all-the-icons-ivy
   :defer 2
   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
-;; (use-package quelpa
-;;   :defer 2
-;;   :ensure t)
-;; (use-package quelpa-use-package
-;;   :ensure t)
-;; (use-package consult :quelpa (consult :fetcher github :repo "minad/consult")
-;;   :after projectile
-;;   :ensure t
-;;   :init
-;;   (setq register-preview-delay 0
-;;         register-preview-function #'consult-register-format)
-;;   :config
-;;   (setq consult-project-root-function #'projectile-project-root)
-;;   (setq consult-narrow-key "<")
-;;   )
-(global-set-key "\C-cy" 'counsel-yank-pop)
 (use-package marginalia
   :defer 2
   :ensure t
@@ -254,6 +240,11 @@
           (write-region nil nil scratch-file)
           (unless (string-equal scratch-file buffer-auto-save-file-name)
             (delete-auto-save-file-if-necessary t))))))
+
+(use-package persistent-scratch
+  :ensure t
+  :config
+  (persistent-scratch-setup-default))
 
 (use-package treemacs-projectile
   :after treemacs projectile
@@ -612,49 +603,47 @@
        (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
      (require 'ruby-config-new)
      (require 'keys-config-new)
+     (require 'ari-custom-new)
      (require 'erc-config)
      (require 'gnus-config)
      (require 'mail-config)
      (require 'gnus-config)
 
 (use-package highline
-<<<<<<< Updated upstream
-       :defer 2
-            :ensure t
-=======
->>>>>>> Stashed changes
-            :config
-            (global-highline-mode t)
-            (setq highline-face '((:background "gray40")))
-            (set-face-attribute 'region nil :background "DarkOliveGreen")
-            (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
-          (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-     
-          (use-package hlinum
-       :defer 2
-            :ensure t)
-          (use-package linum-relative
-            :ensure t)
-     
-            (hlinum-activate)
-     
-     
-     (column-number-mode)
-     (global-display-line-numbers-mode t)
-     
-     ;; Disable line numbers for some modes
-     (dolist (mode '(org-mode-hook
-                     erc-mode-hook
-                     term-mode-hook
-                     eshell-mode-hook
-                     vterm-mode-hook
-                     neotree-mode-hook
-                     telega-chat-mode-hook
-                     telega-root-mode-hook
-                     telega-webpage-mode-hook
-                     treemacs-mode-hook
-                     dashboard-mode-hook))
-       (add-hook mode (lambda () (display-line-numbers-mode 0))))
+        :ensure t
+     :defer 2
+     :config
+       (global-highline-mode t)
+       (setq highline-face '((:background "gray40")))
+       (set-face-attribute 'region nil :background "DarkOliveGreen")
+       (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
+     (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+
+     (use-package hlinum
+  :defer 2
+       :ensure t)
+     (use-package linum-relative
+       :ensure t)
+
+(hlinum-activate)
+
+
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+                erc-mode-hook
+                term-mode-hook
+                eshell-mode-hook
+                vterm-mode-hook
+                neotree-mode-hook
+                telega-chat-mode-hook
+                telega-root-mode-hook
+                telega-webpage-mode-hook
+                treemacs-mode-hook
+                dashboard-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package projectile
   :ensure t
