@@ -15,15 +15,11 @@
 
 (require 'load-path-config-new)
 
-(if (window-system)
-    (tool-bar-mode -1)
-    (menu-bar-mode -1))
 (show-paren-mode 1)
-(setq gc-cons-threshold 100000000)
 (setq undo-limit 8000000)
 (setq undo-strong-limit 12000000)
 (setq undo-outer-limit 12000000)
-(setq read-process-output-max (* 1024 1024))
+(setq read-process-output-max (* 2048 2048))
 (setq inhibit-startup-screen t)
 (setq inhibit-splash-screen t)
 (setq uniquify-buffer-name-style t)
@@ -36,7 +32,6 @@
 (add-hook 'text-mode-hook ' turn-on-auto-fill)
 (add-hook 'before-save-hook 'time-stamp)
 (setq dired-omit-files-p t)
-(require 'dired-x)
 (setq tramp-auto-save-directory "~/tmp")
 (setq backup-directory-alist
       '((".*" . "~/tmp/")))
@@ -51,18 +46,55 @@
 (setq browse-url-browser-function 'eww-browse-url)
 (add-hook 'eww-after-render-hook 'eww-readable)
 (add-hook 'eww-after-render-hook 'visual-line-mode)
-(setq comp-speed 3)
+(setq namtive-comp-speed 2)
 (setq package-native-compile t)
    ;;; follow links in xwidgets
 (use-package xwwp-follow-link
-  :custom
-  (xwwp-follow-link-completion-backend 'ivy)
+ :custom
+ (xwwp-follow-link-completion-backend 'orderless)
   :bind (:map xwidget-webkit-mode-map
               ("v" . xwwp-follow-link)))
 (use-package string-inflection
   :ensure t)
 
-(global-set-key "\C-cy" 'counsel-yank-pop)
+(use-package consult
+  :ensure t
+  :bind
+  (
+   ("\C-s" . 'consult-line)
+   ("C-c j" . 'consult-git-grep)
+   ("C-c k" . 'consult-ripgrep)
+   ("C-x L" . 'counsel-locate)
+   ("M-x" . 'execute-extended-command))
+  )
+
+(use-package consult-lsp
+  :ensure t
+  :config
+  (define-key lsp-mode-map [remap xref-find-apropos] #'consult-lsp-symbols)
+  )
+
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode))
+
+;; (add-hook 'vertico-mode-hook (lambda ()
+;;                                (setq completion-in-region-function
+;;                                      (if vertico-mode
+;;                                          #'consult-completion-in-region
+;;                                        #'completion--in-region))))
+
+(use-package orderless
+  :ensure t
+  :init
+  (setq completion-styles '(orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles .(partial-completion)))))
+ )
+
+(global-set-key "\C-cy" 'consult-yank-pop)
+
 (use-package no-littering
   :ensure t)
 
@@ -110,54 +142,6 @@
   (setq js2-missing-semi-one-line-override nil)
   )
 
-(use-package swiper
-  :ensure t)
-(use-package counsel
-  :ensure t)
-(use-package ivy
-  :ensure t
-  :init
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-use-selectable-prompt t)
-  (setq enable-recursive-minibuffers t)
-  (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
-  :bind
-  (
-   ("\C-s" . 'swiper-isearch)
-   ("C-x C-f" . 'counsel-find-file)
-   ("C-c j" . 'counsel-git-grep)
-   ("C-c k" . 'counsel-ag)
-   ("C-x L" . 'counsel-locate)
-   ("M-x" . 'counsel-M-x))
-  :config
-  (setq swiper-use-visual-line nil)
-  (setq swiper-use-visual-line-p (lambda (a) nil)))
-(use-package ivy-rich
-  :init
-  (ivy-rich-mode 1)
-  :config
-  (setq ivy-format-function #'ivy-format-function-line))
-;; (use-package ivy-posframe
-;;   :ensure t
-;;   :after ivy
-;;   :init
-;;   (setq ivy-posframe-hide-minibuffer t)
-;;   (setq ivy-posframe-min-width nil)
-;;   (setq ivy-posframe-width nil)
-;;   (setq ivy-posframe-border-width 2)
-;;   (setq ivy-posframe-parameters
-;;         '((left-fringe . 8)
-;;           (right-fringe .8)))
-;;   (ivy-posframe-mode t)
-;;   )
-(use-package all-the-icons-ivy-rich
-  :defer 2
-  :ensure t
-  :init(all-the-icons-ivy-rich-mode 1))
-(use-package all-the-icons-ivy
-  :defer 2
-  :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
 (use-package marginalia
   :defer 2
   :ensure t
@@ -168,23 +152,21 @@
         ("M-A" . marginalia-cycle)))
 
 (use-package ace-window
-     :defer  2
   :ensure t
-  :after (zenburn-theme)
   :config
-  (set-face-attribute 'aw-leading-char-face nil :height 3.0
-  :foreground "dodgerblue")
+  (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
   (ace-window-display-mode)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind
   ("M-o" . 'ace-window))
 
 (use-package magit
-     :defer 2
+  :defer 2
   :ensure t)
 (require 'magit)
 (use-package git-gutter-fringe+
      :defer 2
+     :after magit
   :ensure t
   :diminish
   :init
@@ -200,46 +182,46 @@
 ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
 ;; Released under GNU GPL
 
-(defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
-  "File where content of *scratch* buffer will be read from and saved to.")
-(defconst scratch-file-autosave (concat scratch-file ".autosave")
-  "File where to autosave content of *scratch* buffer.")
+;; (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
+;;   "File where content of *scratch* buffer will be read from and saved to.")
+;; (defconst scratch-file-autosave (concat scratch-file ".autosave")
+;;   "File where to autosave content of *scratch* buffer.")
 
-(save-excursion
-  (set-buffer (get-buffer-create "*scratch*"))
-  (if (file-readable-p scratch-file)
-      (if (and (file-readable-p scratch-file-autosave)
-               (file-newer-than-file-p scratch-file-autosave scratch-file)t)
-          (insert-file-contents scratch-file-autosave nil nil nil t)
-        (insert-file-contents scratch-file nil nil nil t)
-        (set-buffer-modified-p nil)))
-  (auto-save-mode 1)
-  (setq buffer-auto-save-file-name scratch-file-autosave)
-                                        ; (setq revert-buffer-function 'scratch-revert)
-  (fundamental-mode))
-(add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
-(add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
+;; (save-excursion
+;;   (set-buffer (get-buffer-create "*scratch*"))
+;;   (if (file-readable-p scratch-file)
+;;       (if (and (file-readable-p scratch-file-autosave)
+;;                (file-newer-than-file-p scratch-file-autosave scratch-file)t)
+;;           (insert-file-contents scratch-file-autosave nil nil nil t)
+;;         (insert-file-contents scratch-file nil nil nil t)
+;;         (set-buffer-modified-p nil)))
+;;   (auto-save-mode 1)
+;;   (setq buffer-auto-save-file-name scratch-file-autosave)
+;;                                         ; (setq revert-buffer-function 'scratch-revert)
+;;   (fundamental-mode))
+;; (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
+;; (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
 
-(defun scratch-revert (ignore-auto noconfirm)
-  (when (file-readable-p scratch-file)
-    (insert-file-contents scratch-file nil nil nil t)
-    (set-buffer-modified-p nil)))
+;; (defun scratch-revert (ignore-auto noconfirm)
+;;   (when (file-readable-p scratch-file)
+;;     (insert-file-contents scratch-file nil nil nil t)
+;;     (set-buffer-modified-p nil)))
 
-(defun kill-scratch-buffer ()
-  (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
-         (delete-region (point-min) (point-max))
-         (set-buffer-modified-p nil)
-         (next-buffer)
-         t)))
+;; (defun kill-scratch-buffer ()
+;;   (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
+;;          (delete-region (point-min) (point-max))
+;;          (set-buffer-modified-p nil)
+;;          (next-buffer)
+;;          t)))
 
-(defun kill-emacs-scratch-save ()
-  (let ((buffer (get-buffer-create "*scratch*")))
-    (if buffer
-        (save-excursion
-          (set-buffer buffer)
-          (write-region nil nil scratch-file)
-          (unless (string-equal scratch-file buffer-auto-save-file-name)
-            (delete-auto-save-file-if-necessary t))))))
+;; (defun kill-emacs-scratch-save ()
+;;   (let ((buffer (get-buffer-create "*scratch*")))
+;;     (if buffer
+;;         (save-excursion
+;;           (set-buffer buffer)
+;;           (write-region nil nil scratch-file)
+;;           (unless (string-equal scratch-file buffer-auto-save-file-name)
+;;             (delete-auto-save-file-if-necessary t))))))
 
 (use-package persistent-scratch
   :ensure t
@@ -313,7 +295,7 @@
                                             "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
                                             "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
                                             "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                            "\\" "://"))
+                                            "\\\\" "://"))
        ;; Enables ligature checks globally in all buffers. You can also do it
        ;; per mode with `ligature-mode'.
        (global-ligature-mode t))
@@ -373,6 +355,10 @@
        (require 'org-habit)
        (setq org-habit-show-all-today t)
        (setq org-habit-show-habits t)
+       (setq org-startup-indented t)
+       (setq org-variable-pitch-mode 1)
+       (visual-line-mode 1)
+       (org-indent-mode)
        (require 'ox-gfm)
        (require 'ox-md)
        (require 'ox-confluence)
@@ -398,6 +384,7 @@
            (org-babel-tangle))))
 
      (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
 (defun ek/babel-ansi ()
   (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
     (save-excursion
@@ -420,7 +407,6 @@
      (require 'org-tempo)
      (use-package org-mime
        :ensure t)
-     (setq org-ellipsis " ⤵")
      (setq org-src-fontify-natively t)
      (setq org-src-tab-acts-natively t)
      (setq org-src-window-setup 'current-window)
@@ -477,17 +463,18 @@
 
      (use-package org-variable-pitch
        :defer 2
+       :after org
        :ensure t
        :config
        (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
        (add-hook 'after-init-hook #'org-variable-pitch-setup))
 
      (use-package olivetti
-       :defer 2
+       :after org
        :ensure t
        :config
-       (setq olivetti-minimum-body-width 120)
-       (add-hook 'org-mode-hook 'olivetti-mode))
+       (setq olivetti-minimum-body-width 120))
+
      (use-package virtualenvwrapper
        :defer 2
        :ensure t
@@ -506,108 +493,92 @@
 
      (use-package zenburn-theme
        :defer 2
+       :after ace-window
        :ensure t
        :init
        (setq zenburn-override-colors-alist '(
                                              ("zenburn-bg" . "gray16")
                                              ("zenburn-bg-1" . "#5F7F5F")))
-     ;;  (load-theme 'zenburn t)
+
        :config
        (setq zenburn-use-variable-pitch t)
        (setq zenburn-scale-org-headlines t)
-       (setq zenburn-scale-outline-headlines t)
-       (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
-       (set-face-attribute 'ivy-current-match nil :height 1.1 :foreground "wheat" :background "#5f7f5f" :underline nil))
+       (setq zenburn-scale-outline-headlines t))
 
      (use-package vscode-dark-plus-theme
        :ensure t
+       :after ace-window
        :init
-       (load-theme 'vscode-dark-plus t)
-       :config
-       (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
-       (set-face-attribute 'ivy-current-match nil :height 1.1 :foreground "wheat" :background "#5f7f5f" :underline nil)
-       )
-     ;;( use-package hc-zenburn-theme
-     ;;  :ensure t
-     ;; :init
-     ;; (powerline-default-theme)
-     ;; (load-theme 'hc-zenburn t)
-     ;; (hc-zenburn-with-color-variables
-     ;;   (custom-theme-set-faces
-     ;;    'hc-zenburn
-     ;;    `(company-tooltip-common ((t (:background ,hc-zenburn-bg+3 :foreground ,hc-zenburn-green+4))))
-     ;;    `(company-tooltip-selection ((t (:background ,"gray40" :foreground ,"LightBlue3"))))
-     ;;    `(popup-isearch-match ((t (:background ,hc-zenburn-cyan :foreground ,"Blue"))))))
-     ;; )
+       (load-theme 'vscode-dark-plus t))
 
 (use-package exec-path-from-shell
-       :ensure t
-       :config
-       (when (memq window-system '(mac ns x))
-         (exec-path-from-shell-initialize))
-       (setq exec-path-from-shell-check-startup-files t)
-       (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER")
-       ))
-     (use-package inf-ruby
+  :ensure t
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  (setq exec-path-from-shell-check-startup-files t)
+  (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER")
+        ))
+(use-package inf-ruby
   :defer 2
-       :ensure t)
-     (require 'ruby-mode)
-     (use-package  ruby-electric
-       :ensure t)
-     (use-package coffee-mode
+  :ensure t)
+(require 'ruby-mode)
+(use-package  ruby-electric
+  :ensure t)
+(use-package coffee-mode
   :defer 2
-       :ensure t)
-     (use-package feature-mode
+  :ensure t)
+(use-package feature-mode
   :defer 2
-       :ensure t
-       :config
-       (setq feature-use-docker-compose nil)
-       (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
+  :ensure t
+  :config
+  (setq feature-use-docker-compose nil)
+  (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
 ;;     (require 'rcodetools)
-     (use-package yasnippet
+(use-package yasnippet
   :defer 2
-       :ensure t
-       :config
-       (yas-global-mode t)
-       (yas-global-mode))
-     (use-package yasnippet-snippets
+  :ensure t
+  :config
+  (yas-global-mode t)
+  (yas-global-mode))
+(use-package yasnippet-snippets
   :defer 2
-       :ensure t)
-     (use-package tree-mode
+  :ensure t)
+(use-package tree-mode
   :defer 2
-       :ensure t)
-     (use-package rake
+  :ensure t)
+(use-package rake
   :defer 2
-       :ensure t)
-     (use-package inflections
+  :ensure t)
+(use-package inflections
   :defer 2
-       :ensure t)
-     (use-package graphql
+  :ensure t)
+(use-package graphql
   :defer 2
-       :ensure t)
-     (require 'org-protocol)
-     (use-package haml-mode
+  :ensure t)
+(require 'org-protocol)
+(use-package haml-mode
   :defer 2
-       :ensure t)
-     (use-package beacon
+  :ensure t)
+(use-package beacon
   :defer 2
-       :ensure t
-       :init
-       (beacon-mode))
-     (use-package rainbow-mode
+  :ensure t
+  :init
+  (beacon-mode))
+(use-package rainbow-mode
   :defer 2
-       :ensure t)
-     (use-package rainbow-delimiters
-       :ensure t
-       :config
-       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-     (require 'ruby-config-new)
-     (require 'keys-config-new)
-     (require 'ari-custom-new)
-     (require 'erc-config)
-     (require 'gnus-config)
-     (require 'mail-config)
-     (require 'gnus-config)
+  :ensure t)
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+(require 'ruby-config-new)
+(require 'keys-config-new)
+(require 'ari-custom-new)
+(require 'erc-config)
+(require 'gnus-config)
+(require 'mail-config)
+(require 'gnus-config)
 
 (use-package highline
         :ensure t
@@ -654,7 +625,7 @@
   (setq projectile-require-project-root nil)
   (setq projectile-indexing-method 'alien)
   :custom
-  ((projectile-completion-system 'ivy)))
+  ((projectile-completion-system 'orderless)))
 
 (use-package counsel-projectile
   :ensure t
@@ -791,67 +762,20 @@
 (use-package helpful
   :ensure t)
 
-(use-package elfeed
-                            :ensure t)
-                          (use-package elfeed-org
-                            :ensure t
-                            :after elfeed
-                            :init
-                            (elfeed-org))
-                          ;; (use-package elfeed-goodies
-                          ;;   :after elfeed
-                          ;;   :ensure t
-                          ;;   :init
-                          ;;   (elfeed-goodies/setup))
-
-                       (use-package visual-fill
-                         :ensure t)
-                       (use-package visual-fill-column
-                         :ensure t)
-                       (add-hook 'elfeed-show-mode-hook (lambda()
-                                                          (set-face-attribute 'variable-pitch (selected-frame) :font (font-spec :family "Helvetica" :size 14))
-                                                          (setq fill-column 100)
-                                                          (visual-fill-mode t)
-                                                          (adaptive-wrap-prefix-mode t)
-                                                          (toggle-word-wrap)
-                                                          (visual-fill-column-mode)))
-
-
-   (use-package twittering-mode
-     :ensure t
-     :config
-     (defface my-twit-face
-       '((t :family "Helvetica"
-            :height 160
-            ))
-       "face for twitter")
-(defalias 'epa--decode-coding-string 'decode-coding-string)
-     (setq twittering-use-master-password t)
-     (setq twittering-icon-mode t)
-     (setq twittering-use-icon-storage t)
-
-     (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
-   %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
-   +----
-   %FOLD[|]{%i %S (%s),  %@:
-   %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
-   +----}}
-   "))
-
 (use-package prescient
   :ensure t
   :config
   (prescient-persist-mode 1))
 
-(use-package ivy-prescient
-  :ensure t
-  :after counsel
-  :config
-  (ivy-prescient-mode 1)
-  (setq  prescient-sort-length-enable nil)
-  (setq ivy-re-builders-alist
- '((counsel-ag . ivy--regex)
-   (t . ivy-prescient-re-builder))))
+;; (use-package ivy-prescient
+;;   :ensure t
+;;   :after counsel
+;;   :config
+;;   (ivy-prescient-mode 1)
+;;   (setq  prescient-sort-length-enable nil)
+;;   (setq ivy-re-builders-alist
+;;  '((counsel-ag . ivy--regex)
+;;    (t . ivy-prescient-re-builder))))
 
 (use-package company-prescient
   :ensure t

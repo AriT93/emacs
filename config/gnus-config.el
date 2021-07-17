@@ -17,9 +17,12 @@ setq smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
 (add-hook 'gnus-article-mode-hook 'visual-line-mode)
 
 (use-package nnreddit
-  :ensure t)
-(setq nnreddit-python-command "python3")
-(add-to-list 'gnus-secondary-select-methods '(nnreddit ""))
+  :ensure t
+  :init
+  (setq nnreddit-python-command "python3")
+  :config
+  (add-to-list 'gnus-secondary-select-methods '(nnreddit ""))
+)
 
 
 ;; Set the default value of mm-discouraged-alternatives.
