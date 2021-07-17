@@ -52,10 +52,11 @@ trouble when I do. but these keys are for that
 ** Fade in .... Fade out
    change the transparecy
 #+BEGIN_SRC elisp
- (global-set-key (kbd "C-9") '(lambda()(interactive)(djcb-opacity-modify)))
- (global-set-key (kbd "C-8") '(lambda()(interactive)(djcb-opacity-modify t)))
- (global-set-key (kbd "C-0") '(lambda()(interactive)
-                                (modify-frame-parameters nil `((alpha . 100)))))
+  (require 'ari-custom-new)
+  (global-set-key (kbd "C-9") (lambda()(interactive)(djcb-opacity-modify)))
+  (global-set-key (kbd "C-8") (lambda()(interactive)(djcb-opacity-modify t)))
+  (global-set-key (kbd "C-0") (lambda()(interactive)
+                                 (modify-frame-parameters nil `((alpha . 100)))))
 #+END_SRC
 ** Change window sizes
 #+BEGIN_SRC elisp

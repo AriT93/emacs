@@ -87,7 +87,7 @@ is going on while you write code.
     (add-hook 'ruby-mode-hook
               (lambda()
                 (add-hook 'write-file-functions
-                          '(lambda()
+                          #'(lambda()
                              (save-excursion
                                (untabify (point-min) (point-max))
                                (delete-trailing-whitespace)
@@ -137,15 +137,13 @@ is going on while you write code.
 ** Key-bindings some still used and some more ac config
 damn this is a mess
 #+BEGIN_SRC elisp
-
-
-    (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
-
-
-    (autoload 'ri "ri-ruby.el" nil t)
-    (use-package autotest
-      :ensure t
-      )
+  
+  
+  ;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
+    ;; (autoload 'ri "ri-ruby.el" nil t)
+  (use-package autotest
+    :ensure t
+    )
 #+END_SRC
 ** hideshow for folding
 #+BEGIN_SRC elisp
