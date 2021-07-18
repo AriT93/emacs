@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2021-07-18 08:07:34 abturet>
+#+Time-stamp: <2021-07-18 15:11:09 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -45,6 +45,9 @@
 ** Looks and Behaviors
    #+BEGIN_SRC elisp
      (show-paren-mode 1)
+     (recentf-mode 1)
+     (setq recentf-max-menu-items 25)
+     (setq recentf-max-saved-items 25)
      (setq undo-limit 8000000)
      (setq undo-strong-limit 12000000)
      (setq undo-outer-limit 12000000)
@@ -85,7 +88,7 @@
                    ("v" . xwwp-follow-link)))
      (use-package string-inflection
        :ensure t)
-
+     
    #+END_SRC
 **  vertico and consult
    #+begin_src elisp
@@ -93,30 +96,35 @@
        :ensure t
        :bind
        (
-        ("\C-s" . 'consult-line)
+        ("\C-s"  . 'consult-line)
         ("C-c j" . 'consult-git-grep)
         ("C-c k" . 'consult-ripgrep)
         ("C-x L" . 'counsel-locate)
-        ("M-x" . 'execute-extended-command))
+        ("M-x"   . 'execute-extended-command)
+        ("C-x b" . 'consult-buffer))
+       :config
+       (setq consult-project-root-function #'projectile-project-root)
+       (setq completion-in-region-function #'consult-completion-in-region)
        )
-
+     
      (use-package consult-lsp
        :ensure t
        :config
        (define-key lsp-mode-map [remap xref-find-apropos] #'consult-lsp-symbols)
        )
-
+     
      (use-package vertico
        :ensure t
        :init
        (vertico-mode))
-
+     
+     
      ;; (add-hook 'vertico-mode-hook (lambda ()
      ;;                                (setq completion-in-region-function
      ;;                                      (if vertico-mode
      ;;                                          #'consult-completion-in-region
      ;;                                        #'completion--in-region))))
-
+     
      (use-package orderless
        :ensure t
        :init
@@ -188,14 +196,16 @@
 ** Marginalia for extra minibuffer info
    Use Ivy, counsel and Swiper(no swiping!) for isearch
    #+BEGIN_SRC elisp
-     (use-package marginalia
-       :defer 2
-       :ensure t
-       :init
-       (marginalia-mode)
-       :bind
-       (:map minibuffer-local-map
-             ("M-A" . marginalia-cycle)))
+               (use-package marginalia
+                 :defer 2
+                 :ensure t
+                 :init
+                 (marginalia-mode)
+                 :bind
+                 (:map minibuffer-local-map
+                       ("M-A" . marginalia-cycle))
+                 :custom
+                (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
    #+END_SRC
 ** Moving Around
 #+BEGIN_SRC elisp
