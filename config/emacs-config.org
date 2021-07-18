@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2021-07-17 15:35:06 abturet>
+#+Time-stamp: <2021-07-18 07:42:44 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -85,7 +85,7 @@
                    ("v" . xwwp-follow-link)))
      (use-package string-inflection
        :ensure t)
-     
+
    #+END_SRC
 **  vertico and consult
    #+begin_src elisp
@@ -99,24 +99,24 @@
         ("C-x L" . 'counsel-locate)
         ("M-x" . 'execute-extended-command))
        )
-     
+
      (use-package consult-lsp
        :ensure t
        :config
        (define-key lsp-mode-map [remap xref-find-apropos] #'consult-lsp-symbols)
        )
-     
+
      (use-package vertico
        :ensure t
        :init
        (vertico-mode))
-     
+
      ;; (add-hook 'vertico-mode-hook (lambda ()
      ;;                                (setq completion-in-region-function
      ;;                                      (if vertico-mode
      ;;                                          #'consult-completion-in-region
      ;;                                        #'completion--in-region))))
-     
+
      (use-package orderless
        :ensure t
        :init
@@ -129,17 +129,17 @@
 
    #+BEGIN_SRC elisp
      (global-set-key "\C-cy" 'consult-yank-pop)
-     
+
      (use-package no-littering
        :ensure t)
-     
+
      (setq auto-save-file-name-transforms
       `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-     
+
      (use-package pos-tip
        :defer 2
        :ensure t)
-     
+
    #+END_SRC
 ** Tex
    #+BEGIN_SRC elisp
@@ -221,7 +221,7 @@
     :diminish
     :init
     (global-git-gutter+-mode))
-  
+
   (use-package git-timemachine
        :defer 2
     :ensure t
@@ -236,12 +236,12 @@
      ;; Notes in *scratch* v. 0.2
      ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
      ;; Released under GNU GPL
-     
+
      ;; (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
      ;;   "File where content of *scratch* buffer will be read from and saved to.")
      ;; (defconst scratch-file-autosave (concat scratch-file ".autosave")
      ;;   "File where to autosave content of *scratch* buffer.")
-     
+
      ;; (save-excursion
      ;;   (set-buffer (get-buffer-create "*scratch*"))
      ;;   (if (file-readable-p scratch-file)
@@ -256,19 +256,19 @@
      ;;   (fundamental-mode))
      ;; (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
      ;; (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
-     
+
      ;; (defun scratch-revert (ignore-auto noconfirm)
      ;;   (when (file-readable-p scratch-file)
      ;;     (insert-file-contents scratch-file nil nil nil t)
      ;;     (set-buffer-modified-p nil)))
-     
+
      ;; (defun kill-scratch-buffer ()
      ;;   (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
      ;;          (delete-region (point-min) (point-max))
      ;;          (set-buffer-modified-p nil)
      ;;          (next-buffer)
      ;;          t)))
-     
+
      ;; (defun kill-emacs-scratch-save ()
      ;;   (let ((buffer (get-buffer-create "*scratch*")))
      ;;     (if buffer
@@ -277,7 +277,7 @@
      ;;           (write-region nil nil scratch-file)
      ;;           (unless (string-equal scratch-file buffer-auto-save-file-name)
      ;;             (delete-auto-save-file-if-necessary t))))))
-     
+
      (use-package persistent-scratch
        :ensure t
        :config
@@ -397,7 +397,7 @@
    #+BEGIN_SRC elisp
           (use-package diminish
             :ensure t)
-     
+
           (diminish 'org-mode  "")
           (diminish 'auto-revert-mode)
           (diminish 'yas-minor-mode)
@@ -412,7 +412,7 @@
           (diminish 'hs-minor-mode)
           (diminish 'ruby-block-mode)
           (diminish 'global-highline-mode)
-     
+
           (use-package org
             :ensure org-plus-contrib
             :ensure t
@@ -439,17 +439,17 @@
             (require 'ox-confluence)
             (require 'ox-jira)
             )
-     
-     
+
+
           ;; This is needed as of Org 9.2
           (require 'org-tempo)
-     
+
           (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
           (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
           (add-to-list 'org-structure-template-alist '("py" . "src python"))
           (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
           (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
-     
+
           ;; Automatically tangle our Emacs.org config file when we save it
           (defun efs/org-babel-tangle-config ()
             (when (string-equal (buffer-file-name)
@@ -457,9 +457,9 @@
               ;; Dynamic scoping to the rescue
               (let ((org-confirm-babel-evaluate nil))
                 (org-babel-tangle))))
-     
+
           (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-     
+
      (defun ek/babel-ansi ()
        (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
          (save-excursion
@@ -469,14 +469,14 @@
                    (ansi-color-context-region nil))
                (ansi-color-apply-on-region beg end))))))
      (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
-     
+
           (fset 'capture-tweet
                 (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
           (use-package ox-twbs
             :ensure t)
           (use-package ox-gfm
             :ensure t)
-     
+
           (use-package ox-jira
             :ensure t)
           (require 'org-tempo)
@@ -500,7 +500,7 @@
           (setq remember-handler-functions '(org-remember-handler))
           (add-hook 'remember-mode-hook 'org-remember-apply-template)
           (global-set-key (kbd "C-c r") 'remember)
-     
+
           (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
           (setq org-agenda-include-diary t)
           (setq org-agenda-include-all-todo t)
@@ -519,7 +519,7 @@
              (java . t)
              (dot . t)))
           (setq org-confirm-babel-evaluate nil)
-     
+
           (use-package geiser
             :defer 2
             :ensure t
@@ -529,13 +529,13 @@
             (setq scheme-program-name "scheme")
             (setq geiser-mit-binary "/usr/local/bin/scheme")
           )
-     
+
           (use-package ox-pandoc
             :defer 2
             :ensure t
             :config
             (setq org-pandoc-options '((standalone . t))))
-     
+
           (use-package org-variable-pitch
             :defer 2
             :after org
@@ -543,13 +543,13 @@
             :config
             (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
             (add-hook 'after-init-hook #'org-variable-pitch-setup))
-     
+
           (use-package olivetti
             :after org
             :ensure t
             :config
             (setq olivetti-minimum-body-width 120))
-     
+
           (use-package virtualenvwrapper
             :defer 2
             :ensure t
@@ -560,12 +560,12 @@
             )
           (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
           (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
-     
-     
+
+
           (setq org-mime-export-options '(:section-numbers nil
                                                            :with-author nil
                                                            :with-toc nil))
-     
+
           (use-package zenburn-theme
             :defer 2
             :after ace-window
@@ -574,18 +574,18 @@
             (setq zenburn-override-colors-alist '(
                                                   ("zenburn-bg" . "gray16")
                                                   ("zenburn-bg-1" . "#5F7F5F")))
-     
+
             :config
             (setq zenburn-use-variable-pitch t)
             (setq zenburn-scale-org-headlines t)
             (setq zenburn-scale-outline-headlines t))
-     
+
           (use-package vscode-dark-plus-theme
             :ensure t
             :after ace-window
             :init
             (load-theme 'vscode-dark-plus t))
-     
+
    #+END_SRC
 
 ** Teh requires
@@ -659,7 +659,7 @@
      (require 'gnus-config)
      (require 'mail-config)
      (require 'gnus-config)
-     
+
    #+END_SRC
 
 
@@ -763,7 +763,6 @@
      (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
      (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
      (use-package company-box
-       :defer 2
        :after company
        :ensure t
        :diminish
@@ -990,7 +989,7 @@
      ;;   :ensure t
      ;;   :init
      ;;   (elfeed-goodies/setup))
-     
+
      (use-package visual-fill
        :ensure t)
      (use-package visual-fill-column
@@ -1002,8 +1001,8 @@
                                         (adaptive-wrap-prefix-mode t)
                                         (toggle-word-wrap)
                                         (visual-fill-column-mode)))
-     
-     
+
+
      (use-package twittering-mode
        :ensure t
        :config
@@ -1016,7 +1015,7 @@
        (setq twittering-use-master-password t)
        (setq twittering-icon-mode t)
        (setq twittering-use-icon-storage t)
-     
+
        (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
         %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
         +----
@@ -1024,7 +1023,7 @@
         %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
         +----}}
         "))
-     
+
    #+end_src
 ** Prescient
    #+begin_src elisp
