@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2021-07-18 07:46:37 abturet>
+#+Time-stamp: <2021-07-18 08:07:34 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -696,7 +696,7 @@
        (add-hook mode (lambda () (display-line-numbers-mode 0))))
    #+END_SRC
 
-** COMMENT Company
+** Company
    #+BEGIN_SRC elisp
      (use-package company
        :ensure t
@@ -708,10 +708,11 @@
        (company-show-numbers t)
        (company-tooltip-align-annotations 't)
        (global-company-mode t))
-
+     
      (require 'company)
      (add-hook  'after-init-hook 'global-company-mode)
      (use-package company-quickhelp
+       :ensure t
        :config
        :after company
        :init
@@ -721,7 +722,7 @@
        :ensure t)
      (use-package lsp-mode
        :commands (lsp lsp-deferred)
-       :hook ((ruby-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration)
+       :hook ((ruby-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
        :custom
        (lsp-auto-configure t)
        (lsp-prefer-flymake nil)
@@ -748,7 +749,7 @@
        (setq lsp-ui-sideline-enable nil)
        (setq lsp-lens-enable t)
        )
-
+     
      (use-package lsp-treemacs
        :defer 2
        :after lsp
@@ -759,9 +760,9 @@
      (setq lsp-inhibit-message t)
      (setq lsp-prefer-flymake nil)
      (setq lsp-eldoc-render-all nil)
-
+     
      (setq lsp-auto-guess-root nil)
-
+     
      (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
      (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
      (use-package company-box
@@ -771,8 +772,7 @@
        :hook
        (company-mode . company-box-mode)
        :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
-
-
+     
    #+END_SRC
 
 ** Projectile
