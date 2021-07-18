@@ -610,6 +610,81 @@
                 dashboard-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
+(use-package company
+  :ensure t
+  :defer 2
+  :diminish
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-begin 0.0)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t))
+
+(require 'company)
+(add-hook  'after-init-hook 'global-company-mode)
+(use-package company-quickhelp
+  :ensure t
+  :config
+  :after company
+  :init
+  (company-quickhelp-mode))
+(use-package terraform-mode
+  :defer 2
+  :ensure t)
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook ((ruby-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
+  :custom
+  (lsp-auto-configure t)
+  (lsp-prefer-flymake nil)
+  (lsp-inhibit-message t)
+  (lsp-eldoc-render-all nil)
+  :config
+  (lsp-enable-which-key-integration t)
+  (setq lsp-enable-symbol-highlighting t)
+  (setq lsp-modeline-code-actions-enable t)
+  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+  :ensure t)
+;; (use-package lsp-ivy
+;;   :defer 2
+;;   :ensure t)
+(use-package lsp-ui
+  :defer 2
+  :commands lsp-ui-mode
+  :after lsp-mode
+  :config
+  (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+  (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-lens-enable t)
+  )
+
+(use-package lsp-treemacs
+  :defer 2
+  :after lsp
+  :config
+  (lsp-treemacs-sync-mode t)
+  )
+(require 'lsp-ui-flycheck)
+(setq lsp-inhibit-message t)
+(setq lsp-prefer-flymake nil)
+(setq lsp-eldoc-render-all nil)
+
+(setq lsp-auto-guess-root nil)
+
+(define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+(define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+(use-package company-box
+  :after company
+  :ensure t
+  :diminish
+  :hook
+  (company-mode . company-box-mode)
+  :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
+
 (use-package projectile
   :ensure t
   :init
