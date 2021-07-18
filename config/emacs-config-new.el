@@ -16,6 +16,9 @@
 (require 'load-path-config-new)
 
 (show-paren-mode 1)
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 25)
 (setq undo-limit 8000000)
 (setq undo-strong-limit 12000000)
 (setq undo-outer-limit 12000000)
@@ -61,11 +64,15 @@
   :ensure t
   :bind
   (
-   ("\C-s" . 'consult-line)
+   ("\C-s"  . 'consult-line)
    ("C-c j" . 'consult-git-grep)
    ("C-c k" . 'consult-ripgrep)
    ("C-x L" . 'counsel-locate)
-   ("M-x" . 'execute-extended-command))
+   ("M-x"   . 'execute-extended-command)
+   ("C-x b" . 'consult-buffer))
+  :config
+  (setq consult-project-root-function #'projectile-project-root)
+  (setq completion-in-region-function #'consult-completion-in-region)
   )
 
 (use-package consult-lsp
@@ -78,6 +85,7 @@
   :ensure t
   :init
   (vertico-mode))
+
 
 ;; (add-hook 'vertico-mode-hook (lambda ()
 ;;                                (setq completion-in-region-function
@@ -149,7 +157,9 @@
   (marginalia-mode)
   :bind
   (:map minibuffer-local-map
-        ("M-A" . marginalia-cycle)))
+        ("M-A" . marginalia-cycle))
+  :custom
+ (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
 
 (use-package ace-window
   :ensure t
