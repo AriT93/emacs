@@ -53,7 +53,7 @@
   
   (when (fboundp 'imagemagick-register-types)
     (imagemagick-register-types))
-  ;; (setq mu4e-mu-binary "/usr/local/bin/mu")
+  (setq mu4e-mu-binary "/usr/local/bin/mu")
   (setq mu4e-compose-reply-to-address nil)
   
   ;; don't save message to Sent Messages, GMail/IMAP will take care of this
