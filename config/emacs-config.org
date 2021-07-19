@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2021-07-18 15:11:09 abturet>
+#+Time-stamp: <2021-07-19 16:21:02 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -80,59 +80,78 @@
      (add-hook 'eww-after-render-hook 'visual-line-mode)
      (setq namtive-comp-speed 2)
      (setq package-native-compile t)
+     (require 'xwidget)
         ;;; follow links in xwidgets
      (use-package xwwp-follow-link
       :custom
-      (xwwp-follow-link-completion-backend 'orderless)
+      (xwwp-follow-link-completion-backend 'ivy)
        :bind (:map xwidget-webkit-mode-map
                    ("v" . xwwp-follow-link)))
      (use-package string-inflection
        :ensure t)
      
    #+END_SRC
-**  vertico and consult
-   #+begin_src elisp
-     (use-package consult
+** Ivy for isearcing
+   Use Ivy, counsel and Swiper(no swiping!) for isearch
+   #+BEGIN_SRC elisp
+     (use-package swiper
+       :ensure t)
+     (use-package counsel
+       :ensure t)
+     (use-package ivy
        :ensure t
+       :init
+       (ivy-mode 1)
+       (setq ivy-use-virtual-buffers t)
+       (setq ivy-use-selectable-prompt t)
+       (setq enable-recursive-minibuffers t)
+       (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
        :bind
        (
-        ("\C-s"  . 'consult-line)
-        ("C-c j" . 'consult-git-grep)
-        ("C-c k" . 'consult-ripgrep)
+        ("\C-s" . 'swiper-isearch)
+        ("C-x C-f" . 'counsel-find-file)
+        ("C-c j" . 'counsel-git-grep)
+        ("C-c k" . 'counsel-ag)
         ("C-x L" . 'counsel-locate)
-        ("M-x"   . 'execute-extended-command)
-        ("C-x b" . 'consult-buffer))
+        ("M-x" . 'counsel-M-x))
        :config
-       (setq consult-project-root-function #'projectile-project-root)
-       (setq completion-in-region-function #'consult-completion-in-region)
-       )
-     
-     (use-package consult-lsp
+       (setq swiper-use-visual-line nil)
+       (setq swiper-use-visual-line-p (lambda (a) nil)))
+     (use-package ivy-rich
+       :init
+       (ivy-rich-mode 1)
+       :config
+       (setq ivy-format-function #'ivy-format-function-line))
+     ;; (use-package ivy-posframe
+     ;;   :ensure t
+     ;;   :after ivy
+     ;;   :init
+     ;;   (setq ivy-posframe-hide-minibuffer t)
+     ;;   (setq ivy-posframe-min-width nil)
+     ;;   (setq ivy-posframe-width nil)
+     ;;   (setq ivy-posframe-border-width 2)
+     ;;   (setq ivy-posframe-parameters
+     ;;         '((left-fringe . 8)
+     ;;           (right-fringe .8)))
+     ;;   (ivy-posframe-mode t)
+     ;;   )
+     (use-package all-the-icons-ivy-rich
+       :defer 2
        :ensure t
-       :config
-       (define-key lsp-mode-map [remap xref-find-apropos] #'consult-lsp-symbols)
-       )
-     
-     (use-package vertico
+       :init(all-the-icons-ivy-rich-mode 1))
+     (use-package all-the-icons-ivy
+       :defer 2
+       :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+     (use-package marginalia
+       :defer 2
        :ensure t
        :init
-       (vertico-mode))
-     
-     
-     ;; (add-hook 'vertico-mode-hook (lambda ()
-     ;;                                (setq completion-in-region-function
-     ;;                                      (if vertico-mode
-     ;;                                          #'consult-completion-in-region
-     ;;                                        #'completion--in-region))))
-     
-     (use-package orderless
-       :ensure t
-       :init
-       (setq completion-styles '(orderless)
-             completion-category-defaults nil
-             completion-category-overrides '((file (styles .(partial-completion)))))
-      )
-   #+end_src
+       (marginalia-mode)
+       :bind
+       (:map minibuffer-local-map
+             ("M-A" . marginalia-cycle)))
+   #+END_SRC
+
    Pop yank gives you a pop up of recent yanks,  a "yank bank"
 
    #+BEGIN_SRC elisp
@@ -239,56 +258,8 @@
     )
 #+END_SRC
 ** Preserve all the crap I put in the =*scrach*= buffer
-   the following was found a while back Not sure where but I can't find
-   it online anymore and the author doesn't seem to have it on his git
-   hub but Thanks Michal!
-   #+BEGIN_SRC  elisp
-     ;; Notes in *scratch* v. 0.2
-     ;; Copyright (c) 2006 by Michal Nazarewicz (mina86/AT/mina86.com)
-     ;; Released under GNU GPL
-
-     ;; (defconst scratch-file (expand-file-name "~/.emacs.d/scratch")
-     ;;   "File where content of *scratch* buffer will be read from and saved to.")
-     ;; (defconst scratch-file-autosave (concat scratch-file ".autosave")
-     ;;   "File where to autosave content of *scratch* buffer.")
-
-     ;; (save-excursion
-     ;;   (set-buffer (get-buffer-create "*scratch*"))
-     ;;   (if (file-readable-p scratch-file)
-     ;;       (if (and (file-readable-p scratch-file-autosave)
-     ;;                (file-newer-than-file-p scratch-file-autosave scratch-file)t)
-     ;;           (insert-file-contents scratch-file-autosave nil nil nil t)
-     ;;         (insert-file-contents scratch-file nil nil nil t)
-     ;;         (set-buffer-modified-p nil)))
-     ;;   (auto-save-mode 1)
-     ;;   (setq buffer-auto-save-file-name scratch-file-autosave)
-     ;;                                         ; (setq revert-buffer-function 'scratch-revert)
-     ;;   (fundamental-mode))
-     ;; (add-hook 'kill-buffer-query-functions 'kill-scratch-buffer)
-     ;; (add-hook 'kill-emacs-hook 'kill-emacs-scratch-save)
-
-     ;; (defun scratch-revert (ignore-auto noconfirm)
-     ;;   (when (file-readable-p scratch-file)
-     ;;     (insert-file-contents scratch-file nil nil nil t)
-     ;;     (set-buffer-modified-p nil)))
-
-     ;; (defun kill-scratch-buffer ()
-     ;;   (not (when (string-equal (buffer-name (current-buffer)) "*scratch*")
-     ;;          (delete-region (point-min) (point-max))
-     ;;          (set-buffer-modified-p nil)
-     ;;          (next-buffer)
-     ;;          t)))
-
-     ;; (defun kill-emacs-scratch-save ()
-     ;;   (let ((buffer (get-buffer-create "*scratch*")))
-     ;;     (if buffer
-     ;;         (save-excursion
-     ;;           (set-buffer buffer)
-     ;;           (write-region nil nil scratch-file)
-     ;;           (unless (string-equal scratch-file buffer-auto-save-file-name)
-     ;;             (delete-auto-save-file-if-necessary t))))))
-
-     (use-package persistent-scratch
+#+BEGIN_SRC elisp
+ (use-package persistent-scratch
        :ensure t
        :config
        (persistent-scratch-setup-default))
@@ -303,7 +274,6 @@
        :ensure t)
      (use-package treemacs
        :ensure t
-       :defer 2
        :config
        (setq treemacs-space-between-root-nodes nil)
        (treemacs-follow-mode t)
@@ -744,9 +714,11 @@
        (setq lsp-modeline-code-actions-enable t)
        (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
        :ensure t)
-     ;; (use-package lsp-ivy
-     ;;   :defer 2
-     ;;   :ensure t)
+     
+     (use-package lsp-ivy
+       :defer 2
+       :ensure t)
+     
      (use-package lsp-ui
        :defer 2
        :commands lsp-ui-mode
@@ -797,7 +769,7 @@
                       (setq projectile-require-project-root nil)
                       (setq projectile-indexing-method 'alien)
                       :custom
-                      ((projectile-completion-system 'orderless)))
+                      ((projectile-completion-system 'ivy)))
 
                     (use-package counsel-projectile
                       :ensure t
@@ -925,7 +897,6 @@
 ** Javascript
   #+BEGIN_SRC elisp
 
-    (exec-path-from-shell-initialize)
     (use-package rjsx-mode
        :defer 2
       :ensure t)
@@ -1043,17 +1014,17 @@
        :ensure t
        :config
        (prescient-persist-mode 1))
-
-     ;; (use-package ivy-prescient
-     ;;   :ensure t
-     ;;   :after counsel
-     ;;   :config
-     ;;   (ivy-prescient-mode 1)
-     ;;   (setq  prescient-sort-length-enable nil)
-     ;;   (setq ivy-re-builders-alist
-     ;;  '((counsel-ag . ivy--regex)
-     ;;    (t . ivy-prescient-re-builder))))
-
+     
+     (use-package ivy-prescient
+       :ensure t
+       :after counsel
+       :config
+       (ivy-prescient-mode 1)
+       (setq  prescient-sort-length-enable nil)
+       (setq ivy-re-builders-alist
+      '((counsel-ag . ivy--regex)
+        (t . ivy-prescient-re-builder))))
+     
      (use-package company-prescient
        :ensure t
        :after company
