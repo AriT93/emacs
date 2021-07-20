@@ -495,12 +495,11 @@
 (use-package exec-path-from-shell
   :ensure t
   :config
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
   (setq exec-path-from-shell-check-startup-files t)
   (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
-  (setq exec-path-from-shell-arguments nil)
-  )
+  (setq exec-path-from-shell-arguments '("-l" "-i"))
+         (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
 
 (use-package inf-ruby
   :defer 2

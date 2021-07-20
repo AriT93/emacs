@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2021-07-19 16:21:02 ari.turetzky>
+#+Time-stamp: <2021-07-19 17:22:39 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -574,12 +574,11 @@
      (use-package exec-path-from-shell
        :ensure t
        :config
-       (when (memq window-system '(mac ns x))
-         (exec-path-from-shell-initialize))
        (setq exec-path-from-shell-check-startup-files t)
        (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
-       (setq exec-path-from-shell-arguments nil)
-       )
+       (setq exec-path-from-shell-arguments '("-l" "-i"))
+              (when (memq window-system '(mac ns x))
+         (exec-path-from-shell-initialize)))
      
      (use-package inf-ruby
        :defer 2
@@ -641,7 +640,7 @@
      (require 'gnus-config)
      (require 'mail-config)
      (require 'gnus-config)
-
+     
    #+END_SRC
 
 
