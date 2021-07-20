@@ -43,12 +43,6 @@ setq smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
 ;;(all-the-icons-gnus-setup)
 (setq gnus-summary-line-format "%U%R%z%I%[%{%&user-date;%}%] %(%[%-20,20f%]%) %s\n")
 (setq gnus-user-date-format-alist '((t .
-    #("%Y-%m-%d %H:%M" 0 1
-      (rear-nonsticky t display
-                      (raise 0.0)
-                      font-lock-face
-                      (:family "Material Icons" :height 1.2)
-                      face
-                      (:family "Material Icons" :height 1.2))))))
+    #("%Y-%m-%d %H:%M" ))))
 (provide 'gnus-config)
 
