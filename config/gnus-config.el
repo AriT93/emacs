@@ -40,6 +40,7 @@ setq smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
 (require 'gravatar)
 (require 'gnus-gravatar)
 (require 'mm-util)
-(all-the-icons-gnus-setup)
-
+;;(all-the-icons-gnus-setup)
+(setq gnus-summary-line-format "%U%R%z%I%[%{%&user-date;%}%]%(%[%4L: %-13,13f%]%) %s\n")
 (provide 'gnus-config)
+
