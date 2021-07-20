@@ -7,6 +7,8 @@
 (setq erc-nick "AriT93")
 (setq erc-part-reason (quote erc-part-reason-zippy))
 (setq erc-prompt-for-password nil)
+(setq erc-prompt-for-nickserv-password nil)
+(setq erc-use-auth-source-for-nickserv-password t)
 (setq erc-quit-reason (quote erc-quit-reason-zippy))
 (setq erc-show-my-nick t)
 (setq erc-track-showcount t)
@@ -18,7 +20,7 @@
 (setq erc-current-nick-highlight-type 'all)
 
 ;; Set char limit so that long lines conform to word wrap
-(setq erc-fill-column 78)
+(setq erc-fill-column 120)
 
 ;; Rename server buffers to reflect the current network name instead of SERVER:PORT (e.g., "freenode" instead of "irc.freenode.net:6667").
 (setq erc-rename-buffers t)
