@@ -150,6 +150,7 @@
     (visual-line-mode)
     (olivetti-mode)
     (variable-pitch-mode)
+    (flyspell-mode)
     )
   (add-hook 'mu4e-view-mode-hook #'abt/mu4e-view-settings)
   (provide 'mail-config)
