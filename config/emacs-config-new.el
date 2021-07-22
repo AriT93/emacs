@@ -49,7 +49,7 @@
 (setq browse-url-browser-function 'eww-browse-url)
 (add-hook 'eww-after-render-hook 'eww-readable)
 (add-hook 'eww-after-render-hook 'visual-line-mode)
-(setq namtive-comp-speed 2)
+(setq native-comp-speed 2)
 (setq package-native-compile t)
 (require 'xwidget)
    ;;; follow links in xwidgets
@@ -118,7 +118,7 @@
   (:map minibuffer-local-map
         ("M-A" . marginalia-cycle)))
 
-(global-set-key "\C-cy" 'consult-yank-pop)
+(global-set-key "\C-cy" 'counsel-yank-pop)
 
 (use-package no-littering
   :ensure t)
@@ -486,11 +486,20 @@
        (setq zenburn-scale-org-headlines t)
        (setq zenburn-scale-outline-headlines t))
 
-     (use-package vscode-dark-plus-theme
+     ;; (use-package vscode-dark-plus-theme
+     ;;   :ensure t
+     ;;   :after ace-window
+     ;;   :init
+     ;;   (load-theme 'vscode-dark-plus t))
+
+     (use-package modus-themes
        :ensure t
        :after ace-window
        :init
-       (load-theme 'vscode-dark-plus t))
+       (setq modus-themes-org-blocks 'gray-background)
+       (modus-themes-load-themes)
+       :config
+       (modus-themes-load-operandi))
 
 (use-package exec-path-from-shell
   :ensure t
@@ -566,15 +575,11 @@
         :ensure t
      :defer 2
      :config
-       (global-highline-mode t)
-       (setq highline-face '((:background "gray40")))
-       (set-face-attribute 'region nil :background "DarkOliveGreen")
-       (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
-     (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-
-     (use-package linum-relative
-       :ensure t)
-
+       (global-highline-mode t))
+     ;;   (setq highline-face '((:background "gray40")))
+     ;;   (set-face-attribute 'region nil :background "DarkOliveGreen")
+     ;;   (setq highline-vertical-face (quote ((t (:background "lemonChiffon2"))))))
+     ;; (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
 
 (column-number-mode)
@@ -587,6 +592,9 @@
                 eshell-mode-hook
                 vterm-mode-hook
                 treemacs-mode-hook
+                gnus-mode-hook
+                mu4e-view-mode-hook
+                gnus-article-mode-hook
                 dashboard-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
