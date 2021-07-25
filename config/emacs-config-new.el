@@ -502,74 +502,75 @@
        (modus-themes-load-operandi))
 
 (use-package exec-path-from-shell
-  :ensure t
-  :config
-  (setq exec-path-from-shell-check-startup-files t)
-  (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
-  (setq exec-path-from-shell-arguments '("-l" "-i"))
-         (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize)))
+       :ensure t
+       :config
+       (setq exec-path-from-shell-check-startup-files t)
+       (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
+;;       (setq exec-path-from-shell-arguments '("-l" "-i"))
+       (setq exec-path-from-shell-arguments nil)
+              (when (memq window-system '(mac ns x))
+         (exec-path-from-shell-initialize)))
 
-(use-package inf-ruby
-  :defer 2
-  :ensure t)
-(require 'ruby-mode)
-(use-package  ruby-electric
-  :ensure t)
-(use-package coffee-mode
-  :defer 2
-  :ensure t)
-(use-package feature-mode
-  :defer 2
-  :ensure t
-  :config
-  (setq feature-use-docker-compose nil)
-  (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
-;;     (require 'rcodetools)
-(use-package yasnippet
-  :defer 2
-  :ensure t
-  :config
-  (yas-global-mode t)
-  (yas-global-mode))
-(use-package yasnippet-snippets
-  :defer 2
-  :ensure t)
-(use-package tree-mode
-  :defer 2
-  :ensure t)
-(use-package rake
-  :defer 2
-  :ensure t)
-(use-package inflections
-  :defer 2
-  :ensure t)
-(use-package graphql
-  :defer 2
-  :ensure t)
-(require 'org-protocol)
-(use-package haml-mode
-  :defer 2
-  :ensure t)
-(use-package beacon
-  :defer 2
-  :ensure t
-  :init
-  (beacon-mode))
-(use-package rainbow-mode
-  :defer 2
-  :ensure t)
-(use-package rainbow-delimiters
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-(require 'ruby-config-new)
-(require 'keys-config-new)
-(require 'ari-custom-new)
-(require 'erc-config)
-(require 'gnus-config)
-(require 'mail-config)
-(require 'gnus-config)
+     (use-package inf-ruby
+       :defer 2
+       :ensure t)
+     (require 'ruby-mode)
+     (use-package  ruby-electric
+       :ensure t)
+     (use-package coffee-mode
+       :defer 2
+       :ensure t)
+     (use-package feature-mode
+       :defer 2
+       :ensure t
+       :config
+       (setq feature-use-docker-compose nil)
+       (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
+     ;;     (require 'rcodetools)
+     (use-package yasnippet
+       :defer 2
+       :ensure t
+       :config
+       (yas-global-mode t)
+       (yas-global-mode))
+     (use-package yasnippet-snippets
+       :defer 2
+       :ensure t)
+     (use-package tree-mode
+       :defer 2
+       :ensure t)
+     (use-package rake
+       :defer 2
+       :ensure t)
+     (use-package inflections
+       :defer 2
+       :ensure t)
+     (use-package graphql
+       :defer 2
+       :ensure t)
+     (require 'org-protocol)
+     (use-package haml-mode
+       :defer 2
+       :ensure t)
+     (use-package beacon
+       :defer 2
+       :ensure t
+       :init
+       (beacon-mode))
+     (use-package rainbow-mode
+       :defer 2
+       :ensure t)
+     (use-package rainbow-delimiters
+       :ensure t
+       :config
+       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+     (require 'ruby-config-new)
+     (require 'keys-config-new)
+     (require 'ari-custom-new)
+     (require 'erc-config)
+     (require 'gnus-config)
+     (require 'mail-config)
+     (require 'gnus-config)
 
 (use-package highline
         :ensure t
