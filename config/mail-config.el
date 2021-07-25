@@ -144,6 +144,7 @@
   :after mu4e
   :ensure t
   :config
+  (mu4e-alert-set-default-style 'libnotify)
   (setq mu4e-alert-interesting-mail-query abt/mu4e-inbox-query)
   (mu4e-alert-set-default-style 'libnotify)
   (setq mu4e-alert-notify-repeated-mails nil)
