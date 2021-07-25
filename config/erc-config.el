@@ -20,7 +20,7 @@
 (setq erc-current-nick-highlight-type 'all)
 
 ;; Set char limit so that long lines conform to word wrap
-(setq erc-fill-column 120)
+(setq erc-fill-column 80)
 
 ;; Rename server buffers to reflect the current network name instead of SERVER:PORT (e.g., "freenode" instead of "irc.freenode.net:6667").
 (setq erc-rename-buffers t)

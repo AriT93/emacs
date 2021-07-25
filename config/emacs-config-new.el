@@ -823,8 +823,15 @@
   :config
   (ivy-prescient-mode 1)
   (setq  prescient-sort-length-enable nil)
+  (setq ivy-prescient-retain-classic-highlighting t)
+  (setq ivy-prescient-enable-filtering nil)
+  (setq ivy-prescient-enable-sorting t)
   (setq ivy-re-builders-alist
- '((counsel-ag . ivy--regex)
+ '(
+   (counse-M-x . ivy--regex-fuzzy)
+   (ivy-switch-buffer . ivy--regex-plus)
+   (ivy-switch-buffer-other-window . ivy--regex-fuzzy)
+   (counsel-ag . ivy--regex-fuzzy)
    (t . ivy-prescient-re-builder))))
 
 (use-package company-prescient

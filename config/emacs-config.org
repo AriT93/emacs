@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2021-07-19 17:22:39 ari.turetzky>
+#+Time-stamp: <2021-07-24 14:51:16 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -1020,8 +1020,15 @@
        :config
        (ivy-prescient-mode 1)
        (setq  prescient-sort-length-enable nil)
+       (setq ivy-prescient-retain-classic-highlighting t)
+       (setq ivy-prescient-enable-filtering nil)
+       (setq ivy-prescient-enable-sorting t)
        (setq ivy-re-builders-alist
-      '((counsel-ag . ivy--regex)
+      '(
+        (counse-M-x . ivy--regex-fuzzy)
+        (ivy-switch-buffer . ivy--regex-plus)
+        (ivy-switch-buffer-other-window . ivy--regex-fuzzy)
+        (counsel-ag . ivy--regex-fuzzy)
         (t . ivy-prescient-re-builder))))
      
      (use-package company-prescient
