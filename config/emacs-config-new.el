@@ -307,230 +307,248 @@
 (server-start)
 
 (use-package diminish
-            :ensure t
-            :config
+  :ensure t
+  :config
 
-          (diminish 'org-mode  "")
-          (diminish 'org-indent-mode  "")
-          (diminish 'auto-revert-mode)
-          (diminish 'yas-minor-mode)
-          (diminish 'emmet-mode)
-          (diminish 'rjsx-minor-mode)
-          (diminish 'eldoc-mode)
-          (diminish 'org-src-mode)
-          (diminish 'abbrev-mode)
-          (diminish 'ivy-mode)
-          (diminish 'global-highline-mode)
-          (diminish 'ruby-block-mode)
-          (diminish 'org-variable-pitch-minor-mode)
-          (diminish 'git-gutter+-mode)
-          (diminish 'ruby-electric-mode)
-          (diminish 'buffer-face-mode)
-          (diminish 'auto-fill-function)
-          (diminish "seeing-is-believing")
-          (diminish 'hs-minor-mode)
-          (diminish 'ruby-block-mode)
-          (diminish 'global-highline-mode))
+  (diminish 'org-mode  "")
+  (diminish 'org-indent-mode  "")
+  (diminish 'auto-revert-mode)
+  (diminish 'yas-minor-mode)
+  (diminish 'emmet-mode)
+  (diminish 'rjsx-minor-mode)
+  (diminish 'eldoc-mode)
+  (diminish 'org-src-mode)
+  (diminish 'abbrev-mode)
+  (diminish 'ivy-mode)
+  (diminish 'global-highline-mode)
+  (diminish 'ruby-block-mode)
+  (diminish 'org-variable-pitch-minor-mode)
+  (diminish 'git-gutter+-mode)
+  (diminish 'ruby-electric-mode)
+  (diminish 'buffer-face-mode)
+  (diminish 'auto-fill-function)
+  (diminish "seeing-is-believing")
+  (diminish 'hs-minor-mode)
+  (diminish 'ruby-block-mode)
+  (diminish 'global-highline-mode))
 
-          (use-package org
-            :ensure org-plus-contrib
-            :ensure t
-            :diminish  ""
-            :config
-            (setq org-default-notes-file "~/Documents/notes/notes.org")
-            (require 'org-capture)
-            (setq org-capture-templates
-                  '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
-                     "* TODO %?\n  %i\n  %a")
-                    ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
-                     "* %?\nEntered on %U\n  %i\n  %a")
-                    ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
-                     "* %?\nEntered on %U\n  %i\n  %a")))
-            (require 'org-habit)
-            (setq org-habit-show-all-today t)
-            (setq org-habit-show-habits t)
-            (setq org-startup-indented t)
-            (setq org-variable-pitch-mode 1)
-            (visual-line-mode 1)
-            (org-indent-mode)
-            (require 'ox-gfm)
-            (require 'ox-md)
-            (require 'ox-confluence)
-            (require 'ox-jira)
-            )
+(use-package org
+  :ensure org-plus-contrib
+  :ensure t
+  :diminish  ""
+  :config
+  (setq org-default-notes-file "~/Documents/notes/notes.org")
+  (require 'org-capture)
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+           "* TODO %?\n  %i\n  %a")
+          ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+           "* %?\nEntered on %U\n  %i\n  %a")
+          ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
+           "* %?\nEntered on %U\n  %i\n  %a")))
+  (require 'org-habit)
+  (setq org-habit-show-all-today t)
+  (setq org-habit-show-habits t)
+  (setq org-startup-indented t)
+  (setq org-variable-pitch-mode 1)
+  (visual-line-mode 1)
+  (org-indent-mode)
+  (require 'ox-gfm)
+  (require 'ox-md)
+  (require 'ox-confluence)
+  (require 'ox-jira)
+  )
 
 
 (use-package org-ref
   :ensure t
-:after org
-:defer nil
-:config
-(setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
-      org-ref-default-bibliography '("~/Documents/references.bib")
-      org-ref-pdf-directory "~/Documents/pdf/"
-      reftex-default-bibliography '("~/Documents/references.bib")
-      org-ref-completion-library 'org-ref-ivy-cite)
-(setq org-latex-pdf-process
-      '("pdflatex -interaction nonstopmode -output-directory %o %f"
-        "bibtex %b"
-        "pdflatex -interaction nonstopmode -output-directory %o %f"
-        "pdflatex -interaction nonstopmode -output-directory %o %f"))
-(require 'org-ref))
+  :after org
+  :defer nil
+  :config
+  (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
+        org-ref-default-bibliography '("~/Documents/references.bib")
+        org-ref-pdf-directory "~/Documents/pdf/"
+        reftex-default-bibliography '("~/Documents/references.bib")
+        org-ref-completion-library 'org-ref-ivy-cite)
+  (setq org-latex-pdf-process
+        '("pdflatex -interaction nonstopmode -output-directory %o %f"
+          "bibtex %b"
+          "pdflatex -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -interaction nonstopmode -output-directory %o %f"))
+  (require 'org-ref))
 
 
-          ;; This is needed as of Org 9.2
-          (require 'org-tempo)
+;; This is needed as of Org 9.2
+(require 'org-tempo)
 
-          (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-          (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
-          (add-to-list 'org-structure-template-alist '("py" . "src python"))
-          (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
-          (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("el" . "src elisp"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
+(add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
+(add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
 
-          ;; Automatically tangle our Emacs.org config file when we save it
-          (defun efs/org-babel-tangle-config ()
-            (when (string-equal (buffer-file-name)
-                                (expand-file-name "~/emacs/config/emacs-config.org"))
-              ;; Dynamic scoping to the rescue
-              (let ((org-confirm-babel-evaluate nil))
-                (org-babel-tangle))))
+;; Automatically tangle our Emacs.org config file when we save it
+(defun efs/org-babel-tangle-config ()
+  (when (string-equal (buffer-file-name)
+                      (expand-file-name "~/emacs/config/emacs-config.org"))
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
 
-          (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-
-     (defun ek/babel-ansi ()
-       (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
-         (save-excursion
-           (goto-char beg)
-           (when (looking-at org-babel-result-regexp)
-             (let ((end (org-babel-result-end))
-                   (ansi-color-context-region nil))
-               (ansi-color-apply-on-region beg end))))))
-     (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
-
-          (fset 'capture-tweet
-                (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
-          (use-package ox-twbs
-            :ensure t)
-          (use-package ox-gfm
-            :ensure t)
-
-          (use-package ox-jira
-            :ensure t)
-          (require 'org-tempo)
-          (use-package org-mime
-            :ensure t)
-          (setq org-src-fontify-natively t)
-          (setq org-src-tab-acts-natively t)
-          (setq org-src-window-setup 'current-window)
-          (use-package plantuml-mode
-            :ensure t)
-          (use-package org-bullets
-            :ensure t)
-          (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-          (setq org-startup-with-inline-images t)
-          (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-          ;;***********remember + Org config*************
-          (setq org-remember-templates
-                '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
-                  ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
-          (setq remember-annotation-functions '(org-remember-annotation))
-          (setq remember-handler-functions '(org-remember-handler))
-          (add-hook 'remember-mode-hook 'org-remember-apply-template)
-          (global-set-key (kbd "C-c r") 'remember)
-
-          (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-          (setq org-agenda-include-diary t)
-          (setq org-agenda-include-all-todo t)
-          (org-babel-do-load-languages
-           'org-babel-load-languages
-           '((shell  . t)
-             (js  . t)
-             (emacs-lisp . t)
-             (python . t)
-             (ruby . t)
-             (css . t )
-             (plantuml . t)
-             (cypher . t)
-             (sql . t)
-             (scheme . t)
-             (java . t)
-             (dot . t)))
-          (setq org-confirm-babel-evaluate nil)
-
-          (use-package geiser
-            :defer 2
-            :ensure t
-            :config
-            (setq geiser-active-implementations '(mit))
-            (setq geiser-default-implementation 'mit)
-            (setq scheme-program-name "scheme")
-            (setq geiser-mit-binary "/usr/local/bin/scheme")
-          )
-
-          (use-package ox-pandoc
-            :defer 2
-            :ensure t
-            :config
-            (setq org-pandoc-options '((standalone . t))))
-
-          (use-package org-variable-pitch
-            :defer 2
-            :after org
-            :ensure t
-            :config
-            (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
-            (add-hook 'after-init-hook #'org-variable-pitch-setup))
-
-          (use-package olivetti
-            :after org
-            :ensure t
-            :config
-            (setq olivetti-minimum-body-width 120))
-
-          (use-package virtualenvwrapper
-            :defer 2
-            :ensure t
-            :init
-            (venv-initialize-interactive-shells)
-            (venv-initialize-eshell)
-            (setq venv-location "~/.virtualenvs")
-            )
-          (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
-          (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 
-          (setq org-mime-export-options '(:section-numbers nil
-                                                           :with-author nil
-                                                           :with-toc nil))
+(use-package org-roam
+  :after org
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/Documents/org-roam" )
+  :config
+  (org-roam-setup)
+  (setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     ("c" "region" plain "%i" :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     )))
 
-          (use-package zenburn-theme
-            :defer 2
-            :after ace-window
-            :ensure t
-            :init
-            (setq zenburn-override-colors-alist '(
-                                                  ("zenburn-bg" . "gray16")
-                                                  ("zenburn-bg-1" . "#5F7F5F")))
+(defun ek/babel-ansi ()
+  (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+    (save-excursion
+      (goto-char beg)
+      (when (looking-at org-babel-result-regexp)
+        (let ((end (org-babel-result-end))
+              (ansi-color-context-region nil))
+          (ansi-color-apply-on-region beg end))))))
+(add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
 
-            :config
-            (setq zenburn-use-variable-pitch t)
-            (setq zenburn-scale-org-headlines t)
-            (setq zenburn-scale-outline-headlines t))
+(fset 'capture-tweet
+      (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
+(use-package ox-twbs
+  :ensure t)
+(use-package ox-gfm
+  :ensure t)
 
-          (use-package vscode-dark-plus-theme
-            :ensure t
-            :after ace-window
-            :init
-            (load-theme 'vscode-dark-plus t))
+(use-package ox-jira
+  :ensure t)
+(require 'org-tempo)
+(use-package org-mime
+  :ensure t)
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
+(setq org-src-window-setup 'current-window)
+(use-package plantuml-mode
+  :ensure t)
+(use-package org-bullets
+  :ensure t)
+(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+(setq org-startup-with-inline-images t)
+(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+;;***********remember + Org config*************
+(setq org-remember-templates
+      '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
+        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
+(setq remember-annotation-functions '(org-remember-annotation))
+(setq remember-handler-functions '(org-remember-handler))
+(add-hook 'remember-mode-hook 'org-remember-apply-template)
+(global-set-key (kbd "C-c r") 'remember)
 
-          ;; (use-package modus-themes
-          ;;   :ensure t
-          ;;   :after ace-window
-          ;;   :init
-          ;;   (setq modus-themes-org-blocks 'gray-background)
-          ;;   (modus-themes-load-themes)
-          ;;   :config
-          ;;   (modus-themes-load-operandi))
+(setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+(setq org-agenda-include-diary t)
+(setq org-agenda-include-all-todo t)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((shell  . t)
+   (js  . t)
+   (emacs-lisp . t)
+   (python . t)
+   (ruby . t)
+   (css . t )
+   (plantuml . t)
+   (cypher . t)
+   (sql . t)
+   (scheme . t)
+   (java . t)
+   (dot . t)))
+(setq org-confirm-babel-evaluate nil)
+
+(use-package geiser
+  :defer 2
+  :ensure t
+  :config
+  (setq geiser-active-implementations '(mit))
+  (setq geiser-default-implementation 'mit)
+  (setq scheme-program-name "scheme")
+  (setq geiser-mit-binary "/usr/local/bin/scheme")
+  )
+
+(use-package ox-pandoc
+  :defer 2
+  :ensure t
+  :config
+  (setq org-pandoc-options '((standalone . t))))
+
+(use-package org-variable-pitch
+  :defer 2
+  :after org
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
+  (add-hook 'after-init-hook #'org-variable-pitch-setup))
+
+(use-package olivetti
+  :after org
+  :ensure t
+  :config
+  (setq olivetti-minimum-body-width 120))
+
+(use-package virtualenvwrapper
+  :defer 2
+  :ensure t
+  :init
+  (venv-initialize-interactive-shells)
+  (venv-initialize-eshell)
+  (setq venv-location "~/.virtualenvs")
+  )
+(setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+(setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+
+
+(setq org-mime-export-options '(:section-numbers nil
+                                                 :with-author nil
+                                                 :with-toc nil))
+
+(use-package zenburn-theme
+  :defer 2
+  :after ace-window
+  :ensure t
+  :init
+  (setq zenburn-override-colors-alist '(
+                                        ("zenburn-bg" . "gray16")
+                                        ("zenburn-bg-1" . "#5F7F5F")))
+
+  :config
+  (setq zenburn-use-variable-pitch t)
+  (setq zenburn-scale-org-headlines t)
+  (setq zenburn-scale-outline-headlines t))
+
+(use-package vscode-dark-plus-theme
+  :ensure t
+  :after ace-window
+  :init
+  (load-theme 'vscode-dark-plus t))
+
+;; (use-package modus-themes
+;;   :ensure t
+;;   :after ace-window
+;;   :init
+;;   (setq modus-themes-org-blocks 'gray-background)
+;;   (modus-themes-load-themes)
+;;   :config
+;;   (modus-themes-load-operandi))
 
 (use-package exec-path-from-shell
   :ensure t
