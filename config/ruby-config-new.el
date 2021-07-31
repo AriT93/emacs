@@ -84,6 +84,8 @@
 
 (use-package rbenv
   :ensure t
+  :init
+  (setq rbenv-show-active-ruby-in-modeline nil)
   :config
   (setq rbenv-installation-dir "/usr/local/opt/rbenv")
   :init

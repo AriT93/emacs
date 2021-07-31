@@ -127,6 +127,8 @@ is going on while you write code.
    #+BEGIN_SRC elisp
      (use-package rbenv
        :ensure t
+       :init
+       (setq rbenv-show-active-ruby-in-modeline nil)
        :config
        (setq rbenv-installation-dir "/usr/local/opt/rbenv")
        :init
