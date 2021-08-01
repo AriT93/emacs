@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2021-07-31 08:15:31 abturet>
+#+Time-stamp: <2021-08-01 14:50:29 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -68,7 +68,7 @@
      (setq backup-directory-alist
            '((".*" . "~/tmp/")))
      (setq message-log-max 1000)
-     (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 150 :weight 'normal)
+     (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 125 :weight 'normal)
      (setq help-at-pt-display-when-idle t)
      (setq help-at-pt-timer-delay 0.1)
      (help-at-pt-set-timer)
