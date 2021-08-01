@@ -3,7 +3,7 @@
 ;;; Code:
 
 (require 'smtpmail)
-(add-to-list 'load-path "/usr/local/Cellar/mu/1.4.15/share/emacs/site-lisp/mu/mu4e/")
+(add-to-list 'load-path "/usr/local/Cellar/mu/1.6.0/share/emacs/site-lisp/mu/mu4e/")
 (require 'mu4e)
 
 (setq   mail-user-agent 'mu4e-user-agent)
@@ -130,6 +130,7 @@
   :ensure t
   :config
   (setq mu4e-alert-interesting-mail-query abt/mu4e-inbox-query)
+  (mu4e-alert-set-default-style 'notifier)
   (setq mu4e-alert-notify-repeated-mails nil)
   (mu4e-alert-enable-notifications))
 
