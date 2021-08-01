@@ -86,10 +86,10 @@
   :ensure t
   :config
   (setq rbenv-installation-dir "/usr/local/opt/rbenv")
-  :init
-  (global-rbenv-mode))
-(require 'lsp)
-(add-hook 'ruby-mode-hook #'lsp)
+  (global-rbenv-mode t))
+
+     (require 'lsp)
+     (add-hook 'ruby-mode-hook #'lsp)
 
 ;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
   ;; (autoload 'ri "ri-ruby.el" nil t)

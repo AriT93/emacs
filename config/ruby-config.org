@@ -79,7 +79,7 @@ is going on while you write code.
     (setq rspec-use-spring-when-possible nil)
     (setq rspec-command-options "--format progress"))
     (add-hook 'after-init-hook  'inf-ruby-switch-setup)
-
+  
     (require 'ruby-block)
     (diminish 'ruby-block-mode)
     (require 'ruby-electric)
@@ -105,6 +105,7 @@ is going on while you write code.
                 (diminish 'eclim-mode)
                 (diminish 'abbrev-mode)
                 (diminish 'ivy-mode)
+                (diminish 'battery-mode)
                 (diminish 'global-highline-mode)
                 (diminish 'ruby-block-mode)
                 (diminish 'ruby-electric-mode)
@@ -129,10 +130,10 @@ is going on while you write code.
        :ensure t
        :config
        (setq rbenv-installation-dir "/usr/local/opt/rbenv")
-       :init
-       (global-rbenv-mode))
-     (require 'lsp)
-     (add-hook 'ruby-mode-hook #'lsp)
+       (global-rbenv-mode t))
+
+          (require 'lsp)
+          (add-hook 'ruby-mode-hook #'lsp)
    #+END_SRC
 ** Key-bindings some still used and some more ac config
 damn this is a mess

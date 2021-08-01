@@ -7,6 +7,8 @@
 (require 'mu4e)
 
 (setq   mail-user-agent 'mu4e-user-agent)
+(setq user-full-name "Ari Turetzky")
+(setq user-mail-address "arit93@gmail.com")
 (setq   send-mail-function 'smtpmail-send-it)
 (setq   message-send-mail-function 'smtpmail-send-it)
 (setq   smtpmail-default-smtp-server "smtp.gmail.com")
@@ -55,7 +57,8 @@
         :name "Gmail"
         :match-func (lambda (msg)
                       (when msg
-                        (mu4e-message-contact-field-matches msg :to "arit93@gmail.com")))
+                        (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
+        ;;                        (mu4e-message-contact-field-matches msg :to "arit93@gmail.com")))
         :vars '( ( user-mail-address . "arit93@gmail.com")
                  (user-full-name   . "Ari Turetzky")
                  (mu4e-sent-folder . "/gmail/[Gmail]/.Sent Mail")
@@ -70,21 +73,42 @@
                  )
         )
        (make-mu4e-context
-        :name "Workday"
-        :match-func(lambda (msg)
-                     (when msg
-                       (string-match-p "^/work" (mu4e-message-field msg :maildir))))
-        :vars '( ( user-mail-address . "ari.turetzky@workday.com")
-                 (user-full-name   . "Ari Turetzky")
-                 (mu4e-trash-folder . "/work/Deleted Items")
-                 (mu4e-sent-folder . "/work/Sent Items")
-                 (mu4e-drafts-folder . "/work/Drafts")
-                 (smtpmail-default-smtp-server . "outlook.office365.com")
-                 (smtpmail-smtp-server .  "outlook.office365.com")
-                 (smtpmail-starttls-credentials   '(("outlook.office365.com" 587 nil nil)))
-                 (smtpmail-auth-credentials '(("outlook.office365.com" 587 "ari.turetzky@workdayinternal.com" nil)))
-                 (smtpmail-smtp-service . 587)
-                 (mu4e-compose-reply-to-address . "ari.turetzky@workday.com")
+        :name "Yahoo"
+        :match-func (lambda (msg)
+                      (when msg
+                        (string-match-p "^/yahoo" (mu4e-message-field msg :maildir))))
+        ;;                        (mu4e-message-contact-field-matches msg :to "arit93@yahoo.com")))
+        :vars '(( user-mail-address . "arit93@yahoo.com")
+                (smtpmail-smtp-user . "arit93@yahoo.com")
+                (user-full-name   . "Ari Turetzky")
+                (mu4e-sent-folder . "/yahoo/Sent")
+                (mu4e-trash-folder . "/yahoo/Trash")
+                (mu4e-drafts-folder . "/yahoo/Draft")
+                (smtpmail-default-smtp-server . "smtp.mail.yahoo.com")
+                (smtpmail-smtp-server .  "smtp.mail.yahoo.com")
+                (smtpmail-starttls-credentials '(("smtp.mail.yahoo.com" 587 nil nil)))
+                (smtpmail-auth-credentials '(("smtp.mail.yahoo.com" 587 "arit93@yahoo.com" nil)))
+                (smtpmail-smtp-service .  587)
+                (mu4e-compose-reply-to-address . "arit93@yahoo.com")
+                ))
+       (make-mu4e-context
+        :name "Turetzky"
+        :match-func (lambda (msg)
+                      (when msg
+                        (string-match-p "^/turetzky" (mu4e-message-field msg :maildir))))
+        ;;                        (mu4e-message-contact-field-matches msg :to "ari@turetzky.org")))
+        :vars '( ( user-mail-address . "ari@turetzky.org")
+                 (smtpmail-smtp-user . "ari@turetzky.org")
+                 (user-full-name   . "Ari")
+                 (mu4e-sent-folder . "/turetzky/[Gmail]/.Sent Mail")
+                 (mu4e-trash-folder . "/turetzky/[Gmail]/.Trash")
+                 (mu4e-drafts-folder . "/turetzky/[Gmail]/.Drafts")
+                 (smtpmail-default-smtp-server . "smtp.gmail.com")
+                 (smtpmail-smtp-server .  "smtp.gmail.com")
+                 (smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
+                 (smtpmail-auth-credentials '(("smtp.gmail.com" 587 "ari@turetzky.org" nil)))
+                 (smtpmail-smtp-service .  587)
+                 (mu4e-compose-reply-to-address . "ari@turetzky.org")
                  )
 
         )))
