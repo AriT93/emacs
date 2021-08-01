@@ -7,14 +7,16 @@
 (require 'mu4e)
 
 (setq   mail-user-agent 'mu4e-user-agent)
+(setq user-full-name "Ari Turetzky")
+(setq user-mail-address "arit93@gmail.com")
 (setq   send-mail-function 'smtpmail-send-it)
 (setq   message-send-mail-function 'smtpmail-send-it)
-;; (setq   smtpmail-default-smtp-server "smtp.gmail.com")
-;; (setq   smtpmail-smtp-server "smtp.gmail.com")
-;; (setq   smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
-;; (setq   starttls-use-gnutls t)
-;; (setq   smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
-;; (setq   smtpmail-smtp-service 587)
+(setq   smtpmail-default-smtp-server "smtp.gmail.com")
+(setq   smtpmail-smtp-server "smtp.gmail.com")
+(setq   smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
+(setq   starttls-use-gnutls t)
+(setq   smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
+(setq   smtpmail-smtp-service 587)
 
 
 
@@ -53,7 +55,7 @@
         :match-func (lambda (msg)
                       (when msg
                         (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
-;;                        (mu4e-message-contact-field-matches msg :to "arit93@gmail.com")))
+        ;;                        (mu4e-message-contact-field-matches msg :to "arit93@gmail.com")))
         :vars '( ( user-mail-address . "arit93@gmail.com")
                  (smtpmail-smtp-user . "arit93@gmail.com")
                  (user-full-name   . "Ari Turetzky")
@@ -73,26 +75,26 @@
         :match-func (lambda (msg)
                       (when msg
                         (string-match-p "^/yahoo" (mu4e-message-field msg :maildir))))
-;;                        (mu4e-message-contact-field-matches msg :to "arit93@yahoo.com")))
+        ;;                        (mu4e-message-contact-field-matches msg :to "arit93@yahoo.com")))
         :vars '(( user-mail-address . "arit93@yahoo.com")
-                 (smtpmail-smtp-user . "arit93@yahoo.com")
-                 (user-full-name   . "Ari Turetzky")
-                 (mu4e-sent-folder . "/yahoo/Sent")
-                 (mu4e-trash-folder . "/yahoo/Trash")
-                 (mu4e-drafts-folder . "/yahoo/Draft")
-                 (smtpmail-default-smtp-server . "smtp.mail.yahoo.com")
-                 (smtpmail-smtp-server .  "smtp.mail.yahoo.com")
-                 (smtpmail-starttls-credentials '(("smtp.mail.yahoo.com" 587 nil nil)))
-                 (smtpmail-auth-credentials '(("smtp.mail.yahoo.com" 587 "arit93@yahoo.com" nil)))
-                 (smtpmail-smtp-service .  587)
-                 (mu4e-compose-reply-to-address . "arit93@yahoo.com")
+                (smtpmail-smtp-user . "arit93@yahoo.com")
+                (user-full-name   . "Ari Turetzky")
+                (mu4e-sent-folder . "/yahoo/Sent")
+                (mu4e-trash-folder . "/yahoo/Trash")
+                (mu4e-drafts-folder . "/yahoo/Draft")
+                (smtpmail-default-smtp-server . "smtp.mail.yahoo.com")
+                (smtpmail-smtp-server .  "smtp.mail.yahoo.com")
+                (smtpmail-starttls-credentials '(("smtp.mail.yahoo.com" 587 nil nil)))
+                (smtpmail-auth-credentials '(("smtp.mail.yahoo.com" 587 "arit93@yahoo.com" nil)))
+                (smtpmail-smtp-service .  587)
+                (mu4e-compose-reply-to-address . "arit93@yahoo.com")
                 ))
        (make-mu4e-context
         :name "Turetzky"
         :match-func (lambda (msg)
                       (when msg
                         (string-match-p "^/turetzky" (mu4e-message-field msg :maildir))))
-;;                        (mu4e-message-contact-field-matches msg :to "ari@turetzky.org")))
+        ;;                        (mu4e-message-contact-field-matches msg :to "ari@turetzky.org")))
         :vars '( ( user-mail-address . "ari@turetzky.org")
                  (smtpmail-smtp-user . "ari@turetzky.org")
                  (user-full-name   . "Ari")
@@ -109,7 +111,7 @@
         )         
        ))
 
-(setq mu4e-context-policy 'ask)
+(setq mu4e-context-policy 'pick)
 (setq mu4e-compose-context-policy 'ask)
 
 ;; setup some handy shortcuts
