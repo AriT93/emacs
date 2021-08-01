@@ -53,7 +53,7 @@
   (set-face-attribute 'mu4e-view-body-face nil :family "Helvetica")
   (setq mu4e-use-fancy-chars t)
   (require 'org-mu4e)
-  
+  (require 'mu4e-view-xwidget)
   (when (fboundp 'imagemagick-register-types)
     (imagemagick-register-types))
   (setq mu4e-mu-binary "/usr/local/bin/mu")
