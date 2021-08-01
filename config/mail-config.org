@@ -19,6 +19,8 @@
   (require 'mu4e)
   
   (setq   mail-user-agent 'mu4e-user-agent)
+  (setq user-full-name "Ari Turetzky")
+  (setq user-mail-address "arit93@gmail.com")
   (setq   send-mail-function 'smtpmail-send-it)
   (setq   message-send-mail-function 'smtpmail-send-it)
   (setq   smtpmail-default-smtp-server "smtp.gmail.com")
@@ -67,7 +69,8 @@
           :name "Gmail"
           :match-func (lambda (msg)
                         (when msg
-                          (mu4e-message-contact-field-matches msg :to "arit93@gmail.com")))
+                          (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
+          ;;                        (mu4e-message-contact-field-matches msg :to "arit93@gmail.com")))
           :vars '( ( user-mail-address . "arit93@gmail.com")
                    (user-full-name   . "Ari Turetzky")
                    (mu4e-sent-folder . "/gmail/[Gmail]/.Sent Mail")
