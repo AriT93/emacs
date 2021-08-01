@@ -20,13 +20,15 @@
   (setq   mail-user-agent 'mu4e-user-agent)
   (setq   send-mail-function 'smtpmail-send-it)
   (setq   message-send-mail-function 'smtpmail-send-it)
-  ;; (setq   smtpmail-default-smtp-server "smtp.gmail.com")
-  ;; (setq   smtpmail-smtp-server "smtp.gmail.com")
-  ;; (setq   smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
-  ;; (setq   starttls-use-gnutls t)
-  ;; (setq   smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
-  ;; (setq   smtpmail-smtp-service 587)
-  
+  (setq   smtpmail-default-smtp-server "smtp.gmail.com")
+  (setq   smtpmail-smtp-server "smtp.gmail.com")
+  (setq   smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
+  (setq   starttls-use-gnutls t)
+  (setq   smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
+  (setq   smtpmail-smtp-service 587)
+    (setq user-mail-address "arit93@gmail.com")
+  (setq user-full-name    "Ari Turetzky")
+
   
   
   ;; ;;mu4e
