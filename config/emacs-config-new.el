@@ -39,7 +39,7 @@
 (setq backup-directory-alist
       '((".*" . "~/tmp/")))
 (setq message-log-max 1000)
-(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 125 :weight 'normal)
+(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 150 :weight 'normal)
 (setq help-at-pt-display-when-idle t)
 (setq help-at-pt-timer-delay 0.1)
 (help-at-pt-set-timer)
@@ -53,6 +53,7 @@
 (setq package-native-compile t)
 (require 'xwidget)
    ;;; follow links in xwidgets
+(setq alert-default-style 'notifier)
 (use-package xwwp-follow-link
  :custom
  (xwwp-follow-link-completion-backend 'ivy)
