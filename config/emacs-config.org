@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2021-08-02 08:43:55 ari.turetzky>
+#+Time-stamp: <2021-08-16 11:27:20 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -384,7 +384,7 @@
                          (use-package diminish
                            :ensure t
                            :config
-     
+
                            (diminish 'org-mode  "")
                            (diminish 'org-indent-mode  "")
                            (diminish 'auto-revert-mode)
@@ -406,7 +406,7 @@
                            (diminish 'hs-minor-mode)
                            (diminish 'ruby-block-mode)
                            (diminish 'global-highline-mode))
-     
+
                          (use-package org
                            :ensure org-plus-contrib
                            :ensure t
@@ -433,8 +433,8 @@
                            (require 'ox-confluence)
                            (require 'ox-jira)
                            )
-     
-     
+
+
                          (use-package org-ref
                            :ensure t
                            :after org
@@ -451,17 +451,17 @@
                                    "pdflatex -interaction nonstopmode -output-directory %o %f"
                                    "pdflatex -interaction nonstopmode -output-directory %o %f"))
                            (require 'org-ref))
-     
-     
+
+
                          ;; This is needed as of Org 9.2
                          (require 'org-tempo)
-     
+
                          (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
                          (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
                          (add-to-list 'org-structure-template-alist '("py" . "src python"))
                          (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
                          (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
-     
+
                          ;; Automatically tangle our Emacs.org config file when we save it
                          (defun efs/org-babel-tangle-config ()
                            (when (string-equal (buffer-file-name)
@@ -469,10 +469,10 @@
                              ;; Dynamic scoping to the rescue
                              (let ((org-confirm-babel-evaluate nil))
                                (org-babel-tangle))))
-     
+
                          (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-     
-     
+
+
                          (use-package org-roam
                            :after org
                            :ensure t
@@ -490,7 +490,7 @@
                                                                :unnarrowed t)
                                                               ))
                            (setq org-roam-dailies-directory "daily/")
-     
+
                (setq org-roam-dailies-capture-templates
                      '(("d" "default" entry
                         "* %?"
@@ -498,11 +498,11 @@
                                            "#+title: %<%Y-%m-%d>\n"))
                        ("c" "region" entry
                    "* %?
-     
+
      %i"
                    :if-new (file+head "%<%Y-%m-%d>.org"
                                       "#+title: %<%Y-%m-%d>\n")))))
-     
+
                          (defun ek/babel-ansi ()
                            (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
                              (save-excursion
@@ -512,14 +512,14 @@
                                        (ansi-color-context-region nil))
                                    (ansi-color-apply-on-region beg end))))))
                          (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
-     
+
                          (fset 'capture-tweet
                                (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
                          (use-package ox-twbs
                            :ensure t)
                          (use-package ox-gfm
                            :ensure t)
-     
+
                          (use-package ox-jira
                            :ensure t)
                          (require 'org-tempo)
@@ -543,7 +543,7 @@
                          (setq remember-handler-functions '(org-remember-handler))
                          (add-hook 'remember-mode-hook 'org-remember-apply-template)
                          (global-set-key (kbd "C-c r") 'remember)
-     
+
                          (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
                          (setq org-agenda-include-diary t)
                          (setq org-agenda-include-all-todo t)
@@ -562,7 +562,7 @@
                             (java . t)
                             (dot . t)))
                          (setq org-confirm-babel-evaluate nil)
-     
+
                          (use-package geiser
                            :defer 2
                            :ensure t
@@ -572,13 +572,13 @@
                            (setq scheme-program-name "scheme")
                            (setq geiser-mit-binary "/usr/local/bin/scheme")
                            )
-     
+
                          (use-package ox-pandoc
                            :defer 2
                            :ensure t
                            :config
                            (setq org-pandoc-options '((standalone . t))))
-     
+
                          (use-package org-variable-pitch
                            :defer 2
                            :after org
@@ -586,13 +586,13 @@
                            :config
                            (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
                            (add-hook 'after-init-hook #'org-variable-pitch-setup))
-     
+
                          (use-package olivetti
                            :after org
                            :ensure t
                            :config
                            (setq olivetti-minimum-body-width 120))
-     
+
                          (use-package virtualenvwrapper
                            :defer 2
                            :ensure t
@@ -603,12 +603,12 @@
                            )
                          (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
                          (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
-     
-     
+
+
                          (setq org-mime-export-options '(:section-numbers nil
                                                                           :with-author nil
                                                                           :with-toc nil))
-     
+
                          (use-package zenburn-theme
                            :defer 2
                            :after ace-window
@@ -617,18 +617,18 @@
                            (setq zenburn-override-colors-alist '(
                                                                  ("zenburn-bg" . "gray16")
                                                                  ("zenburn-bg-1" . "#5F7F5F")))
-     
+
                            :config
                            (setq zenburn-use-variable-pitch t)
                            (setq zenburn-scale-org-headlines t)
                            (setq zenburn-scale-outline-headlines t))
-     
+
                          (use-package vscode-dark-plus-theme
                            :ensure t
                            :after ace-window
                            :init
                            (load-theme 'vscode-dark-plus t))
-     
+
                          ;; (use-package modus-themes
                          ;;   :ensure t
                          ;;   :after ace-window
@@ -637,7 +637,7 @@
                          ;;   (modus-themes-load-themes)
                          ;;   :config
                          ;;   (modus-themes-load-operandi))
-     
+
    #+end_SRC
 
 ** Teh requires
@@ -727,11 +727,11 @@
         (set-face-attribute 'region nil :background "DarkOliveGreen")
         (setq highline-vertical-face '(( :background "lemonChiffon2")))
       (set-face-attribute 'show-paren-match nil :foreground "CadetBlue"))
-     
-     
+
+
      (column-number-mode)
      (global-display-line-numbers-mode t)
-     
+
      ;; Disable line numbers for some modes
      (dolist (mode '(org-mode-hook
                      erc-mode-hook
@@ -779,9 +779,10 @@
        (lsp-inhibit-message t)
        (lsp-eldoc-render-all nil)
        :config
-       (lsp-enable-which-key-integration t)
+       (setq lsp-enable-which-key-integration t)
        (setq lsp-enable-symbol-highlighting t)
        (setq lsp-modeline-code-actions-enable t)
+       (setq lsp-diagnostics-provider :auto)
        (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
        :ensure t)
 
@@ -1028,14 +1029,15 @@
      (use-package helpful
        :ensure t)
    #+end_src
-** COMMENT Elfeed
+**  Elfeed
    #+begin_src elisp
      (use-package elfeed
        :ensure t)
      (use-package elfeed-org
        :ensure t
        :after elfeed
-       :init
+       :config
+       (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
        (elfeed-org))
      ;; (use-package elfeed-goodies
      ;;   :after elfeed
@@ -1047,13 +1049,12 @@
        :ensure t)
      (use-package visual-fill-column
        :ensure t)
-     (add-hook 'elfeed-show-mode-hook (lambda()
-                                        (set-face-attribute 'variable-pitch (selected-frame) :font (font-spec :family "Helvetica" :size 14))
-                                        (setq fill-column 100)
-                                        (visual-fill-mode t)
-                                        (adaptive-wrap-prefix-mode t)
-                                        (toggle-word-wrap)
-                                        (visual-fill-column-mode)))
+     ;; (add-hook 'elfeed-show-mode-hook (lambda()
+     ;;                                    (setq fill-column 100)
+     ;;                                    (visual-fill-mode t)
+     ;;                                    (adaptive-wrap-prefix-mode t)
+     ;;                                    (toggle-word-wrap)
+     ;;                                    (visual-fill-column-mode)))
 
 
      (use-package twittering-mode
@@ -1071,12 +1072,12 @@
        (setq twittering-use-icon-storage t)
 
        (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
-        %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
-        +----
-        %FOLD[|]{%i %S (%s),  %@:
-        %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
-        +----}}
-        "))
+          %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
+          +----
+          %FOLD[|]{%i %S (%s),  %@:
+          %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
+          +----}}
+          "))
 
    #+end_src
 ** Prescient
