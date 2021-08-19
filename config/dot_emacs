@@ -2,11 +2,11 @@
 ;; my emacs file
 ;;; Commentary:
 ;;; Code:
-(exec-path-from-shell-initialize)
+
 (add-to-list 'load-path (expand-file-name "~/emacs/config/"))
 
 (require 'emacs-config-new)
-
+(exec-path-from-shell-initialize)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -22,12 +22,8 @@
    '(company-bbdb company-semantic company-clang company-cmake company-capf company-files
                   (company-dabbrev-code company-gtags company-etags company-keywords)
                   company-dabbrev))
- '(company-idle-begin 0.0 t nil "Customized with use-package company")
- '(company-minimum-prefix-length 1 nil nil "Customized with use-package company")
  '(company-quickhelp-mode t)
  '(company-quickhelp-use-propertized-text t)
- '(company-show-quick-access t nil nil "Customized with use-package company")
- '(company-tooltip-align-annotations t nil nil "Customized with use-package company")
  '(counsel-projectile-switch-project-action
    '(4
      ("o" counsel-projectile-switch-project-action "jump to a project buffer or file")
@@ -53,26 +49,23 @@
      ("Oc" counsel-projectile-switch-project-action-org-capture "capture into project")
      ("Oa" counsel-projectile-switch-project-action-org-agenda "open project agenda")))
  '(custom-safe-themes
-   '("b9e9ba5aeedcc5ba8be99f1cc9301f6679912910ff92fdf7980929c2fc83ab4d" "84d2f9eeb3f82d619ca4bfffe5f157282f4779732f48a5ac1484d94d5ff5b279" "51ec7bfa54adf5fff5d466248ea6431097f5a18224788d0bd7eb1257a4f7b773" "bf4b3dbc59b2b0873bd74ebf8f3a8c13d70dc3d36a4724b27edb1e427f047c1e" "b89a4f5916c29a235d0600ad5a0849b1c50fab16c2c518e1d98f0412367e7f97" "2d40e8de2c676ec749cf13a0a48e35a8b678a056dc397ffe8de4424dfa69d460" "378d52c38b53af751b50c0eba301718a479d7feea5f5ba912d66d7fe9ed64c8f" "5d09b4ad5649fea40249dd937eaaa8f8a229db1cec9a1a0ef0de3ccf63523014" "f2c35f8562f6a1e5b3f4c543d5ff8f24100fae1da29aeb1864bbc17758f52b70" "76bfa9318742342233d8b0b42e824130b3a50dcc732866ff8e47366aed69de11" "4bca89c1004e24981c840d3a32755bf859a6910c65b829d9441814000cf6c3d0" "711efe8b1233f2cf52f338fd7f15ce11c836d0b6240a18fffffc2cbd5bfe61b0" "bf387180109d222aee6bb089db48ed38403a1e330c9ec69fe1f52460a8936b66" "e6ff132edb1bfa0645e2ba032c44ce94a3bd3c15e3929cdf6c049802cf059a2a" "990e24b406787568c592db2b853aa65ecc2dcd08146c0d22293259d400174e37" "f10e50d86ec09152a03fcc3b251ba698610b2e5baa73699297a8bb37a419f3c8" "6b80b5b0762a814c62ce858e9d72745a05dd5fc66f821a1c5023b4f2a76bc910" "834cbeacb6837f3ddca4a1a7b19b1af3834f36a701e8b15b628cad3d85c970ff" "c7eb06356fd16a1f552cfc40d900fe7326ae17ae7578f0ef5ba1edd4fdd09e58" "82360e5f96244ce8cc6e765eeebe7788c2c5f3aeb96c1a765629c5c7937c0b5b" "5383ee4857a6fc48d27f6a064a4cc07d1dbef566b68edd91a4ec910e702edb70" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "68bf77811b94a9d877f9c974c19bafe5b67b53ed82baf96db79518564177c0fb" "155a5de9192c2f6d53efcc9c554892a0d87d87f99ad8cc14b330f4f4be204445" "f061b6bdcf3e9d82dad9fd79458125b3c477d399e87d2027083b7e3ecd6f4dad" "1d2f406a342499f0098f9388b87d05ec9b28ccb12ca548f4f5fa80ae368235b6" "efefb69e7781fcfe62f3d0b573701f56e45e29afbe9e378a422025fd767ea246" "6b2636879127bf6124ce541b1b2824800afc49c6ccd65439d6eb987dbf200c36" "add1f25df72a6faa9c87840e33b1890b117f72829d993d5d47393c0bf9f16a22" "e297f54d0dc0575a9271bb0b64dad2c05cff50b510a518f5144925f627bb5832" "bcc6775934c9adf5f3bd1f428326ce0dcd34d743a92df48c128e6438b815b44f" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "b9cbfb43711effa2e0a7fbc99d5e7522d8d8c1c151a3194a4b176ec17c9a8215" default))
+   '("b9e9ba5aeedcc5ba8be99f1cc9301f6679912910ff92fdf7980929c2fc83ab4d" "84d2f9eeb3f82d619ca4bfffe5f157282f4779732f48a5ac1484d94d5ff5b279" "51ec7bfa54adf5fff5d466248ea6431097f5a18224788d0bd7eb1257a4f7b773" "bf4b3dbc59b2b0873bd74ebf8f3a8c13d70dc3d36a4724b27edb1e427f047c1e" "b89a4f5916c29a235d0600ad5a0849b1c50fab16c2c518e1d98f0412367e7f97" "2d40e8de2c676ec749cf13a0a48e35a8b678a056dc397ffe8de4424dfa69d460" "378d52c38b53af751b50c0eba301718a479d7feea5f5ba912d66d7fe9ed64c8f" "5d09b4ad5649fea40249dd937eaaa8f8a229db1cec9a1a0ef0de3ccf63523014" "f2c35f8562f6a1e5b3f4c543d5ff8f24100fae1da29aeb1864bbc17758f52b70" "76bfa9318742342233d8b0b42e824130b3a50dcc732866ff8e47366aed69de11" "4bca89c1004e24981c840d3a32755bf859a6910c65b829d944n1814000cf6c3d0" "711efe8b1233f2cf52f338fd7f15ce11c836d0b6240a18fffffc2cbd5bfe61b0" "bf387180109d222aee6bb089db48ed38403a1e330c9ec69fe1f52460a8936b66" "e6ff132edb1bfa0645e2ba032c44ce94a3bd3c15e3929cdf6c049802cf059a2a" "990e24b406787568c592db2b853aa65ecc2dcd08146c0d22293259d400174e37" "f10e50d86ec09152a03fcc3b251ba698610b2e5baa73699297a8bb37a419f3c8" "6b80b5b0762a814c62ce858e9d72745a05dd5fc66f821a1c5023b4f2a76bc910" "834cbeacb6837f3ddca4a1a7b19b1af3834f36a701e8b15b628cad3d85c970ff" "c7eb06356fd16a1f552cfc40d900fe7326ae17ae7578f0ef5ba1edd4fdd09e58" "82360e5f96244ce8cc6e765eeebe7788c2c5f3aeb96c1a765629c5c7937c0b5b" "5383ee4857a6fc48d27f6a064a4cc07d1dbef566b68edd91a4ec910e702edb70" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "68bf77811b94a9d877f9c974c19bafe5b67b53ed82baf96db79518564177c0fb" "155a5de9192c2f6d53efcc9c554892a0d87d87f99ad8cc14b330f4f4be204445" "f061b6bdcf3e9d82dad9fd79458125b3c477d399e87d2027083b7e3ecd6f4dad" "1d2f406a342499f0098f9388b87d05ec9b28ccb12ca548f4f5fa80ae368235b6" "efefb69e7781fcfe62f3d0b573701f56e45e29afbe9e378a422025fd767ea246" "6b2636879127bf6124ce541b1b2824800afc49c6ccd65439d6eb987dbf200c36" "add1f25df72a6faa9c87840e33b1890b117f72829d993d5d47393c0bf9f16a22" "e297f54d0dc0575a9271bb0b64dad2c05cff50b510a518f5144925f627bb5832" "bcc6775934c9adf5f3bd1f428326ce0dcd34d743a92df48c128e6438b815b44f" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "b9cbfb43711effa2e0a7fbc99d5e7522d8d8c1c151a3194a4b176ec17c9a8215" default))
  '(display-battery-mode t)
- '(epg-gpg-program "/usr/bin/gpg")
+ '(epg-gpg-program "/usr/local/bin/gpg")
+ '(excorporate-configuration
+   '("ari.turetzky@workdayinternal.com" . "https://outlook.office365.com/EWS/Exchange.asmx"))
  '(exec-path
    '("/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Users/aturetzky/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/libexec" "/Users/aturetzky/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/bin" "/usr/local/bin"))
  '(fancy-narrow-mode t)
  '(fci-rule-color "#5E5E5E")
  '(flycheck-disabled-checkers '(ruby-rubylint))
  '(flycheck-ruby-rubocop-executable "~/.rbenv/shims/rubocop")
- '(global-company-mode t nil nil "Customized with use-package company")
  '(global-display-line-numbers-mode t)
  '(indent-tabs-mode nil)
- '(lsp-auto-configure t nil nil "Customized with use-package lsp-mode")
- '(lsp-diagnostics-provider :flycheck)
+ '(lsp-diagnostics-provider :auto t)
  '(lsp-eldoc-hook nil)
- '(lsp-eldoc-render-all nil nil nil "Customized with use-package lsp-mode")
  '(lsp-hover-enabled nil)
- '(lsp-inhibit-message t t nil "Customized with use-package lsp-mode")
  '(lsp-keymap-prefix "C-c l")
- '(lsp-prefer-flymake nil t nil "Customized with use-package lsp-mode")
  '(lsp-project-whitelist nil)
  '(lsp-solargraph-completion t)
  '(lsp-solargraph-multi-root nil)
@@ -85,66 +78,20 @@
  '(menu-bar-mode nil)
  '(nnreddit-python-command "python3")
  '(objed-cursor-color "#d02b61")
+ '(org-agenda-files
+   '("~/Documents/notes/agenda.org" "/Users/ari.turetzky/Documents/notes/notes.org" "/Users/ari.turetzky/Documents/notes/habits.org" "/Users/ari.turetzky/Documents/notes/todo.org"))
  '(package-selected-packages
-   '(orderless selectrum consult-lsp vertico mure-views all-the-icons-gnus erc-hl-nicks erc-image nnreddit pinentry vscode-dark-plus-theme org lsp-treemacs realgud-pry inflections csv-mode dash-at-point quelpa-use-package quelpa marginalia consult company-posframe company-prescient ivy-prescient org-habit info-colors general ox-slack treemacs-all-the-icons all-the-icons-ivy-rich ob-scheme geiser which-key-posframe ox-pandoc ob-typescript org-variable-pitch olivetti undo-tree fullframe adaptive-wrap visual-fill-column visual-fill vterm darktooth-theme treemacs-evil evil spaceline-all-the-icons minions helpful zenburn-theme which-key elfeed-org elfeed-goodies elfeed w3m twittering-mode rake tree-mode yasnippet-snippets graphql treemacs-projectile deft with-editor color-theme-cobalt ample-zen-theme popup-kill-ring rubocopfmt projectile-extras ox-gfm ob-sql-mode lsp-ivy treemacs-magit ivy-posframe flycheck-jest jest spacemacs-theme spaceline panda-theme markdown-mode+ pretty-mode-plus pretty-mode flycheck-pos-tip react-snippets graphql-mode multiple-cursors monokai-pro-theme stylus-mode emojify prettier-js leuven-theme ivy-rich git-gutter-fringe+ git-gutter+-fringe git-gutter-fringe nimbus-theme company-quickhelp dockerfile-mode rspec-mode doom-themes darcula-theme rufo anzu company-box lsp true visual-regexp ivy-hydra all-the-icons-dired all-the-icons-ivy company-web rbenv lsp-ruby dap-mode lsp-javascript-typescript ag async autotest avy bind-key boxquote coffee-mode epl exec-path-from-shell f feature-mode flx flx-ido flymake-easy gh ghub gist git-commit hcl-mode highline ht htmlize hydra inf-ruby ivy js-comint js2-mode json-reformat json-snatcher logito magit-popup markdown-mode marshal memoize org-bullets org-mime ox-twbs pcache pfuture pkg-info puppet-mode rich-minority ruby-tools s seeing-is-believing lsp-mode company-inf-ruby terraform-mode lsp-ui emmet-mode web-mode rjsx-mode haml-mode use-package yaml-mode rvm groovy-mode haskell-mode nvm enh-ruby-mode bart-mode ox-reveal rainbow-delimiters rainbow-mode beacon-mode counsel-projectile beacon request mu4e ace-jump-mode company-eclim robe company counsel git-timemachine plantuml-mode git-gutter ace-window sicp hc-zenburn-theme linum-relative hlinum smart-mode-line solarized-theme gandalf-theme cyberpunk-theme fancy-narrow ob-cypher cypher-mode ox-jira virtualenvwrapper moe-theme diminish all-the-icons ac-emacs-eclim eclim python-mode json-mode ruby-electric scala-mode rubocop yasnippet ac-inf-ruby flycheck flymake flymake-haml flymake-puppet flymake-ruby flyspell-popup popup-complete popup-imenu pos-tip magit auto-complete ac-cake ac-dabbrev ac-emoji ac-etags ac-ispell ac-html-angular ac-js2 ac-octave auto-complete-c-headers auto-complete-chunk auto-complete-clang auto-complete-clang-async auto-complete-etags auto-complete-exuberant-ctags auto-complete-octave auctex))
+   '(jenkinsfile-mode org-super-agenda telephone-line doom-modeline org-ref shrink-path xwidgets-reuse xwwp-follow-link-ivy xwwp excorporate modus-operandi-theme projectile-ripgrep orderless selectrum consult-lsp vertico mure-views all-the-icons-gnus erc-hl-nicks erc-image nnreddit pinentry vscode-dark-plus-theme org lsp-treemacs realgud-pry inflections csv-mode dash-at-point quelpa-use-package quelpa marginalia consult company-posframe company-prescient ivy-prescient org-habit info-colors general ox-slack treemacs-all-the-icons all-the-icons-ivy-rich ob-scheme geiser which-key-posframe ox-pandoc ob-typescript org-variable-pitch olivetti undo-tree fullframe adaptive-wrap visual-fill-column visual-fill vterm darktooth-theme treemacs-evil spaceline-all-the-icons minions helpful zenburn-theme which-key elfeed-org elfeed-goodies elfeed w3m twittering-mode rake tree-mode yasnippet-snippets graphql treemacs-projectile deft with-editor color-theme-cobalt ample-zen-theme popup-kill-ring rubocopfmt projectile-extras ox-gfm ob-sql-mode lsp-ivy treemacs-magit ivy-posframe flycheck-jest jest spacemacs-theme spaceline panda-theme markdown-mode+ pretty-mode-plus pretty-mode flycheck-pos-tip react-snippets graphql-mode multiple-cursors monokai-pro-theme stylus-mode emojify prettier-js leuven-theme ivy-rich git-gutter-fringe+ git-gutter+-fringe git-gutter-fringe nimbus-theme company-quickhelp dockerfile-mode rspec-mode doom-themes darcula-theme rufo anzu company-box lsp true visual-regexp ivy-hydra all-the-icons-dired all-the-icons-ivy company-web rbenv lsp-ruby dap-mode lsp-javascript-typescript ag async autotest avy bind-key boxquote coffee-mode epl exec-path-from-shell f feature-mode flx flx-ido flymake-easy gh ghub gist git-commit hcl-mode highline ht htmlize hydra inf-ruby ivy js-comint js2-mode json-reformat json-snatcher logito magit-popup markdown-mode marshal memoize org-bullets org-mime ox-twbs pcache pfuture pkg-info puppet-mode rich-minority ruby-tools s seeing-is-believing company-inf-ruby terraform-mode lsp-ui emmet-mode web-mode rjsx-mode haml-mode use-package yaml-mode rvm groovy-mode haskell-mode nvm enh-ruby-mode bart-mode ox-reveal rainbow-delimiters rainbow-mode beacon-mode counsel-projectile beacon request mu4e ace-jump-mode company-eclim robe company counsel git-timemachine plantuml-mode git-gutter ace-window sicp hc-zenburn-theme linum-relative hlinum smart-mode-line solarized-theme gandalf-theme cyberpunk-theme fancy-narrow ob-cypher cypher-mode ox-jira virtualenvwrapper moe-theme diminish all-the-icons ac-emacs-eclim eclim python-mode json-mode ruby-electric scala-mode rubocop yasnippet ac-inf-ruby flycheck flymake flymake-haml flymake-puppet flymake-ruby flyspell-popup popup-complete popup-imenu pos-tip auto-complete ac-cake ac-dabbrev ac-emoji ac-etags ac-ispell ac-html-angular ac-js2 ac-octave auto-complete-c-headers auto-complete-chunk auto-complete-clang auto-complete-clang-async auto-complete-etags auto-complete-exuberant-ctags auto-complete-octave auctex))
  '(projectile-rails-global-mode t)
+ '(rbenv-show-active-ruby-in-modeline nil)
  '(request-message-level -1)
  '(show-paren-mode t)
- '(sml/mode-width (if (eq (powerline-current-separator) 'arrow) 'right 'full))
- '(sml/pos-id-separator
-   '(""
-     (:propertize " " face powerline-active1)
-     (:eval
-      (propertize " " 'display
-                  (funcall
-                   (intern
-                    (format "powerline-%s-%s"
-                            (powerline-current-separator)
-                            (car powerline-default-separator-dir)))
-                   'powerline-active1 'powerline-active2)))
-     (:propertize " " face powerline-active2)))
- '(sml/pos-minor-modes-separator
-   '(""
-     (:propertize " " face powerline-active1)
-     (:eval
-      (propertize " " 'display
-                  (funcall
-                   (intern
-                    (format "powerline-%s-%s"
-                            (powerline-current-separator)
-                            (cdr powerline-default-separator-dir)))
-                   'powerline-active1 'sml/global)))
-     (:propertize " " face sml/global)))
- '(sml/pre-id-separator
-   '(""
-     (:propertize " " face sml/global)
-     (:eval
-      (propertize " " 'display
-                  (funcall
-                   (intern
-                    (format "powerline-%s-%s"
-                            (powerline-current-separator)
-                            (car powerline-default-separator-dir)))
-                   'sml/global 'powerline-active1)))
-     (:propertize " " face powerline-active1)))
- '(sml/pre-minor-modes-separator
-   '(""
-     (:propertize " " face powerline-active2)
-     (:eval
-      (propertize " " 'display
-                  (funcall
-                   (intern
-                    (format "powerline-%s-%s"
-                            (powerline-current-separator)
-                            (cdr powerline-default-separator-dir)))
-                   'powerline-active2 'powerline-active1)))
-     (:propertize " " face powerline-active1)))
- '(sml/pre-modes-separator (propertize " " 'face 'sml/modes))
  '(tool-bar-mode nil)
+ '(warning-suppress-types '((comp) (:warning)))
  '(which-key-mode t))
 
-(setq mac-option-key-is-meta nil)
-(setq mac-command-key-is-meta t)
+;;(setq mac-option-key-is-meta nil)
+;;(setq mac-command-key-is-meta t)
 (setq mac-command-modifier 'meta)
 (setq mac-option-modifier 'super)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -191,17 +138,17 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ace-jump-face-foreground ((t (:background "gray16" :foreground "#9FC59F" :inverse-video nil :height 1.5))))
- '(gnus-summary-normal-unread ((t (:family "Monaco" :height 1.0))))
+ '(gnus-summary-normal-read ((t (:weight light :family "DejaVu Sans Mono for Powerline" :height 1.0 :foreground "DarkSlateGray4"))))
+ '(gnus-summary-normal-unread ((t (:weight light :family "DejaVu Sans Mono for Powerline" :height 1.0))))
  '(line-number-current-line ((t (:inherit line-number :foreground "yellow"))))
- '(mode-line ((t (:background "#007acc" :foreground "#fafafa" :weight normal :family "Monaco" :height 1.1))))
+ '(mode-line ((t (:background "#007acc" :foreground "#fafafa" :weight normal :family "Monaco" :height 150))))
  '(spaceline-highlight-face ((t (:background "DarkSlateGray4" :foreground "#3E3D31" :inherit 'mode-line))))
- '(variable-pitch ((t (:family "Sans Serif")))))
+ '(variable-pitch ((t (:weight light :height 175 :family "Sans Serif")))))
 (message ".emacs loaded")
 ;;end .emacs
 ;; '(spaceline-evil-normal ((t (:background "aquamarine4" :foreground "#3E3D31" :inherit 'mode-line))))
 ;;  '(spaceline-unmodified ((t (:background "#000000" :foreground "#3E3D31" :inherit 'mode-line))))
 
 (put 'upcase-region 'disabled nil)
-(exec-path-from-shell-initialize)
 (provide '.emacs)
 ;;; .emacs ends here
