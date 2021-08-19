@@ -691,9 +691,10 @@
   (lsp-inhibit-message t)
   (lsp-eldoc-render-all nil)
   :config
-  (lsp-enable-which-key-integration t)
+  (setq lsp-enable-which-key-integration t)
   (setq lsp-enable-symbol-highlighting t)
   (setq lsp-modeline-code-actions-enable t)
+  (setq lsp-diagnostics-provider :auto)
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
   :ensure t)
 
@@ -881,6 +882,54 @@
 
 (use-package helpful
   :ensure t)
+
+(use-package elfeed
+  :ensure t)
+(use-package elfeed-org
+  :ensure t
+  :after elfeed
+  :config
+  (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
+  (elfeed-org))
+;; (use-package elfeed-goodies
+;;   :after elfeed
+;;   :ensure t
+;;   :init
+;;   (elfeed-goodies/setup))
+
+(use-package visual-fill
+  :ensure t)
+(use-package visual-fill-column
+  :ensure t)
+;; (add-hook 'elfeed-show-mode-hook (lambda()
+;;                                    (setq fill-column 100)
+;;                                    (visual-fill-mode t)
+;;                                    (adaptive-wrap-prefix-mode t)
+;;                                    (toggle-word-wrap)
+;;                                    (visual-fill-column-mode)))
+
+
+(use-package twittering-mode
+  :ensure t
+  :config
+  (defface my-twit-face
+    '((t :family "Helvetica"
+         :weight ultra-light
+         :height 160
+         ))
+    "face for twitter")
+  (defalias 'epa--decode-coding-string 'decode-coding-string)
+  (setq twittering-use-master-password t)
+  (setq twittering-icon-mode t)
+  (setq twittering-use-icon-storage t)
+
+  (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
+     %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
+     +----
+     %FOLD[|]{%i %S (%s),  %@:
+     %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
+     +----}}
+     "))
 
 (use-package prescient
   :ensure t
