@@ -3,7 +3,6 @@
 (setq package-archives '(
                                  ("melpa"  . "https://melpa.org/packages/")
                                  ("elpa"   . "https://elpa.gnu.org/packages/")
-                                 ("org"    . "https://orgmode.org/elpa/")
                                  ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                                  ))
 (package-initialize)
@@ -63,61 +62,66 @@
   :ensure t)
 
 (use-package swiper
-  :ensure t)
-(use-package counsel
-  :ensure t)
-(use-package ivy
-  :ensure t
-  :init
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-use-selectable-prompt t)
-  (setq enable-recursive-minibuffers t)
-  (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
-  :bind
-  (
-   ("\C-s" . 'swiper-isearch)
-   ("C-x C-f" . 'counsel-find-file)
-   ("C-c j" . 'counsel-git-grep)
-   ("C-c k" . 'counsel-ag)
-   ("C-x L" . 'counsel-locate)
-   ("M-x" . 'counsel-M-x))
-  :config
-  (setq swiper-use-visual-line nil)
-  (setq swiper-use-visual-line-p (lambda (a) nil)))
-(use-package ivy-rich
-  :init
-  (ivy-rich-mode 1)
-  :config
-  (setq ivy-format-function #'ivy-format-function-line))
-;; (use-package ivy-posframe
-;;   :ensure t
-;;   :after ivy
-;;   :init
-;;   (setq ivy-posframe-hide-minibuffer t)
-;;   (setq ivy-posframe-min-width nil)
-;;   (setq ivy-posframe-width nil)
-;;   (setq ivy-posframe-border-width 2)
-;;   (setq ivy-posframe-parameters
-;;         '((left-fringe . 8)
-;;           (right-fringe .8)))
-;;   (ivy-posframe-mode t)
-;;   )
-(use-package all-the-icons-ivy-rich
-  :defer 2
-  :ensure t
-  :init(all-the-icons-ivy-rich-mode 1))
-(use-package all-the-icons-ivy
-  :defer 2
-  :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
-(use-package marginalia
-  :defer 2
-  :ensure t
-  :init
-  (marginalia-mode)
-  :bind
-  (:map minibuffer-local-map
-        ("M-A" . marginalia-cycle)))
+       :ensure t)
+     (use-package counsel
+       :ensure t)
+     (use-package vterm
+       :ensure t
+       :init
+(       setq vterm-max-scrollback 1000000)
+               )
+     (use-package ivy
+       :ensure t
+       :init
+       (ivy-mode 1)
+       (setq ivy-use-virtual-buffers t)
+       (setq ivy-use-selectable-prompt t)
+       (setq enable-recursive-minibuffers t)
+       (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+       :bind
+       (
+        ("\C-s" . 'swiper-isearch)
+        ("C-x C-f" . 'counsel-find-file)
+        ("C-c j" . 'counsel-git-grep)
+        ("C-c k" . 'counsel-ag)
+        ("C-x L" . 'counsel-locate)
+        ("M-x" . 'counsel-M-x))
+       :config
+       (setq swiper-use-visual-line nil)
+       (setq swiper-use-visual-line-p (lambda (a) nil)))
+     (use-package ivy-rich
+       :init
+       (ivy-rich-mode 1)
+       :config
+       (setq ivy-format-function #'ivy-format-function-line))
+     ;; (use-package ivy-posframe
+     ;;   :ensure t
+     ;;   :after ivy
+     ;;   :init
+     ;;   (setq ivy-posframe-hide-minibuffer t)
+     ;;   (setq ivy-posframe-min-width nil)
+     ;;   (setq ivy-posframe-width nil)
+     ;;   (setq ivy-posframe-border-width 2)
+     ;;   (setq ivy-posframe-parameters
+     ;;         '((left-fringe . 8)
+     ;;           (right-fringe .8)))
+     ;;   (ivy-posframe-mode t)
+     ;;   )
+     (use-package all-the-icons-ivy-rich
+       :defer 2
+       :ensure t
+       :init(all-the-icons-ivy-rich-mode 1))
+     (use-package all-the-icons-ivy
+       :defer 2
+       :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+     (use-package marginalia
+       :defer 2
+       :ensure t
+       :init
+       (marginalia-mode)
+       :bind
+       (:map minibuffer-local-map
+             ("M-A" . marginalia-cycle)))
 
 (global-set-key "\C-cy" 'counsel-yank-pop)
 
@@ -303,6 +307,7 @@
   :config
   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
   (flycheck-add-mode 'javascript-jshint 'rjsx-mode)
+  (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
   )
 
 (server-start)
@@ -334,7 +339,7 @@
                       (diminish 'global-highline-mode))
 
                     (use-package org
-                      :ensure org-plus-contrib
+                        :pin nongnu
                       :ensure t
                       :diminish  ""
                       :config
@@ -399,35 +404,39 @@
                     (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 
-                    (use-package org-roam
-                      :after org
-                      :ensure t
-                      :init
-                      (setq org-roam-v2-ack t)
-                      :custom
-                      (org-roam-directory "~/Documents/org-roam" )
-                      :config
-                      (org-roam-setup)
-                      (setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
-                                                          (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-                                                          :unnarrowed t)
-                                                         ("c" "region" plain "%i" :if-new
-                                                          (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-                                                          :unnarrowed t)
-                                                         ))
-                      (setq org-roam-dailies-directory "daily/")
+(use-package org-roam
+  :after org
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/Documents/org-roam" )
+  :config
+  (org-roam-setup)
+  (setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     ("c" "region" plain "%i" :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     ))
+(setq org-roam-node-display-template
+      (concat "${title:30} "
+              (propertize "${tags:*}" 'face 'org-tag)))
 
-          (setq org-roam-dailies-capture-templates
-                '(("d" "default" entry
-                   "* %?"
-                   :if-new (file+head "%<%Y-%m-%d>.org"
-                                      "#+title: %<%Y-%m-%d>\n"))
-                  ("c" "region" entry
-              "* %?
+  (setq org-roam-dailies-directory "daily/")
+
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry
+           "* %?"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n"))
+          ("c" "region" entry
+           "* %?
 
 %i"
-              :if-new (file+head "%<%Y-%m-%d>.org"
-                                 "#+title: %<%Y-%m-%d>\n")))))
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n")))))
 
                     (defun ek/babel-ansi ()
                       (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
@@ -527,8 +536,8 @@
                       (venv-initialize-eshell)
                       (setq venv-location "~/.virtualenvs")
                       )
-                    (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
-                    (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+                    (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.14/libexec/plantuml.jar")
+                    (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.14/libexec/plantuml.jar")
 
 
                     (setq org-mime-export-options '(:section-numbers nil
@@ -696,6 +705,7 @@
   (setq lsp-enable-symbol-highlighting t)
   (setq lsp-modeline-code-actions-enable t)
   (setq lsp-diagnostics-provider :auto)
+  (setq lsp-diagnostics-mode nil)
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
   :ensure t)
 
@@ -882,55 +892,103 @@
   (setq which-key-idle-delay 1))
 
 (use-package helpful
-  :ensure t)
+                                :ensure t
+                                :init
+                                (defun helpful--autoloaded-p (sym buf)
+  "Return non-nil if function SYM is autoloaded."
+  (-when-let (file-name (buffer-file-name buf))
+    (setq file-name (s-chop-suffix ".gz" file-name))
+    (help-fns--autoloaded-p sym)))
+
+(defun helpful--skip-advice (docstring)
+  "Remove mentions of advice from DOCSTRING."
+  (let* ((lines (s-lines docstring))
+         (relevant-lines
+          (--take-while
+           (not (or (s-starts-with-p ":around advice:" it)
+                    (s-starts-with-p "This function has :around advice:" it)))
+           lines)))
+    (s-trim (s-join "\n" relevant-lines)))))
 
 (use-package elfeed
-  :ensure t)
-(use-package elfeed-org
-  :ensure t
-  :after elfeed
-  :config
-  (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
-  (elfeed-org))
-;; (use-package elfeed-goodies
-;;   :after elfeed
-;;   :ensure t
-;;   :init
-;;   (elfeed-goodies/setup))
+       :ensure t)
+     (use-package elfeed-org
+       :ensure t
+       :after elfeed
+       :config
+       (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
+       (elfeed-org))
+     ;; (use-package elfeed-goodies
+     ;;   :after elfeed
+     ;;   :ensure t
+     ;;   :init
+     ;;   (elfeed-goodies/setup))
 
-(use-package visual-fill
-  :ensure t)
-(use-package visual-fill-column
-  :ensure t)
-;; (add-hook 'elfeed-show-mode-hook (lambda()
-;;                                    (setq fill-column 100)
-;;                                    (visual-fill-mode t)
-;;                                    (adaptive-wrap-prefix-mode t)
-;;                                    (toggle-word-wrap)
-;;                                    (visual-fill-column-mode)))
+     (use-package visual-fill
+       :ensure t)
+     (use-package visual-fill-column
+       :ensure t
+       :hook 'visual-line-mode-hook #'visual-fill-column-mode
+       :config
+       (setq fill-column 120)
+       (setq visual-fill-column-width 120)
+       )
+(defun visual-fill-column ()
+  nil)
+     (defun elfeed-olivetti (buff)
+       (with-current-buffer buff
+         (setq buffer-read-only nil)
+         (goto-char (point-min))
+         (re-search-forward "\n\n")
+         (fill-individual-paragraphs (point-min) (point-max))
+         (setq buffer-read-only t))
+       (switch-to-buffer buff)
+       (olivetti-mode)
+       (visual-fill-column-mode t)
+       (elfeed-show-refresh)
+       )
+
+     (setq elfeed-show-entry-switch 'elfeed-olivetti)
+
+     (add-hook 'elfeed-show-mode-hook (lambda()
+                                        (setq fill-column 120)
+                                        (setq-local truncate-lines nil)
+                                        (setq-local shr-width 120)
+                                        (set-buffer-modified-p nil)
+                                        (setq-local left-margin-width 20)
+                                        (setq-local right-margin-width 20)
+                                        (visual-line-mode t)
+                                        (adaptive-wrap-prefix-mode t)))
+
+     ;; (add-hook 'elfeed-show-mode-hook (lambda()
+     ;;                                    (setq fill-column 100)
+     ;;                                    (visual-fill-mode t)
+     ;;                                    (adaptive-wrap-prefix-mode t)
+     ;;                                    (toggle-word-wrap)
+     ;;                                    (visual-fill-column-mode)))
 
 
-(use-package twittering-mode
-  :ensure t
-  :config
-  (defface my-twit-face
-    '((t :family "Helvetica"
-         :weight ultra-light
-         :height 160
-         ))
-    "face for twitter")
-  (defalias 'epa--decode-coding-string 'decode-coding-string)
-  (setq twittering-use-master-password t)
-  (setq twittering-icon-mode t)
-  (setq twittering-use-icon-storage t)
+     (use-package twittering-mode
+       :ensure t
+       :config
+       (defface my-twit-face
+         '((t :family "Helvetica"
+              :weight ultra-light
+              :height 160
+              ))
+         "face for twitter")
+       (defalias 'epa--decode-coding-string 'decode-coding-string)
+       (setq twittering-use-master-password t)
+       (setq twittering-icon-mode t)
+       (setq twittering-use-icon-storage t)
 
-  (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
-     %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
-     +----
-     %FOLD[|]{%i %S (%s),  %@:
-     %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
-     +----}}
-     "))
+       (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
+          %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
+          +----
+          %FOLD[|]{%i %S (%s),  %@:
+          %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
+          +----}}
+          "))
 
 (use-package prescient
   :ensure t
@@ -983,5 +1041,20 @@
     "m" 'mu4e
     "b" '(:ignore t :which-key "eww")
     "bf" '(eww-follow-link :which-key "eww-follow-link")))
+
+(use-package popper
+:ensure t ; or :straight t
+:bind (("C-`"   . popper-toggle-latest)
+       ("M-`"   . popper-cycle)
+       ("C-M-`" . popper-toggle-type))
+:init
+(setq popper-reference-buffers
+      '("\\*Messages\\*"
+        "Output\\*$"
+        "\\*Async Shell Command\\*"
+        help-mode
+        compilation-mode))
+(popper-mode +1)
+(popper-echo-mode +1))                ; For echo area hints
 
 (provide 'emacs-config-new)

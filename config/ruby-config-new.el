@@ -70,6 +70,7 @@
               (diminish 'eclim-mode)
               (diminish 'abbrev-mode)
               (diminish 'ivy-mode)
+              (diminish 'battery-mode)
               (diminish 'global-highline-mode)
               (diminish 'ruby-block-mode)
               (diminish 'ruby-electric-mode)
