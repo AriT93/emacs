@@ -79,7 +79,7 @@ is going on while you write code.
     (setq rspec-use-spring-when-possible nil)
     (setq rspec-command-options "--format progress"))
     (add-hook 'after-init-hook  'inf-ruby-switch-setup)
-  
+
     (require 'ruby-block)
     (diminish 'ruby-block-mode)
     (require 'ruby-electric)
@@ -140,8 +140,8 @@ is going on while you write code.
 ** Key-bindings some still used and some more ac config
 damn this is a mess
 #+BEGIN_SRC elisp
-  
-  
+
+
   ;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
     ;; (autoload 'ri "ri-ruby.el" nil t)
   (use-package autotest
