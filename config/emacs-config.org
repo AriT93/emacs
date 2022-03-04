@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2021-08-19 16:40:37 abturet>
+#+Time-stamp: <2022-02-11 08:54:53 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -15,13 +15,13 @@
 
    find our packages in the more reputable places
    #+BEGIN_SRC elisp
-     (setq package-archives '(
-                                      ("melpa"  . "https://melpa.org/packages/")
-                                      ("elpa"   . "https://elpa.gnu.org/packages/")
-                                      ("org"    . "https://orgmode.org/elpa/")
-                                      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                                      ))
-     (package-initialize)
+          (setq package-archives '(
+                                           ("melpa"  . "https://melpa.org/packages/")
+                                           ("elpa"   . "https://elpa.gnu.org/packages/")
+                                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                                           ))
+          (package-initialize)
+     
    #+END_SRC
 
 ** Use Package
@@ -42,6 +42,120 @@
    #+BEGIN_SRC elisp
      (require 'load-path-config-new)
    #+END_SRC
+
+** EXWM
+#+begin_src elisp
+  ;;     (defun efs/exwm-update-class()
+  ;;       (exwm-workspace-rename-buffer exwm-class-name))
+      (defun efs/run-in-background (command)
+        (let ((command-parts (split-string command "[ ]+")))
+          (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
+  ;;     (defun exwm-x/lock-screen ()
+  ;;       (interactive)
+  ;;         (shell-command "xscreensaver-command -lock"))
+  
+  ;;     (defvar efs/polybar-process nil
+  ;;     "Holds the process of the running Polybar instance, if any")
+  
+  ;;   (defun efs/kill-panel ()
+  ;;     (interactive)
+  ;;     (when efs/polybar-process
+  ;;       (ignore-errors
+  ;;         (kill-process efs/polybar-process)))
+  ;;     (setq efs/polybar-process nil))
+  
+  ;;   (defun efs/start-panel ()
+  ;;     (interactive)
+  ;;     (efs/kill-panel)
+  ;;     (setq efs/polybar-process (start-process-shell-command "polybar" nil "polybar panel")))
+  
+  ;;   (defun efs/send-polybar-hook (module-name hook-index)
+  ;;     (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" module-name hook-index)))
+  
+  ;;   (defun efs/send-polybar-exwm-workspace ()
+  ;;     (efs/send-polybar-hook "exwm-workspace" 1))
+  
+  ;;   ;; Update panel indicator when workspace changes
+  ;;   (add-hook 'exwm-workspace-switch-hook #'efs/send-polybar-exwm-workspace)
+  
+  ;;     (use-package exwm
+  ;;       :ensure t
+  ;;       :config
+  ;;     (add-hook 'exwm-update-class-hook
+  ;;               (lambda ()
+  ;;                 (exwm-workspace-rename-buffer exwm-class-name)))
+  ;;     (setq exwm-workspace-number 4)
+  
+  ;;       (setq exwm-input-prefix-keys
+  ;;             '(?\C-x
+  ;;               ?\C-u
+  ;;               ?\C-h
+  ;;               ?\M-x
+  ;;               ?\M-o
+  ;;               ))
+  ;;       ;; Ctrl+Q will enable the next key to be sent directly
+  ;;       (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
+  
+  ;;       ;; Set up global key bindings.  These always work, no matter the input state!
+  ;;       ;; Keep in mind that changing this list after EXWM initializes has no effect.
+  ;;       (setq exwm-input-global-keys
+  ;;             `(
+  ;;               ;; Reset to line-mode (C-c C-k switches to char-mode via exwm-input-release-keyboard)
+  ;;               ([?\s-r] . exwm-reset)
+  
+  ;;               ;; Move between windows
+  ;;               ([s-left] . windmove-left)
+  ;;               ([s-right] . windmove-right)
+  ;;               ([s-up] . windmove-up)
+  ;;               ([s-down] . windmove-down)
+  
+  ;;               ;; Launch applications via shell command
+  ;;               ([?\s-&] . (lambda (command)
+  ;;                            (interactive (list (read-shell-command "$ ")))
+  ;;                            (start-process-shell-command command nil command)))
+  
+  ;;               ;; Switch workspace
+  ;;               ([?\s-w] . exwm-workspace-switch)
+  
+  ;;               ;; 's-N': Switch to certain workspace with Super (Win) plus a number key (0 - 9)
+  ;;               ,@(mapcar (lambda (i)
+  ;;                           `(,(kbd (format "s-%d" i)) .
+  ;;                             (lambda ()
+  ;;                               (interactive)
+  ;;                               (exwm-workspace-switch-create ,i))))
+  ;;                         (number-sequence 0 9))))
+  
+  
+  ;;       ;; (require 'exwm-systemtray)
+  ;;       ;; (setq exwm-systemtray-height 32)
+  ;;       ;; (exwm-systemtray-enable)
+  ;;       (efs/start-panel)
+  ;;       (efs/run-in-background "dunst")
+  ;;       (efs/run-in-background "nm-applet")
+  ;;       (efs/run-in-background "pasystray")
+  ;;       (efs/run-in-background "dropbox")
+    ;;     (efs/run-in-background "1password --silent")
+  ;;       (efs/run-in-background "blueman-applet")
+  ;; ;;      (efs/run-in-background "/usr/lib/notification-daemon/notification-daemon")
+  ;;       (efs/run-in-background "xscreensaver -no-splash")
+  ;;       (setq exwm-randr-workspace-monitor-plist '(2 "HDMI-A-1" 3 "HDMI-A-1"))
+  
+  
+  ;;       (require 'exwm-randr)
+  ;;       (exwm-randr-enable)
+  ;;       ;; Automatically send the mouse cursor to the selected workspace's display
+  ;;       (setq exwm-workspace-warp-cursor t)
+  
+  ;;       ;; Window focus should follow the mouse pointer
+  ;;       (setq mouse-autoselect-window t
+  ;;             focus-follows-mouse t)
+  ;;       (exwm-enable) )
+  
+      ;; (require 'exwm)
+      ;;   (require 'exwm-config)
+      ;;   (exwm-config-example)
+#+end_src
+
 ** Looks and Behaviors
    #+BEGIN_SRC elisp
      (show-paren-mode 1)
@@ -407,7 +521,6 @@
                            (diminish 'global-highline-mode))
 
                          (use-package org
-                           :ensure org-plus-contrib
                            :ensure t
                            :diminish  ""
                            :config
@@ -1030,53 +1143,68 @@
    #+end_src
 **  Elfeed
    #+begin_src elisp
-     (use-package elfeed
-       :ensure t)
-     (use-package elfeed-org
-       :ensure t
-       :after elfeed
-       :config
-       (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
-       (elfeed-org))
-     ;; (use-package elfeed-goodies
-     ;;   :after elfeed
-     ;;   :ensure t
-     ;;   :init
-     ;;   (elfeed-goodies/setup))
+                 (use-package elfeed
+                   :ensure t)
+                 (use-package elfeed-org
+                   :ensure t
+                   :after elfeed
+                   :config
+                   (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
+                   (elfeed-org))
+                 ;; (use-package elfeed-goodies
+                 ;;   :after elfeed
+                 ;;   :ensure t
+                 ;;   :init
+                 ;;   (elfeed-goodies/setup))
 
-     (use-package visual-fill
-       :ensure t)
-     (use-package visual-fill-column
-       :ensure t)
-     ;; (add-hook 'elfeed-show-mode-hook (lambda()
-     ;;                                    (setq fill-column 100)
-     ;;                                    (visual-fill-mode t)
-     ;;                                    (adaptive-wrap-prefix-mode t)
-     ;;                                    (toggle-word-wrap)
-     ;;                                    (visual-fill-column-mode)))
+                 (use-package visual-fill
+                   :ensure t)
+                 (use-package visual-fill-column
+                   :ensure t)
+     (defun elfeed-olivetti(buff)
+       (with-current-buffer buff
+         (setq buffer-read-only nil)
+             (goto-char (point-min))
+         (re-search-forward "\n\n")
+         (fill-individual-paragraphs (point-min) (point-max))
+         (setq buffer-read-only t))
+                             (switch-to-buffer buff)
+                             (olivetti-mode)
+                             (elfeed-show-refresh))
+     (setq elfeed-show-entry-switch 'elfeed-olivetti)
+     (add-hook 'elfeed-show-mode-hook (lambda()
+                                                    (setq fill-column 60)
+                                                    (setq-local truncate-lines nil)
+                                                    (setq-local shr-width 80)
+                                                    (set-buffer-modified-p nil)
+                                                    (setq-local left-margin-width 15)
+                                                    (setq-local right-margin-width 15)
+                                                    (visual-line-mode t)
+                                                    (adaptive-wrap-prefix-mode t)
+                                                    (visual-fill-column-mode t)
+                                                    ))
 
+                 (use-package twittering-mode
+                   :ensure t
+                   :config
+                   (defface my-twit-face
+                     '((t :family "Helvetica"
+                          :weight ultra-light
+                          :height 160
+                          ))
+                     "face for twitter")
+                   (defalias 'epa--decode-coding-string 'decode-coding-string)
+                   (setq twittering-use-master-password t)
+                   (setq twittering-icon-mode t)
+                   (setq twittering-use-icon-storage t)
 
-     (use-package twittering-mode
-       :ensure t
-       :config
-       (defface my-twit-face
-         '((t :family "Helvetica"
-              :weight ultra-light
-              :height 160
-              ))
-         "face for twitter")
-       (defalias 'epa--decode-coding-string 'decode-coding-string)
-       (setq twittering-use-master-password t)
-       (setq twittering-icon-mode t)
-       (setq twittering-use-icon-storage t)
-
-       (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
-          %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
-          +----
-          %FOLD[|]{%i %S (%s),  %@:
-          %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
-          +----}}
-          "))
+                   (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
+                      %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
+                      +----
+                      %FOLD[|]{%i %S (%s),  %@:
+                      %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
+                      +----}}
+                      "))
 
    #+end_src
 ** Prescient

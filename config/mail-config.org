@@ -142,7 +142,9 @@
   (require 'gnus-icalendar)
   (gnus-icalendar-setup)
   (setq message-kill-buffer-on-exit t)
-
+  (require 'alert)
+  (setq alert-default-style 'libnotify)
+  
   (mu4e-icalendar-setup)
   (setq gnus-icalendar-org-capture-file "~/Documents/notes/agenda.org")
   (setq gnus-icalendar-org-capture-headline '("Calendar"))
@@ -159,7 +161,6 @@
     :config
     (mu4e-alert-set-default-style 'libnotify)
     (setq mu4e-alert-interesting-mail-query abt/mu4e-inbox-query)
-    (mu4e-alert-set-default-style 'libnotify)
     (setq mu4e-alert-notify-repeated-mails nil)
     (mu4e-alert-enable-notifications))
   
@@ -179,3 +180,6 @@
 #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
 #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
 #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+
+
+
