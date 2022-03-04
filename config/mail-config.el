@@ -131,6 +131,8 @@
 (require 'gnus-icalendar)
 (gnus-icalendar-setup)
 (setq message-kill-buffer-on-exit t)
+(require 'alert)
+(setq alert-default-style 'libnotify)
 
 (mu4e-icalendar-setup)
 (setq gnus-icalendar-org-capture-file "~/Documents/notes/agenda.org")
@@ -148,7 +150,6 @@
   :config
   (mu4e-alert-set-default-style 'libnotify)
   (setq mu4e-alert-interesting-mail-query abt/mu4e-inbox-query)
-  (mu4e-alert-set-default-style 'libnotify)
   (setq mu4e-alert-notify-repeated-mails nil)
   (mu4e-alert-enable-notifications))
 
