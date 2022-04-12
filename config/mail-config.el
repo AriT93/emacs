@@ -3,7 +3,7 @@
 ;;; Code:
 
 (require 'smtpmail)
-(add-to-list 'load-path "/usr/local/Cellar/mu/1.6.0/share/emacs/site-lisp/mu/mu4e/")
+(add-to-list 'load-path "/usr/local/Cellar/mu/1.6.8/share/emacs/site-lisp/mu/mu4e/")
 (require 'mu4e)
 
 (setq   mail-user-agent 'mu4e-user-agent)
@@ -72,41 +72,42 @@
                  (mu4e-compose-reply-to-address . "arit93@gmail.com")
                  )
         )
-       (make-mu4e-context
-        :name "Workday"
-        :match-func(lambda (msg)
-                     (when msg
-                       (string-match-p "^/work" (mu4e-message-field msg :maildir))))
-        :vars '( ( user-mail-address . "ari.turetzky@workday.com")
-                 (user-full-name   . "Ari Turetzky")
-                 (mu4e-trash-folder . "/work/Deleted Items")
-                 (mu4e-sent-folder . "/work/Sent Items")
-                 (mu4e-drafts-folder . "/work/Drafts")
-                 (smtpmail-default-smtp-server . "outlook.office365.com")
-                 (smtpmail-smtp-server .  "outlook.office365.com")
-                 (smtpmail-starttls-credentials   '(("outlook.office365.com" 587 nil nil)))
-                 (smtpmail-auth-credentials '(("outlook.office365.com" 587 "ari.turetzky@workdayinternal.com" nil)))
-                 (smtpmail-smtp-service . 587)
-                 (mu4e-compose-reply-to-address . "ari.turetzky@workday.com")
-                 )
+       ;; (make-mu4e-context
+       ;;  :name "Workday"
+       ;;  :match-func(lambda (msg)
+       ;;               (when msg
+       ;;                 (string-match-p "^/work" (mu4e-message-field msg :maildir))))
+       ;;  :vars '( ( user-mail-address . "ari.turetzky@workday.com")
+       ;;           (user-full-name   . "Ari Turetzky")
+       ;;           (mu4e-trash-folder . "/work/Deleted Items")
+       ;;           (mu4e-sent-folder . "/work/Sent Items")
+       ;;           (mu4e-drafts-folder . "/work/Drafts")
+       ;;           (smtpmail-default-smtp-server . "outlook.office365.com")
+       ;;           (smtpmail-smtp-server .  "outlook.office365.com")
+       ;;           (smtpmail-starttls-credentials   '(("outlook.office365.com" 587 nil nil)))
+       ;;           (smtpmail-auth-credentials '(("outlook.office365.com" 587 "ari.turetzky@workdayinternal.com" nil)))
+       ;;           (smtpmail-smtp-service . 587)
+       ;;           (mu4e-compose-reply-to-address . "ari.turetzky@workday.com")
+       ;;           )
 
-        )))
+       ;;  )
+       ))
 
 (setq mu4e-context-policy 'pick-first)
 (setq mu4e-compose-context-policy nil)
 
-(add-to-list 'mu4e-bookmarks
-             '(:name "Workday Unread"
-                     :key ?i
-                     :query "flag:unread AND (maildir:/work/Inbox)"))
+;; (add-to-list 'mu4e-bookmarks
+;;              '(:name "Workday Unread"
+;;                      :key ?i
+;;                      :query "flag:unread AND (maildir:/work/Inbox)"))
 
 ;; setup some handy shortcuts
 (setq mu4e-maildir-shortcuts
       '(("/gmail/Inbox"             . ?i)
         ("/gmail/[Gmail]/.Sent Mail" . ?s)
         ("/gmail/[Gmail]/.Trash"     . ?t)
-        ("/work/Inbox" . ?w)))
-
+        ))
+;;("/work/Inbox" . ?w)
 ;; allow for updating mail using 'U' in the main view:
 (use-package pinentry
   :ensure t)
@@ -123,11 +124,14 @@
 (setq gnus-icalendar-org-capture-headline '("Calendar"))
 (gnus-icalendar-org-setup)
 (setq abt/mu4e-inbox-query
-      "(maildir:/work/Inbox OR maildir:/gmail/Inbox ) AND flag:unread")
+      "(maildir:/gmail/Inbox ) AND flag:unread")
+;;"(maildir:/work/Inbox OR maildir:/gmail/Inbox ) AND flag:unread"
 (setq mu4e-view-prefer-html nil
       mu4e-html2text-command 'mu4e-shr2text
       shr-color-visible-luminance-min 80)
 (setq mm-discouraged-alternatives '("text/html" "text/richtext" "image/.*"))
+(require 'alert)
+(setq alert-default-style 'notifier)
 (use-package mu4e-alert
   :after mu4e
   :ensure t
