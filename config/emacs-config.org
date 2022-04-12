@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2022-03-02 08:57:29 ari.turetzky>
+#+Time-stamp: <2022-04-01 08:38:42 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -290,9 +290,17 @@
        (setq doom-themes-treemacs-theme "doom-colors")
        (global-set-key (kbd "M-0") 'treemacs-select-window))
 
-     (require 'doom-themes)
-     (setq doom-themes-enable-bold t)
-     (setq doom-themes-enable-italic t)
+     (use-package doom-themes
+       :ensure t
+       :config
+       (setq doom-themes-enable-bold t)
+       (setq doom-themes-enable-italic t)
+       (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+       (doom-themes-org-config)
+       ;(load-theme 'doom-1337)               
+       (require 'doom-themes-ext-org))
+     ;; (setq doom-themes-enable-bold t)
+     ;; (setq doom-themes-enable-italic t)
      (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
      ;; (load-theme 'tron-legacy t)
@@ -388,96 +396,96 @@
    currently here but will need to move to it's own config file
    eventually to make it more manageable
    #+BEGIN_SRC elisp
-                         (use-package diminish
-                           :ensure t
-                           :config
+     (use-package diminish
+       :ensure t
+       :config
 
-                           (diminish 'org-mode  "")
-                           (diminish 'org-indent-mode  "")
-                           (diminish 'auto-revert-mode)
-                           (diminish 'yas-minor-mode)
-                           (diminish 'emmet-mode)
-                           (diminish 'rjsx-minor-mode)
-                           (diminish 'eldoc-mode)
-                           (diminish 'org-src-mode)
-                           (diminish 'abbrev-mode)
-                           (diminish 'ivy-mode)
-                           (diminish 'global-highline-mode)
-                           (diminish 'ruby-block-mode)
-                           (diminish 'org-variable-pitch-minor-mode)
-                           (diminish 'git-gutter+-mode)
-                           (diminish 'ruby-electric-mode)
-                           (diminish 'buffer-face-mode)
-                           (diminish 'auto-fill-function)
-                           (diminish "seeing-is-believing")
-                           (diminish 'hs-minor-mode)
-                           (diminish 'ruby-block-mode)
-                           (diminish 'global-highline-mode))
+       (diminish 'org-mode  "")
+       (diminish 'org-indent-mode  "")
+       (diminish 'auto-revert-mode)
+       (diminish 'yas-minor-mode)
+       (diminish 'emmet-mode)
+       (diminish 'rjsx-minor-mode)
+       (diminish 'eldoc-mode)
+       (diminish 'org-src-mode)
+       (diminish 'abbrev-mode)
+       (diminish 'ivy-mode)
+       (diminish 'global-highline-mode)
+       (diminish 'ruby-block-mode)
+       (diminish 'org-variable-pitch-minor-mode)
+       (diminish 'git-gutter+-mode)
+       (diminish 'ruby-electric-mode)
+       (diminish 'buffer-face-mode)
+       (diminish 'auto-fill-function)
+       (diminish "seeing-is-believing")
+       (diminish 'hs-minor-mode)
+       (diminish 'ruby-block-mode)
+       (diminish 'global-highline-mode))
 
-                         (use-package org
-                             :pin nongnu
-                           :ensure t
-                           :diminish  ""
-                           :config
-                           (setq org-default-notes-file "~/Documents/notes/notes.org")
-                           (require 'org-capture)
-                           (setq org-capture-templates
-                                 '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
-                                    "* TODO %?\n  %i\n  %a")
-                                   ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
-                                    "* %?\nEntered on %U\n  %i\n  %a")
-                                   ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
-                                    "* %?\nEntered on %U\n  %i\n  %a")))
-                           (require 'org-habit)
-                           (setq org-habit-show-all-today t)
-                           (setq org-habit-show-habits t)
-                           (setq org-startup-indented t)
-                           (setq org-variable-pitch-mode 1)
-                           (visual-line-mode 1)
-                           (org-indent-mode)
-                           (require 'ox-gfm)
-                           (require 'ox-md)
-                           (require 'ox-confluence)
-                           (require 'ox-jira)
-                           )
-
-
-                         (use-package org-ref
-                           :ensure t
-                           :after org
-                           :defer nil
-                           :config
-                           (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
-                                 org-ref-default-bibliography '("~/Documents/references.bib")
-                                 org-ref-pdf-directory "~/Documents/pdf/"
-                                 reftex-default-bibliography '("~/Documents/references.bib")
-                                 org-ref-completion-library 'org-ref-ivy-cite)
-                           (setq org-latex-pdf-process
-                                 '("pdflatex -interaction nonstopmode -output-directory %o %f"
-                                   "bibtex %b"
-                                   "pdflatex -interaction nonstopmode -output-directory %o %f"
-                                   "pdflatex -interaction nonstopmode -output-directory %o %f"))
-                           (require 'org-ref))
+     (use-package org
+       :pin nongnu
+       :ensure t
+       :diminish  ""
+       :config
+       (setq org-default-notes-file "~/Documents/notes/notes.org")
+       (require 'org-capture)
+       (setq org-capture-templates
+             '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+                "* TODO %?\n  %i\n  %a")
+               ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+                "* %?\nEntered on %U\n  %i\n  %a")
+               ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
+                "* %?\nEntered on %U\n  %i\n  %a")))
+       (require 'org-habit)
+       (setq org-habit-show-all-today t)
+       (setq org-habit-show-habits t)
+       (setq org-startup-indented t)
+       (setq org-variable-pitch-mode 1)
+       (visual-line-mode 1)
+       (org-indent-mode)
+       (require 'ox-gfm)
+       (require 'ox-md)
+       (require 'ox-confluence)
+       (require 'ox-jira)
+       )
 
 
-                         ;; This is needed as of Org 9.2
-                         (require 'org-tempo)
+     (use-package org-ref
+       :ensure t
+       :after org
+       :defer nil
+       :config
+       (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
+             org-ref-default-bibliography '("~/Documents/references.bib")
+             org-ref-pdf-directory "~/Documents/pdf/"
+             reftex-default-bibliography '("~/Documents/references.bib")
+             org-ref-completion-library 'org-ref-ivy-cite)
+       (setq org-latex-pdf-process
+             '("pdflatex -interaction nonstopmode -output-directory %o %f"
+               "bibtex %b"
+               "pdflatex -interaction nonstopmode -output-directory %o %f"
+               "pdflatex -interaction nonstopmode -output-directory %o %f"))
+       (require 'org-ref))
 
-                         (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-                         (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
-                         (add-to-list 'org-structure-template-alist '("py" . "src python"))
-                         (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
-                         (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
 
-                         ;; Automatically tangle our Emacs.org config file when we save it
-                         (defun efs/org-babel-tangle-config ()
-                           (when (string-equal (buffer-file-name)
-                                               (expand-file-name "~/emacs/config/emacs-config.org"))
-                             ;; Dynamic scoping to the rescue
-                             (let ((org-confirm-babel-evaluate nil))
-                               (org-babel-tangle))))
+     ;; This is needed as of Org 9.2
+     (require 'org-tempo)
 
-                         (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+     (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+     (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
+     (add-to-list 'org-structure-template-alist '("py" . "src python"))
+     (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
+     (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+
+     ;; Automatically tangle our Emacs.org config file when we save it
+     (defun efs/org-babel-tangle-config ()
+       (when (string-equal (buffer-file-name)
+                           (expand-file-name "~/emacs/config/emacs-config.org"))
+         ;; Dynamic scoping to the rescue
+         (let ((org-confirm-babel-evaluate nil))
+           (org-babel-tangle))))
+
+     (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 
      (use-package org-roam
@@ -496,9 +504,9 @@
                                            (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
                                            :unnarrowed t)
                                           ))
-     (setq org-roam-node-display-template
-           (concat "${title:30} "
-                   (propertize "${tags:*}" 'face 'org-tag)))
+       (setq org-roam-node-display-template
+             (concat "${title:30} "
+                     (propertize "${tags:*}" 'face 'org-tag)))
 
        (setq org-roam-dailies-directory "daily/")
 
@@ -510,144 +518,147 @@
                ("c" "region" entry
                 "* %?
 
-     %i"
+          %i"
                 :if-new (file+head "%<%Y-%m-%d>.org"
                                    "#+title: %<%Y-%m-%d>\n")))))
 
-                         (defun ek/babel-ansi ()
-                           (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
-                             (save-excursion
-                               (goto-char beg)
-                               (when (looking-at org-babel-result-regexp)
-                                 (let ((end (org-babel-result-end))
-                                       (ansi-color-context-region nil))
-                                   (ansi-color-apply-on-region beg end))))))
-                         (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
+     (defun ek/babel-ansi ()
+       (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+         (save-excursion
+           (goto-char beg)
+           (when (looking-at org-babel-result-regexp)
+             (let ((end (org-babel-result-end))
+                   (ansi-color-context-region nil))
+               (ansi-color-apply-on-region beg end))))))
+     (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
 
-                         (fset 'capture-tweet
-                               (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
-                         (use-package ox-twbs
-                           :ensure t)
-                         (use-package ox-gfm
-                           :ensure t)
+     (fset 'capture-tweet
+           (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
+     (use-package ox-twbs
+       :ensure t)
+     (use-package ox-gfm
+       :ensure t)
 
-                         (use-package ox-jira
-                           :ensure t)
-                         (require 'org-tempo)
-                         (use-package org-mime
-                           :ensure t)
-                         (setq org-src-fontify-natively t)
-                         (setq org-src-tab-acts-natively t)
-                         (setq org-src-window-setup 'current-window)
-                         (use-package plantuml-mode
-                           :ensure t)
-                         (use-package org-bullets
-                           :ensure t)
-                         (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-                         (setq org-startup-with-inline-images t)
-                         (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-                         ;;***********remember + Org config*************
-                         (setq org-remember-templates
-                               '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
-                                 ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
-                         (setq remember-annotation-functions '(org-remember-annotation))
-                         (setq remember-handler-functions '(org-remember-handler))
-                         (add-hook 'remember-mode-hook 'org-remember-apply-template)
-                         (global-set-key (kbd "C-c r") 'remember)
+     (use-package ox-jira
+       :ensure t)
+     (require 'org-tempo)
+     (use-package org-mime
+       :ensure t)
+     (setq org-src-fontify-natively t)
+     (setq org-src-tab-acts-natively t)
+     (setq org-src-window-setup 'current-window)
+     (use-package plantuml-mode
+       :ensure t)
+     (use-package org-bullets
+       :ensure t)
+     (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+     (setq org-startup-with-inline-images t)
+     (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+     ;;***********remember + Org config*************
+     (setq org-remember-templates
+           '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
+             ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
+     (setq remember-annotation-functions '(org-remember-annotation))
+     (setq remember-handler-functions '(org-remember-handler))
+     (add-hook 'remember-mode-hook 'org-remember-apply-template)
+     (global-set-key (kbd "C-c r") 'remember)
 
-                         (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-                         (setq org-agenda-include-diary t)
-                         (setq org-agenda-include-all-todo t)
-                         (org-babel-do-load-languages
-                          'org-babel-load-languages
-                          '((shell  . t)
-                            (js  . t)
-                            (emacs-lisp . t)
-                            (python . t)
-                            (ruby . t)
-                            (css . t )
-                            (plantuml . t)
-                            (cypher . t)
-                            (sql . t)
-                            (scheme . t)
-                            (java . t)
-                            (dot . t)))
-                         (setq org-confirm-babel-evaluate nil)
+     (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+     (setq org-agenda-include-diary t)
+     (setq org-agenda-include-all-todo t)
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((shell  . t)
+        (js  . t)
+        (emacs-lisp . t)
+        (python . t)
+        (ruby . t)
+        (css . t )
+        (plantuml . t)
+        (cypher . t)
+        (sql . t)
+        (scheme . t)
+        (java . t)
+        (dot . t)))
+     (setq org-confirm-babel-evaluate nil)
 
-                         (use-package geiser
-                           :defer 2
-                           :ensure t
-                           :config
-                           (setq geiser-active-implementations '(mit))
-                           (setq geiser-default-implementation 'mit)
-                           (setq scheme-program-name "scheme")
-                           (setq geiser-mit-binary "/usr/local/bin/scheme")
-                           )
+     (use-package geiser
+       :defer 2
+       :ensure t
+       :config
+       (setq geiser-active-implementations '(mit))
+       (setq geiser-default-implementation 'mit)
+       (setq scheme-program-name "scheme")
+       (setq geiser-mit-binary "/usr/local/bin/scheme")
+       )
 
-                         (use-package ox-pandoc
-                           :defer 2
-                           :ensure t
-                           :config
-                           (setq org-pandoc-options '((standalone . t))))
+     (use-package ox-pandoc
+       :defer 2
+       :ensure t
+       :config
+       (setq org-pandoc-options '((standalone . t))))
 
-                         (use-package org-variable-pitch
-                           :defer 2
-                           :after org
-                           :ensure t
-                           :config
-                           (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
-                           (add-hook 'after-init-hook #'org-variable-pitch-setup))
+     (use-package org-variable-pitch
+       :defer 2
+       :after org
+       :ensure t
+       :config
+       (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
+       (add-hook 'after-init-hook #'org-variable-pitch-setup))
 
-                         (use-package olivetti
-                           :after org
-                           :ensure t
-                           :config
-                           (setq olivetti-minimum-body-width 120))
+     (use-package olivetti
+       :after org
+       :ensure t
+       :config
+       (setq olivetti-minimum-body-width 120))
 
-                         (use-package virtualenvwrapper
-                           :defer 2
-                           :ensure t
-                           :init
-                           (venv-initialize-interactive-shells)
-                           (venv-initialize-eshell)
-                           (setq venv-location "~/.virtualenvs")
-                           )
-                         (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.14/libexec/plantuml.jar")
-                         (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.14/libexec/plantuml.jar")
+     (use-package virtualenvwrapper
+       :defer 2
+       :ensure t
+       :init
+       (venv-initialize-interactive-shells)
+       (venv-initialize-eshell)
+       (setq venv-location "~/.virtualenvs")
+       )
+     (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.14/libexec/plantuml.jar")
+     (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.14/libexec/plantuml.jar")
 
 
-                         (setq org-mime-export-options '(:section-numbers nil
-                                                                          :with-author nil
-                                                                          :with-toc nil))
+     (setq org-mime-export-options '(:section-numbers nil
+                                                      :with-author nil
+                                                      :with-toc nil))
 
-                         (use-package zenburn-theme
-                           :defer 2
-                           :after ace-window
-                           :ensure t
-                           :init
-                           (setq zenburn-override-colors-alist '(
-                                                                 ("zenburn-bg" . "gray16")
-                                                                 ("zenburn-bg-1" . "#5F7F5F")))
+     (use-package zenburn-theme
+       :defer 2
+       :after ace-window
+       :ensure t
+       :init
+       (setq zenburn-override-colors-alist '(
+                                             ("zenburn-bg" . "gray16")
+                                             ("zenburn-bg-1" . "#5F7F5F")))
+             (load-theme 'zenburn t)
 
-                           :config
-                           (setq zenburn-use-variable-pitch t)
-                           (setq zenburn-scale-org-headlines t)
-                           (setq zenburn-scale-outline-headlines t))
 
-                         (use-package vscode-dark-plus-theme
-                           :ensure t
-                           :after ace-window
-                           :init
-                           (load-theme 'vscode-dark-plus t))
+       :config
+       (setq zenburn-use-variable-pitch t)
+       (setq zenburn-scale-org-headlines t)
+       (setq zenburn-scale-outline-headlines t)
+       )
 
-                         ;; (use-package modus-themes
-                         ;;   :ensure t
-                         ;;   :after ace-window
-                         ;;   :init
-                         ;;   (setq modus-themes-org-blocks 'gray-background)
-                         ;;   (modus-themes-load-themes)
-                         ;;   :config
-                         ;;   (modus-themes-load-operandi))
+     ;; (use-package vscode-dark-plus-theme
+     ;;   :ensure t
+     ;;   :after ace-window
+     ;;   :init
+     ;;   (load-theme 'vscode-dark-plus t))
+
+     ;; (use-package modus-themes
+     ;;   :ensure t
+     ;;   :after ace-window
+     ;;   :init
+     ;;   (setq modus-themes-org-blocks 'gray-background)
+     ;;   (modus-themes-load-themes)
+     ;;   :config
+     ;;   (modus-themes-load-operandi))
 
    #+end_SRC
 
@@ -1216,6 +1227,44 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
           compilation-mode))
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
+#+end_src
+** Blamer
+#+begin_src elisp
+  (use-package blamer
+    :commands (blamer-mode)
+    :config
+    (setq blamer-view 'overlay-right
+          blamer-type 'visual
+          blamer-max-commit-message-length 180
+          blamer-author-formatter " ✎ [%s] - "
+  blamer-commit-formatter "● %s ● "
+  blamer-smart-background-p nil)
+    :custom
+    (blamer-idle-time 1.0)
+    (blamer-min-offset 10)
+    :custom-face
+    (blamer-face ((t :foreground "#E46876"
+                      :height 140
+                      :italic t
+                      :background "gray40"))))
+      (global-blamer-mode)
+#+end_src
+** SVG-Tag-mode
+#+begin_src elisp
+(use-package svg-tag-mode
+  :hook ((prog-mode . svg-tag-mode)
+         (org-mode . svg-tag-mode))
+  :config
+  (setq svg-tag-tags
+        '(
+          ("DONE\\b" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0))))
+          ("FIXME\\b" . ((lambda (tag) (svg-tag-make "FIXME" :face 'org-todo :inverse t :margin 0))))
+          ("\\/\\/\\W?MARK\\b:\\|MARK\\b:" . ((lambda (tag) (svg-tag-make "MARK" :face 'font-lock-doc-face :inverse t :margin 0 :crop-right t))))
+          ("MARK\\b:\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'font-lock-doc-face :crop-left t))))
+
+          ("\\/\\/\\W?TODO\\b\\|TODO\\b" . ((lambda (tag) (svg-tag-make "TODO" :face 'org-todo :inverse t :margin 0 :crop-right t))))
+          ("TODO\\b\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'org-todo :crop-left t))))
+          )))
 #+end_src
 ** End
    #+BEGIN_SRC elisp
