@@ -989,70 +989,91 @@
   (setq which-key-idle-delay 1))
 
 (use-package helpful
-  :ensure t)
+                 :ensure t
+                 :init
+                 (defun helpful--autoloaded-p (sym buf)
+  "Return non-nil if function SYM is autoloaded."
+  (-when-let (file-name (buffer-file-name buf))
+    (setq file-name (s-chop-suffix ".gz" file-name))
+    (help-fns--autoloaded-p sym)))
+
+(defun helpful--skip-advice (docstring)
+  "Remove mentions of advice from DOCSTRING."
+  (let* ((lines (s-lines docstring))
+         (relevant-lines
+          (--take-while
+           (not (or (s-starts-with-p ":around advice:" it)
+                    (s-starts-with-p "This function has :around advice:" it)))
+           lines)))
+    (s-trim (s-join "\n" relevant-lines)))))
 
 (use-package elfeed
-              :ensure t)
-            (use-package elfeed-org
-              :ensure t
-              :after elfeed
-              :config
-              (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
-              (elfeed-org))
-            ;; (use-package elfeed-goodies
-            ;;   :after elfeed
-            ;;   :ensure t
-            ;;   :init
-            ;;   (elfeed-goodies/setup))
+                  :ensure t)
+                (use-package elfeed-org
+                  :ensure t
+                  :after elfeed
+                  :config
+                  (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
+                  (elfeed-org))
+                ;; (use-package elfeed-goodies
+                ;;   :after elfeed
+                ;;   :ensure t
+                ;;   :init
+                ;;   (elfeed-goodies/setup))
 
-            (use-package visual-fill
-              :ensure t)
-            (use-package visual-fill-column
-              :ensure t)
-(defun elfeed-olivetti(buff)
-  (with-current-buffer buff
-    (setq buffer-read-only nil)
+                (use-package visual-fill
+                  :ensure t)
+                (use-package visual-fill-column
+                  :ensure t)
+    (defun visual-fill-column() nil)
+
+(defun elfeed-olivetti (buff)
+      (with-current-buffer buff
+        (setq buffer-read-only nil)
         (goto-char (point-min))
-    (re-search-forward "\n\n")
-    (fill-individual-paragraphs (point-min) (point-max))
-    (setq buffer-read-only t))
-                        (switch-to-buffer buff)
-                        (olivetti-mode)
-                        (elfeed-show-refresh))
-(setq elfeed-show-entry-switch 'elfeed-olivetti)
-(add-hook 'elfeed-show-mode-hook (lambda()
-                                               (setq fill-column 60)
-                                               (setq-local truncate-lines nil)
-                                               (setq-local shr-width 80)
-                                               (set-buffer-modified-p nil)
-                                               (setq-local left-margin-width 15)
-                                               (setq-local right-margin-width 15)
-                                               (visual-line-mode t)
-                                               (adaptive-wrap-prefix-mode t)
-                                               (visual-fill-column-mode t)
-                                               ))
+        (re-search-forward "\n\n")
+        (fill-individual-paragraphs (point-min) (point-max))
+        (setq buffer-read-only t))
+      (switch-to-buffer buff)
+      (olivetti-mode)
+      (visual-fill-column-mode t)
+      (elfeed-show-refresh)
+      )
 
-            (use-package twittering-mode
-              :ensure t
-              :config
-              (defface my-twit-face
-                '((t :family "Helvetica"
-                     :weight ultra-light
-                     :height 160
-                     ))
-                "face for twitter")
-              (defalias 'epa--decode-coding-string 'decode-coding-string)
-              (setq twittering-use-master-password t)
-              (setq twittering-icon-mode t)
-              (setq twittering-use-icon-storage t)
+    (setq elfeed-show-entry-switch 'elfeed-olivetti)
 
-              (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
-                 %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
-                 +----
-                 %FOLD[|]{%i %S (%s),  %@:
-                 %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
-                 +----}}
-                 "))
+    (add-hook 'elfeed-show-mode-hook (lambda()
+                                       (setq fill-column 120)
+                                       (setq-local truncate-lines nil)
+                                       (setq-local shr-width 120)
+                                       (set-buffer-modified-p nil)
+                                       (setq-local left-margin-width 20)
+                                       (setq-local right-margin-width 20)
+                                       (visual-line-mode t)
+                                       (adaptive-wrap-prefix-mode t)))
+
+
+                (use-package twittering-mode
+                  :ensure t
+                  :config
+                  (defface my-twit-face
+                    '((t :family "Helvetica"
+                         :weight ultra-light
+                         :height 160
+                         ))
+                    "face for twitter")
+                  (defalias 'epa--decode-coding-string 'decode-coding-string)
+                  (setq twittering-use-master-password t)
+                  (setq twittering-icon-mode t)
+                  (setq twittering-use-icon-storage t)
+
+                  (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
+                     %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
+                     +----
+                     %FOLD[|]{%i %S (%s),  %@:
+                     %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
+                     +----}}
+                     "))
 
 (use-package prescient
   :ensure t
@@ -1105,5 +1126,20 @@
     "m" 'mu4e
     "b" '(:ignore t :which-key "eww")
     "bf" '(eww-follow-link :which-key "eww-follow-link")))
+
+(use-package popper
+:ensure t ; or :straight t
+:bind (("C-`"   . popper-toggle-latest)
+       ("M-`"   . popper-cycle)
+       ("C-M-`" . popper-toggle-type))
+:init
+(setq popper-reference-buffers
+      '("\\*Messages\\*"
+        "Output\\*$"
+        "\\*Async Shell Command\\*"
+        help-mode
+        compilation-mode))
+(popper-mode +1)
+(popper-echo-mode +1))                ; For echo area hints
 
 (provide 'emacs-config-new)
