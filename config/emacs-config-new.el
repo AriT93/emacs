@@ -3,7 +3,6 @@
 (setq package-archives '(
                                  ("melpa"  . "https://melpa.org/packages/")
                                  ("elpa"   . "https://elpa.gnu.org/packages/")
-                                 ("org"    . "https://orgmode.org/elpa/")
                                  ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                                  ))
 (package-initialize)
@@ -53,6 +52,7 @@
 (setq package-native-compile t)
 (require 'xwidget)
    ;;; follow links in xwidgets
+(setq alert-default-style 'notifier)
 (use-package xwwp-follow-link
  :custom
  (xwwp-follow-link-completion-backend 'ivy)
@@ -62,61 +62,66 @@
   :ensure t)
 
 (use-package swiper
-  :ensure t)
-(use-package counsel
-  :ensure t)
-(use-package ivy
-  :ensure t
-  :init
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-use-selectable-prompt t)
-  (setq enable-recursive-minibuffers t)
-  (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
-  :bind
-  (
-   ("\C-s" . 'swiper-isearch)
-   ("C-x C-f" . 'counsel-find-file)
-   ("C-c j" . 'counsel-git-grep)
-   ("C-c k" . 'counsel-ag)
-   ("C-x L" . 'counsel-locate)
-   ("M-x" . 'counsel-M-x))
-  :config
-  (setq swiper-use-visual-line nil)
-  (setq swiper-use-visual-line-p (lambda (a) nil)))
-(use-package ivy-rich
-  :init
-  (ivy-rich-mode 1)
-  :config
-  (setq ivy-format-function #'ivy-format-function-line))
-;; (use-package ivy-posframe
-;;   :ensure t
-;;   :after ivy
-;;   :init
-;;   (setq ivy-posframe-hide-minibuffer t)
-;;   (setq ivy-posframe-min-width nil)
-;;   (setq ivy-posframe-width nil)
-;;   (setq ivy-posframe-border-width 2)
-;;   (setq ivy-posframe-parameters
-;;         '((left-fringe . 8)
-;;           (right-fringe .8)))
-;;   (ivy-posframe-mode t)
-;;   )
-(use-package all-the-icons-ivy-rich
-  :defer 2
-  :ensure t
-  :init(all-the-icons-ivy-rich-mode 1))
-(use-package all-the-icons-ivy
-  :defer 2
-  :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
-(use-package marginalia
-  :defer 2
-  :ensure t
-  :init
-  (marginalia-mode)
-  :bind
-  (:map minibuffer-local-map
-        ("M-A" . marginalia-cycle)))
+       :ensure t)
+     (use-package counsel
+       :ensure t)
+     (use-package vterm
+       :ensure t
+       :init
+(       setq vterm-max-scrollback 1000000)
+               )
+     (use-package ivy
+       :ensure t
+       :init
+       (ivy-mode 1)
+       (setq ivy-use-virtual-buffers t)
+       (setq ivy-use-selectable-prompt t)
+       (setq enable-recursive-minibuffers t)
+       (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+       :bind
+       (
+        ("\C-s" . 'swiper-isearch)
+        ("C-x C-f" . 'counsel-find-file)
+        ("C-c j" . 'counsel-git-grep)
+        ("C-c k" . 'counsel-ag)
+        ("C-x L" . 'counsel-locate)
+        ("M-x" . 'counsel-M-x))
+       :config
+       (setq swiper-use-visual-line nil)
+       (setq swiper-use-visual-line-p (lambda (a) nil)))
+     (use-package ivy-rich
+       :init
+       (ivy-rich-mode 1)
+       :config
+       (setq ivy-format-function #'ivy-format-function-line))
+     ;; (use-package ivy-posframe
+     ;;   :ensure t
+     ;;   :after ivy
+     ;;   :init
+     ;;   (setq ivy-posframe-hide-minibuffer t)
+     ;;   (setq ivy-posframe-min-width nil)
+     ;;   (setq ivy-posframe-width nil)
+     ;;   (setq ivy-posframe-border-width 2)
+     ;;   (setq ivy-posframe-parameters
+     ;;         '((left-fringe . 8)
+     ;;           (right-fringe .8)))
+     ;;   (ivy-posframe-mode t)
+     ;;   )
+     (use-package all-the-icons-ivy-rich
+       :defer 2
+       :ensure t
+       :init(all-the-icons-ivy-rich-mode 1))
+     (use-package all-the-icons-ivy
+       :defer 2
+       :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+     (use-package marginalia
+       :defer 2
+       :ensure t
+       :init
+       (marginalia-mode)
+       :bind
+       (:map minibuffer-local-map
+             ("M-A" . marginalia-cycle)))
 
 (global-set-key "\C-cy" 'counsel-yank-pop)
 
@@ -227,9 +232,17 @@
   (setq doom-themes-treemacs-theme "doom-colors")
   (global-set-key (kbd "M-0") 'treemacs-select-window))
 
-(require 'doom-themes)
-(setq doom-themes-enable-bold t)
-(setq doom-themes-enable-italic t)
+(use-package doom-themes
+  :ensure t
+  :config
+  (setq doom-themes-enable-bold t)
+  (setq doom-themes-enable-italic t)
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+  (doom-themes-org-config)
+  ;(load-theme 'doom-1337)               
+  (require 'doom-themes-ext-org))
+;; (setq doom-themes-enable-bold t)
+;; (setq doom-themes-enable-italic t)
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
 ;; (load-theme 'tron-legacy t)
@@ -302,235 +315,274 @@
   :config
   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
   (flycheck-add-mode 'javascript-jshint 'rjsx-mode)
+  (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
   )
 
 (server-start)
 
 (use-package diminish
-            :ensure t
-            :config
+  :ensure t
+  :config
 
-          (diminish 'org-mode  "")
-          (diminish 'org-indent-mode  "")
-          (diminish 'auto-revert-mode)
-          (diminish 'yas-minor-mode)
-          (diminish 'emmet-mode)
-          (diminish 'rjsx-minor-mode)
-          (diminish 'eldoc-mode)
-          (diminish 'org-src-mode)
-          (diminish 'abbrev-mode)
-          (diminish 'ivy-mode)
-          (diminish 'global-highline-mode)
-          (diminish 'ruby-block-mode)
-          (diminish 'org-variable-pitch-minor-mode)
-          (diminish 'git-gutter+-mode)
-          (diminish 'ruby-electric-mode)
-          (diminish 'buffer-face-mode)
-          (diminish 'auto-fill-function)
-          (diminish "seeing-is-believing")
-          (diminish 'hs-minor-mode)
-          (diminish 'ruby-block-mode)
-          (diminish 'global-highline-mode))
+  (diminish 'org-mode  "")
+  (diminish 'org-indent-mode  "")
+  (diminish 'auto-revert-mode)
+  (diminish 'yas-minor-mode)
+  (diminish 'emmet-mode)
+  (diminish 'rjsx-minor-mode)
+  (diminish 'eldoc-mode)
+  (diminish 'org-src-mode)
+  (diminish 'abbrev-mode)
+  (diminish 'ivy-mode)
+  (diminish 'global-highline-mode)
+  (diminish 'ruby-block-mode)
+  (diminish 'org-variable-pitch-minor-mode)
+  (diminish 'git-gutter+-mode)
+  (diminish 'ruby-electric-mode)
+  (diminish 'buffer-face-mode)
+  (diminish 'auto-fill-function)
+  (diminish "seeing-is-believing")
+  (diminish 'hs-minor-mode)
+  (diminish 'ruby-block-mode)
+  (diminish 'global-highline-mode))
 
-          (use-package org
-            :ensure org-plus-contrib
-            :ensure t
-            :diminish  ""
-            :config
-            (setq org-default-notes-file "~/Documents/notes/notes.org")
-            (require 'org-capture)
-            (setq org-capture-templates
-                  '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
-                     "* TODO %?\n  %i\n  %a")
-                    ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
-                     "* %?\nEntered on %U\n  %i\n  %a")
-                    ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
-                     "* %?\nEntered on %U\n  %i\n  %a")))
-            (require 'org-habit)
-            (setq org-habit-show-all-today t)
-            (setq org-habit-show-habits t)
-            (setq org-startup-indented t)
-            (setq org-variable-pitch-mode 1)
-            (visual-line-mode 1)
-            (org-indent-mode)
-            (require 'ox-gfm)
-            (require 'ox-md)
-            (require 'ox-confluence)
-            (require 'ox-jira)
-            )
+(use-package org
+  :pin nongnu
+  :ensure t
+  :diminish  ""
+  :config
+  (setq org-default-notes-file "~/Documents/notes/notes.org")
+  (require 'org-capture)
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+           "* TODO %?\n  %i\n  %a")
+          ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+           "* %?\nEntered on %U\n  %i\n  %a")
+          ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
+           "* %?\nEntered on %U\n  %i\n  %a")))
+  (require 'org-habit)
+  (setq org-habit-show-all-today t)
+  (setq org-habit-show-habits t)
+  (setq org-startup-indented t)
+  (setq org-variable-pitch-mode 1)
+  (visual-line-mode 1)
+  (org-indent-mode)
+  (require 'ox-gfm)
+  (require 'ox-md)
+  (require 'ox-confluence)
+  (require 'ox-jira)
+  )
 
 
 (use-package org-ref
   :ensure t
-:after org
-:defer nil
-:config
-(setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
-      org-ref-default-bibliography '("~/Documents/references.bib")
-      org-ref-pdf-directory "~/Documents/pdf/"
-      reftex-default-bibliography '("~/Documents/references.bib")
-      org-ref-completion-library 'org-ref-ivy-cite)
-(setq org-latex-pdf-process
-      '("pdflatex -interaction nonstopmode -output-directory %o %f"
-        "bibtex %b"
-        "pdflatex -interaction nonstopmode -output-directory %o %f"
-        "pdflatex -interaction nonstopmode -output-directory %o %f"))
-(require 'org-ref))
+  :after org
+  :defer nil
+  :config
+  (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
+        org-ref-default-bibliography '("~/Documents/references.bib")
+        org-ref-pdf-directory "~/Documents/pdf/"
+        reftex-default-bibliography '("~/Documents/references.bib")
+        org-ref-completion-library 'org-ref-ivy-cite)
+  (setq org-latex-pdf-process
+        '("pdflatex -interaction nonstopmode -output-directory %o %f"
+          "bibtex %b"
+          "pdflatex -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -interaction nonstopmode -output-directory %o %f"))
+  (require 'org-ref))
 
 
-          ;; This is needed as of Org 9.2
-          (require 'org-tempo)
+;; This is needed as of Org 9.2
+(require 'org-tempo)
 
-          (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-          (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
-          (add-to-list 'org-structure-template-alist '("py" . "src python"))
-          (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
-          (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("el" . "src elisp"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
+(add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
+(add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
 
-          ;; Automatically tangle our Emacs.org config file when we save it
-          (defun efs/org-babel-tangle-config ()
-            (when (string-equal (buffer-file-name)
-                                (expand-file-name "~/emacs/config/emacs-config.org"))
-              ;; Dynamic scoping to the rescue
-              (let ((org-confirm-babel-evaluate nil))
-                (org-babel-tangle))))
+;; Automatically tangle our Emacs.org config file when we save it
+(defun efs/org-babel-tangle-config ()
+  (when (string-equal (buffer-file-name)
+                      (expand-file-name "~/emacs/config/emacs-config.org"))
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
 
-          (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-
-     (defun ek/babel-ansi ()
-       (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
-         (save-excursion
-           (goto-char beg)
-           (when (looking-at org-babel-result-regexp)
-             (let ((end (org-babel-result-end))
-                   (ansi-color-context-region nil))
-               (ansi-color-apply-on-region beg end))))))
-     (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
-
-          (fset 'capture-tweet
-                (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
-          (use-package ox-twbs
-            :ensure t)
-          (use-package ox-gfm
-            :ensure t)
-
-          (use-package ox-jira
-            :ensure t)
-          (require 'org-tempo)
-          (use-package org-mime
-            :ensure t)
-          (setq org-src-fontify-natively t)
-          (setq org-src-tab-acts-natively t)
-          (setq org-src-window-setup 'current-window)
-          (use-package plantuml-mode
-            :ensure t)
-          (use-package org-bullets
-            :ensure t)
-          (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-          (setq org-startup-with-inline-images t)
-          (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-          ;;***********remember + Org config*************
-          (setq org-remember-templates
-                '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
-                  ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
-          (setq remember-annotation-functions '(org-remember-annotation))
-          (setq remember-handler-functions '(org-remember-handler))
-          (add-hook 'remember-mode-hook 'org-remember-apply-template)
-          (global-set-key (kbd "C-c r") 'remember)
-
-          (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-          (setq org-agenda-include-diary t)
-          (setq org-agenda-include-all-todo t)
-          (org-babel-do-load-languages
-           'org-babel-load-languages
-           '((shell  . t)
-             (js  . t)
-             (emacs-lisp . t)
-             (python . t)
-             (ruby . t)
-             (css . t )
-             (plantuml . t)
-             (cypher . t)
-             (sql . t)
-             (scheme . t)
-             (java . t)
-             (dot . t)))
-          (setq org-confirm-babel-evaluate nil)
-
-          (use-package geiser
-            :defer 2
-            :ensure t
-            :config
-            (setq geiser-active-implementations '(mit))
-            (setq geiser-default-implementation 'mit)
-            (setq scheme-program-name "scheme")
-            (setq geiser-mit-binary "/usr/local/bin/scheme")
-          )
-
-          (use-package ox-pandoc
-            :defer 2
-            :ensure t
-            :config
-            (setq org-pandoc-options '((standalone . t))))
-
-          (use-package org-variable-pitch
-            :defer 2
-            :after org
-            :ensure t
-            :config
-            (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
-            (add-hook 'after-init-hook #'org-variable-pitch-setup))
-
-          (use-package olivetti
-            :after org
-            :ensure t
-            :config
-            (setq olivetti-minimum-body-width 120))
-
-          (use-package virtualenvwrapper
-            :defer 2
-            :ensure t
-            :init
-            (venv-initialize-interactive-shells)
-            (venv-initialize-eshell)
-            (setq venv-location "~/.virtualenvs")
-            )
-          (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
-          (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 
-          (setq org-mime-export-options '(:section-numbers nil
-                                                           :with-author nil
-                                                           :with-toc nil))
+(use-package org-roam
+  :after org
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/Documents/org-roam" )
+  :config
+  (org-roam-setup)
+  (setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     ("c" "region" plain "%i" :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     ))
+  (setq org-roam-node-display-template
+        (concat "${title:30} "
+                (propertize "${tags:*}" 'face 'org-tag)))
 
-          (use-package zenburn-theme
-            :defer 2
-            :after ace-window
-            :ensure t
-            :init
-            (setq zenburn-override-colors-alist '(
-                                                  ("zenburn-bg" . "gray16")
-                                                  ("zenburn-bg-1" . "#5F7F5F")))
+  (setq org-roam-dailies-directory "daily/")
 
-            :config
-            (setq zenburn-use-variable-pitch t)
-            (setq zenburn-scale-org-headlines t)
-            (setq zenburn-scale-outline-headlines t))
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry
+           "* %?"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n"))
+          ("c" "region" entry
+           "* %?
 
-          (use-package vscode-dark-plus-theme
-            :ensure t
-            :after ace-window
-            :init
-            (load-theme 'vscode-dark-plus t))
+     %i"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n")))))
 
-          ;; (use-package modus-themes
-          ;;   :ensure t
-          ;;   :after ace-window
-          ;;   :init
-          ;;   (setq modus-themes-org-blocks 'gray-background)
-          ;;   (modus-themes-load-themes)
-          ;;   :config
-          ;;   (modus-themes-load-operandi))
+(defun ek/babel-ansi ()
+  (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+    (save-excursion
+      (goto-char beg)
+      (when (looking-at org-babel-result-regexp)
+        (let ((end (org-babel-result-end))
+              (ansi-color-context-region nil))
+          (ansi-color-apply-on-region beg end))))))
+(add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
+
+(fset 'capture-tweet
+      (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
+(use-package ox-twbs
+  :ensure t)
+(use-package ox-gfm
+  :ensure t)
+
+(use-package ox-jira
+  :ensure t)
+(require 'org-tempo)
+(use-package org-mime
+  :ensure t)
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
+(setq org-src-window-setup 'current-window)
+(use-package plantuml-mode
+  :ensure t)
+(use-package org-bullets
+  :ensure t)
+(add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+(setq org-startup-with-inline-images t)
+(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+;;***********remember + Org config*************
+(setq org-remember-templates
+      '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
+        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
+(setq remember-annotation-functions '(org-remember-annotation))
+(setq remember-handler-functions '(org-remember-handler))
+(add-hook 'remember-mode-hook 'org-remember-apply-template)
+(global-set-key (kbd "C-c r") 'remember)
+
+(setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+(setq org-agenda-include-diary t)
+(setq org-agenda-include-all-todo t)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((shell  . t)
+   (js  . t)
+   (emacs-lisp . t)
+   (python . t)
+   (ruby . t)
+   (css . t )
+   (plantuml . t)
+   (cypher . t)
+   (sql . t)
+   (scheme . t)
+   (java . t)
+   (dot . t)))
+(setq org-confirm-babel-evaluate nil)
+
+(use-package geiser
+  :defer 2
+  :ensure t
+  :config
+  (setq geiser-active-implementations '(mit))
+  (setq geiser-default-implementation 'mit)
+  (setq scheme-program-name "scheme")
+  (setq geiser-mit-binary "/usr/local/bin/scheme")
+  )
+
+(use-package ox-pandoc
+  :defer 2
+  :ensure t
+  :config
+  (setq org-pandoc-options '((standalone . t))))
+
+(use-package org-variable-pitch
+  :defer 2
+  :after org
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
+  (add-hook 'after-init-hook #'org-variable-pitch-setup))
+
+(use-package olivetti
+  :after org
+  :ensure t
+  :config
+  (setq olivetti-minimum-body-width 120))
+
+(use-package virtualenvwrapper
+  :defer 2
+  :ensure t
+  :init
+  (venv-initialize-interactive-shells)
+  (venv-initialize-eshell)
+  (setq venv-location "~/.virtualenvs")
+  )
+(setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.14/libexec/plantuml.jar")
+(setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.14/libexec/plantuml.jar")
+
+
+(setq org-mime-export-options '(:section-numbers nil
+                                                 :with-author nil
+                                                 :with-toc nil))
+
+(use-package zenburn-theme
+  :defer 2
+  :after ace-window
+  :ensure t
+  :init
+  (setq zenburn-override-colors-alist '(
+                                        ("zenburn-bg" . "gray16")
+                                        ("zenburn-bg-1" . "#5F7F5F")))
+        (load-theme 'zenburn t)
+
+
+  :config
+  (setq zenburn-use-variable-pitch t)
+  (setq zenburn-scale-org-headlines t)
+  (setq zenburn-scale-outline-headlines t)
+  )
+
+;; (use-package vscode-dark-plus-theme
+;;   :ensure t
+;;   :after ace-window
+;;   :init
+;;   (load-theme 'vscode-dark-plus t))
+
+;; (use-package modus-themes
+;;   :ensure t
+;;   :after ace-window
+;;   :init
+;;   (setq modus-themes-org-blocks 'gray-background)
+;;   (modus-themes-load-themes)
+;;   :config
+;;   (modus-themes-load-operandi))
 
 (use-package exec-path-from-shell
   :ensure t
@@ -660,9 +712,11 @@
   (lsp-inhibit-message t)
   (lsp-eldoc-render-all nil)
   :config
-  (lsp-enable-which-key-integration t)
+  (setq lsp-enable-which-key-integration t)
   (setq lsp-enable-symbol-highlighting t)
   (setq lsp-modeline-code-actions-enable t)
+  (setq lsp-diagnostics-provider :auto)
+  (setq lsp-diagnostics-mode nil)
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
   :ensure t)
 
@@ -849,7 +903,103 @@
   (setq which-key-idle-delay 1))
 
 (use-package helpful
-  :ensure t)
+                                :ensure t
+                                :init
+                                (defun helpful--autoloaded-p (sym buf)
+  "Return non-nil if function SYM is autoloaded."
+  (-when-let (file-name (buffer-file-name buf))
+    (setq file-name (s-chop-suffix ".gz" file-name))
+    (help-fns--autoloaded-p sym)))
+
+(defun helpful--skip-advice (docstring)
+  "Remove mentions of advice from DOCSTRING."
+  (let* ((lines (s-lines docstring))
+         (relevant-lines
+          (--take-while
+           (not (or (s-starts-with-p ":around advice:" it)
+                    (s-starts-with-p "This function has :around advice:" it)))
+           lines)))
+    (s-trim (s-join "\n" relevant-lines)))))
+
+(use-package elfeed
+       :ensure t)
+     (use-package elfeed-org
+       :ensure t
+       :after elfeed
+       :config
+       (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
+       (elfeed-org))
+     ;; (use-package elfeed-goodies
+     ;;   :after elfeed
+     ;;   :ensure t
+     ;;   :init
+     ;;   (elfeed-goodies/setup))
+
+     (use-package visual-fill
+       :ensure t)
+     (use-package visual-fill-column
+       :ensure t
+       :hook 'visual-line-mode-hook #'visual-fill-column-mode
+       :config
+       (setq fill-column 120)
+       (setq visual-fill-column-width 120)
+       )
+(defun visual-fill-column ()
+  nil)
+     (defun elfeed-olivetti (buff)
+       (with-current-buffer buff
+         (setq buffer-read-only nil)
+         (goto-char (point-min))
+         (re-search-forward "\n\n")
+         (fill-individual-paragraphs (point-min) (point-max))
+         (setq buffer-read-only t))
+       (switch-to-buffer buff)
+       (olivetti-mode)
+       (visual-fill-column-mode t)
+       (elfeed-show-refresh)
+       )
+
+     (setq elfeed-show-entry-switch 'elfeed-olivetti)
+
+     (add-hook 'elfeed-show-mode-hook (lambda()
+                                        (setq fill-column 120)
+                                        (setq-local truncate-lines nil)
+                                        (setq-local shr-width 120)
+                                        (set-buffer-modified-p nil)
+                                        (setq-local left-margin-width 20)
+                                        (setq-local right-margin-width 20)
+                                        (visual-line-mode t)
+                                        (adaptive-wrap-prefix-mode t)))
+
+     ;; (add-hook 'elfeed-show-mode-hook (lambda()
+     ;;                                    (setq fill-column 100)
+     ;;                                    (visual-fill-mode t)
+     ;;                                    (adaptive-wrap-prefix-mode t)
+     ;;                                    (toggle-word-wrap)
+     ;;                                    (visual-fill-column-mode)))
+
+
+     (use-package twittering-mode
+       :ensure t
+       :config
+       (defface my-twit-face
+         '((t :family "Helvetica"
+              :weight ultra-light
+              :height 160
+              ))
+         "face for twitter")
+       (defalias 'epa--decode-coding-string 'decode-coding-string)
+       (setq twittering-use-master-password t)
+       (setq twittering-icon-mode t)
+       (setq twittering-use-icon-storage t)
+
+       (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
+          %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
+          +----
+          %FOLD[|]{%i %S (%s),  %@:
+          %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
+          +----}}
+          "))
 
 (use-package prescient
   :ensure t
@@ -867,10 +1017,10 @@
   (setq ivy-prescient-enable-sorting t)
   (setq ivy-re-builders-alist
  '(
-   (counse-M-x . ivy--regex-fuzzy)
+   (counsel-M-x . ivy--regex-plus)
    (ivy-switch-buffer . ivy--regex-plus)
-   (ivy-switch-buffer-other-window . ivy--regex-fuzzy)
-   (counsel-ag . ivy--regex-fuzzy)
+   (ivy-switch-buffer-other-window . ivy--regex-plus)
+   (counsel-ag . ivy--regex-plus)
    (t . ivy-prescient-re-builder))))
 
 (use-package company-prescient
@@ -902,5 +1052,54 @@
     "m" 'mu4e
     "b" '(:ignore t :which-key "eww")
     "bf" '(eww-follow-link :which-key "eww-follow-link")))
+
+(use-package popper
+:ensure t ; or :straight t
+:bind (("C-`"   . popper-toggle-latest)
+       ("M-`"   . popper-cycle)
+       ("C-M-`" . popper-toggle-type))
+:init
+(setq popper-reference-buffers
+      '("\\*Messages\\*"
+        "Output\\*$"
+        "\\*Async Shell Command\\*"
+        help-mode
+        compilation-mode))
+(popper-mode +1)
+(popper-echo-mode +1))                ; For echo area hints
+
+(use-package blamer
+  :commands (blamer-mode)
+  :config
+  (setq blamer-view 'overlay-right
+        blamer-type 'visual
+        blamer-max-commit-message-length 180
+        blamer-author-formatter " ✎ [%s] - "
+blamer-commit-formatter "● %s ● "
+blamer-smart-background-p nil)
+  :custom
+  (blamer-idle-time 1.0)
+  (blamer-min-offset 10)
+  :custom-face
+  (blamer-face ((t :foreground "#E46876"
+                    :height 140
+                    :italic t
+                    :background "gray40"))))
+    (global-blamer-mode)
+
+(use-package svg-tag-mode
+  :hook ((prog-mode . svg-tag-mode)
+         (org-mode . svg-tag-mode))
+  :config
+  (setq svg-tag-tags
+        '(
+          ("DONE\\b" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0))))
+          ("FIXME\\b" . ((lambda (tag) (svg-tag-make "FIXME" :face 'org-todo :inverse t :margin 0))))
+          ("\\/\\/\\W?MARK\\b:\\|MARK\\b:" . ((lambda (tag) (svg-tag-make "MARK" :face 'font-lock-doc-face :inverse t :margin 0 :crop-right t))))
+          ("MARK\\b:\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'font-lock-doc-face :crop-left t))))
+
+          ("\\/\\/\\W?TODO\\b\\|TODO\\b" . ((lambda (tag) (svg-tag-make "TODO" :face 'org-todo :inverse t :margin 0 :crop-right t))))
+          ("TODO\\b\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'org-todo :crop-left t))))
+          )))
 
 (provide 'emacs-config-new)
