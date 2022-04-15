@@ -3,6 +3,7 @@
 (setq package-archives '(
                                  ("melpa"  . "https://melpa.org/packages/")
                                  ("elpa"   . "https://elpa.gnu.org/packages/")
+                                 ("org"    . "https://orgmode.org/elpa/")
                                  ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                                  ))
 (package-initialize)
@@ -13,116 +14,6 @@
 (require 'use-package)
 
 (require 'load-path-config-new)
-
-;;     (defun efs/exwm-update-class()
-;;       (exwm-workspace-rename-buffer exwm-class-name))
-    (defun efs/run-in-background (command)
-      (let ((command-parts (split-string command "[ ]+")))
-        (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
-;;     (defun exwm-x/lock-screen ()
-;;       (interactive)
-;;         (shell-command "xscreensaver-command -lock"))
-
-;;     (defvar efs/polybar-process nil
-;;     "Holds the process of the running Polybar instance, if any")
-
-;;   (defun efs/kill-panel ()
-;;     (interactive)
-;;     (when efs/polybar-process
-;;       (ignore-errors
-;;         (kill-process efs/polybar-process)))
-;;     (setq efs/polybar-process nil))
-
-;;   (defun efs/start-panel ()
-;;     (interactive)
-;;     (efs/kill-panel)
-;;     (setq efs/polybar-process (start-process-shell-command "polybar" nil "polybar panel")))
-
-;;   (defun efs/send-polybar-hook (module-name hook-index)
-;;     (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" module-name hook-index)))
-
-;;   (defun efs/send-polybar-exwm-workspace ()
-;;     (efs/send-polybar-hook "exwm-workspace" 1))
-
-;;   ;; Update panel indicator when workspace changes
-;;   (add-hook 'exwm-workspace-switch-hook #'efs/send-polybar-exwm-workspace)
-
-;;     (use-package exwm
-;;       :ensure t
-;;       :config
-;;     (add-hook 'exwm-update-class-hook
-;;               (lambda ()
-;;                 (exwm-workspace-rename-buffer exwm-class-name)))
-;;     (setq exwm-workspace-number 4)
-
-;;       (setq exwm-input-prefix-keys
-;;             '(?\C-x
-;;               ?\C-u
-;;               ?\C-h
-;;               ?\M-x
-;;               ?\M-o
-;;               ))
-;;       ;; Ctrl+Q will enable the next key to be sent directly
-;;       (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
-
-;;       ;; Set up global key bindings.  These always work, no matter the input state!
-;;       ;; Keep in mind that changing this list after EXWM initializes has no effect.
-;;       (setq exwm-input-global-keys
-;;             `(
-;;               ;; Reset to line-mode (C-c C-k switches to char-mode via exwm-input-release-keyboard)
-;;               ([?\s-r] . exwm-reset)
-
-;;               ;; Move between windows
-;;               ([s-left] . windmove-left)
-;;               ([s-right] . windmove-right)
-;;               ([s-up] . windmove-up)
-;;               ([s-down] . windmove-down)
-
-;;               ;; Launch applications via shell command
-;;               ([?\s-&] . (lambda (command)
-;;                            (interactive (list (read-shell-command "$ ")))
-;;                            (start-process-shell-command command nil command)))
-
-;;               ;; Switch workspace
-;;               ([?\s-w] . exwm-workspace-switch)
-
-;;               ;; 's-N': Switch to certain workspace with Super (Win) plus a number key (0 - 9)
-;;               ,@(mapcar (lambda (i)
-;;                           `(,(kbd (format "s-%d" i)) .
-;;                             (lambda ()
-;;                               (interactive)
-;;                               (exwm-workspace-switch-create ,i))))
-;;                         (number-sequence 0 9))))
-
-
-;;       ;; (require 'exwm-systemtray)
-;;       ;; (setq exwm-systemtray-height 32)
-;;       ;; (exwm-systemtray-enable)
-;;       (efs/start-panel)
-;;       (efs/run-in-background "dunst")
-;;       (efs/run-in-background "nm-applet")
-;;       (efs/run-in-background "pasystray")
-;;       (efs/run-in-background "dropbox")
-  ;;     (efs/run-in-background "1password --silent")
-;;       (efs/run-in-background "blueman-applet")
-;; ;;      (efs/run-in-background "/usr/lib/notification-daemon/notification-daemon")
-;;       (efs/run-in-background "xscreensaver -no-splash")
-;;       (setq exwm-randr-workspace-monitor-plist '(2 "HDMI-A-1" 3 "HDMI-A-1"))
-
-
-;;       (require 'exwm-randr)
-;;       (exwm-randr-enable)
-;;       ;; Automatically send the mouse cursor to the selected workspace's display
-;;       (setq exwm-workspace-warp-cursor t)
-
-;;       ;; Window focus should follow the mouse pointer
-;;       (setq mouse-autoselect-window t
-;;             focus-follows-mouse t)
-;;       (exwm-enable) )
-
-    ;; (require 'exwm)
-    ;;   (require 'exwm-config)
-    ;;   (exwm-config-example)
 
 (show-paren-mode 1)
 (recentf-mode 1)
@@ -148,7 +39,7 @@
 (setq backup-directory-alist
       '((".*" . "~/tmp/")))
 (setq message-log-max 1000)
-(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 125 :weight 'normal)
+(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 150 :weight 'normal)
 (setq help-at-pt-display-when-idle t)
 (setq help-at-pt-timer-delay 0.1)
 (help-at-pt-set-timer)
@@ -416,260 +307,230 @@
 (server-start)
 
 (use-package diminish
-                      :ensure t
-                      :config
+            :ensure t
+            :config
 
-                      (diminish 'org-mode  "")
-                      (diminish 'org-indent-mode  "")
-                      (diminish 'auto-revert-mode)
-                      (diminish 'yas-minor-mode)
-                      (diminish 'emmet-mode)
-                      (diminish 'rjsx-minor-mode)
-                      (diminish 'eldoc-mode)
-                      (diminish 'org-src-mode)
-                      (diminish 'abbrev-mode)
-                      (diminish 'ivy-mode)
-                      (diminish 'global-highline-mode)
-                      (diminish 'ruby-block-mode)
-                      (diminish 'org-variable-pitch-minor-mode)
-                      (diminish 'git-gutter+-mode)
-                      (diminish 'ruby-electric-mode)
-                      (diminish 'buffer-face-mode)
-                      (diminish 'auto-fill-function)
-                      (diminish "seeing-is-believing")
-                      (diminish 'hs-minor-mode)
-                      (diminish 'ruby-block-mode)
-                      (diminish 'global-highline-mode))
+          (diminish 'org-mode  "")
+          (diminish 'org-indent-mode  "")
+          (diminish 'auto-revert-mode)
+          (diminish 'yas-minor-mode)
+          (diminish 'emmet-mode)
+          (diminish 'rjsx-minor-mode)
+          (diminish 'eldoc-mode)
+          (diminish 'org-src-mode)
+          (diminish 'abbrev-mode)
+          (diminish 'ivy-mode)
+          (diminish 'global-highline-mode)
+          (diminish 'ruby-block-mode)
+          (diminish 'org-variable-pitch-minor-mode)
+          (diminish 'git-gutter+-mode)
+          (diminish 'ruby-electric-mode)
+          (diminish 'buffer-face-mode)
+          (diminish 'auto-fill-function)
+          (diminish "seeing-is-believing")
+          (diminish 'hs-minor-mode)
+          (diminish 'ruby-block-mode)
+          (diminish 'global-highline-mode))
 
-                    (use-package org
-                      :ensure t
-                      :diminish  ""
-                      :config
-                      (setq org-default-notes-file "~/Documents/notes/notes.org")
-                      (require 'org-capture)
-                      (setq org-capture-templates
-                            '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
-                               "* TODO %?\n  %i\n  %a")
-                              ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
-                               "* %?\nEntered on %U\n  %i\n  %a")
-                              ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
-                               "* %?\nEntered on %U\n  %i\n  %a")))
-                      (require 'org-habit)
-                      (setq org-habit-show-all-today t)
-                      (setq org-habit-show-habits t)
-                      (setq org-startup-indented t)
-                      (setq org-variable-pitch-mode 1)
-                      (visual-line-mode 1)
-                      (org-indent-mode)
-                      (require 'ox-gfm)
-                      (require 'ox-md)
-                      (require 'ox-confluence)
-                      (require 'ox-jira)
-                      )
-
-
-                    (use-package org-ref
-                      :ensure t
-                      :after org
-                      :defer nil
-                      :config
-                      (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
-                            org-ref-default-bibliography '("~/Documents/references.bib")
-                            org-ref-pdf-directory "~/Documents/pdf/"
-                            reftex-default-bibliography '("~/Documents/references.bib")
-                            org-ref-completion-library 'org-ref-ivy-cite)
-                      (setq org-latex-pdf-process
-                            '("pdflatex -interaction nonstopmode -output-directory %o %f"
-                              "bibtex %b"
-                              "pdflatex -interaction nonstopmode -output-directory %o %f"
-                              "pdflatex -interaction nonstopmode -output-directory %o %f"))
-                      (require 'org-ref))
+          (use-package org
+            :ensure org-plus-contrib
+            :ensure t
+            :diminish  ""
+            :config
+            (setq org-default-notes-file "~/Documents/notes/notes.org")
+            (require 'org-capture)
+            (setq org-capture-templates
+                  '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+                     "* TODO %?\n  %i\n  %a")
+                    ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+                     "* %?\nEntered on %U\n  %i\n  %a")
+                    ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
+                     "* %?\nEntered on %U\n  %i\n  %a")))
+            (require 'org-habit)
+            (setq org-habit-show-all-today t)
+            (setq org-habit-show-habits t)
+            (setq org-startup-indented t)
+            (setq org-variable-pitch-mode 1)
+            (visual-line-mode 1)
+            (org-indent-mode)
+            (require 'ox-gfm)
+            (require 'ox-md)
+            (require 'ox-confluence)
+            (require 'ox-jira)
+            )
 
 
-                    ;; This is needed as of Org 9.2
-                    (require 'org-tempo)
-
-                    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-                    (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
-                    (add-to-list 'org-structure-template-alist '("py" . "src python"))
-                    (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
-                    (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
-
-                    ;; Automatically tangle our Emacs.org config file when we save it
-                    (defun efs/org-babel-tangle-config ()
-                      (when (string-equal (buffer-file-name)
-                                          (expand-file-name "~/emacs/config/emacs-config.org"))
-                        ;; Dynamic scoping to the rescue
-                        (let ((org-confirm-babel-evaluate nil))
-                          (org-babel-tangle))))
-
-                    (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+(use-package org-ref
+  :ensure t
+:after org
+:defer nil
+:config
+(setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
+      org-ref-default-bibliography '("~/Documents/references.bib")
+      org-ref-pdf-directory "~/Documents/pdf/"
+      reftex-default-bibliography '("~/Documents/references.bib")
+      org-ref-completion-library 'org-ref-ivy-cite)
+(setq org-latex-pdf-process
+      '("pdflatex -interaction nonstopmode -output-directory %o %f"
+        "bibtex %b"
+        "pdflatex -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -interaction nonstopmode -output-directory %o %f"))
+(require 'org-ref))
 
 
-                    (use-package org-roam
-                      :after org
-                      :ensure t
-                      :init
-                      (setq org-roam-v2-ack t)
-                      :custom
-                      (org-roam-directory "~/Documents/org-roam" )
-                      :config
-                      (org-roam-setup)
-                      (setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
-                                                          (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-                                                          :unnarrowed t)
-                                                         ("c" "region" plain "%i" :if-new
-                                                          (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-                                                          :unnarrowed t)
-                                                         ))
-                      (setq org-roam-dailies-directory "daily/")
+          ;; This is needed as of Org 9.2
+          (require 'org-tempo)
 
-          (setq org-roam-dailies-capture-templates
-                '(("d" "default" entry
-                   "* %?"
-                   :if-new (file+head "%<%Y-%m-%d>.org"
-                                      "#+title: %<%Y-%m-%d>\n"))
-                  ("c" "region" entry
-              "* %?
+          (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+          (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
+          (add-to-list 'org-structure-template-alist '("py" . "src python"))
+          (add-to-list 'org-structure-template-alist '("ru" . "src ruby"))
+          (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
 
-%i"
-              :if-new (file+head "%<%Y-%m-%d>.org"
-                                 "#+title: %<%Y-%m-%d>\n")))))
+          ;; Automatically tangle our Emacs.org config file when we save it
+          (defun efs/org-babel-tangle-config ()
+            (when (string-equal (buffer-file-name)
+                                (expand-file-name "~/emacs/config/emacs-config.org"))
+              ;; Dynamic scoping to the rescue
+              (let ((org-confirm-babel-evaluate nil))
+                (org-babel-tangle))))
 
-                    (defun ek/babel-ansi ()
-                      (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
-                        (save-excursion
-                          (goto-char beg)
-                          (when (looking-at org-babel-result-regexp)
-                            (let ((end (org-babel-result-end))
-                                  (ansi-color-context-region nil))
-                              (ansi-color-apply-on-region beg end))))))
-                    (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
+          (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
-                    (fset 'capture-tweet
-                          (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
-                    (use-package ox-twbs
-                      :ensure t)
-                    (use-package ox-gfm
-                      :ensure t)
+     (defun ek/babel-ansi ()
+       (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+         (save-excursion
+           (goto-char beg)
+           (when (looking-at org-babel-result-regexp)
+             (let ((end (org-babel-result-end))
+                   (ansi-color-context-region nil))
+               (ansi-color-apply-on-region beg end))))))
+     (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
 
-                    (use-package ox-jira
-                      :ensure t)
-                    (require 'org-tempo)
-                    (use-package org-mime
-                      :ensure t)
-                    (setq org-src-fontify-natively t)
-                    (setq org-src-tab-acts-natively t)
-                    (setq org-src-window-setup 'current-window)
-                    (use-package plantuml-mode
-                      :ensure t)
-                    (use-package org-bullets
-                      :ensure t)
-                    (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-                    (setq org-startup-with-inline-images t)
-                    (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-                    ;;***********remember + Org config*************
-                    (setq org-remember-templates
-                          '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
-                            ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
-                    (setq remember-annotation-functions '(org-remember-annotation))
-                    (setq remember-handler-functions '(org-remember-handler))
-                    (add-hook 'remember-mode-hook 'org-remember-apply-template)
-                    (global-set-key (kbd "C-c r") 'remember)
+          (fset 'capture-tweet
+                (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
+          (use-package ox-twbs
+            :ensure t)
+          (use-package ox-gfm
+            :ensure t)
 
-                    (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-                    (setq org-agenda-include-diary t)
-                    (setq org-agenda-include-all-todo t)
-                    (org-babel-do-load-languages
-                     'org-babel-load-languages
-                     '((shell  . t)
-                       (js  . t)
-                       (emacs-lisp . t)
-                       (python . t)
-                       (ruby . t)
-                       (css . t )
-                       (plantuml . t)
-                       (cypher . t)
-                       (sql . t)
-                       (scheme . t)
-                       (java . t)
-                       (dot . t)))
-                    (setq org-confirm-babel-evaluate nil)
+          (use-package ox-jira
+            :ensure t)
+          (require 'org-tempo)
+          (use-package org-mime
+            :ensure t)
+          (setq org-src-fontify-natively t)
+          (setq org-src-tab-acts-natively t)
+          (setq org-src-window-setup 'current-window)
+          (use-package plantuml-mode
+            :ensure t)
+          (use-package org-bullets
+            :ensure t)
+          (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+          (setq org-startup-with-inline-images t)
+          (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+          ;;***********remember + Org config*************
+          (setq org-remember-templates
+                '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
+                  ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
+          (setq remember-annotation-functions '(org-remember-annotation))
+          (setq remember-handler-functions '(org-remember-handler))
+          (add-hook 'remember-mode-hook 'org-remember-apply-template)
+          (global-set-key (kbd "C-c r") 'remember)
 
-                    (use-package geiser
-                      :defer 2
-                      :ensure t
-                      :config
-                      (setq geiser-active-implementations '(mit))
-                      (setq geiser-default-implementation 'mit)
-                      (setq scheme-program-name "scheme")
-                      (setq geiser-mit-binary "/usr/local/bin/scheme")
-                      )
+          (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+          (setq org-agenda-include-diary t)
+          (setq org-agenda-include-all-todo t)
+          (org-babel-do-load-languages
+           'org-babel-load-languages
+           '((shell  . t)
+             (js  . t)
+             (emacs-lisp . t)
+             (python . t)
+             (ruby . t)
+             (css . t )
+             (plantuml . t)
+             (cypher . t)
+             (sql . t)
+             (scheme . t)
+             (java . t)
+             (dot . t)))
+          (setq org-confirm-babel-evaluate nil)
 
-                    (use-package ox-pandoc
-                      :defer 2
-                      :ensure t
-                      :config
-                      (setq org-pandoc-options '((standalone . t))))
+          (use-package geiser
+            :defer 2
+            :ensure t
+            :config
+            (setq geiser-active-implementations '(mit))
+            (setq geiser-default-implementation 'mit)
+            (setq scheme-program-name "scheme")
+            (setq geiser-mit-binary "/usr/local/bin/scheme")
+          )
 
-                    (use-package org-variable-pitch
-                      :defer 2
-                      :after org
-                      :ensure t
-                      :config
-                      (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
-                      (add-hook 'after-init-hook #'org-variable-pitch-setup))
+          (use-package ox-pandoc
+            :defer 2
+            :ensure t
+            :config
+            (setq org-pandoc-options '((standalone . t))))
 
-                    (use-package olivetti
-                      :after org
-                      :ensure t
-                      :config
-                      (setq olivetti-minimum-body-width 120))
+          (use-package org-variable-pitch
+            :defer 2
+            :after org
+            :ensure t
+            :config
+            (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
+            (add-hook 'after-init-hook #'org-variable-pitch-setup))
 
-                    (use-package virtualenvwrapper
-                      :defer 2
-                      :ensure t
-                      :init
-                      (venv-initialize-interactive-shells)
-                      (venv-initialize-eshell)
-                      (setq venv-location "~/.virtualenvs")
-                      )
-                    (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
-                    (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+          (use-package olivetti
+            :after org
+            :ensure t
+            :config
+            (setq olivetti-minimum-body-width 120))
+
+          (use-package virtualenvwrapper
+            :defer 2
+            :ensure t
+            :init
+            (venv-initialize-interactive-shells)
+            (venv-initialize-eshell)
+            (setq venv-location "~/.virtualenvs")
+            )
+          (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+          (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
 
 
-                    (setq org-mime-export-options '(:section-numbers nil
-                                                                     :with-author nil
-                                                                     :with-toc nil))
+          (setq org-mime-export-options '(:section-numbers nil
+                                                           :with-author nil
+                                                           :with-toc nil))
 
-                    (use-package zenburn-theme
-                      :defer 2
-                      :after ace-window
-                      :ensure t
-                      :init
-                      (setq zenburn-override-colors-alist '(
-                                                            ("zenburn-bg" . "gray16")
-                                                            ("zenburn-bg-1" . "#5F7F5F")))
+          (use-package zenburn-theme
+            :defer 2
+            :after ace-window
+            :ensure t
+            :init
+            (setq zenburn-override-colors-alist '(
+                                                  ("zenburn-bg" . "gray16")
+                                                  ("zenburn-bg-1" . "#5F7F5F")))
 
-                      :config
-                      (setq zenburn-use-variable-pitch t)
-                      (setq zenburn-scale-org-headlines t)
-                      (setq zenburn-scale-outline-headlines t))
+            :config
+            (setq zenburn-use-variable-pitch t)
+            (setq zenburn-scale-org-headlines t)
+            (setq zenburn-scale-outline-headlines t))
 
-                    (use-package vscode-dark-plus-theme
-                      :ensure t
-                      :after ace-window
-                      :init
-                      (load-theme 'vscode-dark-plus t))
+          (use-package vscode-dark-plus-theme
+            :ensure t
+            :after ace-window
+            :init
+            (load-theme 'vscode-dark-plus t))
 
-                    ;; (use-package modus-themes
-                    ;;   :ensure t
-                    ;;   :after ace-window
-                    ;;   :init
-                    ;;   (setq modus-themes-org-blocks 'gray-background)
-                    ;;   (modus-themes-load-themes)
-                    ;;   :config
-                    ;;   (modus-themes-load-operandi))
+          ;; (use-package modus-themes
+          ;;   :ensure t
+          ;;   :after ace-window
+          ;;   :init
+          ;;   (setq modus-themes-org-blocks 'gray-background)
+          ;;   (modus-themes-load-themes)
+          ;;   :config
+          ;;   (modus-themes-load-operandi))
 
 (use-package exec-path-from-shell
   :ensure t
@@ -799,10 +660,9 @@
   (lsp-inhibit-message t)
   (lsp-eldoc-render-all nil)
   :config
-  (setq lsp-enable-which-key-integration t)
+  (lsp-enable-which-key-integration t)
   (setq lsp-enable-symbol-highlighting t)
   (setq lsp-modeline-code-actions-enable t)
-  (setq lsp-diagnostics-provider :auto)
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
   :ensure t)
 
@@ -989,91 +849,7 @@
   (setq which-key-idle-delay 1))
 
 (use-package helpful
-                 :ensure t
-                 :init
-                 (defun helpful--autoloaded-p (sym buf)
-  "Return non-nil if function SYM is autoloaded."
-  (-when-let (file-name (buffer-file-name buf))
-    (setq file-name (s-chop-suffix ".gz" file-name))
-    (help-fns--autoloaded-p sym)))
-
-(defun helpful--skip-advice (docstring)
-  "Remove mentions of advice from DOCSTRING."
-  (let* ((lines (s-lines docstring))
-         (relevant-lines
-          (--take-while
-           (not (or (s-starts-with-p ":around advice:" it)
-                    (s-starts-with-p "This function has :around advice:" it)))
-           lines)))
-    (s-trim (s-join "\n" relevant-lines)))))
-
-(use-package elfeed
-                  :ensure t)
-                (use-package elfeed-org
-                  :ensure t
-                  :after elfeed
-                  :config
-                  (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
-                  (elfeed-org))
-                ;; (use-package elfeed-goodies
-                ;;   :after elfeed
-                ;;   :ensure t
-                ;;   :init
-                ;;   (elfeed-goodies/setup))
-
-                (use-package visual-fill
-                  :ensure t)
-                (use-package visual-fill-column
-                  :ensure t)
-    (defun visual-fill-column() nil)
-
-(defun elfeed-olivetti (buff)
-      (with-current-buffer buff
-        (setq buffer-read-only nil)
-        (goto-char (point-min))
-        (re-search-forward "\n\n")
-        (fill-individual-paragraphs (point-min) (point-max))
-        (setq buffer-read-only t))
-      (switch-to-buffer buff)
-      (olivetti-mode)
-      (visual-fill-column-mode t)
-      (elfeed-show-refresh)
-      )
-
-    (setq elfeed-show-entry-switch 'elfeed-olivetti)
-
-    (add-hook 'elfeed-show-mode-hook (lambda()
-                                       (setq fill-column 120)
-                                       (setq-local truncate-lines nil)
-                                       (setq-local shr-width 120)
-                                       (set-buffer-modified-p nil)
-                                       (setq-local left-margin-width 20)
-                                       (setq-local right-margin-width 20)
-                                       (visual-line-mode t)
-                                       (adaptive-wrap-prefix-mode t)))
-
-
-                (use-package twittering-mode
-                  :ensure t
-                  :config
-                  (defface my-twit-face
-                    '((t :family "Helvetica"
-                         :weight ultra-light
-                         :height 160
-                         ))
-                    "face for twitter")
-                  (defalias 'epa--decode-coding-string 'decode-coding-string)
-                  (setq twittering-use-master-password t)
-                  (setq twittering-icon-mode t)
-                  (setq twittering-use-icon-storage t)
-
-                  (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
-                     %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
-                     +----
-                     %FOLD[|]{%i %S (%s),  %@:
-                     %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
-                     +----}}
-                     "))
+  :ensure t)
 
 (use-package prescient
   :ensure t
@@ -1091,10 +867,10 @@
   (setq ivy-prescient-enable-sorting t)
   (setq ivy-re-builders-alist
  '(
-   (counsel-M-x . ivy--regex-plus)
+   (counse-M-x . ivy--regex-fuzzy)
    (ivy-switch-buffer . ivy--regex-plus)
-   (ivy-switch-buffer-other-window . ivy--regex-plus)
-   (counsel-ag . ivy--regex-plus)
+   (ivy-switch-buffer-other-window . ivy--regex-fuzzy)
+   (counsel-ag . ivy--regex-fuzzy)
    (t . ivy-prescient-re-builder))))
 
 (use-package company-prescient
@@ -1126,20 +902,5 @@
     "m" 'mu4e
     "b" '(:ignore t :which-key "eww")
     "bf" '(eww-follow-link :which-key "eww-follow-link")))
-
-(use-package popper
-:ensure t ; or :straight t
-:bind (("C-`"   . popper-toggle-latest)
-       ("M-`"   . popper-cycle)
-       ("C-M-`" . popper-toggle-type))
-:init
-(setq popper-reference-buffers
-      '("\\*Messages\\*"
-        "Output\\*$"
-        "\\*Async Shell Command\\*"
-        help-mode
-        compilation-mode))
-(popper-mode +1)
-(popper-echo-mode +1))                ; For echo area hints
 
 (provide 'emacs-config-new)
