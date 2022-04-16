@@ -516,6 +516,17 @@
   (setq geiser-mit-binary "/usr/local/bin/scheme")
   )
 
+(use-package citeproc-org
+  :ensure t
+  :config
+  (require 'oc-csl)
+  (setq org-cite-csl-styles-dir "~/Zotero/styles/"))
+(use-package org-modern
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook #'org-modern-mode)
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+  )
 (use-package ox-pandoc
   :defer 2
   :ensure t
@@ -1051,7 +1062,14 @@
     "fr" '(feature-register-verify-redo :which-key "repeat last cuke")
     "m" 'mu4e
     "b" '(:ignore t :which-key "eww")
-    "bf" '(eww-follow-link :which-key "eww-follow-link")))
+    "bf" '(eww-follow-link :which-key "eww-follow-link")
+    "z" '(:ignore t :which-key "roam")
+    "zf" '(org-roam-node-find :which-key "org-roam-node-find")
+    "zi" '(org-roam-node-insert :which-key "org-roam-node-insert")
+    "zv" '(org-roam-node-visit :which-key "org-roam-node-visit")
+    "zo" '(org-roam-node-open :which-key "org-roam-node-open")
+    "zt" '(:ignore t :which-key "roam-tag")
+    "zta" '(org-roam-tag-add :which-key "roam-tag-add")))
 
 (use-package popper
 :ensure t ; or :straight t
