@@ -385,12 +385,15 @@
         reftex-default-bibliography '("~/Documents/references.bib")
         org-ref-completion-library 'org-ref-ivy-cite)
   (setq org-latex-pdf-process
-        '("pdflatex -interaction nonstopmode -output-directory %o %f"
-          "bibtex %b"
-          "pdflatex -interaction nonstopmode -output-directory %o %f"
-          "pdflatex -interaction nonstopmode -output-directory %o %f"))
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "bibtex %b"))
   (require 'org-ref))
 
+(require 'ox-latex)
+(setq org-latex-listings 'minted)
+(add-to-list 'org-latex-packages-alist '("" "minted" t))
 
 ;; This is needed as of Org 9.2
 (require 'org-tempo)
@@ -870,6 +873,7 @@
    :defer 2
   :ensure t)
 (add-hook 'js2-mode-hook 'lsp)
+(add-hook 'js-mode-hook 'lsp)
 (add-hook 'rjsx-mode-hook 'lsp)
 (add-hook 'rjsx-mode-hook 'emmet-mode)
 
