@@ -239,7 +239,7 @@
   (setq doom-themes-enable-italic t)
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
   (doom-themes-org-config)
-  ;(load-theme 'doom-1337)
+  ;(load-theme 'doom-1337)               
   (require 'doom-themes-ext-org))
 ;; (setq doom-themes-enable-bold t)
 ;; (setq doom-themes-enable-italic t)
@@ -385,12 +385,15 @@
         reftex-default-bibliography '("~/Documents/references.bib")
         org-ref-completion-library 'org-ref-ivy-cite)
   (setq org-latex-pdf-process
-        '("pdflatex -interaction nonstopmode -output-directory %o %f"
-          "bibtex %b"
-          "pdflatex -interaction nonstopmode -output-directory %o %f"
-          "pdflatex -interaction nonstopmode -output-directory %o %f"))
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "bibtex %b"))
   (require 'org-ref))
 
+(require 'ox-latex)
+(setq org-latex-listings 'minted)
+(add-to-list 'org-latex-packages-alist '("" "minted" t))
 
 ;; This is needed as of Org 9.2
 (require 'org-tempo)
@@ -516,6 +519,17 @@
   (setq geiser-mit-binary "/usr/local/bin/scheme")
   )
 
+(use-package citeproc-org
+  :ensure t
+  :config
+  (require 'oc-csl)
+  (setq org-cite-csl-styles-dir "~/Zotero/styles/"))
+(use-package org-modern
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook #'org-modern-mode)
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+  )
 (use-package ox-pandoc
   :defer 2
   :ensure t
@@ -868,6 +882,7 @@
    :defer 2
   :ensure t)
 (add-hook 'js2-mode-hook 'lsp)
+(add-hook 'js-mode-hook 'lsp)
 (add-hook 'rjsx-mode-hook 'lsp)
 (add-hook 'rjsx-mode-hook 'emmet-mode)
 
@@ -1060,7 +1075,14 @@
     "fr" '(feature-register-verify-redo :which-key "repeat last cuke")
     "m" 'mu4e
     "b" '(:ignore t :which-key "eww")
-    "bf" '(eww-follow-link :which-key "eww-follow-link")))
+    "bf" '(eww-follow-link :which-key "eww-follow-link")
+    "z" '(:ignore t :which-key "roam")
+    "zf" '(org-roam-node-find :which-key "org-roam-node-find")
+    "zi" '(org-roam-node-insert :which-key "org-roam-node-insert")
+    "zv" '(org-roam-node-visit :which-key "org-roam-node-visit")
+    "zo" '(org-roam-node-open :which-key "org-roam-node-open")
+    "zt" '(:ignore t :which-key "roam-tag")
+    "zta" '(org-roam-tag-add :which-key "roam-tag-add")))
 
 (use-package popper
 :ensure t ; or :straight t
