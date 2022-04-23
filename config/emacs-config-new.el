@@ -51,11 +51,11 @@
 (setq native-comp-speed 2)
 (setq package-native-compile t)
 (require 'xwidget)
-   ;;; follow links in xwidgets
+        ;;; follow links in xwidgets
 (setq alert-default-style 'notifier)
 (use-package xwwp-follow-link
- :custom
- (xwwp-follow-link-completion-backend 'ivy)
+  :custom
+  (xwwp-follow-link-completion-backend 'ivy)
   :bind (:map xwidget-webkit-mode-map
               ("v" . xwwp-follow-link)))
 (use-package string-inflection
@@ -86,9 +86,13 @@
         ("C-c k" . 'counsel-ag)
         ("C-x L" . 'counsel-locate)
         ("M-x" . 'counsel-M-x))
+       :custom-face
+       (ivy-minibuffer-match-face-2 ((t (:height 180 :family "JetBrainsMono Nerd Font" :underline t))))
+       (ivy-current-match (( t (:background "gray40" :height 180 :family "JetBrainsMono Nerd Font"))))
        :config
        (setq swiper-use-visual-line nil)
        (setq swiper-use-visual-line-p (lambda (a) nil)))
+
      (use-package ivy-rich
        :init
        (ivy-rich-mode 1)
@@ -186,11 +190,12 @@
 (use-package ace-window
   :ensure t
   :config
-  (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
   (ace-window-display-mode)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind
-  ("M-o" . 'ace-window))
+  ("M-o" . 'ace-window)
+  :custom-face
+  (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
 
 (use-package magit
   :defer 2
@@ -239,7 +244,7 @@
   (setq doom-themes-enable-italic t)
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
   (doom-themes-org-config)
-  ;(load-theme 'doom-1337)               
+  ;(load-theme 'doom-1337)
   (require 'doom-themes-ext-org))
 ;; (setq doom-themes-enable-bold t)
 ;; (setq doom-themes-enable-italic t)
@@ -911,6 +916,13 @@
   (global-set-key (kbd "<f8>") 'deft)
   )
 
+(add-to-list 'load-path "~/dev/git/notdeft/")
+(add-to-list 'load-path "~/dev/git/notdeft/extras")
+(setq notdeft-directories '("~/Documents/org-roam"))
+(setq notdeft-xapian-program "/Users/ari.turetzky/dev/git/notdeft/xapian/notdeft-xapian")
+(require 'notdeft-autoloads)
+(global-set-key (kbd "<f9>") 'notdeft)
+
 (use-package cypher-mode
   :ensure t)
 (setq n4js-cli-program "~/Downloads/cypher-shell/cypher-shell")
@@ -1077,12 +1089,17 @@
     "b" '(:ignore t :which-key "eww")
     "bf" '(eww-follow-link :which-key "eww-follow-link")
     "z" '(:ignore t :which-key "roam")
+    "zd" '(:ignore t :which-key "dailies")
+    "zdc" '(org-roam-dailies-capture-today :which-key "capture today")
+    "zdt" '(org-roam-dailies-goto-today :which-key "goto today")
+    "zdd" '(org-roam-dailies-goto-tomorrow :which-key "goto tomorrow")
     "zf" '(org-roam-node-find :which-key "org-roam-node-find")
     "zi" '(org-roam-node-insert :which-key "org-roam-node-insert")
     "zv" '(org-roam-node-visit :which-key "org-roam-node-visit")
     "zo" '(org-roam-node-open :which-key "org-roam-node-open")
     "zt" '(:ignore t :which-key "roam-tag")
-    "zta" '(org-roam-tag-add :which-key "roam-tag-add")))
+    "zta" '(org-roam-tag-add :which-key "roam-tag-add")
+    "ztr" '(org-roam-tag-add :which-key "roam-tag-remove")))
 
 (use-package popper
 :ensure t ; or :straight t
@@ -1124,7 +1141,7 @@ blamer-smart-background-p nil)
   :config
   (setq svg-tag-tags
         '(
-          ("DONE\\b" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0))))
+          ("\\W?DONE\\b" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0))))
           ("FIXME\\b" . ((lambda (tag) (svg-tag-make "FIXME" :face 'org-todo :inverse t :margin 0))))
           ("\\/\\/\\W?MARK\\b:\\|MARK\\b:" . ((lambda (tag) (svg-tag-make "MARK" :face 'font-lock-doc-face :inverse t :margin 0 :crop-right t))))
           ("MARK\\b:\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'font-lock-doc-face :crop-left t))))
