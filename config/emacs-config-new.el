@@ -1150,4 +1150,14 @@ blamer-smart-background-p nil)
           ("TODO\\b\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'org-todo :crop-left t))))
           )))
 
+(use-package tree-sitter-langs
+  :ensure t )
+(use-package tree-sitter
+  :ensure t
+  :config
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+  (add-hook 'ruby-mode-hook #'tree-sitter-hl-mode))
+
 (provide 'emacs-config-new)
