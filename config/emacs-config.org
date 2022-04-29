@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2022-04-21 08:21:01 ari.turetzky>
+#+Time-stamp: <2022-04-28 08:29:18 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -1320,7 +1320,18 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
           ("TODO\\b\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'org-todo :crop-left t))))
           )))
 #+end_src
-
+** Tree sitter
+#+begin_src elisp
+  (use-package tree-sitter-langs
+    :ensure t )
+  (use-package tree-sitter
+    :ensure t
+    :config
+    (require 'tree-sitter-langs)
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+    (add-hook 'ruby-mode-hook #'tree-sitter-hl-mode))
+#+end_src
 ** End
    #+BEGIN_SRC elisp
      (provide 'emacs-config-new)
