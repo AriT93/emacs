@@ -388,7 +388,8 @@
         org-ref-default-bibliography '("~/Documents/references.bib")
         org-ref-pdf-directory "~/Documents/pdf/"
         reftex-default-bibliography '("~/Documents/references.bib")
-        org-ref-completion-library 'org-ref-ivy-cite)
+        org-ref-completion-library 'org-ref-ivy-cite
+        org-cite-csl-styles-dir "~/Zotero/styles")
   (setq org-latex-pdf-process
         '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
@@ -441,7 +442,7 @@
                 (propertize "${tags:*}" 'face 'org-tag)))
 
   (setq org-roam-dailies-directory "daily/")
-
+  (setq org-roam-completion-everywhere t)
   (setq org-roam-dailies-capture-templates
         '(("d" "default" entry
            "* %?"
@@ -1159,5 +1160,11 @@ blamer-smart-background-p nil)
   (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
   (add-hook 'ruby-mode-hook #'tree-sitter-hl-mode))
+
+(use-package pdf-tools
+:ensure t
+:config (pdf-tools-install :no-query)
+(setq-default pdf-view-display-size 'fit-page)
+(add-hook 'pdf-view-mode-hook (lambda() (display-line-numbers-mode -1))))
 
 (provide 'emacs-config-new)
