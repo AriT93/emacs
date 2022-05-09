@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2022-04-28 08:29:18 ari.turetzky>
+#+Time-stamp: <2022-05-09 08:26:22 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -464,7 +464,8 @@
              org-ref-default-bibliography '("~/Documents/references.bib")
              org-ref-pdf-directory "~/Documents/pdf/"
              reftex-default-bibliography '("~/Documents/references.bib")
-             org-ref-completion-library 'org-ref-ivy-cite)
+             org-ref-completion-library 'org-ref-ivy-cite
+             org-cite-csl-styles-dir "~/Zotero/styles")
        (setq org-latex-pdf-process
              '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
                "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
@@ -517,7 +518,7 @@
                      (propertize "${tags:*}" 'face 'org-tag)))
 
        (setq org-roam-dailies-directory "daily/")
-
+       (setq org-roam-completion-everywhere t)
        (setq org-roam-dailies-capture-templates
              '(("d" "default" entry
                 "* %?"
@@ -1331,6 +1332,14 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
     (global-tree-sitter-mode)
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
     (add-hook 'ruby-mode-hook #'tree-sitter-hl-mode))
+#+end_src
+** pdf-tools
+#+begin_src elisp
+(use-package pdf-tools
+:ensure t
+:config (pdf-tools-install :no-query)
+(setq-default pdf-view-display-size 'fit-page)
+(add-hook 'pdf-view-mode-hook (lambda() (display-line-numbers-mode -1))))
 #+end_src
 ** End
    #+BEGIN_SRC elisp
