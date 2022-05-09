@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2022-05-09 08:26:22 ari.turetzky>
+#+Time-stamp: <2022-05-09 09:24:42 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -512,6 +512,9 @@
                                           ("c" "region" plain "%i" :if-new
                                            (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
                                            :unnarrowed t)
+                                          ("r" "ref" plain "%a %i %(format \"%s\" org-store-link-plist)"
+         :target (file+head "refs/${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
+         :unnarrowed t)
                                           ))
        (setq org-roam-node-display-template
              (concat "${title:30} "
@@ -732,6 +735,7 @@
        :defer 2
        :ensure t)
      (require 'org-protocol)
+     (require 'org-roam-protocol)
      (use-package haml-mode
        :defer 2
        :ensure t)
