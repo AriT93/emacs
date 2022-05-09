@@ -436,6 +436,9 @@
                                      ("c" "region" plain "%i" :if-new
                                       (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
                                       :unnarrowed t)
+                                     ("r" "ref" plain "%a %i %(format \"%s\" org-store-link-plist)"
+    :target (file+head "refs/${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
+    :unnarrowed t)
                                      ))
   (setq org-roam-node-display-template
         (concat "${title:30} "
@@ -651,6 +654,7 @@
   :defer 2
   :ensure t)
 (require 'org-protocol)
+(require 'org-roam-protocol)
 (use-package haml-mode
   :defer 2
   :ensure t)
