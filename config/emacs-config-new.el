@@ -436,10 +436,10 @@
                                      ("c" "region" plain "%i" :if-new
                                       (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
                                       :unnarrowed t)
-                                     ("r" "ref" plain "%a %i %(format \"%s\" org-store-link-plist)"
-    :target (file+head "refs/${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
-    :unnarrowed t)
                                      ))
+  (setq org-roam-capture-ref-templates '(("r" "ref" plain "%a %i %(format \"%s\" org-store-link-plist)"
+    :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
+    :unnarrowed t)))
   (setq org-roam-node-display-template
         (concat "${title:30} "
                 (propertize "${tags:*}" 'face 'org-tag)))
