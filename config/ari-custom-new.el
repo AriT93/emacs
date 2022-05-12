@@ -33,5 +33,32 @@ decrease the transparency, otherwise increase it in 10%-steps"
     (when (and (>= newalpha frame-alpha-lower-limit) (<= newalpha 100))
       (modify-frame-parameters nil (list (cons 'alpha newalpha))))))
 
+(defun fg/jira-update-heading ()
+"Update heading for Jira Issue at point."
+(interactive)
+(when-let* ((pt (point))
+            (issue-key (and (org-at-heading-p)
+                            (org-entry-get pt "JIRAISSUEKEY"))))
+  (let-alist (jiralib2-get-issue issue-key)
+    ;; Update headline
+    (let ((headline (format "%s %s" .key .fields.summary)))
+      (message "Updating %s" headline)
+      (org-edit-headline headline))
+    ;; Update properties
+    (cl-loop
+     for (property value)
+     on (list
+         "JiraAssignee" .fields.assignee.displayName
+         "JiraCreated" .fields.created
+         "JiraIssueKey" .key
+         "JiraIssueType" .fields.issuetype.name
+         "JiraPriority" .fields.priority.name
+         "JiraProjectKey" .fields.project.key
+         "JiraReporter" .fields.reporter.displayName
+         "JiraStatus" .fields.status.name
+         "JiraSummary" .fields.summary)
+     by #'cddr
+     do (org-entry-put pt property value)))))
+
 (provide 'ari-custom-new)
 ;;; ari-custom.el ends here

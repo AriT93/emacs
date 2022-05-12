@@ -364,7 +364,13 @@
           ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
            "* %?\nEntered on %U\n  %i\n  %a")
           ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
-           "* %?\nEntered on %U\n  %i\n  %a")))
+           "* %?\nEntered on %U\n  %i\n  %a")
+          ("i" "Jira Issue" entry
+           (file+headline "~/Documents/notes/work.org" "Issues")
+           "* TODO %^{JiraIssueKey}p"
+           :jump-to-captured t
+           :immediate-finish t
+           :empty-lines-after 1)))
   (require 'org-habit)
   (setq org-habit-show-all-today t)
   (setq org-habit-show-habits t)
@@ -421,6 +427,16 @@
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 
+(use-package jiralib2
+  :ensure t
+  :config
+  (setq
+   jiralib2-auth 'cookie
+   jiralib2-url "https://jira2.workday.com"
+   )
+  (add-hook 'org-roam-capture-new-node-hook #'fg/jira-update-heading)
+  (add-hook 'org-capture-before-finalize-hook #'fg/jira-update-heading)
+  )
 (use-package org-roam
   :after org
   :ensure t
@@ -436,10 +452,15 @@
                                      ("c" "region" plain "%i" :if-new
                                       (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
                                       :unnarrowed t)
+                                     ("i" "Jira Issue" entry "* TODO ${title}\n:PROPERTIES:\n:JiraIssueKey: ${title}\n:END:\n"
+                                      :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                     "#+title: ${title}\n\n" )
+                                      :unnarrowed t)
                                      ))
   (setq org-roam-capture-ref-templates '(("r" "ref" plain "%a %i %(format \"%s\" org-store-link-plist)"
-    :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
-    :unnarrowed t)))
+                                          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
+                                          :unnarrowed t)))
   (setq org-roam-node-display-template
         (concat "${title:30} "
                 (propertize "${tags:*}" 'face 'org-tag)))
@@ -452,9 +473,7 @@
            :if-new (file+head "%<%Y-%m-%d>.org"
                               "#+title: %<%Y-%m-%d>\n"))
           ("c" "region" entry
-           "* %?
-
-     %i"
+           "* %? %i"
            :if-new (file+head "%<%Y-%m-%d>.org"
                               "#+title: %<%Y-%m-%d>\n")))))
 
@@ -583,7 +602,7 @@
   (setq zenburn-override-colors-alist '(
                                         ("zenburn-bg" . "gray16")
                                         ("zenburn-bg-1" . "#5F7F5F")))
-        (load-theme 'zenburn t)
+  (load-theme 'zenburn t)
 
 
   :config
@@ -963,7 +982,43 @@
     (s-trim (s-join "\n" relevant-lines)))))
 
 (use-package elfeed
-       :ensure t)
+       :ensure t
+       :config
+
+       ;;
+       ;; linking and capturing
+       ;;
+
+       (defun elfeed-link-title (entry)
+         "Copy the entry title and URL as org link to the clipboard."
+         (interactive)
+         (let* ((link (elfeed-entry-link entry))
+                (title (elfeed-entry-title entry))
+                (titlelink (concat "[[" link "][" title "]]")))
+           (when titlelink
+             (kill-new titlelink)
+             (x-set-selection 'PRIMARY titlelink)
+             (message "Yanked: %s" titlelink))))
+
+       ;; show mode
+
+       (defun elfeed-show-link-title ()
+         "Copy the current entry title and URL as org link to the clipboard."
+         (interactive)
+         (elfeed-link-title elfeed-show-entry))
+
+       (defun elfeed-show-quick-url-note ()
+         "Fastest way to capture entry link to org agenda from elfeed show mode"
+         (interactive)
+         (elfeed-link-title elfeed-show-entry)
+         (org-roam-dailies-capture-today nil "c")
+         (yank)
+         (org-capture-finalize))
+       (bind-keys :map elfeed-show-mode-map
+                  ("l" . elfeed-show-link-title)
+                  ("v" . elfeed-show-quick-url-note))
+       )
+
      (use-package elfeed-org
        :ensure t
        :after elfeed
@@ -1141,8 +1196,7 @@ blamer-smart-background-p nil)
     (global-blamer-mode)
 
 (use-package svg-tag-mode
-  :hook ((prog-mode . svg-tag-mode)
-         (org-mode . svg-tag-mode))
+  :hook ((prog-mode . svg-tag-mode))
   :config
   (setq svg-tag-tags
         '(
