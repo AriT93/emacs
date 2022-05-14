@@ -943,7 +943,7 @@
 (add-to-list 'load-path "~/dev/git/notdeft/")
 (add-to-list 'load-path "~/dev/git/notdeft/extras")
 (setq notdeft-directories '("~/Documents/org-roam"))
-(setq notdeft-xapian-program "/Users/ari.turetzky/dev/git/notdeft/xapian/notdeft-xapian")
+(setq notdeft-xapian-program "/Users/abturet/dev/git/notdeft/xapian/notdeft-xapian")
 (require 'notdeft-autoloads)
 (global-set-key (kbd "<f9>") 'notdeft)
 

@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2022-05-12 15:04:10 ari.turetzky>
+#+Time-stamp: <2022-05-14 13:18:43 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -1083,10 +1083,10 @@
 Like deft about only it uses xapian for the searchy indexy stuffs
 setting this up for roam and keeping deft for notes
 #+begin_src elisp
-    (add-to-list 'load-path "~/dev/git/notdeft/")
+  (add-to-list 'load-path "~/dev/git/notdeft/")
   (add-to-list 'load-path "~/dev/git/notdeft/extras")
   (setq notdeft-directories '("~/Documents/org-roam"))
-  (setq notdeft-xapian-program "/Users/ari.turetzky/dev/git/notdeft/xapian/notdeft-xapian")
+  (setq notdeft-xapian-program "/Users/abturet/dev/git/notdeft/xapian/notdeft-xapian")
   (require 'notdeft-autoloads)
   (global-set-key (kbd "<f9>") 'notdeft)
 
