@@ -456,10 +456,12 @@
                                       :if-new
                                       (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
                                                      "#+title: ${title}\n\n" )
+
                                       :unnarrowed t)
                                      ))
-  (setq org-roam-capture-ref-templates '(("r" "ref" plain "%a %i %(format \"%s\" org-store-link-plist)"
+  (setq org-roam-capture-ref-templates '(("r" "ref" plain "%a %i"
                                           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
+                                          :jump-to-captured t
                                           :unnarrowed t)))
   (setq org-roam-node-display-template
         (concat "${title:30} "
@@ -475,7 +477,13 @@
           ("c" "region" entry
            "* %? %i"
            :if-new (file+head "%<%Y-%m-%d>.org"
-                              "#+title: %<%Y-%m-%d>\n")))))
+                              "#+title: %<%Y-%m-%d>\n"))
+          ("l" "link" entry
+      "* %?\n\n %i"
+      :target (file+olp "%<%Y-%m-%d>.org"
+                              ("Links"))
+      :unnarrowed t
+      ))))
 
 (defun ek/babel-ansi ()
   (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
@@ -1011,7 +1019,7 @@
          "Fastest way to capture entry link to org agenda from elfeed show mode"
          (interactive)
          (elfeed-link-title elfeed-show-entry)
-         (org-roam-dailies-capture-today nil "c")
+         (org-roam-dailies-capture-today nil "l")
          (yank)
          (org-capture-finalize))
        (bind-keys :map elfeed-show-mode-map
