@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2022-05-18 08:31:21 ari.turetzky>
+#+Time-stamp: <2022-06-03 08:00:06 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -549,13 +549,15 @@
                       '(("d" "default" entry
                          "* %?"
                          :if-new (file+head "%<%Y-%m-%d>.org"
-                                            "#+title: %<%Y-%m-%d>\n"))
+                                            "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0\n\n
+"))
                         ("c" "region" entry
                          "* %? %i"
                          :if-new (file+head "%<%Y-%m-%d>.org"
-                                            "#+title: %<%Y-%m-%d>\n"))
+                                            "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0\n\n
+"))
                         ("l" "link" entry
-                    "* %?\n\n %i"
+                    "* %? \n%i"
                     :target (file+olp "%<%Y-%m-%d>.org"
                                             ("Links"))
                     :unnarrowed t
@@ -670,8 +672,8 @@
                 (venv-initialize-eshell)
                 (setq venv-location "~/.virtualenvs")
                 )
-              (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.14/libexec/plantuml.jar")
-              (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.14/libexec/plantuml.jar")
+              (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2022.5/libexec/plantuml.jar")
+              (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2022.5/libexec/plantuml.jar")
 
 
               (setq org-mime-export-options '(:section-numbers nil
