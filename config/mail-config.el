@@ -3,7 +3,7 @@
 ;;; Code:
 
 (require 'smtpmail)
-  (add-to-list 'load-path "/usr/local/Cellar/mu/1.8.5/share/emacs/site-lisp/mu/mu4e/")
+  (add-to-list 'load-path "/usr/local/Cellar/mu/1.8.10/share/emacs/site-lisp/mu/mu4e/")
   (require 'mu4e)
 
   (setq   mail-user-agent 'mu4e-user-agent)
@@ -35,7 +35,7 @@
   (setq mu4e-compose-signature-auto-include nil)
   (setq mu4e-change-filenames-when-moving t)
   (add-to-list 'mu4e-view-actions '("ViewinBrowser" . mu4e-action-view-in-browser) t)
-  (add-to-list 'mu4e-view-actions '("XWidget View" . mu4e-action-view-with-xwidget) t)
+;;  (add-to-list 'mu4e-view-actions '("XWidget View" . mu4e-action-view-with-xwidget) t)
   (setq mu4e-view-show-images t)
   (setq mu4e-view-show-addresses t)
 ;;  (set-face-attribute 'mu4e-view-body-face nil :family "Helvetica")
