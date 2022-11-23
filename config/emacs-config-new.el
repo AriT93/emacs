@@ -417,7 +417,7 @@
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
 
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config))) 
 
 
 (use-package org-roam
@@ -892,6 +892,7 @@
 (add-hook 'rjsx-mode-hook 'emmet-mode)
 
 (use-package prettier-js
+  :ensure t
   :config
   (add-hook 'js2-mode-hook 'prettier-js-mode)
   (add-hook 'rjsx-mode-hook 'prettier-js-mode)

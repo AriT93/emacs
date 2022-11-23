@@ -2,11 +2,11 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2022-04-21 08:21:01 ari.turetzky>
+#+Time-stamp: <2022-08-13 14:16:47 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
-  Contained herein are my general non-mode specific(mostly)
+  Contained herein are my general non-mode specific(mostly) 
   configuration  *This is a Work in Progress*
 ** Get some package goodness
    #+BEGIN_SRC elisp
@@ -493,7 +493,7 @@
          (let ((org-confirm-babel-evaluate nil))
            (org-babel-tangle))))
 
-     (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+     (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config))) 
 
 
      (use-package org-roam
@@ -1028,6 +1028,7 @@
     (add-hook 'rjsx-mode-hook 'emmet-mode)
 
     (use-package prettier-js
+      :ensure t
       :config
       (add-hook 'js2-mode-hook 'prettier-js-mode)
       (add-hook 'rjsx-mode-hook 'prettier-js-mode)
