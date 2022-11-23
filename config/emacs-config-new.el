@@ -4,6 +4,7 @@
                                  ("melpa"  . "https://melpa.org/packages/")
                                  ("elpa"   . "https://elpa.gnu.org/packages/")
                                  ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                                 ("melpa-stable" . "https://stable.melpa.org/packages/")
                                  ))
 (package-initialize)
 
@@ -62,70 +63,69 @@
   :ensure t)
 
 (use-package swiper
-       :ensure t)
-     (use-package counsel
-       :ensure t)
-     (use-package vterm
-       :ensure t
-       :init
-(       setq vterm-max-scrollback 1000000)
-               )
-     (use-package ivy
-       :ensure t
-       :init
-       (ivy-mode 1)
-       (setq ivy-use-virtual-buffers t)
-       (setq ivy-use-selectable-prompt t)
-       (setq enable-recursive-minibuffers t)
-       (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
-       :bind
-       (
-        ("\C-s" . 'swiper-isearch)
-        ("C-x C-f" . 'counsel-find-file)
-        ("C-c j" . 'counsel-git-grep)
-        ("C-c k" . 'counsel-ag)
-        ("C-x L" . 'counsel-locate)
-        ("M-x" . 'counsel-M-x))
-       :custom-face
-       (ivy-minibuffer-match-face-2 ((t (:height 180 :family "JetBrainsMono Nerd Font" :underline t))))
-       (ivy-current-match (( t (:background "gray40" :height 180 :family "JetBrainsMono Nerd Font"))))
-       :config
-       (setq swiper-use-visual-line nil)
-       (setq swiper-use-visual-line-p (lambda (a) nil)))
+          :ensure t)
+        (use-package counsel
+          :ensure t)
+        (use-package vterm
+          :ensure t
+          :init
+   (       setq vterm-max-scrollback 1000000)
+                  )
+        (use-package ivy
+          :ensure t
+          :init
+          (ivy-mode 1)
+          (setq ivy-use-virtual-buffers t)
+          (setq ivy-use-selectable-prompt t)
+          (setq enable-recursive-minibuffers t)
+          (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+          :bind
+          (
+           ("\C-s" . 'swiper-isearch)
+           ("C-x C-f" . 'counsel-find-file)
+           ("C-c j" . 'counsel-git-grep)
+           ("C-c k" . 'counsel-ag)
+           ("C-x L" . 'counsel-locate)
+           ("M-x" . 'counsel-M-x))
+          :custom-face
+          (ivy-minibuffer-match-face-2 ((t (:height 180 :family "JetBrainsMono Nerd Font" :underline t))))
+          (ivy-current-match (( t (:background "gray40" :height 180 :family "JetBrainsMono Nerd Font"))))
+          :config
+          (setq swiper-use-visual-line nil)
+          (setq swiper-use-visual-line-p (lambda (a) nil)))
 
-     (use-package ivy-rich
-       :init
-       (ivy-rich-mode 1)
-       :config
-       (setq ivy-format-function #'ivy-format-function-line))
-     ;; (use-package ivy-posframe
-     ;;   :ensure t
-     ;;   :after ivy
-     ;;   :init
-     ;;   (setq ivy-posframe-hide-minibuffer t)
-     ;;   (setq ivy-posframe-min-width nil)
-     ;;   (setq ivy-posframe-width nil)
-     ;;   (setq ivy-posframe-border-width 2)
-     ;;   (setq ivy-posframe-parameters
-     ;;         '((left-fringe . 8)
-     ;;           (right-fringe .8)))
-     ;;   (ivy-posframe-mode t)
-     ;;   )
-     (use-package all-the-icons-ivy-rich
-       :defer 2
-       :ensure t
-       :init(all-the-icons-ivy-rich-mode 1))
-     (use-package all-the-icons-ivy
-       :defer 2
-       :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
-     (use-package marginalia
-       :defer 2
-       :ensure t
-       :init
-       (marginalia-mode)
-       :bind
-       (:map minibuffer-local-map
-             ("M-A" . marginalia-cycle)))
+        (use-package ivy-rich
+          :init
+          (ivy-rich-mode 1)
+          :config
+          (setq ivy-format-function #'ivy-format-function-line))
+        ;; (use-package ivy-posframe
+        ;;   :ensure t
+        ;;   :after ivy
+        ;;   :init
+        ;;   (setq ivy-posframe-hide-minibuffer t)
+        ;;   (setq ivy-posframe-min-width nil)
+        ;;   (setq ivy-posframe-width nil)
+        ;;   (setq ivy-posframe-border-width 2)
+        ;;   (setq ivy-posframe-parameters
+        ;;         '((left-fringe . 8)
+        ;;           (right-fringe .8)))
+        ;;   (ivy-posframe-mode t)
+        ;;   )
+        (use-package all-the-icons-ivy-rich
+          :defer 2
+          :ensure t
+          :init(all-the-icons-ivy-rich-mode 1))
+        (use-package all-the-icons-ivy
+          :defer 2
+          :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+
+   (use-package all-the-icons-completion
+     :ensure t
+:after (marginalia all-the-icons)
+:hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+:init
+(all-the-icons-completion-mode))
 
 (global-set-key "\C-cy" 'counsel-yank-pop)
 
@@ -177,15 +177,15 @@
   )
 
 (use-package marginalia
-  :defer 2
-  :ensure t
-  :init
-  (marginalia-mode)
-  :bind
-  (:map minibuffer-local-map
-        ("M-A" . marginalia-cycle))
-  :custom
- (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
+    :defer 2
+    :ensure t
+    :init
+    (marginalia-mode)
+    :bind
+    (:map minibuffer-local-map
+          ("M-A" . marginalia-cycle))
+    :custom
+   (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
 
 (use-package ace-window
   :ensure t
@@ -355,6 +355,7 @@
                 :pin nongnu
                 :ensure t
                 :diminish  ""
+                :after (org-modern)
                 :config
                 (setq org-default-notes-file "~/Documents/notes/notes.org")
                 (require 'org-capture)
@@ -379,6 +380,7 @@
                 (visual-line-mode 1)
                 (org-indent-mode)
                 (require 'ox-gfm)
+                (require 'org-modern)
                 (require 'ox-md)
                 (require 'ox-confluence)
                 (require 'ox-jira)
@@ -387,7 +389,7 @@
 
               (use-package org-ref
                 :ensure t
-                :after org
+                :after (org)
                 :defer nil
                 :config
                 (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
@@ -402,6 +404,7 @@
                         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
                         "bibtex %b"))
                 (require 'org-ref))
+
 
               (require 'ox-latex)
               (setq org-latex-listings 'minted)
@@ -606,15 +609,15 @@
 
               (use-package zenburn-theme
                 :defer 2
-                :after ace-window
+                :after (:all ace-window)
                 :ensure t
                 :init
                 (setq zenburn-override-colors-alist '(
                                                       ("zenburn-bg" . "gray16")
                                                       ("zenburn-bg-1" . "#5F7F5F")))
-                (load-theme 'zenburn t)
 
 
+                     (load-theme 'zenburn t)
                 :config
                 (setq zenburn-use-variable-pitch t)
                 (setq zenburn-scale-org-headlines t)
@@ -706,6 +709,7 @@
 (require 'gnus-config)
 (require 'mail-config)
 (require 'gnus-config)
+(require 'blog)
 
 (use-package highline
         :ensure t
@@ -757,7 +761,10 @@
        :defer 2
        :ensure t)
      (use-package lsp-mode
+       :ensure t
+       :pin melpa
        :commands (lsp lsp-deferred)
+       :after tree-sitter
        :hook ((ruby-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
        :custom
        (lsp-auto-configure t)
@@ -770,8 +777,9 @@
        (setq lsp-modeline-code-actions-enable t)
        (setq lsp-diagnostics-provider :auto)
        (setq lsp-diagnostics-mode nil)
+       (setq lsp-semantic-tokens-enable t)
        (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-       :ensure t)
+       )
 
      (use-package lsp-ivy
        :defer 2
@@ -789,15 +797,15 @@
        (setq lsp-ui-sideline-enable t)
        (setq lsp-lens-enable t)
        (setq lsp-ui-sideline-enable t
-      lsp-ui-sideline-show-symbol nil
-      lsp-ui-sideline-show-hover nil
+      lsp-ui-sideline-show-symbol t
+      lsp-ui-sideline-show-hover t
       lsp-ui-sideline-show-flycheck t
       lsp-ui-sideline-show-code-actions t
       lsp-ui-sideline-show-diagnostics t)
 
-(setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc-enable t)
 (setq lsp-ui-imenu-enable nil)
-(setq lsp-ui-peek-enable nil)       )
+(setq lsp-ui-peek-enable t)       )
 
      (use-package lsp-treemacs
        :defer 2
@@ -1043,46 +1051,48 @@
 
      (use-package visual-fill
        :ensure t)
-     (use-package visual-fill-column
-       :ensure t
-       :hook 'visual-line-mode-hook #'visual-fill-column-mode
-       :config
-       (setq fill-column 120)
-       (setq visual-fill-column-width 120)
-       )
-(defun visual-fill-column ()
-  nil)
+     ;; (use-package visual-fill-column
+     ;;   :ensure t
+     ;;   :hook 'visual-line-mode-hook #'visual-fill-column-mode
+     ;;   :config
+     ;;   (setq fill-column 100)
+     ;;   (setq visual-fill-column-width 100)
+     ;;   )
+     ;; (defun visual-fill-column ()
+     ;;   nil)
      (defun elfeed-olivetti (buff)
        (with-current-buffer buff
+         (setq fill-column 100)
          (setq buffer-read-only nil)
          (goto-char (point-min))
          (re-search-forward "\n\n")
          (fill-individual-paragraphs (point-min) (point-max))
          (setq buffer-read-only t))
        (switch-to-buffer buff)
-       (olivetti-mode)
-       (visual-fill-column-mode t)
+;;       (olivetti-mode)
+       (visual-fill-column-mode)
        (elfeed-show-refresh)
        )
 
-     (setq elfeed-show-entry-switch 'elfeed-olivetti)
 
-     (add-hook 'elfeed-show-mode-hook (lambda()
-                                        (setq fill-column 120)
-                                        (setq-local truncate-lines nil)
-                                        (setq-local shr-width 120)
-                                        (set-buffer-modified-p nil)
-                                        (setq-local left-margin-width 20)
-                                        (setq-local right-margin-width 20)
-                                        (visual-line-mode t)
-                                        (adaptive-wrap-prefix-mode t)))
 
      ;; (add-hook 'elfeed-show-mode-hook (lambda()
-     ;;                                    (setq fill-column 100)
-     ;;                                    (visual-fill-mode t)
-     ;;                                    (adaptive-wrap-prefix-mode t)
-     ;;                                    (toggle-word-wrap)
-     ;;                                    (visual-fill-column-mode)))
+     ;;                                    (setq fill-column 120)
+     ;;                                    (setq-local truncate-lines nil)
+     ;;                                    (setq-local shr-width 120)
+     ;;                                    (set-buffer-modified-p nil)
+     ;;                                    (setq-local left-margin-width 20)
+     ;;                                    (setq-local right-margin-width 20)
+     ;;                                    (visual-line-mode t)
+     ;;                                    (adaptive-wrap-prefix-mode t)))
+
+     (add-hook 'elfeed-show-mode-hook (lambda()
+                                        (setq fill-column 100)
+                                        ;;(visual-fill-mode t)
+                                        (adaptive-wrap-prefix-mode t)
+                                        (toggle-word-wrap)
+                                        (setq elfeed-show-entry-switch 'elfeed-olivetti)
+                                        ))
 
 
      (use-package twittering-mode
@@ -1100,12 +1110,12 @@
        (setq twittering-use-icon-storage t)
 
        (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
-          %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
-          +----
-          %FOLD[|]{%i %S (%s),  %@:
-          %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
-          +----}}
-          "))
+               %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
+               +----
+               %FOLD[|]{%i %S (%s),  %@:
+               %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
+               +----}}
+               "))
 
 (use-package prescient
   :ensure t
@@ -1234,5 +1244,11 @@ blamer-smart-background-p nil)
 :config (pdf-tools-install :no-query)
 (setq-default pdf-view-display-size 'fit-page)
 (add-hook 'pdf-view-mode-hook (lambda() (display-line-numbers-mode -1))))
+
+(use-package mastodon
+  :ensure  t
+  :config
+  (setq mastodon-active-user "AriT93")
+  (setq mastodon-instance-url "https://mastodon.social"))
 
 (provide 'emacs-config-new)
