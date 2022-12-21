@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2022-11-23 08:24:37 ari.turetzky>
+#+Time-stamp: <2022-12-09 10:49:36 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -31,6 +31,7 @@
    gets installed from a repository we defined above
 
    #+BEGIN_SRC elisp
+     (setq treesit-extra-load-path "~/.emacs.d/tree-sitter")
      (unless (package-installed-p 'use-package)
      (package-refresh-contents)
      (package-install 'use-package))
@@ -856,7 +857,6 @@
             :ensure t
             :pin melpa
             :commands (lsp lsp-deferred)
-            :after tree-sitter
             :hook ((ruby-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
             :custom
             (lsp-auto-configure t)
@@ -869,7 +869,7 @@
             (setq lsp-modeline-code-actions-enable t)
             (setq lsp-diagnostics-provider :auto)
             (setq lsp-diagnostics-mode nil)
-            (setq lsp-semantic-tokens-enable t)
+            ;;(setq lsp-semantic-tokens-enable t)
             (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
             )
 
@@ -1157,123 +1157,117 @@ setting this up for roam and keeping deft for notes
    #+end_src
 **  Elfeed
    #+begin_src elisp
-          (use-package elfeed
-            :ensure t
-            :config
+               (use-package elfeed
+                 :ensure t
+                 :config
 
-            ;;
-            ;; linking and capturing
-            ;;
+                 ;;
+                 ;; linking and capturing
+                 ;;
 
-            (defun elfeed-link-title (entry)
-              "Copy the entry title and URL as org link to the clipboard."
-              (interactive)
-              (let* ((link (elfeed-entry-link entry))
-                     (title (elfeed-entry-title entry))
-                     (titlelink (concat "[[" link "][" title "]]")))
-                (when titlelink
-                  (kill-new titlelink)
-                  (x-set-selection 'PRIMARY titlelink)
-                  (message "Yanked: %s" titlelink))))
+                 (defun elfeed-link-title (entry)
+                   "Copy the entry title and URL as org link to the clipboard."
+                   (interactive)
+                   (let* ((link (elfeed-entry-link entry))
+                          (title (elfeed-entry-title entry))
+                          (titlelink (concat "[[" link "][" title "]]")))
+                     (when titlelink
+                       (kill-new titlelink)
+                       (x-set-selection 'PRIMARY titlelink)
+                       (message "Yanked: %s" titlelink))))
 
-            ;; show mode
+                 ;; show mode
 
-            (defun elfeed-show-link-title ()
-              "Copy the current entry title and URL as org link to the clipboard."
-              (interactive)
-              (elfeed-link-title elfeed-show-entry))
+                 (defun elfeed-show-link-title ()
+                   "Copy the current entry title and URL as org link to the clipboard."
+                   (interactive)
+                   (elfeed-link-title elfeed-show-entry))
 
-            (defun elfeed-show-quick-url-note ()
-              "Fastest way to capture entry link to org agenda from elfeed show mode"
-              (interactive)
-              (elfeed-link-title elfeed-show-entry)
-              (org-roam-dailies-capture-today nil "l")
-              (yank)
-              (org-capture-finalize))
-            (bind-keys :map elfeed-show-mode-map
-                       ("l" . elfeed-show-link-title)
-                       ("v" . elfeed-show-quick-url-note))
-            )
+                 (defun elfeed-show-quick-url-note ()
+                   "Fastest way to capture entry link to org agenda from elfeed show mode"
+                   (interactive)
+                   (elfeed-link-title elfeed-show-entry)
+                   (org-roam-dailies-capture-today nil "l")
+                   (yank)
+                   (org-capture-finalize))
+                 (bind-keys :map elfeed-show-mode-map
+                            ("l" . elfeed-show-link-title)
+                            ("v" . elfeed-show-quick-url-note))
+                 )
 
-          (use-package elfeed-org
-            :ensure t
-            :after elfeed
-            :config
-            (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
-            (elfeed-org))
-          ;; (use-package elfeed-goodies
-          ;;   :after elfeed
-          ;;   :ensure t
-          ;;   :init
-          ;;   (elfeed-goodies/setup))
+               (use-package elfeed-org
+                 :ensure t
+                 :after elfeed
+                 :config
+                 (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
+                 (elfeed-org))
+               ;; (use-package elfeed-goodies
+               ;;   :after elfeed
+               ;;   :ensure t
+               ;;   :init
+               ;;   (elfeed-goodies/setup))
 
-          (use-package visual-fill
-            :ensure t)
-          ;; (use-package visual-fill-column
-          ;;   :ensure t
-          ;;   :hook 'visual-line-mode-hook #'visual-fill-column-mode
-          ;;   :config
-          ;;   (setq fill-column 100)
-          ;;   (setq visual-fill-column-width 100)
-          ;;   )
-          ;; (defun visual-fill-column ()
-          ;;   nil)
-          (defun elfeed-olivetti (buff)
-            (with-current-buffer buff
-              (setq fill-column 100)
-              (setq buffer-read-only nil)
-              (goto-char (point-min))
-              (re-search-forward "\n\n")
-              (fill-individual-paragraphs (point-min) (point-max))
-              (setq buffer-read-only t))
-            (switch-to-buffer buff)
-     ;;       (olivetti-mode)
-            (visual-fill-column-mode)
-            (elfeed-show-refresh)
-            )
-
-
-
-          ;; (add-hook 'elfeed-show-mode-hook (lambda()
-          ;;                                    (setq fill-column 120)
-          ;;                                    (setq-local truncate-lines nil)
-          ;;                                    (setq-local shr-width 120)
-          ;;                                    (set-buffer-modified-p nil)
-          ;;                                    (setq-local left-margin-width 20)
-          ;;                                    (setq-local right-margin-width 20)
-          ;;                                    (visual-line-mode t)
-          ;;                                    (adaptive-wrap-prefix-mode t)))
-
-          (add-hook 'elfeed-show-mode-hook (lambda()
-                                             (setq fill-column 100)
-                                             ;;(visual-fill-mode t)
-                                             (adaptive-wrap-prefix-mode t)
-                                             (toggle-word-wrap)
-                                             (setq elfeed-show-entry-switch 'elfeed-olivetti)
-                                             ))
+               (use-package visual-fill
+                 :ensure t)
+               ;; (use-package visual-fill-column
+               ;;   :ensure t
+               ;;   :hook 'visual-line-mode-hook #'visual-fill-column-mode
+               ;;   :config
+               ;;   (setq fill-column 100)
+               ;;   (setq visual-fill-column-width 100)
+               ;;   )
+               ;; (defun visual-fill-column ()
+               ;;   nil)
+               (defun elfeed-olivetti (buff)
+                 (with-current-buffer buff
+                   (setq fill-column 100)
+                   (setq buffer-read-only nil)
+                   (goto-char (point-min))
+                   (re-search-forward "\n\n")
+                   (fill-individual-paragraphs (point-min) (point-max))
+                   (setq buffer-read-only t))
+                 (switch-to-buffer buff)
+          ;;       (olivetti-mode)
+                 (visual-fill-column-mode)
+                 (elfeed-show-refresh)
+                 )
 
 
-          (use-package twittering-mode
-            :ensure t
-            :config
-            (defface my-twit-face
-              '((t :family "Helvetica"
-                   :weight ultra-light
-                   :height 160
-                   ))
-              "face for twitter")
-            (defalias 'epa--decode-coding-string 'decode-coding-string)
-            (setq twittering-use-master-password t)
-            (setq twittering-icon-mode t)
-            (setq twittering-use-icon-storage t)
 
-            (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
-                    %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
-                    +----
-                    %FOLD[|]{%i %S (%s),  %@:
-                    %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
-                    +----}}
-                    "))
+               ;; (add-hook 'elfeed-show-mode-hook (lambda()
+               ;;                                    (setq fill-column 120)
+               ;;                                    (setq-local truncate-lines nil)
+               ;;                                    (setq-local shr-width 120)
+               ;;                                    (set-buffer-modified-p nil)
+               ;;                                    (setq-local left-margin-width 20)
+               ;;                                    (setq-local right-margin-width 20)
+               ;;                                    (visual-line-mode t)
+               ;;                                    (adaptive-wrap-prefix-mode t)))
+
+               (add-hook 'elfeed-show-mode-hook (lambda()
+                                                  (setq fill-column 100)
+                                                  ;;(visual-fill-mode t)
+                                                  (adaptive-wrap-prefix-mode t)
+                                                  (toggle-word-wrap)
+                                                  (setq elfeed-show-entry-switch 'elfeed-olivetti)
+                                                  ))
+
+
+               (use-package twittering-mode
+                 :ensure t
+                 :config
+                 (defface my-twit-face
+                   '((t :family "Helvetica"
+                        :weight ultra-light
+                        :height 160
+                        ))
+                   "face for twitter")
+                 (defalias 'epa--decode-coding-string 'decode-coding-string)
+                 (setq twittering-use-master-password t)
+                 (setq twittering-icon-mode t)
+                 (setq twittering-use-icon-storage t)
+
+                 (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S  (%s), %R  %@:\n %FACE[my-twit-face]{%T}\n %QT{\n +----\n %FOLD[|]{%i %S (%s),  %@:  %FACE[my-twit-face]{%T}} \n +----\n }"))
 
    #+end_src
 ** Prescient
@@ -1411,8 +1405,8 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
     :config
     (require 'tree-sitter-langs)
     (global-tree-sitter-mode)
-    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-    (add-hook 'ruby-mode-hook #'tree-sitter-hl-mode))
+;;    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+;;    (add-hook 'ruby-mode-hook #'tree-sitter-hl-mode))
 #+end_src
 ** pdf-tools
 #+begin_src elisp
@@ -1425,11 +1419,15 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
 ** Mastodon
 who knows it might catch only
 #+begin_src elisp
+  (use-package discover
+    :ensure t)
+
   (use-package mastodon
     :ensure  t
     :config
     (setq mastodon-active-user "AriT93")
-    (setq mastodon-instance-url "https://mastodon.social"))
+    (setq mastodon-instance-url "https://mastodon.social")
+    (mastodon-discover))
 #+end_src
 ** End
    #+BEGIN_SRC elisp

@@ -8,6 +8,7 @@
                                  ))
 (package-initialize)
 
+(setq treesit-extra-load-path "~/.emacs.d/tree-sitter")
 (unless (package-installed-p 'use-package)
 (package-refresh-contents)
 (package-install 'use-package))
@@ -764,7 +765,6 @@
        :ensure t
        :pin melpa
        :commands (lsp lsp-deferred)
-       :after tree-sitter
        :hook ((ruby-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
        :custom
        (lsp-auto-configure t)
@@ -777,7 +777,7 @@
        (setq lsp-modeline-code-actions-enable t)
        (setq lsp-diagnostics-provider :auto)
        (setq lsp-diagnostics-mode nil)
-       (setq lsp-semantic-tokens-enable t)
+       ;;(setq lsp-semantic-tokens-enable t)
        (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
        )
 
@@ -1109,13 +1109,7 @@
        (setq twittering-icon-mode t)
        (setq twittering-use-icon-storage t)
 
-       (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S (%s),  %@:
-               %FOLD[  ]{%FACE[my-twit-face]{%FILL[ ]{%T}} %QT{
-               +----
-               %FOLD[|]{%i %S (%s),  %@:
-               %FOLD[  ]{%FILL[]{%FACE[my-twit-face]{%T}} }}
-               +----}}
-               "))
+       (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S  (%s), %R  %@:\n %FACE[my-twit-face]{%T}\n %QT{\n +----\n %FOLD[|]{%i %S (%s),  %@:  %FACE[my-twit-face]{%T}} \n +----\n }"))
 
 (use-package prescient
   :ensure t
@@ -1230,14 +1224,14 @@ blamer-smart-background-p nil)
           )))
 
 (use-package tree-sitter-langs
-  :ensure t )
-(use-package tree-sitter
-  :ensure t
-  :config
-  (require 'tree-sitter-langs)
-  (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-  (add-hook 'ruby-mode-hook #'tree-sitter-hl-mode))
+    :ensure t )
+  (use-package tree-sitter
+    :ensure t
+    :config
+    (require 'tree-sitter-langs)
+    (global-tree-sitter-mode))
+;;    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+;;    (add-hook 'ruby-mode-hook #'tree-sitter-hl-mode))
 
 (use-package pdf-tools
 :ensure t
@@ -1245,10 +1239,14 @@ blamer-smart-background-p nil)
 (setq-default pdf-view-display-size 'fit-page)
 (add-hook 'pdf-view-mode-hook (lambda() (display-line-numbers-mode -1))))
 
+(use-package discover
+  :ensure t)
+
 (use-package mastodon
   :ensure  t
   :config
   (setq mastodon-active-user "AriT93")
-  (setq mastodon-instance-url "https://mastodon.social"))
+  (setq mastodon-instance-url "https://mastodon.social")
+  (mastodon-discover))
 
 (provide 'emacs-config-new)
