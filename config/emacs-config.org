@@ -1,8 +1,9 @@
+
 #+TITLE: General Emacs Configuration options
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2023-02-03 11:15:10 ari.turetzky>
+#+Time-stamp: <2023-02-16 14:49:29 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
