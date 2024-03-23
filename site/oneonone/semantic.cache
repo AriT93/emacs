@@ -1,0 +1,21 @@
+;; Object oneonone/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "oneonone/"
+  :tables (list 
+   (semanticdb-table "autofit-frame.el"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("and" code nil nil [7455 7521]) ("fit-frame" include nil nil [7530 7550]) ("strings" include nil nil [7564 7588]) ("misc-fns" include nil nil [7628 7653]) ("autofit-frames-flag" variable (:user-visible-flag t :default-value t) nil [7811 8246]) ("fit-frame-if-one-window" function nil nil [8473 8719]) ("or" code nil nil [9815 9914]) ("display-buffer" function (:user-visible-flag t :arguments ("buffer" "&optional" "not-this-window" "frame")) nil [10204 12001]) ("or" code nil nil [12055 12160]) ("switch-to-buffer" function (:user-visible-flag t :arguments ("buffer" "&optional" "norecord")) nil [12644 14244]) ("autofit-frame" package nil nil [14271 14295]))
+    :file "autofit-frame.el"
+    :pointmax 14399
+    )
+   (semanticdb-table "fit-frame.el"
+    :major-mode 'emacs-lisp-mode
+    :tags '(("and" code nil nil [7288 7354]) ("frame-cmds" include nil nil [7371 7398]) ("defgroup" code nil nil [7528 8309]) ("inhibit-fit-frame-flag" variable (:user-visible-flag t) nil [8326 8563]) ("create-frame-min-width" variable (:user-visible-flag t :default-value 20) nil [8580 8801]) ("create-frame-max-width" variable (:user-visible-flag t) nil [8818 9125]) ("create-frame-max-width-percent" variable (:user-visible-flag t :default-value 94) nil [9142 9388]) ("create-frame-min-height" variable (:user-visible-flag t :default-value window-min-height) nil [9405 9639]) ("create-frame-max-height" variable (:user-visible-flag t) nil [9656 9962]) ("create-frame-max-height-percent" variable (:user-visible-flag t :default-value 82) nil [9979 10229]) ("create-empty-frame-width" variable (:user-visible-flag t :default-value (or (cdr (assq (quote width) default-frame-alist)) 80)) nil [10246 10437]) ("create-empty-frame-height" variable (:user-visible-flag t :default-value (or (cdr (assq (quote height) default-frame-alist)) 35)) nil [10454 10643]) ("create-empty-special-display-frame-width" variable (:user-visible-flag t :default-value 80) nil [10660 10865]) ("create-empty-special-display-frame-height" variable (:user-visible-flag t :default-value 9) nil [10882 11088]) ("fill-column-frame-margin" variable (:user-visible-flag t :default-value 7) nil [11105 11471]) ("make-variable-buffer-local" code nil nil [11473 11527]) ("fit-frame-skip-header-lines-alist" variable (:user-visible-flag t :default-value (quote ((Info-mode . 1) (dired-mode . 1) (compilation-mode . 2)))) nil [11544 12324]) ("create-frame-max-width" function (:arguments ("&optional" "frame")) nil [12405 12981]) ("create-frame-max-height" function (:arguments ("&optional" "frame")) nil [12983 13900]) ("thumbnail-factor" function (:arguments ("frame")) nil [13902 14382]) ("fit-frame" function (:user-visible-flag t :arguments ("&optional" "frame" "width" "height")) nil [14469 21246]) ("fit-frame-or-mouse-drag-vertical-line" function (:user-visible-flag t :arguments ("start-event")) nil [21263 21492]) ("when" code nil nil [21632 21824]) ("when" code nil nil [21841 22018]) ("when" code nil nil [22020 22215]) ("unless" code nil nil [22331 22663]) ("unless" code nil nil [22693 22872]) ("unless" code nil nil [22920 23230]) ("unless" code nil nil [23262 23873]) ("unless" code nil nil [23906 24250]) ("fit-frame" package nil nil [24264 24284]))
+    :file "fit-frame.el"
+    :pointmax 24384
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.0"
+  )
