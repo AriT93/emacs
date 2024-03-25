@@ -47,7 +47,7 @@
 (setq show-paren-style 'mixed)
 (setq mode-line-in-non-selected-windows nil)
 (fset 'yes-or-no-p 'y-or-n-p)
-(setq browse-url-browser-function 'eww-browse-url)
+(setq browse-url-browser-function 'browse-url-default-browser)
 (add-hook 'eww-after-render-hook 'eww-readable)
 (add-hook 'eww-after-render-hook 'visual-line-mode)
 (setq native-comp-speed 2)
@@ -327,87 +327,84 @@
 (server-start)
 
 (use-package diminish
-                     :ensure t
-                     :config
+  :ensure t
+  :config
 
-                     (diminish 'org-mode  "")
-                     (diminish 'org-indent-mode  "")
-                     (diminish 'auto-revert-mode)
-                     (diminish 'yas-minor-mode)
-                     (diminish 'emmet-mode)
-                     (diminish 'rjsx-minor-mode)
-                     (diminish 'eldoc-mode)
-                     (diminish 'org-src-mode)
-                     (diminish 'abbrev-mode)
-                     (diminish 'ivy-mode)
-                     (diminish 'global-highline-mode)
-                     (diminish 'ruby-block-mode)
-                     (diminish 'org-variable-pitch-minor-mode)
-                     (diminish 'git-gutter+-mode)
-                     (diminish 'ruby-electric-mode)
-                     (diminish 'buffer-face-mode)
-                     (diminish 'auto-fill-function)
-                     (diminish "seeing-is-believing")
-                     (diminish 'hs-minor-mode)
-                     (diminish 'ruby-block-mode)
-                     (diminish 'global-highline-mode))
+  (diminish 'org-mode  "")
+  (diminish 'org-indent-mode  "")
+  (diminish 'auto-revert-mode)
+  (diminish 'yas-minor-mode)
+  (diminish 'emmet-mode)
+  (diminish 'rjsx-minor-mode)
+  (diminish 'eldoc-mode)
+  (diminish 'org-src-mode)
+  (diminish 'abbrev-mode)
+  (diminish 'ivy-mode)
+  (diminish 'global-highline-mode)
+  (diminish 'ruby-block-mode)
+  (diminish 'org-variable-pitch-minor-mode)
+  (diminish 'git-gutter+-mode)
+  (diminish 'ruby-electric-mode)
+  (diminish 'buffer-face-mode)
+  (diminish 'auto-fill-function)
+  (diminish "seeing-is-believing")
+  (diminish 'hs-minor-mode)
+  (diminish 'ruby-block-mode)
+  (diminish 'global-highline-mode))
 
-                   (use-package org
-                     :pin nongnu
-                     :ensure t
-                     :diminish  ""
-                     :after (org-modern)
-                     :config
-                     (setq org-default-notes-file "~/Documents/notes/notes.org")
-                     (require 'org-capture)
-                     (setq org-capture-templates
-                           '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
-                              "* TODO %?\n  %i\n  %a")
-                             ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
-                              "* %?\nEntered on %U\n  %i\n  %a")
-                             ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
-                              "* %?\nEntered on %U\n  %i\n  %a")
-                             ("i" "Jira Issue" entry
-                              (file+headline "~/Documents/notes/work.org" "Issues")
-                              "* TODO %^{JiraIssueKey}p"
-                              :jump-to-captured t
-                              :immediate-finish t
-                              :empty-lines-after 1)))
-                     (require 'org-habit)
-                     (setq org-habit-show-all-today t)
-                     (setq org-habit-show-habits t)
-                     (setq org-startup-indented t)
-                     (setq org-variable-pitch-mode 1)
-                     (visual-line-mode 1)
-                     (org-indent-mode)
-                     (require 'ox-gfm)
-                     (require 'org-modern)
-                     (require 'ox-md)
-                     (require 'ox-confluence)
-                     (require 'ox-jira)
-                     )
+(use-package org
+  :pin nongnu
+  :ensure t
+  :diminish  ""
+  :after (org-modern)
+  :config
+  (setq org-default-notes-file "~/Documents/notes/notes.org")
+  (require 'org-capture)
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+           "* TODO %?\n  %i\n  %a")
+          ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+           "* %?\nEntered on %U\n  %i\n  %a")
+          ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
+           "* %?\nEntered on %U\n  %i\n  %a")
+          ("i" "Jira Issue" entry
+           (file+headline "~/Documents/notes/work.org" "Issues")
+           "* TODO %^{JiraIssueKey}p"
+           :jump-to-captured t
+           :immediate-finish t
+           :empty-lines-after 1)))
+  (require 'org-habit)
+  (setq org-habit-show-all-today t)
+  (setq org-habit-show-habits t)
+  (setq org-startup-indented t)
+  (setq org-variable-pitch-mode 1)
+  (visual-line-mode 1)
+  (org-indent-mode)
+  (require 'ox-gfm)
+  (require 'org-modern)
+  (require 'ox-md)
+  (require 'ox-confluence)
+  (require 'ox-jira))
 
+(use-package org-ref
+  :ensure t
+  :after (org)
+  :defer nil
+  :config
+  (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
+        org-ref-default-bibliography '("~/Documents/references.bib")
+        org-ref-pdf-directory "~/Documents/pdf/"
+        reftex-default-bibliography '("~/Documents/references.bib")
+        org-ref-completion-library 'org-ref-ivy-cite
+        org-cite-csl-styles-dir "~/Zotero/styles")
+  (setq org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "bibtex %b"))
+  )
 
-                   (use-package org-ref
-                     :ensure t
-                     :after (org)
-                     :defer nil
-                     :config
-                     (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
-                           org-ref-default-bibliography '("~/Documents/references.bib")
-                           org-ref-pdf-directory "~/Documents/pdf/"
-                           reftex-default-bibliography '("~/Documents/references.bib")
-                           org-ref-completion-library 'org-ref-ivy-cite
-                           org-cite-csl-styles-dir "~/Zotero/styles")
-                     (setq org-latex-pdf-process
-                           '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-                             "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-                             "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-                             "bibtex %b"))
-                     )
-
-
-                   (require 'ox-latex)
+(require 'ox-latex)
                    (setq org-latex-listings 'minted)
                    (add-to-list 'org-latex-packages-alist '("" "minted" t))
 
@@ -577,7 +574,8 @@
                      :defer 2
                      :ensure t
                      :config
-                     (setq org-pandoc-options '((standalone . t))))
+                     (setq org-pandoc-options '((standalone . t)))
+                     (setq org-pandoc-command "/opt/homebrew/bin/pandoc"))
 
                    (use-package org-variable-pitch
                      :defer 2
@@ -741,95 +739,100 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package company
-       :ensure t
-       :defer 2
-       :diminish
-       :custom
-       (company-minimum-prefix-length 1)
-       (company-idle-begin 0.0)
-       (company-show-numbers t)
-       (company-tooltip-align-annotations 't)
-       (global-company-mode t))
+            :ensure t
+            :defer 2
+            :diminish
+            :custom
+            (company-minimum-prefix-length 1)
+            (company-idle-begin 0.0)
+            (company-show-numbers t)
+            (company-tooltip-align-annotations 't)
+            (global-company-mode t))
 
-     (require 'company)
-     (add-hook  'after-init-hook 'global-company-mode)
-     (use-package company-quickhelp
-       :ensure t
-       :config
-       :after company
-       :init
-       (company-quickhelp-mode))
-     (use-package terraform-mode
-       :defer 2
-       :ensure t)
-     (use-package lsp-mode
-       :ensure t
-       :pin melpa
-       :commands (lsp lsp-deferred)
-       :hook ((ruby-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
-       :custom
-       (lsp-auto-configure t)
-       (lsp-prefer-flymake nil)
-       (lsp-inhibit-message t)
-       (lsp-eldoc-render-all t)
-       :config
-       (setq lsp-enable-which-key-integration t)
-       (setq lsp-enable-symbol-highlighting t)
-       (setq lsp-modeline-code-actions-enable t)
-       (setq lsp-diagnostics-provider :auto)
-       (setq lsp-diagnostics-mode nil)
-       ;;(setq lsp-semantic-tokens-enable t)
-       (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-       )
+          (require 'company)
+          (add-hook  'after-init-hook 'global-company-mode)
+          (use-package company-quickhelp
+            :ensure t
+            :config
+            :after company
+            :init
+            (company-quickhelp-mode))
+          (use-package terraform-mode
+            :defer 2
+            :ensure t)
+          (use-package lsp-mode
+            :ensure t
+            :pin melpa
+            :commands (lsp lsp-deferred)
+            :hook ((ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
+            :custom
+            (lsp-auto-configure t)
+            (lsp-prefer-flymake nil)
+            (lsp-inhibit-message t)
+            (lsp-eldoc-render-all t)
+            :config
+            (setq lsp-enable-which-key-integration t)
+            (setq lsp-enable-symbol-highlighting t)
+            (setq lsp-modeline-code-actions-enable t)
+            (setq lsp-diagnostics-provider :auto)
+            (setq lsp-diagnostics-mode nil)
+            ;;(setq lsp-semantic-tokens-enable t)
+            (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+            )
+(use-package lsp-java
+  :ensure t
+  :config (add-hook 'java-mode-hook #'lsp))
 
-     (use-package lsp-ivy
-       :defer 2
-       :ensure t)
+(setenv "JAVA_HOME" "/usr/local/Cellar/openjdk/20.0.1")
+(setq lsp-java-java-path "/usr/local/Cellar/openjdk/20.0.1/bin/java")
+          (use-package lsp-ivy
+            :defer 2
+            :ensure t)
 
-     (use-package lsp-ui
-       :defer 2
-       :commands lsp-ui-mode
-       :after lsp-mode
-       :config
-       (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
-       (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-       (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-       (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
-       (setq lsp-ui-sideline-enable t)
-       (setq lsp-lens-enable t)
-       (setq lsp-ui-sideline-enable t
-      lsp-ui-sideline-show-symbol t
-      lsp-ui-sideline-show-hover t
-      lsp-ui-sideline-show-flycheck t
-      lsp-ui-sideline-show-code-actions t
-      lsp-ui-sideline-show-diagnostics t)
+          (use-package lsp-ui
+            :defer 2
+            :commands lsp-ui-mode
+            :after lsp-mode
+            :config
+            (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
+            (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+            (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+            (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
+            (setq lsp-ui-sideline-enable t)
+            (setq lsp-lens-enable t)
+            (setq lsp-ui-sideline-enable t
+           lsp-ui-sideline-show-symbol t
+           lsp-ui-sideline-show-hover t
+           lsp-ui-sideline-show-flycheck t
+           lsp-ui-sideline-show-code-actions t
+           lsp-ui-sideline-show-diagnostics t)
 
-(setq lsp-ui-doc-enable t)
-(setq lsp-ui-imenu-enable nil)
-(setq lsp-ui-peek-enable t)       )
+     (setq lsp-ui-doc-enable t)
+     (setq lsp-ui-imenu-enable nil)
+     (setq lsp-ui-peek-enable t)       )
 
-     (use-package lsp-treemacs
-       :defer 2
-       :after lsp
-       :config
-       (lsp-treemacs-sync-mode t)
-       )
-     (require 'lsp-ui-flycheck)
-     (setq lsp-inhibit-message t)
-     (setq lsp-prefer-flymake nil)
-     (setq lsp-eldoc-render-all t)
+          (use-package lsp-treemacs
+            :defer 2
+            :after lsp
+            :config
+            (lsp-treemacs-sync-mode t)
+            )
+          (require 'lsp-ui-flycheck)
+          (setq lsp-inhibit-message t)
+          (setq lsp-prefer-flymake nil)
+          (setq lsp-eldoc-render-all t)
 
-     (setq lsp-auto-guess-root nil)
+          (setq lsp-auto-guess-root nil)
 
-     (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-     (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
-     (use-package company-box
-       :after company
-       :ensure t
-       :diminish
-       :hook
-       (company-mode . company-box-mode)
-       :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
+          (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+          (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+          (use-package company-box
+            :after company
+            :ensure t
+            :diminish
+            :hook
+            (company-mode . company-box-mode)
+            :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
 
 (use-package projectile
   :ensure t
@@ -1155,6 +1158,11 @@
     "gs" '(rspec-verify-single :which-key "run single spec")
     "gr" '(rspec-rerun :which-key "rerun spec")
     "gf" '(rspec-run-last-failed :which-key "rerun last failed")
+    "v"  '(:ignore t :which-key "avy")
+    "va" '(avy-goto-word-1 :which-key "avy-goto-word-1")
+    "vl" '(avy-goto-line :which-key "avy-goto-line")
+    "vs" '(avy-goto-char-timer :which-key "avy-goto-char-timer")
+    "vc" '(avy-goto-char :which-key "avy-goto-char")
     "f" '(:ignore t :which-key "cucumber")
     "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
     "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")

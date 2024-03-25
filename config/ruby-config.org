@@ -126,16 +126,17 @@ is going on while you write code.
 ** Set up some autocomplete goodness
 
    #+BEGIN_SRC elisp
-     (use-package rbenv
-       :ensure t
-       :init
-       (setq rbenv-show-active-ruby-in-modeline nil)
-       :config
-       (setq rbenv-installation-dir "/usr/local/opt/rbenv")
-       (global-rbenv-mode t))
+          (use-package rbenv
+            :ensure t
+            :init
+            (setq rbenv-show-active-ruby-in-modeline nil)
+            :config
+            (setq rbenv-installation-dir "/opt/homebrew/Cellar/rbenv/1.2.0")
+            (setq rbenv-executable "/opt/homebrew/bin/rbenv")
+            (global-rbenv-mode t))
 
-          (require 'lsp)
-          (add-hook 'ruby-mode-hook #'lsp)
+               (require 'lsp)
+               (add-hook 'ruby-mode-hook #'lsp)
    #+END_SRC
 ** Key-bindings some still used and some more ac config
 damn this is a mess
