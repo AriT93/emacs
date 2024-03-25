@@ -88,7 +88,8 @@
   :init
   (setq rbenv-show-active-ruby-in-modeline nil)
   :config
-  (setq rbenv-installation-dir "/usr/local/opt/rbenv")
+  (setq rbenv-installation-dir "/opt/homebrew/Cellar/rbenv/1.2.0")
+  (setq rbenv-executable "/opt/homebrew/bin/rbenv")
   (global-rbenv-mode t))
 
      (require 'lsp)
