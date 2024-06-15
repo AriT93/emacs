@@ -40,7 +40,7 @@
 (setq backup-directory-alist
       '((".*" . "~/tmp/")))
 (setq message-log-max 1000)
-(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 150 :weight 'normal)
+(set-face-attribute 'default nil :family "Cascadia Code NF" :height 150 :weight 'light)
 (setq help-at-pt-display-when-idle t)
 (setq help-at-pt-timer-delay 0.1)
 (help-at-pt-set-timer)
@@ -63,6 +63,23 @@
 (use-package string-inflection
   :ensure t)
 
+(use-package fzf
+:bind
+  ;; Don't forget to set keybinds!
+:config
+(setq fzf/args ""
+      fzf/preview-command "bat --style=numbers,changes --color=always --line-range :40 {}"
+      fzf/args-for-preview "bat --style=numbers,changes --color=always --line-range :40 {}"
+      fzf/executable "fzf"
+      fzf/git-grep-args "-i --line-number %s"
+      ;; command used for `fzf-grep-*` functions
+      ;; example usage for ripgrep:
+      ;; fzf/grep-command "rg --no-heading -nH"
+      fzf/grep-command "grep -nrH"
+      ;; If nil, the fzf buffer will appear at the top of the window
+      fzf/position-bottom t
+      fzf/window-height 15))
+
 (use-package swiper
           :ensure t)
         (use-package counsel
@@ -83,8 +100,8 @@
           :bind
           (
            ("\C-s" . 'swiper-isearch)
-           ("C-x C-f" . 'counsel-find-file)
-           ("C-c j" . 'counsel-git-grep)
+           ("C-x C-f" . 'fzf-find-file)
+           ("C-c j" . 'fzf-git-grep)
            ("C-c k" . 'counsel-ag)
            ("C-x L" . 'counsel-locate)
            ("M-x" . 'counsel-M-x))
@@ -1150,7 +1167,7 @@
   (general-create-definer my-leader-def
     :prefix "C-c")
   (my-leader-def
-    "t" 'projectile-find-file
+    "t" 'fzf-projectile
     "a" 'ace-jump-mode
     "g" '(:ignore t :which-key "rspec")
     "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
@@ -1158,6 +1175,8 @@
     "gs" '(rspec-verify-single :which-key "run single spec")
     "gr" '(rspec-rerun :which-key "rerun spec")
     "gf" '(rspec-run-last-failed :which-key "rerun last failed")
+    "i"  '(:ignore t :which-key "inf-ruby")
+    "ib" '(ruby-send-buffer :which-key "ruby-send-buffer")
     "v"  '(:ignore t :which-key "avy")
     "va" '(avy-goto-word-1 :which-key "avy-goto-word-1")
     "vl" '(avy-goto-line :which-key "avy-goto-line")
@@ -1183,7 +1202,29 @@
     "zo" '(org-roam-node-open :which-key "org-roam-node-open")
     "zt" '(:ignore t :which-key "roam-tag")
     "zta" '(org-roam-tag-add :which-key "roam-tag-add")
-    "ztr" '(org-roam-tag-add :which-key "roam-tag-remove")))
+    "ztr" '(org-roam-tag-add :which-key "roam-tag-remove")
+    "q" '(:ignore t :which-key "copilot")
+    "qa" '(copilot-accept-completion :which-key "copilot-accept-completion")
+    "qd" '(copilot-diagnose :which-key "copilot-diagnose")
+    "ql" '(copilot-accept-completion-by-line :which-key "copilot-accept-completion-by-line")
+    "qw" '(copilot-accept-completion-by-word :which-key "copilot-accept-completion-by-word")
+    "qp" '(copilot-previous-completion :whick-key "copilot-previous-completion")
+    "qn" '(copilot-next-completion :whick-key "copilot-next-completion")))
+
+(require 'quelpa-use-package)
+(use-package copilot
+  :quelpa (copilot :fetcher github
+                   :repo "zerolfx/copilot.el"
+                   :branch "main"
+                   :files ("dist" "*.el")))
+;; you can utilize :map :hook and :config to customize copilot
+(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+
+(use-package magit-delta
+  :ensure t
+  :hook
+  (magit-mode . magit-delta-mode))
 
 (use-package popper
 :ensure t ; or :straight t
