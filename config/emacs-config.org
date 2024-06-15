@@ -3,7 +3,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-06-14 10:35:51 ari.turetzky>
+#+Time-stamp: <2024-06-07 09:19:25 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -71,7 +71,7 @@
      (setq backup-directory-alist
            '((".*" . "~/tmp/")))
      (setq message-log-max 1000)
-     (set-face-attribute 'default nil :family "Cascadia Code NF" :height 150 :weight 'light)
+     (set-face-attribute 'default nil :family "CaskaydiaMono Nerd Font" :height 150 :weight 'normal)
      (setq help-at-pt-display-when-idle t)
      (setq help-at-pt-timer-delay 0.1)
      (help-at-pt-set-timer)
