@@ -3,7 +3,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2023-12-06 13:47:03 ari.turetzky>
+#+Time-stamp: <2024-06-14 10:35:51 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -71,7 +71,7 @@
      (setq backup-directory-alist
            '((".*" . "~/tmp/")))
      (setq message-log-max 1000)
-     (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 150 :weight 'normal)
+     (set-face-attribute 'default nil :family "Cascadia Code NF" :height 150 :weight 'light)
      (setq help-at-pt-display-when-idle t)
      (setq help-at-pt-timer-delay 0.1)
      (help-at-pt-set-timer)
@@ -96,6 +96,25 @@
 
    #+END_SRC
 ** Ivy for isearcing
+Lets use some fzf here too
+#+begin_src elisp
+  (use-package fzf
+  :bind
+    ;; Don't forget to set keybinds!
+  :config
+  (setq fzf/args ""
+        fzf/preview-command "bat --style=numbers,changes --color=always --line-range :40 {}"
+        fzf/args-for-preview "bat --style=numbers,changes --color=always --line-range :40 {}"
+        fzf/executable "fzf"
+        fzf/git-grep-args "-i --line-number %s"
+        ;; command used for `fzf-grep-*` functions
+        ;; example usage for ripgrep:
+        ;; fzf/grep-command "rg --no-heading -nH"
+        fzf/grep-command "grep -nrH"
+        ;; If nil, the fzf buffer will appear at the top of the window
+        fzf/position-bottom t
+        fzf/window-height 15))
+#+end_src
    Use Ivy, counsel and Swiper(no swiping!) for isearch
    #+BEGIN_SRC elisp
              (use-package swiper
@@ -118,8 +137,8 @@
                :bind
                (
                 ("\C-s" . 'swiper-isearch)
-                ("C-x C-f" . 'counsel-find-file)
-                ("C-c j" . 'counsel-git-grep)
+                ("C-x C-f" . 'fzf-find-file)
+                ("C-c j" . 'fzf-git-grep)
                 ("C-c k" . 'counsel-ag)
                 ("C-x L" . 'counsel-locate)
                 ("M-x" . 'counsel-M-x))
@@ -1312,8 +1331,7 @@ setting this up for roam and keeping deft for notes
        (company-prescient-mode 1))
 #+end_src
 ** General
-**
-**
+
    #+begin_src elisp
      (use-package general
        :ensure t
@@ -1321,7 +1339,7 @@ setting this up for roam and keeping deft for notes
        (general-create-definer my-leader-def
          :prefix "C-c")
        (my-leader-def
-         "t" 'projectile-find-file
+         "t" 'fzf-projectile
          "a" 'ace-jump-mode
          "g" '(:ignore t :which-key "rspec")
          "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
@@ -1329,6 +1347,8 @@ setting this up for roam and keeping deft for notes
          "gs" '(rspec-verify-single :which-key "run single spec")
          "gr" '(rspec-rerun :which-key "rerun spec")
          "gf" '(rspec-run-last-failed :which-key "rerun last failed")
+         "i"  '(:ignore t :which-key "inf-ruby")
+         "ib" '(ruby-send-buffer :which-key "ruby-send-buffer")
          "v"  '(:ignore t :which-key "avy")
          "va" '(avy-goto-word-1 :which-key "avy-goto-word-1")
          "vl" '(avy-goto-line :which-key "avy-goto-line")
@@ -1354,8 +1374,37 @@ setting this up for roam and keeping deft for notes
          "zo" '(org-roam-node-open :which-key "org-roam-node-open")
          "zt" '(:ignore t :which-key "roam-tag")
          "zta" '(org-roam-tag-add :which-key "roam-tag-add")
-         "ztr" '(org-roam-tag-add :which-key "roam-tag-remove")))
+         "ztr" '(org-roam-tag-add :which-key "roam-tag-remove")
+         "q" '(:ignore t :which-key "copilot")
+         "qa" '(copilot-accept-completion :which-key "copilot-accept-completion")
+         "qd" '(copilot-diagnose :which-key "copilot-diagnose")
+         "ql" '(copilot-accept-completion-by-line :which-key "copilot-accept-completion-by-line")
+         "qw" '(copilot-accept-completion-by-word :which-key "copilot-accept-completion-by-word")
+         "qp" '(copilot-previous-completion :whick-key "copilot-previous-completion")
+         "qn" '(copilot-next-completion :whick-key "copilot-next-completion")))
    #+end_src
+** Copilo
+** t
+#+begin_src elisp
+  (require 'quelpa-use-package)
+  (use-package copilot
+    :quelpa (copilot :fetcher github
+                     :repo "zerolfx/copilot.el"
+                     :branch "main"
+                     :files ("dist" "*.el")))
+  ;; you can utilize :map :hook and :config to customize copilot
+  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+#+end_src
+** Magit Delta
+delta is better diffs for git
+#+begin_src elisp
+    (use-package magit-delta
+      :ensure t
+      :hook
+      (magit-mode . magit-delta-mode))
+#+end_src
+** 
 ** Popper
 Popper helps with managing transient windows  see [[https://github.com/karthink/popper][Github]]
 #+begin_src elisp

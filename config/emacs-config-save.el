@@ -148,7 +148,7 @@
   :bind
   (
    ("\C-s" . 'swiper)
-   ("C-x C-f" . 'counsel-find-file)
+   ("C-x C-f" . 'fzf-find-file)
    ("C-c j" . 'counsel-git-grep)
    ("C-c k" . 'counsel-ag)
    ("C-c l" . 'counsel-locate)

@@ -3,7 +3,7 @@
 ;;; Code:
 
 (require 'smtpmail)
-  (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.10.8/share/emacs/site-lisp/mu/mu4e/")
+  (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.12.5/share/emacs/site-lisp/mu/mu4e/")
     (require 'mu4e)
 
     (setq   mail-user-agent 'mu4e-user-agent)
