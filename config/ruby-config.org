@@ -86,12 +86,12 @@ is going on while you write code.
     (diminish 'ruby-electric-mode)
     (add-hook 'ruby-mode-hook
               (lambda()
-                (add-hook 'write-file-functions
-                          #'(lambda()
-                             (save-excursion
-                               (untabify (point-min) (point-max))
-                               (delete-trailing-whitespace)
-                               )))
+                ;; (add-hook 'write-file-functions
+                ;;           #'(lambda()
+                ;;              (save-excursion
+                ;;                (untabify (point-min) (point-max))
+                ;;                (delete-trailing-whitespace)
+                ;;                )))
                 (set (make-local-variable 'indent-tabs-mode) 'nil)
                 (set (make-local-variable 'tab-width) 2)
                 (ruby-electric-mode t)
