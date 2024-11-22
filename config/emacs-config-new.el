@@ -216,22 +216,28 @@
   (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
 
 (use-package magit
+    :defer 2
+    :ensure t)
+;;  (require 'magit)
+  ;; (use-package git-gutter-fringe+
+  ;;      :defer 2
+  ;;      :after magit
+  ;;   :ensure t
+  ;;   :diminish
+  ;;   :init
+  ;;   (global-git-gutter+-mode))
+(use-package git-gutter-fringe
   :defer 2
-  :ensure t)
-(require 'magit)
-(use-package git-gutter-fringe+
-     :defer 2
-     :after magit
+  :after magit
   :ensure t
   :diminish
   :init
-  (global-git-gutter+-mode))
-
-(use-package git-timemachine
-     :defer 2
-  :ensure t
-  :diminish
-  )
+  (global-git-gutter-mode))
+  (use-package git-timemachine
+       :defer 2
+    :ensure t
+    :diminish
+    )
 
 (use-package persistent-scratch
       :ensure t
@@ -270,7 +276,8 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
 ;; (load-theme 'tron-legacy t)
- (load-theme 'doom-zenburn t)
+;; (load-theme 'doom-zenburn t)
+ (load-theme 'hc-zenburn t)
 ;; (load-theme 'doom-dark+ t)
 ;; (powerline-default-theme)
 
@@ -377,38 +384,41 @@
   (diminish 'global-highline-mode))
 
 (use-package org
-         :pin nongnu
-         :ensure t
-         :diminish  ""
-         :after (org-modern)
-         :config
-         (setq org-default-notes-file "~/Documents/notes/notes.org")
-         (require 'org-capture)
-         (setq org-capture-templates
-               '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
-                  "* TODO %?\n  %i\n  %a")
-                 ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
-                  "* %?\nEntered on %U\n  %i\n  %a")
-                 ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
-                  "* %?\nEntered on %U\n  %i\n  %a")
-                 ("i" "Jira Issue" entry
-                  (file+headline "~/Documents/notes/work.org" "Issues")
-                  "* TODO %^{JiraIssueKey}p"
-                  :jump-to-captured t
-                  :immediate-finish t
-                  :empty-lines-after 1)))
-         (require 'org-habit)
-         (setq org-habit-show-all-today t)
-         (setq org-habit-show-habits t)
-         (setq org-startup-indented t)
-         (setq org-variable-pitch-mode 1)
-         (visual-line-mode 1)
-;;         (org-indent-mode)
-         (require 'ox-gfm)
-         (require 'org-modern)
-         (require 'ox-md)
-         (require 'ox-confluence)
-         (require 'ox-jira))
+           :pin nongnu
+           :ensure t
+           :diminish  ""
+           :config
+           (setq org-default-notes-file "~/Documents/notes/notes.org")
+           (require 'org-capture)
+           (setq org-capture-templates
+                 '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+                    "* TODO %?\n  %i\n  %a")
+                   ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+                    "* %?\nEntered on %U\n  %i\n  %a")
+                   ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
+                    "* %?\nEntered on %U\n  %i\n  %a")
+                   ("i" "Jira Issue" entry
+                    (file+headline "~/Documents/notes/work.org" "Issues")
+                    "* TODO %^{JiraIssueKey}p"
+                    :jump-to-captured t
+                    :immediate-finish t
+                    :empty-lines-after 1)))
+           (require 'org-habit)
+           (setq org-habit-show-all-today t)
+           (setq org-habit-show-habits t)
+           (setq org-startup-indented t)
+           (setq org-variable-pitch-mode 1)
+           (visual-line-mode 1)
+  ;;         (org-indent-mode)
+           (require 'ox-gfm)
+           (require 'org-modern)
+           (require 'ox-md)
+           (require 'ox-confluence)
+           (require 'ox-jira)
+    (add-hook 'org-mode-hook #'org-modern-mode)
+    (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+(add-hook 'after-init-hook #'org-variable-pitch-setup)
+(add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
 
 (use-package biblio
   :ensure t)
@@ -479,7 +489,7 @@
   :custom
   (org-roam-directory "~/Documents/org-roam" )
   :config
-  (org-roam-setup)
+  (org-roam-db-autosync-enable)
   (setq org-roam-database-connector 'sqlite-builtin)
   (setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
                                       (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
@@ -540,20 +550,20 @@
   :ensure t)
 
 (use-package ox-jira
-  :ensure t)
-(require 'org-tempo)
-(use-package org-mime
-  :ensure t)
-(setq org-src-fontify-natively t)
-(setq org-src-tab-acts-natively t)
-(setq org-src-window-setup 'current-window)
-(use-package plantuml-mode
-  :ensure t)
-;; (use-package org-bullets
-;;   :ensure t)
- (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-(setq org-startup-with-inline-images t)
-(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+      :ensure t)
+    (require 'org-tempo)
+    (use-package org-mime
+      :ensure t)
+    (setq org-src-fontify-natively t)
+    (setq org-src-tab-acts-natively t)
+    (setq org-src-window-setup 'current-window)
+    (use-package plantuml-mode
+      :ensure t)
+    ;; (use-package org-bullets
+    ;;   :ensure t)
+;;     (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+    (setq org-startup-with-inline-images t)
+    (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
 
 ;;***********remember + Org config*************
 (setq org-remember-templates
@@ -596,9 +606,6 @@
 
 (use-package org-modern
   :ensure t
-  :config
-  (add-hook 'org-mode-hook #'org-modern-mode)
-  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
   )
 (use-package ox-pandoc
   :defer 2
@@ -612,8 +619,8 @@
   :after org
   :ensure t
   :config
-  (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
-  (add-hook 'after-init-hook #'org-variable-pitch-setup))
+  (add-hook 'after-init-hook #'org-variable-pitch-setup)
+  (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
 
 (use-package olivetti
   :after org
@@ -803,7 +810,7 @@
             :ensure t
             :pin melpa
             :commands (lsp lsp-deferred)
-            :hook ((ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
+            :hook ((ruby-mode . lsp-deferred)(go-ts-mode . 'lsp-deffered)(go-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
             :custom
             (lsp-auto-configure t)
             (lsp-prefer-flymake nil)
@@ -822,8 +829,8 @@
   :ensure t
   :config (add-hook 'java-mode-hook #'lsp))
 
-(setenv "JAVA_HOME" "/usr/local/Cellar/openjdk/20.0.1")
-(setq lsp-java-java-path "/usr/local/Cellar/openjdk/20.0.1/bin/java")
+(setenv "JAVA_HOME" "/opt/homebrew/Cellar/openjdk/22.0.2/")
+(setq lsp-java-java-path "/opt/homebrew/Cellar/openjdk/22.0.2/bin/java")
           (use-package lsp-ivy
             :defer 2
             :ensure t)
@@ -846,7 +853,7 @@
            lsp-ui-sideline-show-code-actions t
            lsp-ui-sideline-show-diagnostics t)
 
-     (setq lsp-ui-doc-enable t)
+     (setq lsp-ui-doc-enable nil)
      (setq lsp-ui-imenu-enable nil)
      (setq lsp-ui-peek-enable t)       )
 
@@ -1011,7 +1018,7 @@
 (use-package cypher-mode
        :ensure t)
 ;;     (setq n4js-cli-program "~/Downloads/cypher-shell/cypher-shell")
-     (setq n4js-cli-program "/usr/local/bin/cypher-shell")
+     (setq n4js-cli-program "/opt/homebrew/bin/cypher-shell")
      (setq n4js-cli-arguments '("-u" "neo4j"))
      (setq n4js-pop-to-buffer t)
      (setq n4js-font-lock-keywords cypher-font-lock-keywords)
