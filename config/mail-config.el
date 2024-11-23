@@ -161,5 +161,22 @@
     (variable-pitch-mode)
     (flyspell-mode)
     )
+  (require 'epa-file)
   (add-hook 'mu4e-view-mode-hook #'abt/mu4e-view-settings)
+  (add-hook 'mu4e-view-mode-hook (epa-mail-mode))
+(add-hook 'mu4e-compose-mode-hook (epa-mail-mode))
+
+(setq mu4e-compose-crypto-reply-encrypted-policy 'sign-and-encrypt
+      mu4e-alert-email-notification-types '(subjects))
+
+(require 'epg-config)
+(setq mml2015-use `epg
+ mm-verify-option 'always
+      gnus-buttonized-mime-types '("multipart/signed")
+      mml-default-sign-method 'pgp		; use pgp
+      mml-secure-openpgp-encrypt-to-self  t     ;    "
+      mml-secure-openpgp-sign-with-sender t     ;    "
+      epg-user-id "gpg_key_id"                  ;    "
+      epg-gpg-program "gpg2"                    ; program for encryption
+      )
   (provide 'mail-config)
