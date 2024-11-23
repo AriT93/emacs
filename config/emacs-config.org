@@ -3,7 +3,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-06-07 09:19:25 abturet>
+#+Time-stamp: <2024-11-02 07:35:02 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -71,7 +71,7 @@
      (setq backup-directory-alist
            '((".*" . "~/tmp/")))
      (setq message-log-max 1000)
-     (set-face-attribute 'default nil :family "CaskaydiaMono Nerd Font" :height 150 :weight 'normal)
+     (set-face-attribute 'default nil :family "Cascadia Code" :height 150 :weight 'normal)
      (setq help-at-pt-display-when-idle t)
      (setq help-at-pt-timer-delay 0.1)
      (help-at-pt-set-timer)
@@ -102,10 +102,10 @@ Lets use some fzf here too
   :bind
     ;; Don't forget to set keybinds!
   :config
-  (setq fzf/args ""
-        fzf/preview-command "bat --style=numbers,changes --color=always --line-range :40 {}"
-        fzf/args-for-preview "bat --style=numbers,changes --color=always --line-range :40 {}"
-        fzf/executable "fzf"
+  (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
+        fzf/preview-command "batcat --style=numbers,changes --color=always --line-range :40 {}"
+        fzf/args-for-preview "batcat --style=numbers,changes --color=always --line-range :40 {}"
+        ;;fzf/executable "/home/abturet/.fzf/bin/fzf"
         fzf/git-grep-args "-i --line-number %s"
         ;; command used for `fzf-grep-*` functions
         ;; example usage for ripgrep:
@@ -272,23 +272,25 @@ Lets use some fzf here too
 #+END_SRC
 ** Git
 #+BEGIN_SRC elisp
-  (use-package magit
-    :defer 2
-    :ensure t)
-  (require 'magit)
-  (use-package git-gutter-fringe+
-       :defer 2
-       :after magit
-    :ensure t
-    :diminish
-    :init
-    (global-git-gutter+-mode))
+   (use-package magit
+     :defer 2
+     :ensure t)
+   (require 'magit)
+  ;; (use-package git-gutter-fringe+
+  ;;         :defer 2
+  ;;         :after magit
+  ;;      :ensure t
+  ;;      :diminish
+  ;;      :init
+  ;;      (global-git-gutter+-mode))
 
-  (use-package git-timemachine
-       :defer 2
-    :ensure t
-    :diminish
-    )
+    (use-package
+     git-timemachine
+                                          ;
+        :defer 2
+     :ensure t
+     :diminish
+     )
 #+END_SRC
 ** Preserve all the crap I put in the =*scrach*= buffer
 #+BEGIN_SRC elisp
@@ -476,7 +478,7 @@ Lets use some fzf here too
          (setq org-startup-indented t)
          (setq org-variable-pitch-mode 1)
          (visual-line-mode 1)
-         (org-indent-mode)
+         ;;(org-indent-mode)
          (require 'ox-gfm)
          (require 'org-modern)
          (require 'ox-md)
@@ -539,11 +541,11 @@ Lets use some fzf here too
                               (add-hook 'org-roam-capture-new-node-hook #'fg/jira-update-heading)
                               (add-hook 'org-capture-before-finalize-hook #'fg/jira-update-heading)
                               )
-              (use-package emacsql-sqlite-builtin
-                :ensure t
-                )
-         (use-package emacsql-sqlite-builtin
-           :ensure t)
+;;              (use-package emacsql-sqlite-builtin
+;;                :ensure t
+;;                )
+;;         (use-package emacsql-sqlite-builtin
+;;           :ensure t)
          (use-package org-roam
                               :after org
                               :ensure t
@@ -881,7 +883,7 @@ Lets use some fzf here too
                  :ensure t
                  :pin melpa
                  :commands (lsp lsp-deferred)
-                 :hook ((ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
+                 :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
                  :custom
                  (lsp-auto-configure t)
                  (lsp-prefer-flymake nil)
@@ -1404,7 +1406,7 @@ delta is better diffs for git
       :hook
       (magit-mode . magit-delta-mode))
 #+end_src
-** 
+**
 ** Popper
 Popper helps with managing transient windows  see [[https://github.com/karthink/popper][Github]]
 #+begin_src elisp
