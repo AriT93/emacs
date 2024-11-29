@@ -675,7 +675,7 @@
 (require 'org-crypt)
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance (quote("crypt")))
-(setq org-crypt-key "722569FB9B510D16")
+(setq org-crypt-key "14E7F934")
 
 ;;(add-to-list 'load-path "~/dev/git/emacs-reveal")
 ;;  (setq emacs-reveal-managed-install-p nil)

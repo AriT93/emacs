@@ -3,7 +3,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-11-22 16:56:55 abturet>
+#+Time-stamp: <2024-11-25 14:38:29 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -774,7 +774,7 @@ Lets use some fzf here too
      (require 'org-crypt)
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance (quote("crypt")))
-(setq org-crypt-key "722569FB9B510D16")
+(setq org-crypt-key "14E7F934")
 
    #+end_src
 
