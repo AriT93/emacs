@@ -1,21 +1,29 @@
-;;; ari-custom.el --- holds all my own private stuff
+;;; ari-custom.el --- holds all my own private stuff -*- lexical-binding: t; -*-
 ;;add a comment
 ;;; Commentary:
-;;; History:
+;;; this is my custom functions
+;;; History: long ago in a different time.  check git log for deets
 ;;; Code:
 
-(defun dos-to-unix()
+(defun dos-to-unix ()
+  "Convert DOS line endings to Unix line endings in the current buffer."
   (interactive)
   (save-excursion
-    (beginning-of-buffer)
-    (replace-string "\r\n" "\n")))
+    (save-restriction
+      (widen)
+      (goto-char (point-min))
+      (while (search-forward "\r\n" nil t)
+        (replace-match "\n" nil t)))))
 
-
-(defun unix-to-dos()
+(defun unix-to-dos ()
+  "Convert Unix line endings to DOS line endings in the current buffer."
   (interactive)
   (save-excursion
-    (beginning-of-buffer)
-    (replace-string"\n" "\r\n")))
+    (save-restriction
+      (widen)
+      (goto-char (point-min))
+      (while (search-forward "\n" nil t)
+        (replace-match "\r\n" nil t)))))
 
 (define-key isearch-mode-map (kbd "C-o")
   (lambda ()
@@ -25,8 +33,7 @@
                (regexp-quote isearch-string))))))
 
 (defun djcb-opacity-modify (&optional dec)
-  "modify the transparency of the emacs frame; if DEC is t,
-decrease the transparency, otherwise increase it in 10%-steps"
+  "Modify the transparency of the EMACS frame; If DEC is t, decrease the transparency, otherwise increase it in 10%-steps."
   (let* ((alpha-or-nil (frame-parameter nil 'alpha)) ; nil before setting
          (oldalpha (if alpha-or-nil alpha-or-nil 100))
          (newalpha (if dec (- oldalpha 10) (+ oldalpha 10))))
@@ -61,4 +68,4 @@ decrease the transparency, otherwise increase it in 10%-steps"
      do (org-entry-put pt property value)))))
 
 (provide 'ari-custom-new)
-;;; ari-custom.el ends here
+;;; ari-custom-new.el ends here
