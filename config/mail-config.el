@@ -3,7 +3,7 @@
 ;;; Code:
 
 (require 'smtpmail)
-  (add-to-list 'load-path "/home/abturet/dev/git/mu/mu4e/")
+  (add-to-list 'load-path "/home/abturet/dev/git/mu/build/mu4e")
   (require 'mu4e)
 
   (setq   mail-user-agent 'mu4e-user-agent)

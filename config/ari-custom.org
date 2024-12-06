@@ -8,35 +8,44 @@
   Start with some housekeeping
   #+BEGIN_SRC elisp
 
-    ;;; ari-custom.el --- holds all my own private stuff
-    ;;add a comment
-    ;;; Commentary:
-    ;;; History:
-    ;;; Code:
+        ;;; ari-custom.el --- holds all my own private stuff -*- lexical-binding: t; -*-
+        ;;add a comment
+        ;;; Commentary:
+        ;;; this is my custom functions
+        ;;; History: long ago in a different time.  check git log for deets
+        ;;; Code:
   #+END_SRC
 
 ** Line endings
    why use the shell when emacs can do it for you!
 
    #+BEGIN_SRC elisp
-     (defun dos-to-unix()
-       (interactive)
-       (save-excursion
-         (beginning-of-buffer)
-         (replace-string "\r\n" "\n")))
+(defun dos-to-unix ()
+  "Convert DOS line endings to Unix line endings in the current buffer."
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (widen)
+      (goto-char (point-min))
+      (while (search-forward "\r\n" nil t)
+        (replace-match "\n" nil t)))))
 
 
-     (defun unix-to-dos()
-       (interactive)
-       (save-excursion
-         (beginning-of-buffer)
-         (replace-string"\n" "\r\n")))
+
+(defun unix-to-dos ()
+  "Convert Unix line endings to DOS line endings in the current buffer."
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (widen)
+      (goto-char (point-min))
+      (while (search-forward "\n" nil t)
+        (replace-match "\r\n" nil t)))))
    #+END_SRC
 
 ** Occur from isearch
    if you see hits in isearch this will pop the current term to an
    occur buffer
-
    #+BEGIN_SRC elisp
      (define-key isearch-mode-map (kbd "C-o")
        (lambda ()
@@ -52,8 +61,7 @@
 
    #+BEGIN_SRC elisp
      (defun djcb-opacity-modify (&optional dec)
-       "modify the transparency of the emacs frame; if DEC is t,
-     decrease the transparency, otherwise increase it in 10%-steps"
+       "Modify the transparency of the EMACS frame; If DEC is t, decrease the transparency, otherwise increase it in 10%-steps."
        (let* ((alpha-or-nil (frame-parameter nil 'alpha)) ; nil before setting
               (oldalpha (if alpha-or-nil alpha-or-nil 100))
               (newalpha (if dec (- oldalpha 10) (+ oldalpha 10))))
@@ -96,7 +104,7 @@
 ** Aaaand we're out
    #+BEGIN_SRC elisp
      (provide 'ari-custom-new)
-     ;;; ari-custom.el ends here
+     ;;; ari-custom-new.el ends here
    #+END_SRC
    #+DESCRIPTION: Literate source for my Emacs configuration
    #+PROPERTY: header-args:elisp :tangle ~/emacs/config/ari-custom-new.el
