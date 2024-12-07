@@ -338,7 +338,6 @@
   (diminish 'global-highline-mode)
   (diminish 'ruby-block-mode)
   (diminish 'org-variable-pitch-minor-mode)
-  (diminish 'git-gutter+-mode)
   (diminish 'ruby-electric-mode)
   (diminish 'buffer-face-mode)
   (diminish 'auto-fill-function)
@@ -350,7 +349,6 @@
 (use-package org
   :pin nongnu
   :ensure t
-  :diminish  ""
   :config
   (setq org-default-notes-file "~/Documents/notes/notes.org"))
 
@@ -607,7 +605,7 @@
 (require 'org-crypt)
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance (quote("crypt")))
-(setq org-crypt-key "14E7F934")
+(setq org-crypt-key (substring (shell-command-to-string "gpg --list-secret-key --keyid-format short | grep sec | grep -o -P '(?<=/)[A-Z0-9]{8}'") 0 -1))
 
 (use-package exec-path-from-shell
   :ensure t
