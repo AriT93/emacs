@@ -1,0 +1,2 @@
+* Emacs Configuration
+Repos need a README. So here is one.
