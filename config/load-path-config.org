@@ -9,25 +9,24 @@
   (add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
   (add-to-list 'load-path (expand-file-name "~/emacs/site/color-theme/themes"))
   (add-to-list 'load-path (expand-file-name "~/emacs/site/lisp"))
-;;  (add-to-list 'load-path (expand-file-name "~/emacs/site/mu4e-view-xwidget"))
   (add-to-list 'load-path (expand-file-name "~/emacs/site/ruby-block"))
   (add-to-list 'load-path (expand-file-name "~/emacs/site/blog"))
+  (add-to-list 'load-path "~/dev/git/lsp-bridge/")
 #+END_SRC
 * Why are these here?
-  I don't know I can move them later(never...)
+I don't know I can move them later(never...)
 #+BEGIN_SRC elisp
- (load "ps-print")
-;;(load-file "~/emacs/site/cedet/common/cedet.elc")
+  (load "ps-print")
 
-(autoload 'python-mode "python-mode" "Python editing mode." t)
+  (autoload 'python-mode "python-mode" "Python editing mode." t)
 
-(provide 'load-path-config-new)
+  (provide 'load-path-config-new)
 
 #+END_SRC
-    #+DESCRIPTION: Literate source for my Emacs configuration
-    #+PROPERTY: header-args:elisp :tangle ~/emacs/config/load-path-config-new.el
-    #+PROPERTY: header-args:ruby :tangle no
-    #+PROPERTY: header-args:shell :tangle no
-    #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
-    #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
-    #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+DESCRIPTION: Literate source for my Emacs configuration
+#+PROPERTY: header-args:elisp :tangle ~/emacs/config/load-path-config-new.el
+#+PROPERTY: header-args:ruby :tangle no
+#+PROPERTY: header-args:shell :tangle no
+#+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
+#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js

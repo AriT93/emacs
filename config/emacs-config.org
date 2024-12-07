@@ -1,523 +1,499 @@
-
 #+TITLE: General Emacs Configuration options
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-11-25 14:38:29 abturet>
+#+Time-stamp: <2024-12-07 10:53:38 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
-  Contained herein are my general non-mode specific(mostly)
-  configuration  *This is a Work in Progress*
+Contained herein are my general non-mode specific(mostly)
+configuration  *This is a Work in Progress*
 ** Get some package goodness
-   #+BEGIN_SRC elisp
-     (require 'package)
-   #+END_SRC
-   find our packages in the more reputable places
-   #+BEGIN_SRC elisp
-     (setq package-archives '(
-                                      ("melpa"  . "https://melpa.org/packages/")
-                                      ("elpa"   . "https://elpa.gnu.org/packages/")
-                                      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                                      ("melpa-stable" . "https://stable.melpa.org/packages/")
-                                      ))
-     (package-initialize)
-   #+END_SRC
+#+BEGIN_SRC elisp
+  (require 'package)
+#+END_SRC
+find our packages in the more reputable places
 
-   #+RESULTS:
+#+BEGIN_SRC elisp
+  (setq package-archives '(
+                           ("melpa"  . "https://melpa.org/packages/")
+                           ("elpa"   . "https://elpa.gnu.org/packages/")
+                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                           ("melpa-stable" . "https://stable.melpa.org/packages/")
+                           ))
+  (package-initialize)
+#+END_SRC
 
 ** Use Package
-   =use-package= makes it easy to require a file without a bunch of
-   requires like you'll find just below a bit and it will also ensure it`
-   gets installed from a repository we defined above
+=use-package= makes it easy to require a file without a bunch of
+requires like you'll find just below a bit and it will also ensure it`
+gets installed from a repository we defined above
 
-   #+BEGIN_SRC elisp
-     (setq treesit-extra-load-path nil)
-     (unless (package-installed-p 'use-package)
-     (package-refresh-contents)
-     (package-install 'use-package))
-     (require 'use-package)
-   #+END_SRC
+#+BEGIN_SRC elisp
+  (setq treesit-extra-load-path nil)
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (require 'use-package)
+#+END_SRC
 
-   I store the load paths to locally downloaded package in their own
-   config file [[file:load-path-config.org][load-path-config]]
+I store the load paths to locally downloaded package in their own
+config file [[file:load-path-config.org][load-path-config]]
 
-   #+BEGIN_SRC elisp
-     (require 'load-path-config-new)
-   #+END_SRC
+#+BEGIN_SRC elisp
+  (require 'load-path-config-new)
+#+END_SRC
 ** Looks and Behaviors
-   #+BEGIN_SRC elisp
-     (show-paren-mode 1)
-     (recentf-mode 1)
-     (setq recentf-max-menu-items 25)
-     (setq recentf-max-saved-items 25)
-     (setq undo-limit 8000000)
-     (setq undo-strong-limit 12000000)
-     (setq undo-outer-limit 12000000)
-     (setq read-process-output-max (* 2048 2048))
-     (setq inhibit-startup-screen t)
-     (setq inhibit-splash-screen t)
-     (setq uniquify-buffer-name-style t)
-     (setq uniquify-buffer-name-style (quote post-forward))
-     (setq uniquify-min-dir-content 0)
-     (electric-pair-mode 1)
-     (setq cal-tex-diary t)
-     (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
-     (add-hook 'diary-display-hook 'fancy-diary-display)
-     (add-hook 'text-mode-hook ' turn-on-auto-fill)
-     (add-hook 'before-save-hook 'time-stamp)
-     (setq dired-omit-files-p t)
-     (setq tramp-auto-save-directory "~/tmp")
-     (setq backup-directory-alist
-           '((".*" . "~/tmp/")))
-     (setq message-log-max 1000)
-     (set-face-attribute 'default nil :family "Cascadia Code" :height 150 :weight 'normal)
-     (setq help-at-pt-display-when-idle t)
-     (setq help-at-pt-timer-delay 0.1)
-     (help-at-pt-set-timer)
-     (setq show-paren-style 'mixed)
-     (setq mode-line-in-non-selected-windows nil)
-     (fset 'yes-or-no-p 'y-or-n-p)
-     (setq browse-url-browser-function 'browse-url-default-browser)
-     (add-hook 'eww-after-render-hook 'eww-readable)
-     (add-hook 'eww-after-render-hook 'visual-line-mode)
-     (setq native-comp-speed 2)
-     (setq package-native-compile t)
-     (require 'xwidget)
-             ;;; follow links in xwidgets
-     (setq alert-default-style 'notifier)
-     (use-package xwwp-follow-link
-       :custom
-       (xwwp-follow-link-completion-backend 'ivy)
-       :bind (:map xwidget-webkit-mode-map
-                   ("v" . xwwp-follow-link)))
-     (use-package string-inflection
-       :ensure t)
-
-   #+END_SRC
+#+BEGIN_SRC elisp
+  (show-paren-mode 1)
+  (recentf-mode 1)
+  (setq recentf-max-menu-items 25)
+  (setq recentf-max-saved-items 25)
+  (setq undo-limit 8000000)
+  (setq undo-strong-limit 12000000)
+  (setq undo-outer-limit 12000000)
+  (setq read-process-output-max (* 2048 2048))
+  (setq inhibit-startup-screen t)
+  (setq inhibit-splash-screen t)
+  (setq uniquify-buffer-name-style t)
+  (setq uniquify-buffer-name-style (quote post-forward))
+  (setq uniquify-min-dir-content 0)
+  (electric-pair-mode 1)
+  (setq cal-tex-diary t)
+  (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
+  (add-hook 'diary-display-hook 'fancy-diary-display)
+  (add-hook 'text-mode-hook ' turn-on-auto-fill)
+  (add-hook 'before-save-hook 'time-stamp)
+  (setq dired-omit-files-p t)
+  (setq tramp-auto-save-directory "~/tmp")
+  (setq backup-directory-alist
+        '((".*" . "~/tmp/")))
+  (setq message-log-max 1000)
+  (set-face-attribute 'default nil :family "Cascadia Code" :height 150 :weight 'normal)
+  (setq help-at-pt-display-when-idle t)
+  (setq help-at-pt-timer-delay 0.1)
+  (help-at-pt-set-timer)
+  (setq show-paren-style 'mixed)
+  (setq mode-line-in-non-selected-windows nil)
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (setq browse-url-browser-function 'browse-url-default-browser)
+  (add-hook 'eww-after-render-hook 'eww-readable)
+  (add-hook 'eww-after-render-hook 'visual-line-mode)
+  (setq native-comp-speed 2)
+  (setq package-native-compile t)
+  (require 'xwidget)
+          ;;; follow links in xwidgets
+  (setq alert-default-style 'notifier)
+#+END_SRC
+#+BEGIN_SRC elisp
+  (use-package xwwp-follow-link
+    :custom
+    (xwwp-follow-link-completion-backend 'ivy)
+    :bind (:map xwidget-webkit-mode-map
+                ("v" . xwwp-follow-link)))
+  (use-package string-inflection
+    :ensure t)
+#+END_SRC
+** Vterm for emulation
+#+begin_src elisp
+  (use-package vterm
+    :ensure t
+    :init
+    (setq vterm-max-scrollback 1000000)
+    )
+#+end_src
 ** Ivy for isearcing
 Lets use some fzf here too
-#+begin_src elisp
+#+BEGIN_SRC elisp
   (use-package fzf
-  :bind
+    :bind
     ;; Don't forget to set keybinds!
-  :config
-  (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
-        fzf/preview-command "bat --style=numbers,changes --color=always --line-range :40 {}"
-        fzf/args-for-preview "bat --style=numbers,changes --color=always --line-range :40 {}"
-        fzf/executable "fzf"
-        fzf/git-grep-args "-i --line-number %s"
-        ;; command used for `fzf-grep-*` functions
-        ;; example usage for ripgrep:
-        ;; fzf/grep-command "rg --no-heading -nH"
-        fzf/grep-command "grep -nrH"
-        ;; If nil, the fzf buffer will appear at the top of the window
-        fzf/position-bottom t
-        fzf/window-height 15))
-#+end_src
-   Use Ivy, counsel and Swiper(no swiping!) for isearch
-   #+BEGIN_SRC elisp
-             (use-package swiper
-               :ensure t)
-             (use-package counsel
-               :ensure t)
-             (use-package vterm
-               :ensure t
-               :init
-        (       setq vterm-max-scrollback 1000000)
-                       )
-             (use-package ivy
-               :ensure t
-               :init
-               (ivy-mode 1)
-               (setq ivy-use-virtual-buffers t)
-               (setq ivy-use-selectable-prompt t)
-               (setq enable-recursive-minibuffers t)
-               (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
-               :bind
-               (
-                ("\C-s" . 'swiper-isearch)
-                ("C-x C-f" . 'fzf-find-file)
-                ("C-c j" . 'fzf-git-grep)
-                ("C-c k" . 'counsel-ag)
-                ("C-x L" . 'counsel-locate)
-                ("M-x" . 'counsel-M-x))
-               :custom-face
-               (ivy-minibuffer-match-face-2 ((t (:height 180 :family "JetBrainsMono Nerd Font" :underline t))))
-               (ivy-current-match (( t (:background "gray40" :height 180 :family "JetBrainsMono Nerd Font"))))
-               :config
-               (setq swiper-use-visual-line nil)
-               (setq swiper-use-visual-line-p (lambda (a) nil)))
+    :config
+    (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
+          fzf/preview-command "bat --style=numbers,changes --color=always --line-range :40 {}"
+          fzf/args-for-preview "bat --style=numbers,changes --color=always --line-range :40 {}"
+          fzf/executable "fzf"
+          fzf/git-grep-args "-i --line-number %s"
+          ;; command used for `fzf-grep-*` functions
+          ;; example usage for ripgrep:
+          ;; fzf/grep-command "rg --no-heading -nH"
+          fzf/grep-command "grep -nrH"
+          ;; If nil, the fzf buffer will appear at the top of the window
+          fzf/position-bottom t
+          fzf/window-height 15))
+#+END_SRC
+Use Ivy, counsel and Swiper(no swiping!) for isearch
+#+BEGIN_SRC elisp
+  (use-package swiper
+    :ensure t)
+  (use-package counsel
+    :ensure t)
+  (use-package ivy
+    :ensure t
+    :init
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-use-selectable-prompt t)
+    (setq enable-recursive-minibuffers t)
+    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+    :bind
+    (("\C-s" . 'swiper-isearch)
+     ("C-x C-f" . 'fzf-find-file)
+     ("C-c j" . 'fzf-git-grep)
+     ("C-c k" . 'counsel-ag)
+     ("C-x L" . 'counsel-locate)
+     ("M-x" . 'counsel-M-x))
+    :custom-face
+    (ivy-minibuffer-match-face-2 ((t (:height 180 :family "Cascadia Code Mono" :underline t))))
+    (ivy-current-match (( t (:background "gray40" :height 180 :family "Cascadia Code Mono"))))
+    :config
+    (setq swiper-use-visual-line nil)
+    (setq swiper-use-visual-line-p (lambda (a) nil)))
 
-             (use-package ivy-rich
-               :init
-               (ivy-rich-mode 1)
-               :config
-               (setq ivy-format-function #'ivy-format-function-line))
-             ;; (use-package ivy-posframe
-             ;;   :ensure t
-             ;;   :after ivy
-             ;;   :init
-             ;;   (setq ivy-posframe-hide-minibuffer t)
-             ;;   (setq ivy-posframe-min-width nil)
-             ;;   (setq ivy-posframe-width nil)
-             ;;   (setq ivy-posframe-border-width 2)
-             ;;   (setq ivy-posframe-parameters
-             ;;         '((left-fringe . 8)
-             ;;           (right-fringe .8)))
-             ;;   (ivy-posframe-mode t)
-             ;;   )
-             (use-package all-the-icons-ivy-rich
-               :defer 2
-               :ensure t
-               :init(all-the-icons-ivy-rich-mode 1))
-             (use-package all-the-icons-ivy
-               :defer 2
-               :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1)
+    :config
+    (setq ivy-format-function #'ivy-format-function-line))
+  (use-package nerd-icons-ivy-rich
+    :ensure t
+    :init
+    (nerd-icons-ivy-rich-mode 1))
 
-        (use-package all-the-icons-completion
-          :ensure t
-     :after (marginalia all-the-icons)
-     :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-     :init
-     (all-the-icons-completion-mode))
+  (use-package ivy-posframe
+    :ensure t
+    :after ivy
+    :init
+    (setq ivy-posframe-hide-minibuffer t)
+    (setq ivy-posframe-min-width nil)
+    (setq ivy-posframe-width nil)
+    (setq ivy-posframe-border-width 2)
+    (setq ivy-posframe-parameters
+          '((left-fringe . 8)
+            (right-fringe .8)))
+    (ivy-posframe-mode t)
+    )
 
-   #+END_SRC
+  (defun my-ivy-posframe-get-size ()
+    "Set the ivy-posframe size according to the current frame."
+    (let ((height (or ivy-posframe-height (or ivy-height 10)))
+          (width (min (or ivy-posframe-width 200) (round (* 1 (frame-width))))))
+      (list :height height :width width :min-height height :min-width width)))
 
-   Pop yank gives you a pop up of recent yanks,  a "yank bank"
+  (setq ivy-posframe-size-function 'my-ivy-posframe-get-size)
 
-   #+BEGIN_SRC elisp
-     (global-set-key "\C-cy" 'counsel-yank-pop)
+  (use-package nerd-icons-completion
+    :after marginalia
+    :config
+    (nerd-icons-completion-mode)
+    (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+  ;;    (use-package all-the-icons-completion
+  ;;      :ensure t
+  ;; :after (marginalia all-the-icons)
+  ;; :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  ;; :init
+  ;; (all-the-icons-completion-mode))
 
-     (use-package no-littering
-       :ensure t)
+#+END_SRC
 
-     (setq auto-save-file-name-transforms
-      `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+Pop yank gives you a pop up of recent yanks,  a "yank bank"
 
-     (use-package pos-tip
-       :defer 2
-       :ensure t)
+#+BEGIN_SRC elisp
+  (global-set-key "\C-cy" 'counsel-yank-pop)
 
-   #+END_SRC
+  (use-package no-littering
+    :ensure t)
+
+  (setq auto-save-file-name-transforms
+        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+
+  (use-package pos-tip
+    :defer 2
+    :ensure t)
+
+#+END_SRC
 ** Tex
-   #+BEGIN_SRC elisp
-     (setq TeX-command-list
-           (quote (
-                   ("TeX" "tex \\\\nonstopmode\\\\input %t" TeX-run-TeX nil t)
-                   ("LaTeX" "%l -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t)
-                   ("LaTeX PDF" "pdflatex -shell-escape \\\\nonstopmode\\\\input{%t}" TeX-run-LaTeX nil t)
-                   ("View" "%v" TeX-run-discard nil nil)
-                   ("Print" "gsview32 %f" TeX-run-command t nil)
-                   ("File" "dvips %d -o %f " TeX-run-command t nil)
-                   ("BibTeX" "bibtex %s"</FONT> TeX-run-BibTeX nil nil)
-                   ("Index" "makeindex %s" TeX-run-command nil t)
-                   ("Check" "lacheck %s" TeX-run-compile nil t)
-                   ("Other" "" TeX-run-command t t))))
 
-   #+END_SRC
 ** JS Comint using node to eval javascript code
-   And here we have the first use of use-pacakge!
-   #+BEGIN_SRC elisp
-     (use-package nvm
-       :defer 2
-       :ensure t)
-     (use-package js-comint
-       :ensure t
-       :defer 2
-       :config
-       (require 'nvm)
-       (js-do-use-nvm))
+And here we have the first use of use-pacakge!
+#+BEGIN_SRC elisp
+  (use-package nvm
+    :defer 2
+    :ensure t)
+  (use-package js-comint
+    :ensure t
+    :defer 2
+    :config
+    (require 'nvm)
+    (js-do-use-nvm))
 
-     (use-package js2-mode
-       :ensure t
-       :defer 2
-       :bind (:map js2-mode-map
-                   ("\C-x\C-e" . js-send-last-sexp)
-                   ("\C-\M-x"  . js-send-last-sexp-and-go)
-                   ("\C-cb"    . js-send-buffer)
-                   ("\C-c\C-b" . js-send-buffer-and-go)
-                   ("\C-cl"    . js-load-file-and-go))
-       :config
-       (setq js2-strict-missing-semi-warning nil)
-       (setq js2-missing-semi-one-line-override nil)
-       )
-   #+END_SRC
+  (use-package js2-mode
+    :ensure t
+    :defer 2
+    :bind (:map js2-mode-map
+                ("\C-x\C-e" . js-send-last-sexp)
+                ("\C-\M-x"  . js-send-last-sexp-and-go)
+                ("\C-cb"    . js-send-buffer)
+                ("\C-c\C-b" . js-send-buffer-and-go)
+                ("\C-cl"    . js-load-file-and-go))
+    :config
+    (setq js2-strict-missing-semi-warning nil)
+    (setq js2-missing-semi-one-line-override nil)
+    )
+#+END_SRC
 
 ** Marginalia for extra minibuffer info
-   Use Ivy, counsel and Swiper(no swiping!) for isearch
-   #+BEGIN_SRC elisp
-     (use-package marginalia
-         :defer 2
-         :ensure t
-         :init
-         (marginalia-mode)
-         :bind
-         (:map minibuffer-local-map
-               ("M-A" . marginalia-cycle))
-         :custom
-        (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
-   #+END_SRC
+Use Ivy, counsel and Swiper(no swiping!) for isearch
+#+BEGIN_SRC elisp
+  (use-package marginalia
+    :defer 2
+    :ensure t
+    :init
+    (marginalia-mode)
+    :bind
+    (:map minibuffer-local-map
+          ("M-A" . marginalia-cycle))
+    :custom
+    (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
+#+END_SRC
 ** Moving Around
 #+BEGIN_SRC elisp
-      (use-package ace-window
-        :ensure t
-        :config
-        (ace-window-display-mode)
-        (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-        :bind
-        ("M-o" . 'ace-window)
-        :custom-face
-        (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
+  (use-package ace-window
+    :ensure t
+    :config
+    (ace-window-display-mode)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    :bind
+    ("M-o" . 'ace-window)
+    :custom-face
+    (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
 #+END_SRC
 ** Git
 #+BEGIN_SRC elisp
-   (use-package magit
-     :defer 2
-     :ensure t)
-   (require 'magit)
-  ;; (use-package git-gutter-fringe+
-  ;;         :defer 2
-  ;;         :after magit
-  ;;      :ensure t
-  ;;      :diminish
-  ;;      :init
-  ;;      (global-git-gutter+-mode))
+  (use-package magit
+    :defer 2
+    :ensure t)
+  (require 'magit)
 
-    (use-package
-     git-timemachine
-                                          ;
-        :defer 2
-     :ensure t
-     :diminish
-     )
+  (use-package git-timemachine
+    :defer 2
+    :ensure t
+    :diminish
+    )
 #+END_SRC
 ** Preserve all the crap I put in the =*scrach*= buffer
 #+BEGIN_SRC elisp
- (use-package persistent-scratch
-       :ensure t
-       :config
-       (persistent-scratch-setup-default))
+  (use-package persistent-scratch
+    :ensure t
+    :config
+    (persistent-scratch-setup-default))
 #+END_SRC
 ** Treemacs
-   #+BEGIN_SRC elisp
-     (use-package treemacs-projectile
-       :after treemacs projectile
-       :ensure t)
-     (use-package treemacs-magit
-       :after treemacs magit
-       :ensure t)
-     (use-package treemacs
-       :ensure t
-       :config
-       (setq treemacs-space-between-root-nodes nil)
-       (treemacs-follow-mode t)
-       (treemacs-filewatch-mode t)
-       (treemacs-fringe-indicator-mode t)
-       (doom-themes-treemacs-config)
-       (setq doom-themes-treemacs-theme "doom-colors")
-       (global-set-key (kbd "M-0") 'treemacs-select-window))
+#+BEGIN_SRC elisp
+  (use-package treemacs-projectile
+    :after treemacs projectile
+    :ensure t)
+  (use-package treemacs-magit
+    :after treemacs magit
+    :ensure t)
+  (use-package treemacs
+    :ensure t
+    :config
+    (setq treemacs-space-between-root-nodes nil)
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode t)
+    (doom-themes-treemacs-config)
+    (setq doom-themes-treemacs-theme "doom-colors")
+    (global-set-key (kbd "M-0") 'treemacs-select-window))
 
-     (use-package doom-themes
-       :ensure t
-       :config
-       (setq doom-themes-enable-bold t)
-       (setq doom-themes-enable-italic t)
-       (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-       (doom-themes-org-config)
-       ;(load-theme 'doom-1337)
-       (require 'doom-themes-ext-org))
-
-     ;; (setq doom-themes-enable-bold t)
-     ;; (setq doom-themes-enable-italic t)
-     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-
-     ;; (load-theme 'tron-legacy t)
-     ;; (load-theme 'doom-zenburn t)
-      (load-theme 'hc-zenburn t)
-     ;; (load-theme 'doom-dark+ t)
-     ;; (powerline-default-theme)
+  (use-package doom-themes
+    :ensure t
+    :config
+    (setq doom-themes-enable-bold t)
+    (setq doom-themes-enable-italic t)
+    (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+    (doom-themes-org-config)
+    (require 'doom-themes-ext-org))
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+  (load-theme 'hc-zenburn t)
 #+END_SRC
-** SpaceLine
-   #+BEGIN_SRC elisp
-             ;; (use-package spaceline
-             ;;   :defer 2
-             ;;   :ensure t)
-             ;; (use-package spaceline-all-the-icons
-             ;;   :defer 2
-             ;;   :ensure t
-             ;;   :after spaceline
-             ;;   :config
-             ;;   (setq spaceline-all-the-icons-separator-type 'arrow)
-             ;;   (spaceline-all-the-icons-theme)
-             ;;   )
-             ;; (require 'spaceline-config)
-     ;;     (spaceline-vim-theme)
-     (use-package nerd-icons
-       :ensure t
-     )
-          (use-package doom-modeline
-            :ensure t
-            :config
-            (setq doom-modeline-buffer-file-name-style 'buffer-name)
-            (setq doom-modeline-env-enable-ruby nil)
-            (setq doom-modeline-vcs-icon t)
-            (setq doom-modeline-vcs-max-length 40)
-            (setq doom-modeline-battery nil)
-            (doom-modeline-mode 1))
-            (require 'gnutls)
-            (setq starttls-use-gnutls t)
-     (setq auto-revert-check-vc-info t)
+** Doom Modeline
+#+BEGIN_SRC elisp
+  (use-package nerd-icons
+    :ensure t
+    )
+  (use-package doom-modeline
+    :ensure t
+    :config
+    (setq doom-modeline-buffer-file-name-style 'buffer-name)
+    (setq doom-modeline-env-enable-ruby nil)
+    (setq doom-modeline-vcs-icon t)
+    (setq doom-modeline-vcs-max-length 40)
+    (setq doom-modeline-battery nil)
+    (doom-modeline-mode 1))
+  (require 'gnutls)
+  (setq starttls-use-gnutls t)
+  (setq auto-revert-check-vc-info t)
 #+END_SRC
 ** Font Ligatures
-   #+BEGIN_SRC elisp
-   (use-package ligature
-       :load-path "~/dev/git/ligature.el"
-       :config
-       ;; Enable the "www" ligature in every possible major mode
-       (ligature-set-ligatures 't '("www"))
-       ;; Enable traditional ligature support in eww-mode, if the
-       ;; `variable-pitch' face supports it
-;;       (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-       ;; Enable all Cascadia Code ligatures in programming modes
-       (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                            ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                            "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                            "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                            "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                            "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                            "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                            "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                            ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                            "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                            "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                            "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                            "\\\\" "://"))
-       ;; Enables ligature checks globally in all buffers. You can also do it
-       ;; per mode with `ligature-mode'.
-       (global-ligature-mode t))
+#+BEGIN_SRC elisp
+  (use-package ligature
+    :load-path "~/dev/git/ligature.el"
+    :config
+    ;; Enable the "www" ligature in every possible major mode
+    (ligature-set-ligatures 't '("www"))
+    ;; Enable traditional ligature support in eww-mode, if the
+    ;; `variable-pitch' face supports it
+    (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+    ;; Enable all Cascadia Code ligatures in programming modes
+    (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                         ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                         "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                         "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                         "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                         "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                         "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                         "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                         ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                         "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                         "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                         "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                         "\\\\" "://"))
+    ;; Enables ligature checks globally in all buffers. You can also do it
+    ;; per mode with `ligature-mode'.
+    (global-ligature-mode t))
 
-   #+END_SRC
+#+END_SRC
 
 ** Flycheck is fly as hell
-   #+BEGIN_SRC elisp
-     (use-package flycheck-pos-tip
-       :defer 2
-       :after flycheck
-       :config
-       (flycheck-pos-tip-mode)
-       )
-     (use-package flycheck
-       :defer 2
-       :diminish flycheck-mode
-       :ensure t
-       :init
-       (setq flycheck-emacs-lisp-initialize-packages 1)
-       (setq flycheck-emacs-lisp-load-path 'inherit)
-       :config
-       (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-       (flycheck-add-mode 'javascript-jshint 'rjsx-mode)
-       (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
-       )
-   #+END_SRC
+#+BEGIN_SRC elisp
+  (use-package flycheck-pos-tip
+    :defer 2
+    :after flycheck
+    :config
+    (flycheck-pos-tip-mode)
+    )
+  (use-package flycheck
+    :defer 2
+    :diminish flycheck-mode
+    :ensure t
+    :init
+    (setq flycheck-emacs-lisp-initialize-packages 1)
+    (setq flycheck-emacs-lisp-load-path 'inherit)
+    :config
+    (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+    (flycheck-add-mode 'javascript-jshint 'rjsx-mode)
+    (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
+    )
+#+END_SRC
 
 ** Start up the emacs server
-   Of course it has a server...
-   #+BEGIN_SRC elisp
-     (server-start)
-   #+END_SRC
+Of course it has a server...
+#+BEGIN_SRC elisp
+  (server-start)
+#+END_SRC
+
+** Diminish
+Hide stuff from cluttering up the mode line
+#+BEGIN_SRC elisp
+  (use-package diminish
+    :ensure t
+    :config
+
+    (diminish 'org-mode  "")
+    (diminish 'org-indent-mode  "")
+    (diminish 'auto-revert-mode)
+    (diminish 'yas-minor-mode)
+    (diminish 'emmet-mode)
+    (diminish 'rjsx-minor-mode)
+    (diminish 'eldoc-mode)
+    (diminish 'org-src-mode)
+    (diminish 'abbrev-mode)
+    (diminish 'ivy-mode)
+    (diminish 'global-highline-mode)
+    (diminish 'ruby-block-mode)
+    (diminish 'org-variable-pitch-minor-mode)
+    (diminish 'git-gutter+-mode)
+    (diminish 'ruby-electric-mode)
+    (diminish 'buffer-face-mode)
+    (diminish 'auto-fill-function)
+    (diminish "seeing-is-believing")
+    (diminish 'hs-minor-mode)
+    (diminish 'ruby-block-mode)
+    (diminish 'global-highline-mode))
+#+END_SRC
 
 ** Org-Mode
-   Pretty meta to talk about =org-mode= in and org doc.  this is
-   currently here but will need to move to it's own config file
-   eventually to make it more manageable
-   #+BEGIN_SRC elisp
-                        (use-package diminish
-                          :ensure t
-                          :config
+Pretty meta to talk about =org-mode= in and org doc.  this is
+currently here but will need to move to it's own config file
+eventually to make it more manageable
 
-                          (diminish 'org-mode  "")
-                          (diminish 'org-indent-mode  "")
-                          (diminish 'auto-revert-mode)
-                          (diminish 'yas-minor-mode)
-                          (diminish 'emmet-mode)
-                          (diminish 'rjsx-minor-mode)
-                          (diminish 'eldoc-mode)
-                          (diminish 'org-src-mode)
-                          (diminish 'abbrev-mode)
-                          (diminish 'ivy-mode)
-                          (diminish 'global-highline-mode)
-                          (diminish 'ruby-block-mode)
-                          (diminish 'org-variable-pitch-minor-mode)
-                          (diminish 'git-gutter+-mode)
-                          (diminish 'ruby-electric-mode)
-                          (diminish 'buffer-face-mode)
-                          (diminish 'auto-fill-function)
-                          (diminish "seeing-is-believing")
-                          (diminish 'hs-minor-mode)
-                          (diminish 'ruby-block-mode)
-                          (diminish 'global-highline-mode))
- #+END_SRC
-  #+BEGIN_SRC elisp
-               (use-package org
-                 :pin nongnu
-                 :ensure t
-                 :diminish  ""
-                 :config
-                 (setq org-default-notes-file "~/Documents/notes/notes.org")
-                 (require 'org-capture)
-                 (setq org-capture-templates
-                       '(("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
-                          "* TODO %?\n  %i\n  %a")
-                         ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
-                          "* %?\nEntered on %U\n  %i\n  %a")
-                         ("w" "Tweet" entry (file+datetree "~/Documents/notes/tweets.org")
-                          "* %?\nEntered on %U\n  %i\n  %a")
-                         ("i" "Jira Issue" entry
-                          (file+headline "~/Documents/notes/work.org" "Issues")
-                          "* TODO %^{JiraIssueKey}p"
-                          :jump-to-captured t
-                          :immediate-finish t
-                          :empty-lines-after 1)))
-                 (require 'org-habit)
-                 (setq org-habit-show-all-today t)
-                 (setq org-habit-show-habits t)
-                 (setq org-startup-indented t)
-                 (setq org-variable-pitch-mode 1)
-                 (visual-line-mode 1)
-        ;;         (org-indent-mode)
-                 (require 'ox-gfm)
-                 (require 'org-modern)
-                 (require 'ox-md)
-                 (require 'ox-confluence)
-                 (require 'ox-jira)
-          (add-hook 'org-mode-hook #'org-modern-mode)
-          (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-      (add-hook 'after-init-hook #'org-variable-pitch-setup)
-      (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
-     #+END_SRC
-     #+BEGIN_SRC elisp
+#+BEGIN_SRC elisp
+  (use-package org
+    :pin nongnu
+    :ensure t
+    :diminish  ""
+    :config
+    (setq org-default-notes-file "~/Documents/notes/notes.org"))
+#+END_SRC
 
-       (use-package biblio
-         :ensure t)
-       (use-package org-ref
-         :ensure t
-         :after (biblio)
-         :defer nil
-         :config
-         (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
-               org-ref-default-bibliography '("~/Documents/references.bib")
-               org-ref-pdf-directory "~/Documents/pdf/"
-               reftex-default-bibliography '("~/Documents/references.bib")
-               org-ref-completion-library 'org-ref-ivy-cite
-               org-cite-csl-styles-dir "~/Zotero/styles")
-         (setq org-latex-pdf-process
-               '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-                 "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-                 "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-                 "bibtex %b"))
-         )
-            #+END_SRC
+#+BEGIN_SRC elisp
+  (require 'org-capture)
+  (setq org-capture-templates
+        '(
+          ("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
+           "* TODO %?\n  %i\n  %a")
+          ("j" "Journal" entry (file+datetree "~/Documents/notes/notes.org")
+           "* %?\nEntered on %U\n  %i\n  %a")
+          ("i" "Jira Issue" entry (file+headline "~/Documents/notes/work.org" "Issues")
+           "* TODO %^{JiraIssueKey}"
+           :jump-to-captured t
+           :immediate-finish t
+           :empty-lines-after 1)))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+  (use-package ox-jira
+    :ensure t)
+  (require 'org-habit)
+  (setq org-habit-show-all-today t)
+  (setq org-habit-show-habits t)
+  (setq org-startup-indented t)
+  (setq org-variable-pitch-mode 1)
+  (visual-line-mode 1)
+  (require 'ox-gfm)
+  (require 'org-modern)
+  (require 'ox-md)
+  (require 'ox-confluence)
+  (require 'ox-jira)
+  (add-hook 'org-mode-hook #'org-modern-mode)
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+  (add-hook 'after-init-hook #'org-variable-pitch-setup)
+  (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
+#+END_SRC
+
+#+BEGIN_SRC elisp
+  (use-package biblio
+    :ensure t)
+  (use-package org-ref
+    :ensure t
+    :after (biblio)
+    :defer nil
+    :config
+    (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
+          org-ref-default-bibliography '("~/Documents/references.bib")
+          org-ref-pdf-directory "~/Documents/pdf/"
+          reftex-default-bibliography '("~/Documents/references.bib")
+          org-ref-completion-library 'org-ref-ivy-cite
+          org-cite-csl-styles-dir "~/Zotero/styles")
+    (setq org-latex-pdf-process
+          '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+            "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+            "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+            "bibtex %b"))
+    )
+#+END_SRC
 #+BEGIN_SRC elisp
 
   (require 'ox-latex)
@@ -544,8 +520,8 @@ Lets use some fzf here too
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 #+END_SRC
-  #+BEGIN_SRC elisp
 
+#+BEGIN_SRC elisp
   (use-package jiralib2
     :ensure t
     :config
@@ -558,23 +534,20 @@ Lets use some fzf here too
     )
   (use-package emacsql
     :ensure t)
-  ;; (use-package emacsql-sqlite-builtin
-  ;;   :ensure t
-  ;;   )
-  ;; (use-package emacsql-sqlite-builtin
-  ;;   :ensure t)
 #+END_SRC
-  #+BEGIN_SRC elisp
-       (use-package org-roam
-      :after org
-      :ensure t
-      :init
-      (setq org-roam-v2-ack t)
-      :custom
-      (org-roam-directory "~/Documents/org-roam" )
-      :config
-      (org-roam-db-autosync-enable)
-      (setq org-roam-database-connector 'sqlite-builtin)
+#+BEGIN_SRC elisp
+  (use-package org-roam
+    :after org
+    :ensure t
+    :init
+    (setq org-roam-v2-ack t)
+    :custom
+    (org-roam-directory "~/Documents/org-roam" )
+    :config
+    (org-roam-db-autosync-enable)
+    (setq org-roam-database-connector 'sqlite-builtin))
+#+END_SRC
+#+BEGIN_SRC elisp
       (setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
                                           (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
                                           :unnarrowed t)
@@ -614,8 +587,10 @@ Lets use some fzf here too
                :target (file+olp "%<%Y-%m-%d>.org"
                                  ("Links"))
                :unnarrowed t
-               ))))
+               )))
+  #+END_SRC
 
+#+BEGIN_SRC elisp
     (defun ek/babel-ansi ()
       (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
         (save-excursion
@@ -625,47 +600,33 @@ Lets use some fzf here too
                   (ansi-color-context-region nil))
               (ansi-color-apply-on-region beg end))))))
     (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
-
-    (fset 'capture-tweet
-          (kmacro-lambda-form [?U ?\C-  ?j ?\M-x ?o ?r ?g ?- ?c ?a ?p ?t ?u ?r ?e return ?w ?\C-y] 0 "%d"))
     (use-package ox-twbs
       :ensure t)
     (use-package ox-gfm
       :ensure t)
 #+END_SRC
-  #+BEGIN_SRC elisp
-
-    (use-package ox-jira
-      :ensure t)
-    (require 'org-tempo)
-    (use-package org-mime
-      :ensure t)
-    (setq org-src-fontify-natively t)
-    (setq org-src-tab-acts-natively t)
-    (setq org-src-window-setup 'current-window)
-    (use-package plantuml-mode
-      :ensure t)
-    ;; (use-package org-bullets
-    ;;   :ensure t)
-;;     (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
-    (setq org-startup-with-inline-images t)
-    (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+#+BEGIN_SRC elisp
+  (require 'org-tempo)
+  (use-package org-mime
+    :ensure t)
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-src-window-setup 'current-window)
+  (use-package plantuml-mode
+    :ensure t)
+  (setq org-startup-with-inline-images t)
+  (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
 #+END_SRC
-  #+BEGIN_SRC elisp
-     ;;***********remember + Org config*************
-    (setq org-remember-templates
-          '(("Tasks" ?t "* TODO %?\n %i\n %a" "~/Documents/notes/todo.org")
-            ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n %a" "~/Documents/notes/todo.org")))
-    (setq remember-annotation-functions '(org-remember-annotation))
-    (setq remember-handler-functions '(org-remember-handler))
-    (add-hook 'remember-mode-hook 'org-remember-apply-template)
-    (global-set-key (kbd "C-c r") 'remember)
 
-    (setq org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-    (setq org-agenda-include-diary t)
-    (setq org-agenda-include-all-todo t)
-    (with-eval-after-load 'org
-      (org-babel-do-load-languages
+#+BEGIN_SRC elisp
+  (setq org-todo-keywords
+        '((
+           sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+  (setq org-agenda-include-diary t)
+  (setq org-agenda-include-all-todo t)
+
+  (with-eval-after-load 'org
+    (org-babel-do-load-languages
      'org-babel-load-languages
      '((shell  . t)
        (js  . t)
@@ -679,758 +640,665 @@ Lets use some fzf here too
        (scheme . t)
        (java . t)
        (dot . t))))
-    (setq org-confirm-babel-evaluate nil)
-
-    (use-package geiser
-      :defer 2
-      :ensure t
-      :config
-      (setq geiser-active-implementations '(mit))
-      (setq geiser-default-implementation 'mit)
-      (setq scheme-program-name "scheme")
-      (setq geiser-mit-binary "/usr/local/bin/scheme")
-      )
+  (setq org-confirm-babel-evaluate nil)
 #+END_SRC
-  #+BEGIN_SRC elisp
 
-    (use-package org-modern
-      :ensure t
-      )
-    (use-package ox-pandoc
-      :defer 2
-      :ensure t
-      :config
-      (setq org-pandoc-options '((standalone . t)))
-      (setq org-pandoc-command "/opt/homebrew/bin/pandoc"))
+#+BEGIN_SRC elisp
+  (use-package org-modern
+    :ensure t
+    )
+  (use-package ox-pandoc
+    :defer 2
+    :ensure t
+    :config
+    (setq org-pandoc-options '((standalone . t)))
+    (setq org-pandoc-command (substring (shell-command-to-string "which pandoc") 0 -1)))
 
-    (use-package org-variable-pitch
-      :defer 2
-      :after org
-      :ensure t
-      :config
-      (add-hook 'after-init-hook #'org-variable-pitch-setup)
-      (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
+  (use-package org-variable-pitch
+    :defer 2
+    :after org
+    :ensure t
+    :config
+    (add-hook 'after-init-hook #'org-variable-pitch-setup)
+    (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
 #+END_SRC
-  #+BEGIN_SRC elisp
 
-    (use-package olivetti
-      :after org
-      :ensure t
-      :config
-      (setq olivetti-minimum-body-width 120))
+#+BEGIN_SRC elisp
+  (use-package olivetti
+    :after org
+    :ensure t
+    :config
+    (setq olivetti-minimum-body-width 120))
 
-    (use-package virtualenvwrapper
-      :defer 2
-      :ensure t
-      :init
-      (venv-initialize-interactive-shells)
-      (venv-initialize-eshell)
-      (setq venv-location "~/.virtualenvs")
-      )
-    (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2022.5/libexec/plantuml.jar")
-    (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2022.5/libexec/plantuml.jar")
-
-
-    (setq org-mime-export-options '(:section-numbers nil
-                                                     :with-author nil
-                                                     :with-toc nil))
-
-    ;; (use-package zenburn-theme
-    ;;   :defer 2
-    ;;   :after (:all ace-window)
-    ;;   :ensure t
-    ;;   :init
-    ;;   (setq zenburn-override-colors-alist '(
-    ;;                                         ("zenburn-bg" . "gray16")
-    ;;                                         ("zenburn-bg-1" . "#5F7F5F")))
+  (use-package virtualenvwrapper
+    :defer 2
+    :ensure t
+    :init
+    (venv-initialize-interactive-shells)
+    (venv-initialize-eshell)
+    (setq venv-location "~/.virtualenvs")
+    )
+  (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2022.5/libexec/plantuml.jar")
+  (setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2022.5/libexec/plantuml.jar")
 
 
-    ;;        (load-theme 'zenburn t)
-    ;;   :config
-    ;;   (setq zenburn-use-variable-pitch t)
-    ;;   (setq zenburn-scale-org-headlines t)
-    ;;   (setq zenburn-scale-outline-headlines t)
-    ;;   )
+  (setq org-mime-export-options '(:section-numbers nil
+                                                   :with-author nil
+                                                   :with-toc nil))
 
-    ;; (use-package vscode-dark-plus-theme
-    ;;   :ensure t
-    ;;   :after ace-window
-    ;;   :init
-    ;;   (load-theme 'vscode-dark-plus t))
+  ;; (use-package zenburn-theme
+  ;;   :defer 2
+  ;;   :after (:all ace-window)
+  ;;   :ensure t
+  ;;   :init
+  ;;   (setq zenburn-override-colors-alist '(
+  ;;                                         ("zenburn-bg" . "gray16")
+  ;;                                         ("zenburn-bg-1" . "#5F7F5F")))
 
-    ;; (use-package modus-themes
-    ;;   :ensure t
-    ;;   :after ace-window
-    ;;   :init
-    ;;   (setq modus-themes-org-blocks 'gray-background)
-    ;;   (modus-themes-load-themes)
-    ;;   :config
-    ;;   (modus-themes-load-operandi))
 
-   #+end_SRC
+  ;;        (load-theme 'zenburn t)
+  ;;   :config
+  ;;   (setq zenburn-use-variable-pitch t)
+  ;;   (setq zenburn-scale-org-headlines t)
+  ;;   (setq zenburn-scale-outline-headlines t)
+  ;;   )
 
-   encrypt the stoff that needs encrypting
-   #+begin_src elisp
-     (require 'org-crypt)
-(org-crypt-use-before-save-magic)
-(setq org-tags-exclude-from-inheritance (quote("crypt")))
-(setq org-crypt-key "14E7F934")
+  ;; (use-package vscode-dark-plus-theme
+  ;;   :ensure t
+  ;;   :after ace-window
+  ;;   :init
+  ;;   (load-theme 'vscode-dark-plus t))
 
-   #+end_src
+#+end_SRC
 
-*** Org reveal
+encrypt the stoff that needs encrypting
 #+begin_src elisp
-  ;;(add-to-list 'load-path "~/dev/git/emacs-reveal")
-;;  (setq emacs-reveal-managed-install-p nil)
-  ;;(require 'emacs-reveal)
+  (require 'org-crypt)
+  (org-crypt-use-before-save-magic)
+  (setq org-tags-exclude-from-inheritance (quote("crypt")))
+  (setq org-crypt-key "14E7F934")
+
 #+end_src
 
-
 ** Teh requires
-   This is kinda like that part in the bible with all the begats...
-   #+BEGIN_SRC elisp
-     (use-package exec-path-from-shell
-       :ensure t
-       :config
-       (setq exec-path-from-shell-check-startup-files t)
-       (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
-       (setq exec-path-from-shell-arguments '("-l" "-i"))
-              (when (memq window-system '(mac ns x))
-         (exec-path-from-shell-initialize)))
+This is kinda like that part in the bible with all the begats...
+#+BEGIN_SRC elisp
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (setq exec-path-from-shell-check-startup-files t)
+    (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
+    (setq exec-path-from-shell-arguments '("-l" "-i"))
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize)))
 
-     (use-package inf-ruby
-       :defer 2
-       :ensure t)
-     (require 'ruby-mode)
-     (use-package  ruby-electric
-       :ensure t)
-     (use-package coffee-mode
-       :defer 2
-       :ensure t)
-     (use-package feature-mode
-       :defer 2
-       :ensure t
-       :config
-       (setq feature-use-docker-compose nil)
-       (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
-     ;;     (require 'rcodetools)
-     (use-package yasnippet
-       :defer 2
-       :ensure t
-       :config
-       (yas-global-mode t)
-       (yas-global-mode))
-     (use-package yasnippet-snippets
-       :defer 2
-       :ensure t)
-     (use-package tree-mode
-       :defer 2
-       :ensure t)
-     (use-package rake
-       :defer 2
-       :ensure t)
-     (use-package inflections
-       :defer 2
-       :ensure t)
-     (use-package graphql
-       :defer 2
-       :ensure t)
-     (require 'org-protocol)
-     (require 'org-roam-protocol)
-     (use-package haml-mode
-       :defer 2
-       :ensure t)
-     (use-package beacon
-       :defer 2
-       :ensure t
-       :init
-       (beacon-mode))
-     (use-package rainbow-mode
-       :defer 2
-       :ensure t)
-     (use-package rainbow-delimiters
-       :ensure t
-       :config
-       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-     (require 'ruby-config-new)
-     (require 'keys-config-new)
-     (require 'ari-custom-new)
-     (require 'erc-config)
-     (require 'gnus-config)
-     (require 'mail-config)
-     (require 'gnus-config)
-     (require 'blog)
+  (use-package inf-ruby
+    :defer 2
+    :ensure t)
+  (require 'ruby-mode)
+  (use-package  ruby-electric
+    :ensure t)
+  (use-package feature-mode
+    :defer 2
+    :ensure t
+    :config
+    (setq feature-use-docker-compose nil)
+    (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
 
-   #+END_SRC
-
+  (use-package yasnippet
+    :defer 2
+    :ensure t
+    :config
+    (yas-global-mode t))
+  (use-package yasnippet-snippets
+    :defer 2
+    :ensure t)
+  (use-package rake
+    :defer 2
+    :ensure t)
+  (use-package inflections
+    :defer 2
+    :ensure t)
+  (use-package graphql
+    :defer 2
+    :ensure t)
+  (require 'org-protocol)
+  (require 'org-roam-protocol)
+  (use-package haml-mode
+    :defer 2
+    :ensure t)
+  (use-package beacon
+    :defer 2
+    :ensure t
+    :init
+    (beacon-mode))
+  (use-package rainbow-mode
+    :defer 2
+    :ensure t)
+  (use-package rainbow-delimiters
+    :ensure t
+    :config
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+  (require 'ruby-config-new)
+  (require 'keys-config-new)
+  (require 'ari-custom-new)
+  (require 'erc-config)
+  (require 'gnus-config)
+  (require 'mail-config)
+  (require 'gnus-config)
+  (require 'blog)
+#+END_SRC
 
 ** Set up HighLine mode
-   #+BEGIN_SRC elisp
-          (use-package highline
-             :ensure t
-          :defer 2
-          :config
-            (global-highline-mode t)
-        (setq highline-face '((:background "gray40")))
-        (set-face-attribute 'region nil :background "DarkOliveGreen")
-        (setq highline-vertical-face '(( :background "lemonChiffon2")))
-      (set-face-attribute 'show-paren-match nil :foreground "CadetBlue"))
+#+BEGIN_SRC elisp
+  (use-package highline
+    :ensure t
+    :defer 2
+    :config
+    (global-highline-mode t)
+    (setq highline-face '((:background "gray40")))
+    (set-face-attribute 'region nil :background "DarkOliveGreen")
+    (setq highline-vertical-face '(( :background "lemonChiffon2")))
+    (set-face-attribute 'show-paren-match nil :foreground "CadetBlue"))
 
 
-     (column-number-mode)
-     (global-display-line-numbers-mode t)
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
 
-     ;; Disable line numbers for some modes
-     (dolist (mode '(org-mode-hook
-                     erc-mode-hook
-                     term-mode-hook
-                     eshell-mode-hook
-                     vterm-mode-hook
-                     treemacs-mode-hook
-                     gnus-mode-hook
-                     mu4e-view-mode-hook
-                     gnus-article-mode-hook
-                     dashboard-mode-hook))
-       (add-hook mode (lambda () (display-line-numbers-mode 0))))
-   #+END_SRC
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+                  erc-mode-hook
+                  term-mode-hook
+                  eshell-mode-hook
+                  vterm-mode-hook
+                  treemacs-mode-hook
+                  gnus-mode-hook
+                  mu4e-view-mode-hook
+                  gnus-article-mode-hook
+                  dashboard-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+#+END_SRC
 
 ** Company
-   #+BEGIN_SRC elisp
-               (use-package company
-                 :ensure t
-                 :defer 2
-                 :diminish
-                 :custom
-                 (company-minimum-prefix-length 1)
-                 (company-idle-begin 0.0)
-                 (company-show-numbers t)
-                 (company-tooltip-align-annotations 't)
-                 (global-company-mode t))
+#+BEGIN_SRC elisp
+  (use-package company
+    :ensure t
+    :defer 2
+    :diminish
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-begin 0.0)
+    (company-show-numbers t)
+    (company-tooltip-align-annotations 't)
+    (global-company-mode t))
 
-               (require 'company)
-               (add-hook  'after-init-hook 'global-company-mode)
-               (use-package company-quickhelp
-                 :ensure t
-                 :config
-                 :after company
-                 :init
-                 (company-quickhelp-mode))
-               (use-package terraform-mode
-                 :defer 2
-                 :ensure t)
-               (use-package lsp-mode
-                 :ensure t
-                 :pin melpa
-                 :commands (lsp lsp-deferred)
-                 :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
-                 :custom
-                 (lsp-auto-configure t)
-                 (lsp-prefer-flymake nil)
-                 (lsp-inhibit-message t)
-                 (lsp-eldoc-render-all t)
-                 :config
-                 (setq lsp-enable-which-key-integration t)
-                 (setq lsp-enable-symbol-highlighting t)
-                 (setq lsp-modeline-code-actions-enable t)
-                 (setq lsp-diagnostics-provider :auto)
-                 (setq lsp-diagnostics-mode nil)
-                 ;;(setq lsp-semantic-tokens-enable t)
-                 (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-                 )
-     (use-package lsp-java
-       :ensure t
-       :config (add-hook 'java-mode-hook #'lsp))
+  (require 'company)
+  (add-hook  'after-init-hook 'global-company-mode)
+  (use-package company-quickhelp
+    :ensure t
+    :config
+    :after company
+    :init
+    (company-quickhelp-mode))
+  (use-package terraform-mode
+    :defer 2
+    :ensure t)
+  #+END_SRC
 
-     (setenv "JAVA_HOME" "/opt/homebrew/Cellar/openjdk/22.0.2/")
-     (setq lsp-java-java-path "/opt/homebrew/Cellar/openjdk/22.0.2/bin/java")
-               (use-package lsp-ivy
-                 :defer 2
-                 :ensure t)
+** LSP-Mode
+#+BEGIN_SRC elisp
+  (use-package lsp-mode
+    :ensure t
+    :pin melpa
+    :commands (lsp lsp-deferred)
+    :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
+    :custom
+    (lsp-auto-configure t)
+    (lsp-prefer-flymake nil)
+    (lsp-inhibit-message t)
+    (lsp-eldoc-render-all t)
+    :config
+    (setq lsp-enable-which-key-integration t)
+    (setq lsp-enable-symbol-highlighting t)
+    (setq lsp-modeline-code-actions-enable t)
+    (setq lsp-diagnostics-provider :auto)
+    (setq lsp-diagnostics-mode nil)
+    (setq lsp-semantic-tokens-enable t)
+    (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+    )
+  (require 'lsp-bridge)
+  (global-lsp-bridge-mode)
 
-               (use-package lsp-ui
-                 :defer 2
-                 :commands lsp-ui-mode
-                 :after lsp-mode
-                 :config
-                 (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
-                 (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-                 (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-                 (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
-                 (setq lsp-ui-sideline-enable t)
-                 (setq lsp-lens-enable t)
-                 (setq lsp-ui-sideline-enable t
-                lsp-ui-sideline-show-symbol t
-                lsp-ui-sideline-show-hover t
-                lsp-ui-sideline-show-flycheck t
-                lsp-ui-sideline-show-code-actions t
-                lsp-ui-sideline-show-diagnostics t)
+  (use-package lsp-java
+    :ensure t
+    :config (add-hook 'java-mode-hook #'lsp))
 
-          (setq lsp-ui-doc-enable nil)
-          (setq lsp-ui-imenu-enable nil)
-          (setq lsp-ui-peek-enable t)       )
+  (setenv "JAVA_HOME" "/opt/homebrew/Cellar/openjdk/22.0.2/")
+  (setq lsp-java-java-path "/opt/homebrew/Cellar/openjdk/22.0.2/bin/java")
+  (use-package lsp-ivy
+    :defer 2
+    :ensure t)
 
-               (use-package lsp-treemacs
-                 :defer 2
-                 :after lsp
-                 :config
-                 (lsp-treemacs-sync-mode t)
-                 )
-               (require 'lsp-ui-flycheck)
-               (setq lsp-inhibit-message t)
-               (setq lsp-prefer-flymake nil)
-               (setq lsp-eldoc-render-all t)
+  (use-package lsp-ui
+    :defer 2
+    :commands lsp-ui-mode
+    :after lsp-mode
+    :config
+    (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
+    (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+    (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
+    (setq lsp-ui-sideline-enable t)
+    (setq lsp-lens-enable t)
+    (setq lsp-ui-sideline-enable t
+          lsp-ui-sideline-show-symbol t
+          lsp-ui-sideline-show-hover t
+          lsp-ui-sideline-show-flycheck t
+          lsp-ui-sideline-show-code-actions t
+          lsp-ui-sideline-show-diagnostics t)
 
-               (setq lsp-auto-guess-root nil)
+    (setq lsp-ui-doc-enable nil)
+    (setq lsp-ui-imenu-enable nil)
+    (setq lsp-ui-peek-enable t)       )
 
-               (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-               (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
-               (use-package company-box
-                 :after company
-                 :ensure t
-                 :diminish
-                 :hook
-                 (company-mode . company-box-mode)
-                 :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
+  (use-package lsp-treemacs
+    :defer 2
+    :after lsp
+    :config
+    (lsp-treemacs-sync-mode t)
+    )
+  (require 'lsp-ui-flycheck)
+  (setq lsp-inhibit-message t)
+  (setq lsp-prefer-flymake nil)
+  (setq lsp-eldoc-render-all t)
 
-   #+END_SRC
+  (setq lsp-auto-guess-root nil)
+
+  (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+  (use-package company-box
+    :after company
+    :ensure t
+    :diminish
+    :hook
+    (company-mode . company-box-mode)
+    :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
+#+END_SRC
 
 ** Projectile
-   Projectile helps looking around in projects
-   #+BEGIN_SRC elisp
-                    (use-package projectile
-                      :ensure t
-                      :init
-                      (projectile-global-mode)
-                      (setq projectile-switch-project-action #'projectile-dired)
-                      (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-                      (setq projectile-require-project-root nil)
-                      (setq projectile-indexing-method 'alien)
-                      :custom
-                      ((projectile-completion-system 'ivy)))
+Projectile helps looking around in projects
+#+BEGIN_SRC elisp
+  (use-package projectile
+    :ensure t
+    :init
+    (projectile-global-mode)
+    (setq projectile-switch-project-action #'projectile-dired)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (setq projectile-require-project-root nil)
+    (setq projectile-indexing-method 'alien)
+    :custom
+    ((projectile-completion-system 'ivy)))
 
-                    (use-package counsel-projectile
-                      :ensure t
-                      :init
-                      (counsel-projectile-mode))
-   #+END_SRC
+  (use-package counsel-projectile
+    :ensure t
+    :init
+    (counsel-projectile-mode))
+#+END_SRC
 
 ** Auto-Modes
-   associate some fiels wit the right modes
-   #+BEGIN_SRC elisp
-     (add-to-list 'auto-mode-alist
-                  (cons
-                   (concat "\\." (regexp-opt '("xml" "xsd" "svg" "rss" "rng" "build" "config") t) "\\'" )'nxml-mode))
+associate some files wit the right modes
+#+BEGIN_SRC elisp
+  (add-to-list 'auto-mode-alist
+               (cons
+                (concat "\\." (regexp-opt '("xml" "xsd" "svg" "rss" "rng" "build" "config") t) "\\'" )'nxml-mode))
 
-     ;;
-     ;; What files to invoke the new html-mode for?
-     (add-to-list 'auto-mode-alist '("\\.inc\\'" . web-mode))
-     (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-     (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
-     (add-to-list 'auto-mode-alist '("\\.[sj]?html?\\'" . web-mode))
-     (add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
-     (add-to-list 'auto-mode-alist '("\\.t\\'" . perl-mode))
-     (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
-     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-     ;;
+  ;;
+  ;; What files to invoke the new html-mode for?
+  (add-to-list 'auto-mode-alist '("\\.inc\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.[sj]?html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.t\\'" . perl-mode))
+  (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  ;;
 
 
-     (add-hook 'html-mode-hook 'abbrev-mode)
-     (add-hook 'web-mode-hook 'abbrev-mode)
-
-   #+END_SRC
-
-** Dash at point
-   I use dash for doc looks up and this alows me to call it from emacs
-   with =C-c d=
-   #+BEGIN_SRC elisp
-;;     (autoload 'dash-at-point "dash-at-point"
-;;       "Search the word at point with Dash." t nil)
-   #+END_SRC
+  (add-hook 'html-mode-hook 'abbrev-mode)
+  (add-hook 'web-mode-hook 'abbrev-mode)
+#+END_SRC
 
 ** Markdown Mode
-   #+BEGIN_SRC elisp
-     (autoload 'markdown-mode' "markdown-mode" "Major Mode for editing Markdown" t)
-     (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-   #+END_SRC
+#+BEGIN_SRC elisp
+  (autoload 'markdown-mode' "markdown-mode" "Major Mode for editing Markdown" t)
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+#+END_SRC
 
 ** Ruby stuff that should be in another file actually.
-   #+BEGIN_SRC elisp
-     (autoload 'ruby-mode "ruby-mode"
-       "Mode for editing ruby source files" t)
-     (setq auto-mode-alist
-           (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
-     (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
-                                          interpreter-mode-alist))
-   #+END_SRC
+#+BEGIN_SRC elisp
+  (autoload 'ruby-mode "ruby-mode"
+    "Mode for editing ruby source files" t)
+  (setq auto-mode-alist
+        (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
+  (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
+                                       interpreter-mode-alist))
+#+END_SRC
 ** Dired-X
-   better dir listings
-   #+BEGIN_SRC elisp
-     (require 'dired-x)
-     (setq dired-omit-files
-           (rx(or(seq bol(? ".") "#")
-                 (seq bol"."(not(any".")))
-                 (seq "~" eol)
-                 (seq bol "CVS" eol)
-                 (seq bol "svn" eol))))
+better dir listings
+#+BEGIN_SRC elisp
+  (require 'dired-x)
+  (setq dired-omit-files
+        (rx(or(seq bol(? ".") "#")
+              (seq bol"."(not(any".")))
+              (seq "~" eol)
+              (seq bol "CVS" eol)
+              (seq bol "svn" eol))))
 
-     (setq dired-omit-extensions
-           (append dired-latex-unclean-extensions
-                   dired-bibtex-unclean-extensions
-                   dired-texinfo-unclean-extensions))
+  (setq dired-omit-extensions
+        (append dired-latex-unclean-extensions
+                dired-bibtex-unclean-extensions
+                dired-texinfo-unclean-extensions))
 
 
-     (add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
-
-   #+END_SRC
+  (add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
+#+END_SRC
 ** Tabs setup
 ***  tabs are 4 spaces (no Tabs)
-    #+BEGIN_SRC elisp
-      (setq-default indent-tabs-mode nil)
-      (setq-default c-basic-offset 4)
-    #+END_SRC
+#+BEGIN_SRC elisp
+  (setq-default indent-tabs-mode nil)
+  (setq-default c-basic-offset 4)
+#+END_SRC
 ** Disabled For now but could be back anytime soon!
 ***   Multiple cursors
-    [[https://github.com/magnars/multiple-cursors.el][=mulitple-cursors=]] is a cool tool that can can be used for
-    quick and easy refactoring.  However I usually get into trouble
-    whe I try to use it
-    #+BEGIN_SRC elisp
-      ;;(require 'multiple-cursors)
-    #+END_SRC
+[[https://github.com/magnars/multiple-cursors.el][=mulitple-cursors=]] is a cool tool that can can be used for
+quick and easy refactoring.  However I usually get into trouble
+whe I try to use it
+#+BEGIN_SRC elisp
+  ;;(require 'multiple-cursors)
+#+END_SRC
 *** Kill whitespace and in buffers
-    Personally I like this as it cleans up files. However in shared
-    codebases where others aren't as tidy it can lead to some annoying
-    pull requests.
+Personally I like this as it cleans up files. However in shared
+codebases where others aren't as tidy it can lead to some annoying
+pull requests.
+#+BEGIN_SRC elisp
+  ;;(require 'whitespace)
+  ;;(autoload 'nuke-trailing-whitespace "whitespace" nil t)
+  ;;(add-hook 'write-file-hooks 'nuke-trailing-whitespace)
 
-    #+BEGIN_SRC elisp
-      ;;(require 'whitespace)
-      ;;(autoload 'nuke-trailing-whitespace "whitespace" nil t)
-      ;;(add-hook 'write-file-hooks 'nuke-trailing-whitespace)
+  ;;(require 'start-opt)
+  ;; (defadvice whitespace-cleanup (around whitespace-cleanup-indent-tab
+  ;;                                       activate)
+  ;;   "Fix whitespace-cleanup indent-tabs-mode bug"
+  ;;   (let ((whitespace-indent-tabs-mode indent-tabs-mode)
+  ;;         (whitespace-tab-width tab-width))
+  ;;     ad-do-it))
+  ;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
 
-      ;;(require 'start-opt)
-      ;; (defadvice whitespace-cleanup (around whitespace-cleanup-indent-tab
-      ;;                                       activate)
-      ;;   "Fix whitespace-cleanup indent-tabs-mode bug"
-      ;;   (let ((whitespace-indent-tabs-mode indent-tabs-mode)
-      ;;         (whitespace-tab-width tab-width))
-      ;;     ad-do-it))
-      ;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
-
-    #+END_SRC
+#+END_SRC
 ** SQL Mode
-   set up sql mode
-   #+BEGIN_SRC elisp
-     (add-hook 'sql-mode-hook 'my-sql-mode-hook)
-     (defun my-sql-mode-hook()
-       (message "SQL mode hook executed")
-       (define-key sql-mode-map [f5] 'sql-send-buffer))
+set up sql mode
+#+BEGIN_SRC elisp
+  (add-hook 'sql-mode-hook 'my-sql-mode-hook)
+  (defun my-sql-mode-hook()
+    (message "SQL mode hook executed")
+    (define-key sql-mode-map [f5] 'sql-send-buffer))
 
-     (setq sql-ms-program "osql")
-     (require 'sql)
-     (setq sql-mysql-program "mysql")
-     (setq sql-pop-to-buffer-after-send-region nil)
-     (setq sql-product (quote ms))
-     (setq sql-mysql-login-params (append sql-mysql-login-params '(port)))
-   #+END_SRC
+  (setq sql-ms-program "osql")
+  (require 'sql)
+  (setq sql-mysql-program "mysql")
+  (setq sql-pop-to-buffer-after-send-region nil)
+  (setq sql-product (quote ms))
+  (setq sql-mysql-login-params (append sql-mysql-login-params '(port)))
+#+END_SRC
 ** Javascript
-  #+BEGIN_SRC elisp
+#+BEGIN_SRC elisp
 
-    (use-package rjsx-mode
-       :defer 2
-      :ensure t)
-    (add-hook 'js2-mode-hook 'lsp)
-    (add-hook 'js-mode-hook 'lsp)
-    (add-hook 'rjsx-mode-hook 'lsp)
-    (add-hook 'rjsx-mode-hook 'emmet-mode)
+  (use-package rjsx-mode
+    :defer 2
+    :ensure t)
+  (add-hook 'js2-mode-hook 'lsp)
+  (add-hook 'js-mode-hook 'lsp)
+  (add-hook 'rjsx-mode-hook 'lsp)
+  (add-hook 'rjsx-mode-hook 'emmet-mode)
 
-    (use-package prettier-js
-      :config
-      (add-hook 'js2-mode-hook 'prettier-js-mode)
-      (add-hook 'rjsx-mode-hook 'prettier-js-mode)
-      )
+  (use-package prettier-js
+    :config
+    (add-hook 'js2-mode-hook 'prettier-js-mode)
+    (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+    )
 
-    (setq emmet-expand-jsx-className? t)
-
-  #+END_SRC
+  (setq emmet-expand-jsx-className? t)
+#+END_SRC
 ** Deft
-   #+begin_src elisp
-     (use-package deft
-       :ensure t
-       :config
-       (setq deft-extensions'("org" "txt" "md"))
-       (setq deft-default-extension "org")
-       (setq deft-recursive t)
-       (setq deft-directory "~/Documents/notes")
-       (setq deft-use-filename-as-title nil)
-       (setq deft-use-filter-string-for-filename t)
-       (setq deft-auto-save-interval 0)
-       (setq deft-file-naming-rules '((noslash . "-")
-                                       (nospace . "-")
-                                       (case-fn . downcase)))
-       (setq deft-text-mode 'org-mode)
-       (global-set-key (kbd "<f8>") 'deft)
-       )
-   #+end_src
+#+begin_src elisp
+  (use-package deft
+    :ensure t
+    :config
+    (setq deft-extensions'("org" "txt" "md"))
+    (setq deft-default-extension "org")
+    (setq deft-recursive t)
+    (setq deft-directory "~/Documents/notes")
+    (setq deft-use-filename-as-title nil)
+    (setq deft-use-filter-string-for-filename t)
+    (setq deft-auto-save-interval 0)
+    (setq deft-file-naming-rules '((noslash . "-")
+                                   (nospace . "-")
+                                   (case-fn . downcase)))
+    (setq deft-text-mode 'org-mode)
+    (global-set-key (kbd "<f8>") 'deft)
+    )
+#+end_src
 ** NotDeft
 Like deft about only it uses xapian for the searchy indexy stuffs
 setting this up for roam and keeping deft for notes
 #+begin_src elisp
-    (add-to-list 'load-path "~/dev/git/notdeft/")
+  (add-to-list 'load-path "~/dev/git/notdeft/")
   (add-to-list 'load-path "~/dev/git/notdeft/extras")
   (setq notdeft-directories '("~/Documents/org-roam"))
   (setq notdeft-xapian-program "/Users/ari.turetzky/dev/git/notdeft/xapian/notdeft-xapian")
   (require 'notdeft-autoloads)
   (global-set-key (kbd "<f9>") 'notdeft)
-
 #+end_src
 
 ** Cypher Mode
-   #+BEGIN_SRC elisp
-     (use-package cypher-mode
-       :ensure t)
-;;     (setq n4js-cli-program "~/Downloads/cypher-shell/cypher-shell")
-     (setq n4js-cli-program "/opt/homebrew/bin/cypher-shell")
-     (setq n4js-cli-arguments '("-u" "neo4j"))
-     (setq n4js-pop-to-buffer t)
-     (setq n4js-font-lock-keywords cypher-font-lock-keywords)
-   #+END_SRC
-** Tell the world we are providing something useful
+#+BEGIN_SRC elisp
+  (use-package cypher-mode
+    :ensure t)
+  ;;     (setq n4js-cli-program "~/Downloads/cypher-shell/cypher-shell")
+  (setq n4js-cli-program "/opt/homebrew/bin/cypher-shell")
+  (setq n4js-cli-arguments '("-u" "neo4j"))
+  (setq n4js-pop-to-buffer t)
+  (setq n4js-font-lock-keywords cypher-font-lock-keywords)
+#+END_SRC
 ** Which Key
-   #+begin_src elisp
-     (use-package which-key
-       :ensure t
-       :init
-       (which-key-mode)
-       :diminish which-key-mode
-       :config
-       (setq which-key-idle-delay 1))
+#+begin_src elisp
+  (use-package which-key
+    :ensure t
+    :init
+    (which-key-mode)
+    :diminish which-key-mode
+    :config
+    (setq which-key-idle-delay 1))
 
-   #+end_src
+#+end_src
 ** Helpful
-   #+begin_src elisp
-                              (use-package helpful
-                                :ensure t
-                                :init
-                                (defun helpful--autoloaded-p (sym buf)
-  "Return non-nil if function SYM is autoloaded."
-  (-when-let (file-name (buffer-file-name buf))
-    (setq file-name (s-chop-suffix ".gz" file-name))
-    (help-fns--autoloaded-p sym)))
+#+begin_src elisp
+  (use-package helpful
+    :ensure t
+    :init
+    (defun helpful--autoloaded-p (sym buf)
+      "Return non-nil if function SYM is autoloaded."
+      (-when-let (file-name (buffer-file-name buf))
+        (setq file-name (s-chop-suffix ".gz" file-name))
+        (help-fns--autoloaded-p sym)))
 
-(defun helpful--skip-advice (docstring)
-  "Remove mentions of advice from DOCSTRING."
-  (let* ((lines (s-lines docstring))
-         (relevant-lines
-          (--take-while
-           (not (or (s-starts-with-p ":around advice:" it)
-                    (s-starts-with-p "This function has :around advice:" it)))
-           lines)))
-    (s-trim (s-join "\n" relevant-lines)))))
-   #+end_src
-**  Elfeed
-   #+begin_src elisp
-               (use-package elfeed
-                 :ensure t
-                 :config
+    (defun helpful--skip-advice (docstring)
+      "Remove mentions of advice from DOCSTRING."
+      (let* ((lines (s-lines docstring))
+             (relevant-lines
+              (--take-while
+               (not (or (s-starts-with-p ":around advice:" it)
+                        (s-starts-with-p "This function has :around advice:" it)))
+               lines)))
+        (s-trim (s-join "\n" relevant-lines)))))
+#+end_src
+** Elfeed
+#+begin_src elisp
+  (use-package elfeed
+    :ensure t
+    :config
+    ;;
+    ;; linking and capturing
+    ;;
+    (defun elfeed-link-title (entry)
+      "Copy the entry title and URL as org link to the clipboard."
+      (interactive)
+      (let* ((link (elfeed-entry-link entry))
+             (title (elfeed-entry-title entry))
+             (titlelink (concat "[[" link "][" title "]]")))
+        (when titlelink
+          (kill-new titlelink)
+          (x-set-selection 'PRIMARY titlelink)
+          (message "Yanked: %s" titlelink))))
+    ;; show mode
+    (defun elfeed-show-link-title ()
+      "Copy the current entry title and URL as org link to the clipboard."
+      (interactive)
+      (elfeed-link-title elfeed-show-entry))
+    (defun elfeed-show-quick-url-note ()
+      "Fastest way to capture entry link to org agenda from elfeed show mode"
+      (interactive)
+      (elfeed-link-title elfeed-show-entry)
+      (org-roam-dailies-capture-today nil "l")
+      (yank)
+      (org-capture-finalize))
+    (bind-keys :map elfeed-show-mode-map
+               ("l" . elfeed-show-link-title)
+               ("v" . elfeed-show-quick-url-note))
+    )
 
-                 ;;
-                 ;; linking and capturing
-                 ;;
+  (use-package elfeed-org
+    :ensure t
+    :after elfeed
+    :config
+    (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
+    (elfeed-org))
 
-                 (defun elfeed-link-title (entry)
-                   "Copy the entry title and URL as org link to the clipboard."
-                   (interactive)
-                   (let* ((link (elfeed-entry-link entry))
-                          (title (elfeed-entry-title entry))
-                          (titlelink (concat "[[" link "][" title "]]")))
-                     (when titlelink
-                       (kill-new titlelink)
-                       (x-set-selection 'PRIMARY titlelink)
-                       (message "Yanked: %s" titlelink))))
+  (use-package visual-fill
+    :ensure t)
 
-                 ;; show mode
+  (defun elfeed-olivetti (buff)
+    (with-current-buffer buff
+      (setq fill-column 100)
+      (setq buffer-read-only nil)
+      (goto-char (point-min))
+      (re-search-forward "\n\n")
+      (fill-individual-paragraphs (point-min) (point-max))
+      (setq buffer-read-only t))
+    (switch-to-buffer buff)
+    ;;       (olivetti-mode)
+    (visual-fill-column-mode)
+    (elfeed-show-refresh)
+    )
 
-                 (defun elfeed-show-link-title ()
-                   "Copy the current entry title and URL as org link to the clipboard."
-                   (interactive)
-                   (elfeed-link-title elfeed-show-entry))
-
-                 (defun elfeed-show-quick-url-note ()
-                   "Fastest way to capture entry link to org agenda from elfeed show mode"
-                   (interactive)
-                   (elfeed-link-title elfeed-show-entry)
-                   (org-roam-dailies-capture-today nil "l")
-                   (yank)
-                   (org-capture-finalize))
-                 (bind-keys :map elfeed-show-mode-map
-                            ("l" . elfeed-show-link-title)
-                            ("v" . elfeed-show-quick-url-note))
-                 )
-
-               (use-package elfeed-org
-                 :ensure t
-                 :after elfeed
-                 :config
-                 (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
-                 (elfeed-org))
-               ;; (use-package elfeed-goodies
-               ;;   :after elfeed
-               ;;   :ensure t
-               ;;   :init
-               ;;   (elfeed-goodies/setup))
-
-               (use-package visual-fill
-                 :ensure t)
-               ;; (use-package visual-fill-column
-               ;;   :ensure t
-               ;;   :hook 'visual-line-mode-hook #'visual-fill-column-mode
-               ;;   :config
-               ;;   (setq fill-column 100)
-               ;;   (setq visual-fill-column-width 100)
-               ;;   )
-               ;; (defun visual-fill-column ()
-               ;;   nil)
-               (defun elfeed-olivetti (buff)
-                 (with-current-buffer buff
-                   (setq fill-column 100)
-                   (setq buffer-read-only nil)
-                   (goto-char (point-min))
-                   (re-search-forward "\n\n")
-                   (fill-individual-paragraphs (point-min) (point-max))
-                   (setq buffer-read-only t))
-                 (switch-to-buffer buff)
-          ;;       (olivetti-mode)
-                 (visual-fill-column-mode)
-                 (elfeed-show-refresh)
-                 )
-
-
-
-               ;; (add-hook 'elfeed-show-mode-hook (lambda()
-               ;;                                    (setq fill-column 120)
-               ;;                                    (setq-local truncate-lines nil)
-               ;;                                    (setq-local shr-width 120)
-               ;;                                    (set-buffer-modified-p nil)
-               ;;                                    (setq-local left-margin-width 20)
-               ;;                                    (setq-local right-margin-width 20)
-               ;;                                    (visual-line-mode t)
-               ;;                                    (adaptive-wrap-prefix-mode t)))
-
-               (add-hook 'elfeed-show-mode-hook (lambda()
-                                                  (setq fill-column 100)
-                                                  ;;(visual-fill-mode t)
-                                                  (adaptive-wrap-prefix-mode t)
-                                                  (toggle-word-wrap)
-                                                  (setq elfeed-show-entry-switch 'elfeed-olivetti)
-                                                  ))
-
-
-               (use-package twittering-mode
-                 :ensure t
-                 :config
-                 (defface my-twit-face
-                   '((t :family "Helvetica"
-                        :weight ultra-light
-                        :height 160
-                        ))
-                   "face for twitter")
-                 (defalias 'epa--decode-coding-string 'decode-coding-string)
-                 (setq twittering-use-master-password t)
-                 (setq twittering-icon-mode t)
-                 (setq twittering-use-icon-storage t)
-
-                 (setq twittering-status-format "%RT{%FACE[my-twit-face]{RT}}%i %S  (%s), %R  %@:\n %FACE[my-twit-face]{%T}\n %QT{\n +----\n %FOLD[|]{%i %S (%s),  %@:  %FACE[my-twit-face]{%T}} \n +----\n }"))
-
-   #+end_src
+  (add-hook 'elfeed-show-mode-hook (lambda()
+                                     (setq fill-column 100)
+                                     ;;(visual-fill-mode t)
+                                     (adaptive-wrap-prefix-mode t)
+                                     (toggle-word-wrap)
+                                     (setq elfeed-show-entry-switch 'elfeed-olivetti)
+                                     ))
+#+end_src
 ** Prescient
-   #+begin_src elisp
-        (use-package prescient
-       :ensure t
-       :config
-       (prescient-persist-mode 1))
+#+begin_src elisp
+  (use-package prescient
+    :ensure t
+    :config
+    (prescient-persist-mode 1))
 
-     (use-package ivy-prescient
-       :ensure t
-       :after counsel
-       :config
-       (ivy-prescient-mode 1)
-       (setq  prescient-sort-length-enable nil)
-       (setq ivy-prescient-retain-classic-highlighting t)
-       (setq ivy-prescient-enable-filtering nil)
-       (setq ivy-prescient-enable-sorting t)
-       (setq ivy-re-builders-alist
-      '(
-        (counsel-M-x . ivy--regex-plus)
-        (ivy-switch-buffer . ivy--regex-plus)
-        (ivy-switch-buffer-other-window . ivy--regex-plus)
-        (counsel-ag . ivy--regex-plus)
-        (t . ivy-prescient-re-builder))))
+  (use-package ivy-prescient
+    :ensure t
+    :after counsel
+    :config
+    (ivy-prescient-mode 1)
+    (setq  prescient-sort-length-enable nil)
+    (setq ivy-prescient-retain-classic-highlighting t)
+    (setq ivy-prescient-enable-filtering nil)
+    (setq ivy-prescient-enable-sorting t)
+    (setq ivy-re-builders-alist
+          '(
+            (counsel-M-x . ivy--regex-plus)
+            (ivy-switch-buffer . ivy--regex-plus)
+            (ivy-switch-buffer-other-window . ivy--regex-plus)
+            (counsel-ag . ivy--regex-plus)
+            (t . ivy-prescient-re-builder))))
 
-     (use-package company-prescient
-       :ensure t
-       :after company
-       :config
-       (company-prescient-mode 1))
+  (use-package company-prescient
+    :ensure t
+    :after company
+    :config
+    (company-prescient-mode 1))
 #+end_src
 ** General
-
-   #+begin_src elisp
-     (use-package general
-       :ensure t
-       :config
-       (general-create-definer my-leader-def
-         :prefix "C-c")
-       (my-leader-def
-         "t" 'fzf-projectile
-         "a" 'ace-jump-mode
-         "g" '(:ignore t :which-key "rspec")
-         "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
-         "ga" '(rspec-verify-all :which-key "run all specs")
-         "gs" '(rspec-verify-single :which-key "run single spec")
-         "gr" '(rspec-rerun :which-key "rerun spec")
-         "gf" '(rspec-run-last-failed :which-key "rerun last failed")
-         "i"  '(:ignore t :which-key "inf-ruby")
-         "ib" '(ruby-send-buffer :which-key "ruby-send-buffer")
-         "v"  '(:ignore t :which-key "avy")
-         "va" '(avy-goto-word-1 :which-key "avy-goto-word-1")
-         "vl" '(avy-goto-line :which-key "avy-goto-line")
-         "vs" '(avy-goto-char-timer :which-key "avy-goto-char-timer")
-         "vc" '(avy-goto-char :which-key "avy-goto-char")
-         "f" '(:ignore t :which-key "cucumber")
-         "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
-         "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
-         "fv" '(feature-verify-all-scenarios-in-buffer :which-key "run all cukes in buffer")
-         "fg" '(feature-goto-step-definition :which-key "goto step definition")
-         "fr" '(feature-register-verify-redo :which-key "repeat last cuke")
-         "m" 'mu4e
-         "o" 'find-file
-         "b" '(:ignore t :which-key "eww")
-         "bf" '(eww-follow-link :which-key "eww-follow-link")
-         "z" '(:ignore t :which-key "roam")
-         "zd" '(:ignore t :which-key "dailies")
-         "zdc" '(org-roam-dailies-capture-today :which-key "capture today")
-         "zdt" '(org-roam-dailies-goto-today :which-key "goto today")
-         "zdd" '(org-roam-dailies-goto-tomorrow :which-key "goto tomorrow")
-         "zf" '(org-roam-node-find :which-key "org-roam-node-find")
-         "zi" '(org-roam-node-insert :which-key "org-roam-node-insert")
-         "zv" '(org-roam-node-visit :which-key "org-roam-node-visit")
-         "zo" '(org-roam-node-open :which-key "org-roam-node-open")
-         "zt" '(:ignore t :which-key "roam-tag")
-         "zta" '(org-roam-tag-add :which-key "roam-tag-add")
-         "ztr" '(org-roam-tag-add :which-key "roam-tag-remove")
-         "zr"  '(:ignore t :which-key "roam-ref")
-         "zra" '(org-roam-ref-add :which-key "roam-ref-add")
-         "zrr" '(org-roam-ref-remove :which-key "roam-ref-remove")
-         "zb"  '(org-roam-buffer-toggle :which-key "roam-buffer-toggle")
-         "q" '(:ignore t :which-key "copilot")
-         "qa" '(copilot-accept-completion :which-key "copilot-accept-completion")
-         "qd" '(copilot-diagnose :which-key "copilot-diagnose")
-         "ql" '(copilot-accept-completion-by-line :which-key "copilot-accept-completion-by-line")
-         "qw" '(copilot-accept-completion-by-word :which-key "copilot-accept-completion-by-word")
-         "qp" '(copilot-previous-completion :whick-key "copilot-previous-completion")
-         "qn" '(copilot-next-completion :whick-key "copilot-next-completion")))
-   #+end_src
-** Copilo
-** t
+Da General give command-t like ease to emacs
+#+begin_src elisp
+  (use-package general
+    :ensure t
+    :config
+    (general-create-definer my-leader-def
+      :prefix "C-c")
+    (my-leader-def
+      "t" 'fzf-projectile
+      "a" 'ace-jump-mode
+      "g" '(:ignore t :which-key "rspec")
+      "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
+      "ga" '(rspec-verify-all :which-key "run all specs")
+      "gs" '(rspec-verify-single :which-key "run single spec")
+      "gr" '(rspec-rerun :which-key "rerun spec")
+      "gf" '(rspec-run-last-failed :which-key "rerun last failed")
+      "i"  '(:ignore t :which-key "inf-ruby")
+      "ib" '(ruby-send-buffer :which-key "ruby-send-buffer")
+      "v"  '(:ignore t :which-key "avy")
+      "va" '(avy-goto-word-1 :which-key "avy-goto-word-1")
+      "vl" '(avy-goto-line :which-key "avy-goto-line")
+      "vs" '(avy-goto-char-timer :which-key "avy-goto-char-timer")
+      "vc" '(avy-goto-char :which-key "avy-goto-char")
+      "f" '(:ignore t :which-key "cucumber")
+      "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
+      "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
+      "fv" '(feature-verify-all-scenarios-in-buffer :which-key "run all cukes in buffer")
+      "fg" '(feature-goto-step-definition :which-key "goto step definition")
+      "fr" '(feature-register-verify-redo :which-key "repeat last cuke")
+      "m" 'mu4e
+      "o" 'find-file
+      "b" '(:ignore t :which-key "eww")
+      "bf" '(eww-follow-link :which-key "eww-follow-link")
+      "z" '(:ignore t :which-key "roam")
+      "zd" '(:ignore t :which-key "dailies")
+      "zdc" '(org-roam-dailies-capture-today :which-key "capture today")
+      "zdt" '(org-roam-dailies-goto-today :which-key "goto today")
+      "zdd" '(org-roam-dailies-goto-tomorrow :which-key "goto tomorrow")
+      "zf" '(org-roam-node-find :which-key "org-roam-node-find")
+      "zi" '(org-roam-node-insert :which-key "org-roam-node-insert")
+      "zv" '(org-roam-node-visit :which-key "org-roam-node-visit")
+      "zo" '(org-roam-node-open :which-key "org-roam-node-open")
+      "zt" '(:ignore t :which-key "roam-tag")
+      "zta" '(org-roam-tag-add :which-key "roam-tag-add")
+      "ztr" '(org-roam-tag-add :which-key "roam-tag-remove")
+      "zr"  '(:ignore t :which-key "roam-ref")
+      "zra" '(org-roam-ref-add :which-key "roam-ref-add")
+      "zrr" '(org-roam-ref-remove :which-key "roam-ref-remove")
+      "zb"  '(org-roam-buffer-toggle :which-key "roam-buffer-toggle")
+      "q" '(:ignore t :which-key "copilot")
+      "qa" '(copilot-accept-completion :which-key "copilot-accept-completion")
+      "qd" '(copilot-diagnose :which-key "copilot-diagnose")
+      "ql" '(copilot-accept-completion-by-line :which-key "copilot-accept-completion-by-line")
+      "qw" '(copilot-accept-completion-by-word :which-key "copilot-accept-completion-by-word")
+      "qp" '(copilot-previous-completion :whick-key "copilot-previous-completion")
+      "qn" '(copilot-next-completion :whick-key "copilot-next-completion")))
+#+end_src
+** Copilot
 #+begin_src elisp
   (use-package quelpa-use-package
     :ensure t)
@@ -1447,29 +1315,28 @@ setting this up for roam and keeping deft for notes
 ** Magit Delta
 delta is better diffs for git
 #+begin_src elisp
-    (use-package magit-delta
-      :ensure t
-      :hook
-      (magit-mode . magit-delta-mode))
+  (use-package magit-delta
+    :ensure t
+    :hook
+    (magit-mode . magit-delta-mode))
 #+end_src
-**
 ** Popper
 Popper helps with managing transient windows  see [[https://github.com/karthink/popper][Github]]
 #+begin_src elisp
   (use-package popper
-  :ensure t ; or :straight t
-  :bind (("C-`"   . popper-toggle-latest)
-         ("M-`"   . popper-cycle)
-         ("C-M-`" . popper-toggle-type))
-  :init
-  (setq popper-reference-buffers
-        '("\\*Messages\\*"
-          "Output\\*$"
-          "\\*Async Shell Command\\*"
-          help-mode
-          compilation-mode))
-  (popper-mode +1)
-  (popper-echo-mode +1))                ; For echo area hints
+    :ensure t ; or :straight t
+    :bind (("C-`"   . popper-toggle-latest)
+           ("M-`"   . popper-cycle)
+           ("C-M-`" . popper-toggle-type))
+    :init
+    (setq popper-reference-buffers
+          '("\\*Messages\\*"
+            "Output\\*$"
+            "\\*Async Shell Command\\*"
+            help-mode
+            compilation-mode))
+    (popper-mode +1)
+    (popper-echo-mode +1))                ; For echo area hints
 #+end_src
 ** Blamer
 #+begin_src elisp
@@ -1480,33 +1347,33 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
           blamer-type 'visual
           blamer-max-commit-message-length 180
           blamer-author-formatter " ✎ [%s] - "
-  blamer-commit-formatter "● %s ● "
-  blamer-smart-background-p nil)
+          blamer-commit-formatter "● %s ● "
+          blamer-smart-background-p nil)
     :custom
     (blamer-idle-time 1.0)
     (blamer-min-offset 10)
     :custom-face
     (blamer-face ((t :foreground "#E46876"
-                      :height 140
-                      :italic t
-                      :background "gray40"))))
-      (global-blamer-mode)
+                     :height 140
+                     :italic t
+                     :background "gray40"))))
+  (global-blamer-mode)
 #+end_src
 ** SVG-Tag-mode
 #+begin_src elisp
-(use-package svg-tag-mode
-  :hook ((prog-mode . svg-tag-mode))
-  :config
-  (setq svg-tag-tags
-        '(
-          ("\\W?DONE\\b" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0))))
-          ("FIXME\\b" . ((lambda (tag) (svg-tag-make "FIXME" :face 'org-todo :inverse t :margin 0))))
-          ("\\/\\/\\W?MARK\\b:\\|MARK\\b:" . ((lambda (tag) (svg-tag-make "MARK" :face 'font-lock-doc-face :inverse t :margin 0 :crop-right t))))
-          ("MARK\\b:\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'font-lock-doc-face :crop-left t))))
+  (use-package svg-tag-mode
+    :hook ((prog-mode . svg-tag-mode))
+    :config
+    (setq svg-tag-tags
+          '(
+            ("\\W?DONE\\b" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0))))
+            ("FIXME\\b" . ((lambda (tag) (svg-tag-make "FIXME" :face 'org-todo :inverse t :margin 0))))
+            ("\\/\\/\\W?MARK\\b:\\|MARK\\b:" . ((lambda (tag) (svg-tag-make "MARK" :face 'font-lock-doc-face :inverse t :margin 0 :crop-right t))))
+            ("MARK\\b:\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'font-lock-doc-face :crop-left t))))
 
-          ("\\/\\/\\W?TODO\\b\\|TODO\\b" . ((lambda (tag) (svg-tag-make "TODO" :face 'org-todo :inverse t :margin 0 :crop-right t))))
-          ("TODO\\b\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'org-todo :crop-left t))))
-          )))
+            ("\\/\\/\\W?TODO\\b\\|TODO\\b" . ((lambda (tag) (svg-tag-make "TODO" :face 'org-todo :inverse t :margin 0 :crop-right t))))
+            ("TODO\\b\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'org-todo :crop-left t))))
+            )))
 #+end_src
 ** Tree sitter
 #+begin_src elisp
@@ -1517,19 +1384,17 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
     :config
     (require 'tree-sitter-langs)
     (global-tree-sitter-mode))
-;;    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-;;    (add-hook 'ruby-mode-hook #'tree-sitter-hl-mode))
 #+end_src
 ** pdf-tools
 #+begin_src elisp
-(use-package pdf-tools
-:ensure t
-:config (pdf-tools-install :no-query)
-(setq-default pdf-view-display-size 'fit-page)
-(add-hook 'pdf-view-mode-hook (lambda() (display-line-numbers-mode -1))))
+  (use-package pdf-tools
+    :ensure t
+    :config (pdf-tools-install :no-query)
+    (setq-default pdf-view-display-size 'fit-page)
+    (add-hook 'pdf-view-mode-hook (lambda() (display-line-numbers-mode -1))))
 #+end_src
 ** Mastodon
-who knows it might catch only
+who knows it might catch on
 #+begin_src elisp
   (use-package discover
     :ensure t)
@@ -1541,17 +1406,15 @@ who knows it might catch only
     (setq mastodon-instance-url "https://mastodon.social")
     (mastodon-discover))
 #+end_src
-** End
-   #+BEGIN_SRC elisp
-     (provide 'emacs-config-new)
-   #+END_SRC
-
-
-
-   #+DESCRIPTION: Literate source for my Emacs configuration
-   #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
-   #+PROPERTY: header-args:ruby :tangle no
-   #+PROPERTY: header-args:shell :tangle no
-   #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
-   #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
-   #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+** Tell the world we are providing something useful
+End
+#+BEGIN_SRC elisp
+  (provide 'emacs-config-new)
+#+END_SRC
+#+DESCRIPTION: Literate source for my Emacs configuration
+#+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
+#+PROPERTY: header-args:ruby :tangle no
+#+PROPERTY: header-args:shell :tangle no
+#+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
+#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
