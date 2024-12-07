@@ -1,2 +1,0 @@
-@set version 2.2
-@set update-month September 2005

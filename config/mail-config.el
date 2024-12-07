@@ -3,7 +3,7 @@
 ;;; Code:
 
 (require 'smtpmail)
-  (add-to-list 'load-path "/home/abturet/dev/git/mu/build/mu4e")
+  (add-to-list 'load-path "~/dev/git/mu/build/mu4e/")
   (require 'mu4e)
 
   (setq   mail-user-agent 'mu4e-user-agent)
@@ -173,7 +173,7 @@
 (setq mml2015-use `epg
  mm-verify-option 'always
       gnus-buttonized-mime-types '("multipart/signed")
-      mml-default-sign-method 'pgp		; use pgp
+      mml-default-sign-method 'pgp            ; use pgp
       mml-secure-openpgp-encrypt-to-self  t     ;    "
       mml-secure-openpgp-sign-with-sender t     ;    "
       epg-user-id "gpg_key_id"                  ;    "
