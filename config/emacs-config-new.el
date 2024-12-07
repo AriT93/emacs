@@ -1115,16 +1115,23 @@
     "qn" '(copilot-next-completion :whick-key "copilot-next-completion")))
 
 (use-package quelpa-use-package
+    :ensure t)
+  (require 'quelpa-use-package)
+  (use-package copilot
+    :quelpa (copilot :fetcher github
+                     :repo "copilot-emacs/copilot.el"
+                     :branch "main"
+                     :files ("*.el")))
+  ;; you can utilize :map :hook and :config to customize copilot
+  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+
+(use-package chatgpt-shell
   :ensure t)
-(require 'quelpa-use-package)
-(use-package copilot
-  :quelpa (copilot :fetcher github
-                   :repo "copilot-emacs/copilot.el"
-                   :branch "main"
-                   :files ("*.el")))
-;; you can utilize :map :hook and :config to customize copilot
-(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+(use-pacakge gptel
+             :ensure t)
+(use-package copilot-chat
+  :ensure t)
 
 (use-package magit-delta
   :ensure t
