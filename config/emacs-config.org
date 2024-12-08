@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-12-07 15:36:04 abturet>
+#+Time-stamp: <2024-12-07 16:27:07 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -167,11 +167,11 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (setq ivy-posframe-hide-minibuffer t)
     (setq ivy-posframe-min-width nil)
     (setq ivy-posframe-width nil)
-    (setq ivy-posframe-border-width 2)
+    (setq ivy-posframe-border-width 10)
     (setq ivy-posframe-parameters
           '((left-fringe . 8)
             (right-fringe .8)))
-    (ivy-posframe-mode t)
+    (ivy-posframe-mode nil)
     )
 
   (defun my-ivy-posframe-get-size ()
@@ -215,7 +215,7 @@ Pop yank gives you a pop up of recent yanks,  a "yank bank"
 ** Tex
 
 ** JS Comint using node to eval javascript code
-And here we have the first use of use-pacakge!
+And here we have the first use of use-package!
 #+BEGIN_SRC elisp
   (use-package nvm
     :defer 2
@@ -1312,10 +1312,27 @@ Da General give command-t like ease to emacs
 
   (use-package chatgpt-shell
     :ensure t)
-  (use-pacakge gptel
+  (use-package gptel
                :ensure t)
   (use-package copilot-chat
     :ensure t)
+
+  (add-to-list 'chatgpt-shell-models '((:version . "gpt-4o-mini") (:short-version)
+  (:label . "ChatGPT") (:provider . "OpenAI")
+  (:path . "/v1/chat/completions") (:token-width . 3)
+  (:context-window . 128000)
+  (:handler . chatgpt-shell-openai--handle-chatgpt-command)
+  (:filter . chatgpt-shell-openai--filter-output)
+  (:payload . chatgpt-shell-openai--make-payload)
+  (:headers . chatgpt-shell-openai--make-headers)
+  (:url . chatgpt-shell-openai--make-url)
+  (:key . chatgpt-shell-openai-key)
+  (:url-base . chatgpt-shell-api-url-base)
+  (:validate-command . chatgpt-shell-openai--validate-command)))
+
+(require 'ob-chatgpt-shell)
+(ob-chatgpt-shell-setup)
+
 #+end_src
 ** Magit Delta
 delta is better diffs for git

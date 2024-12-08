@@ -130,11 +130,11 @@
   (setq ivy-posframe-hide-minibuffer t)
   (setq ivy-posframe-min-width nil)
   (setq ivy-posframe-width nil)
-  (setq ivy-posframe-border-width 2)
+  (setq ivy-posframe-border-width 10)
   (setq ivy-posframe-parameters
         '((left-fringe . 8)
           (right-fringe .8)))
-  (ivy-posframe-mode t)
+  (ivy-posframe-mode nil)
   )
 
 (defun my-ivy-posframe-get-size ()
@@ -1115,23 +1115,39 @@
     "qn" '(copilot-next-completion :whick-key "copilot-next-completion")))
 
 (use-package quelpa-use-package
-    :ensure t)
-  (require 'quelpa-use-package)
-  (use-package copilot
-    :quelpa (copilot :fetcher github
-                     :repo "copilot-emacs/copilot.el"
-                     :branch "main"
-                     :files ("*.el")))
-  ;; you can utilize :map :hook and :config to customize copilot
-  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+      :ensure t)
+    (require 'quelpa-use-package)
+    (use-package copilot
+      :quelpa (copilot :fetcher github
+                       :repo "copilot-emacs/copilot.el"
+                       :branch "main"
+                       :files ("*.el")))
+    ;; you can utilize :map :hook and :config to customize copilot
+    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
 
-(use-package chatgpt-shell
-  :ensure t)
-(use-pacakge gptel
-             :ensure t)
-(use-package copilot-chat
-  :ensure t)
+  (use-package chatgpt-shell
+    :ensure t)
+  (use-package gptel
+               :ensure t)
+  (use-package copilot-chat
+    :ensure t)
+
+  (add-to-list 'chatgpt-shell-models '((:version . "gpt-4o-mini") (:short-version)
+  (:label . "ChatGPT") (:provider . "OpenAI")
+  (:path . "/v1/chat/completions") (:token-width . 3)
+  (:context-window . 128000)
+  (:handler . chatgpt-shell-openai--handle-chatgpt-command)
+  (:filter . chatgpt-shell-openai--filter-output)
+  (:payload . chatgpt-shell-openai--make-payload)
+  (:headers . chatgpt-shell-openai--make-headers)
+  (:url . chatgpt-shell-openai--make-url)
+  (:key . chatgpt-shell-openai-key)
+  (:url-base . chatgpt-shell-api-url-base)
+  (:validate-command . chatgpt-shell-openai--validate-command)))
+
+(require 'ob-chatgpt-shell)
+(ob-chatgpt-shell-setup)
 
 (use-package magit-delta
   :ensure t
