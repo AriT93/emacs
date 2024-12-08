@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-12-07 18:52:31 abturet>
+#+Time-stamp: <2024-12-07 19:05:25 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -1433,6 +1433,21 @@ who knows it might catch on
     (setq mastodon-instance-url "https://mastodon.social")
     (mastodon-discover))
 #+end_src
+** Fancy LaTeX processing
+#+begin_src elisp
+  (use-package auctex
+    :ensure t)
+  (add-to-list 'load-path "~/dev/git/procress")
+  (use-package procress
+    :commands procress-auctex-mode
+    :init
+    (add-hook 'LaTeX-mode-hook #'procress-auctex-mode)
+    (add-hook 'LaTeX/P-mode-hook #'procress-auctex-mode)
+
+    :config
+    (procress-load-default-svg-images))
+#+end_src
+
 ** Tell the world we are providing something useful
 End
 #+BEGIN_SRC elisp
