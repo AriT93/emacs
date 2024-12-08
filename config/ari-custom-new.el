@@ -4,7 +4,7 @@
 ;;; this is my custom functions
 ;;; History: long ago in a different time.  check git log for deets
 ;;; Code:
-
+;;; test
 (defun dos-to-unix ()
   "Convert DOS line endings to Unix line endings in the current buffer."
   (interactive)

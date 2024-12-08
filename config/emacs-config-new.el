@@ -18,6 +18,7 @@
 
 (show-paren-mode 1)
 (recentf-mode 1)
+(fringe-mode 10)
 (setq recentf-max-menu-items 25)
 (setq recentf-max-saved-items 25)
 (setq undo-limit 8000000)
@@ -215,7 +216,6 @@
   (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
 
 (use-package magit
-  :defer 2
   :ensure t)
 (require 'magit)
 
@@ -224,6 +224,22 @@
   :ensure t
   :diminish
   )
+(use-package git-gutter
+  :ensure t
+  :hook (prog-mode . git-gutter-mode)
+  :config
+  (global-git-gutter-mode)
+  (setq git-gutter:update-interval 0.02)
+  )
+
+(use-package git-gutter-fringe
+  :ensure t
+  :config
+  (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
+(define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+(define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
+  )
+(require 'git-gutter-fringe)
 
 (use-package persistent-scratch
   :ensure t
