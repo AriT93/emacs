@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-12-07 16:31:38 abturet>
+#+Time-stamp: <2024-12-07 18:52:31 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Simple Settings
@@ -182,6 +182,7 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
   (setq ivy-posframe-size-function 'my-ivy-posframe-get-size)
 
   (use-package nerd-icons-completion
+    :ensure t
     :after marginalia
     :config
     (nerd-icons-completion-mode)
@@ -315,6 +316,8 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (doom-themes-org-config)
     (require 'doom-themes-ext-org))
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+  (use-package hc-zenburn-theme
+    :ensure t)
   (load-theme 'hc-zenburn t)
 #+END_SRC
 ** Doom Modeline
@@ -1297,40 +1300,43 @@ Da General give command-t like ease to emacs
 #+end_src
 ** Copilot
 #+begin_src elisp
-    (use-package quelpa-use-package
+        (use-package quelpa-use-package
+          :ensure t)
+        (require 'quelpa-use-package)
+        (use-package copilot
+          :quelpa (copilot :fetcher github
+                           :repo "copilot-emacs/copilot.el"
+                           :branch "main"
+                           :files ("*.el")))
+
+        ;; you can utilize :map :hook and :config to customize copilot
+        (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+        (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+
+      (use-package chatgpt-shell
+        :ensure t)
+      (use-package gptel
+                   :ensure t)
+      (use-package copilot-chat
+        :ensure t)
+
+      (add-to-list 'chatgpt-shell-models '((:version . "gpt-4o-mini") (:short-version)
+      (:label . "ChatGPT") (:provider . "OpenAI")
+      (:path . "/v1/chat/completions") (:token-width . 3)
+      (:context-window . 128000)
+      (:handler . chatgpt-shell-openai--handle-chatgpt-command)
+      (:filter . chatgpt-shell-openai--filter-output)
+      (:payload . chatgpt-shell-openai--make-payload)
+      (:headers . chatgpt-shell-openai--make-headers)
+      (:url . chatgpt-shell-openai--make-url)
+      (:key . chatgpt-shell-openai-key)
+      (:url-base . chatgpt-shell-api-url-base)
+      (:validate-command . chatgpt-shell-openai--validate-command)))
+
+    (use-package ob-chatgpt-shell
       :ensure t)
-    (require 'quelpa-use-package)
-    (use-package copilot
-      :quelpa (copilot :fetcher github
-                       :repo "copilot-emacs/copilot.el"
-                       :branch "main"
-                       :files ("*.el")))
-    ;; you can utilize :map :hook and :config to customize copilot
-    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-
-  (use-package chatgpt-shell
-    :ensure t)
-  (use-package gptel
-               :ensure t)
-  (use-package copilot-chat
-    :ensure t)
-
-  (add-to-list 'chatgpt-shell-models '((:version . "gpt-4o-mini") (:short-version)
-  (:label . "ChatGPT") (:provider . "OpenAI")
-  (:path . "/v1/chat/completions") (:token-width . 3)
-  (:context-window . 128000)
-  (:handler . chatgpt-shell-openai--handle-chatgpt-command)
-  (:filter . chatgpt-shell-openai--filter-output)
-  (:payload . chatgpt-shell-openai--make-payload)
-  (:headers . chatgpt-shell-openai--make-headers)
-  (:url . chatgpt-shell-openai--make-url)
-  (:key . chatgpt-shell-openai-key)
-  (:url-base . chatgpt-shell-api-url-base)
-  (:validate-command . chatgpt-shell-openai--validate-command)))
-
-(require 'ob-chatgpt-shell)
-(ob-chatgpt-shell-setup)
+    (require 'ob-chatgpt-shell)
+    (ob-chatgpt-shell-setup)
 
 #+end_src
 ** Magit Delta
