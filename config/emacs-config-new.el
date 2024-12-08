@@ -134,7 +134,6 @@
   (setq ivy-posframe-parameters
         '((left-fringe . 8)
           (right-fringe .8)))
-  (ivy-posframe-mode nil)
   )
 
 (defun my-ivy-posframe-get-size ()
