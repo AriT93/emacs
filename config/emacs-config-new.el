@@ -1231,4 +1231,16 @@
   (setq mastodon-instance-url "https://mastodon.social")
   (mastodon-discover))
 
+(use-package auctex
+  :ensure t)
+(add-to-list 'load-path "~/dev/git/procress")
+(use-package procress
+  :commands procress-auctex-mode
+  :init
+  (add-hook 'LaTeX-mode-hook #'procress-auctex-mode)
+  (add-hook 'LaTeX/P-mode-hook #'procress-auctex-mode)
+
+  :config
+  (procress-load-default-svg-images))
+
 (provide 'emacs-config-new)
