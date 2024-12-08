@@ -145,6 +145,7 @@
 (setq ivy-posframe-size-function 'my-ivy-posframe-get-size)
 
 (use-package nerd-icons-completion
+  :ensure t
   :after marginalia
   :config
   (nerd-icons-completion-mode)
@@ -255,6 +256,8 @@
   (doom-themes-org-config)
   (require 'doom-themes-ext-org))
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(use-package hc-zenburn-theme
+  :ensure t)
 (load-theme 'hc-zenburn t)
 
 (use-package nerd-icons
@@ -1121,6 +1124,7 @@
                        :repo "copilot-emacs/copilot.el"
                        :branch "main"
                        :files ("*.el")))
+
     ;; you can utilize :map :hook and :config to customize copilot
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
     (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
@@ -1145,6 +1149,8 @@
   (:url-base . chatgpt-shell-api-url-base)
   (:validate-command . chatgpt-shell-openai--validate-command)))
 
+(use-package ob-chatgpt-shell
+  :ensure t)
 (require 'ob-chatgpt-shell)
 (ob-chatgpt-shell-setup)
 
