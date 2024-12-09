@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-12-07 20:20:05 abturet>
+#+Time-stamp: <2024-12-09 08:22:48 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -47,6 +47,8 @@ config file [[file:load-path-config.org][load-path-config]]
   (show-paren-mode 1)
   (recentf-mode 1)
   (fringe-mode 10)
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
   (setq recentf-max-menu-items 25)
   (setq recentf-max-saved-items 25)
   (setq undo-limit 8000000)
@@ -82,10 +84,10 @@ config file [[file:load-path-config.org][load-path-config]]
   (setq native-comp-speed 2)
   (setq package-native-compile t)
   (require 'xwidget)
-          ;;; follow links in xwidgets
   (setq alert-default-style 'notifier)
 #+END_SRC
 #+BEGIN_SRC elisp
+  ;;; follow links in xwidgets
   (use-package xwwp-follow-link
     :custom
     (xwwp-follow-link-completion-backend 'ivy)
@@ -187,13 +189,6 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     :config
     (nerd-icons-completion-mode)
     (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
-  ;;    (use-package all-the-icons-completion
-  ;;      :ensure t
-  ;; :after (marginalia all-the-icons)
-  ;; :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-  ;; :init
-  ;; (all-the-icons-completion-mode))
-
 #+END_SRC
 
 Pop yank gives you a pop up of recent yanks,  a "yank bank"
@@ -291,8 +286,8 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     :ensure t
     :config
     (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
-  (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
-  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
+    (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+    (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
     )
   (require 'git-gutter-fringe)
 #+END_SRC
@@ -446,11 +441,14 @@ currently here but will need to move to it's own config file
 eventually to make it more manageable
 
 #+BEGIN_SRC elisp
-  (use-package org
-    :pin nongnu
-    :ensure t
-    :config
-    (setq org-default-notes-file "~/Documents/notes/notes.org"))
+    (use-package org
+      :pin nongnu
+      :ensure t
+      :config
+      (set-face-attribute 'org-block nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray30" :weight 'normal)
+      (set-face-attribute 'org-block-begin-line nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray18" :weight 'light)
+      (set-face-attribute 'org-block-end-line nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray18" :weight 'light)
+  (setq org-default-notes-file "~/Documents/notes/notes.org"))
 #+END_SRC
 
 #+BEGIN_SRC elisp
@@ -563,65 +561,65 @@ eventually to make it more manageable
     (setq org-roam-database-connector 'sqlite-builtin))
 #+END_SRC
 #+BEGIN_SRC elisp
-      (setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
-                                          (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-                                          :unnarrowed t)
-                                         ("c" "region" plain "%i" :if-new
-                                          (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-                                          :unnarrowed t)
-                                         ("i" "Jira Issue" entry "* TODO ${title}\n:PROPERTIES:\n:JiraIssueKey: ${title}\n:END:\n"
-                                          :if-new
-                                          (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                                                     "#+title: ${title}\n\n" )
+  (setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     ("c" "region" plain "%i" :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     ("i" "Jira Issue" entry "* TODO ${title}\n:PROPERTIES:\n:JiraIssueKey: ${title}\n:END:\n"
+                                      :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                 "#+title: ${title}\n\n" )
 
-                                          :unnarrowed t)
-                                         ))
-      (setq org-roam-capture-ref-templates '(("r" "ref" plain "%a %i"
-                                              :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
-                                              :jump-to-captured t
-                                              :unnarrowed t)))
-      (setq org-roam-node-display-template
-            (concat "${title:30} "
-                    (propertize "${tags:*}" 'face 'org-tag)))
+                                      :unnarrowed t)
+                                     ))
+  (setq org-roam-capture-ref-templates '(("r" "ref" plain "%a %i"
+                                          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
+                                          :jump-to-captured t
+                                          :unnarrowed t)))
+  (setq org-roam-node-display-template
+        (concat "${title:30} "
+                (propertize "${tags:*}" 'face 'org-tag)))
 
-      (setq org-roam-dailies-directory "daily/")
-      (setq org-roam-completion-everywhere t)
-      (setq org-roam-dailies-capture-templates
-            '(("d" "default" entry
-               "* %?"
-               :if-new (file+head "%<%Y-%m-%d>.org"
-                                  "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
-         "))
-              ("c" "region" entry
-               "* %? %i"
-               :if-new (file+head "%<%Y-%m-%d>.org"
-                                  "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
-         "))
-              ("l" "link" entry
-               "* %? \n%i"
-               :target (file+olp "%<%Y-%m-%d>.org"
-                                 ("Links"))
-               :unnarrowed t
-               )))
-  #+END_SRC
+  (setq org-roam-dailies-directory "daily/")
+  (setq org-roam-completion-everywhere t)
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry
+           "* %?"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
+     "))
+          ("c" "region" entry
+           "* %? %i"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
+     "))
+          ("l" "link" entry
+           "* %? \n%i"
+           :target (file+olp "%<%Y-%m-%d>.org"
+                             ("Links"))
+           :unnarrowed t
+           )))
+#+END_SRC
 
 #+BEGIN_SRC elisp
-    (defun ek/babel-ansi ()
-      (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
-        (save-excursion
-          (goto-char beg)
-          (when (looking-at org-babel-result-regexp)
-            (let ((end (org-babel-result-end))
-                  (ansi-color-context-region nil))
-              (ansi-color-apply-on-region beg end))))))
-    (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
-    (use-package ox-twbs
-      :ensure t)
-    (use-package ox-gfm
-      :ensure t)
+  (defun ek/babel-ansi ()
+    (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+      (save-excursion
+        (goto-char beg)
+        (when (looking-at org-babel-result-regexp)
+          (let ((end (org-babel-result-end))
+                (ansi-color-context-region nil))
+            (ansi-color-apply-on-region beg end))))))
+  (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
+  (use-package ox-twbs
+    :ensure t)
+  (use-package ox-gfm
+    :ensure t)
 #+END_SRC
 #+BEGIN_SRC elisp
-  (require 'org-tempo)
+
   (use-package org-mime
     :ensure t)
   (setq org-src-fontify-natively t)
@@ -669,13 +667,13 @@ eventually to make it more manageable
     (setq org-pandoc-options '((standalone . t)))
     (setq org-pandoc-command (substring (shell-command-to-string "which pandoc") 0 -1)))
 
-  (use-package org-variable-pitch
-    :defer 2
-    :after org
-    :ensure t
-    :config
-    (add-hook 'after-init-hook #'org-variable-pitch-setup)
-    (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
+  ;; (use-package org-variable-pitch
+  ;;   :defer 2
+  ;;   :after org
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-hook 'after-init-hook #'org-variable-pitch-setup)
+  ;;   (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
 #+END_SRC
 
 #+BEGIN_SRC elisp
@@ -858,7 +856,7 @@ This is kinda like that part in the bible with all the begats...
   (use-package terraform-mode
     :defer 2
     :ensure t)
-  #+END_SRC
+#+END_SRC
 
 ** LSP-Mode
 #+BEGIN_SRC elisp
@@ -1200,10 +1198,10 @@ setting this up for roam and keeping deft for notes
     (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
     (elfeed-org))
 
-  (use-package visual-fill
-    :ensure t)
+  ;; (use-package visual-fill
+  ;;   :ensure t)
 
-  (defun elfeed-olivetti (buff)
+   (defun elfeed-olivetti (buff)
     (with-current-buffer buff
       (setq fill-column 100)
       (setq buffer-read-only nil)
@@ -1315,43 +1313,43 @@ Da General give command-t like ease to emacs
 #+end_src
 ** Copilot
 #+begin_src elisp
-        (use-package quelpa-use-package
-          :ensure t)
-        (require 'quelpa-use-package)
-        (use-package copilot
-          :quelpa (copilot :fetcher github
-                           :repo "copilot-emacs/copilot.el"
-                           :branch "main"
-                           :files ("*.el")))
+  (use-package quelpa-use-package
+    :ensure t)
+  (require 'quelpa-use-package)
+  (use-package copilot
+    :quelpa (copilot :fetcher github
+                     :repo "copilot-emacs/copilot.el"
+                     :branch "main"
+                     :files ("*.el")))
 
-        ;; you can utilize :map :hook and :config to customize copilot
-        (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-        (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+  ;; you can utilize :map :hook and :config to customize copilot
+  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
 
-      (use-package chatgpt-shell
-        :ensure t)
-      (use-package gptel
-                   :ensure t)
-      (use-package copilot-chat
-        :ensure t)
+  (use-package chatgpt-shell
+    :ensure t)
+  (use-package gptel
+    :ensure t)
+  (use-package copilot-chat
+    :ensure t)
 
-      (add-to-list 'chatgpt-shell-models '((:version . "gpt-4o-mini") (:short-version)
-      (:label . "ChatGPT") (:provider . "OpenAI")
-      (:path . "/v1/chat/completions") (:token-width . 3)
-      (:context-window . 128000)
-      (:handler . chatgpt-shell-openai--handle-chatgpt-command)
-      (:filter . chatgpt-shell-openai--filter-output)
-      (:payload . chatgpt-shell-openai--make-payload)
-      (:headers . chatgpt-shell-openai--make-headers)
-      (:url . chatgpt-shell-openai--make-url)
-      (:key . chatgpt-shell-openai-key)
-      (:url-base . chatgpt-shell-api-url-base)
-      (:validate-command . chatgpt-shell-openai--validate-command)))
+  (add-to-list 'chatgpt-shell-models '((:version . "gpt-4o-mini") (:short-version)
+                                       (:label . "ChatGPT") (:provider . "OpenAI")
+                                       (:path . "/v1/chat/completions") (:token-width . 3)
+                                       (:context-window . 128000)
+                                       (:handler . chatgpt-shell-openai--handle-chatgpt-command)
+                                       (:filter . chatgpt-shell-openai--filter-output)
+                                       (:payload . chatgpt-shell-openai--make-payload)
+                                       (:headers . chatgpt-shell-openai--make-headers)
+                                       (:url . chatgpt-shell-openai--make-url)
+                                       (:key . chatgpt-shell-openai-key)
+                                       (:url-base . chatgpt-shell-api-url-base)
+                                       (:validate-command . chatgpt-shell-openai--validate-command)))
 
-    (use-package ob-chatgpt-shell
-      :ensure t)
-    (require 'ob-chatgpt-shell)
-    (ob-chatgpt-shell-setup)
+  (use-package ob-chatgpt-shell
+    :ensure t)
+  (require 'ob-chatgpt-shell)
+  (ob-chatgpt-shell-setup)
 
 #+end_src
 ** Magit Delta
