@@ -19,6 +19,8 @@
 (show-paren-mode 1)
 (recentf-mode 1)
 (fringe-mode 10)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
 (setq recentf-max-menu-items 25)
 (setq recentf-max-saved-items 25)
 (setq undo-limit 8000000)
@@ -54,9 +56,9 @@
 (setq native-comp-speed 2)
 (setq package-native-compile t)
 (require 'xwidget)
-        ;;; follow links in xwidgets
 (setq alert-default-style 'notifier)
 
+;;; follow links in xwidgets
 (use-package xwwp-follow-link
   :custom
   (xwwp-follow-link-completion-backend 'ivy)
@@ -151,12 +153,6 @@
   :config
   (nerd-icons-completion-mode)
   (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
-;;    (use-package all-the-icons-completion
-;;      :ensure t
-;; :after (marginalia all-the-icons)
-;; :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-;; :init
-;; (all-the-icons-completion-mode))
 
 (global-set-key "\C-cy" 'counsel-yank-pop)
 
@@ -236,8 +232,8 @@
   :ensure t
   :config
   (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
-(define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
-(define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
+  (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
   )
 (require 'git-gutter-fringe)
 
@@ -365,10 +361,13 @@
   (diminish 'global-highline-mode))
 
 (use-package org
-  :pin nongnu
-  :ensure t
-  :config
-  (setq org-default-notes-file "~/Documents/notes/notes.org"))
+    :pin nongnu
+    :ensure t
+    :config
+    (set-face-attribute 'org-block nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray30" :weight 'normal)
+    (set-face-attribute 'org-block-begin-line nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray18" :weight 'light)
+    (set-face-attribute 'org-block-end-line nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray18" :weight 'light)
+(setq org-default-notes-file "~/Documents/notes/notes.org"))
 
 (require 'org-capture)
 (setq org-capture-templates
@@ -523,7 +522,6 @@
 (use-package ox-gfm
   :ensure t)
 
-(require 'org-tempo)
 (use-package org-mime
   :ensure t)
 (setq org-src-fontify-natively t)
@@ -567,13 +565,13 @@
   (setq org-pandoc-options '((standalone . t)))
   (setq org-pandoc-command (substring (shell-command-to-string "which pandoc") 0 -1)))
 
-(use-package org-variable-pitch
-  :defer 2
-  :after org
-  :ensure t
-  :config
-  (add-hook 'after-init-hook #'org-variable-pitch-setup)
-  (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
+;; (use-package org-variable-pitch
+;;   :defer 2
+;;   :after org
+;;   :ensure t
+;;   :config
+;;   (add-hook 'after-init-hook #'org-variable-pitch-setup)
+;;   (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
 
 (use-package olivetti
   :after org
@@ -1024,10 +1022,10 @@
   (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
   (elfeed-org))
 
-(use-package visual-fill
-  :ensure t)
+;; (use-package visual-fill
+;;   :ensure t)
 
-(defun elfeed-olivetti (buff)
+ (defun elfeed-olivetti (buff)
   (with-current-buffer buff
     (setq fill-column 100)
     (setq buffer-read-only nil)
@@ -1133,37 +1131,37 @@
     "qn" '(copilot-next-completion :whick-key "copilot-next-completion")))
 
 (use-package quelpa-use-package
-      :ensure t)
-    (require 'quelpa-use-package)
-    (use-package copilot
-      :quelpa (copilot :fetcher github
-                       :repo "copilot-emacs/copilot.el"
-                       :branch "main"
-                       :files ("*.el")))
+  :ensure t)
+(require 'quelpa-use-package)
+(use-package copilot
+  :quelpa (copilot :fetcher github
+                   :repo "copilot-emacs/copilot.el"
+                   :branch "main"
+                   :files ("*.el")))
 
-    ;; you can utilize :map :hook and :config to customize copilot
-    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+;; you can utilize :map :hook and :config to customize copilot
+(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
 
-  (use-package chatgpt-shell
-    :ensure t)
-  (use-package gptel
-               :ensure t)
-  (use-package copilot-chat
-    :ensure t)
+(use-package chatgpt-shell
+  :ensure t)
+(use-package gptel
+  :ensure t)
+(use-package copilot-chat
+  :ensure t)
 
-  (add-to-list 'chatgpt-shell-models '((:version . "gpt-4o-mini") (:short-version)
-  (:label . "ChatGPT") (:provider . "OpenAI")
-  (:path . "/v1/chat/completions") (:token-width . 3)
-  (:context-window . 128000)
-  (:handler . chatgpt-shell-openai--handle-chatgpt-command)
-  (:filter . chatgpt-shell-openai--filter-output)
-  (:payload . chatgpt-shell-openai--make-payload)
-  (:headers . chatgpt-shell-openai--make-headers)
-  (:url . chatgpt-shell-openai--make-url)
-  (:key . chatgpt-shell-openai-key)
-  (:url-base . chatgpt-shell-api-url-base)
-  (:validate-command . chatgpt-shell-openai--validate-command)))
+(add-to-list 'chatgpt-shell-models '((:version . "gpt-4o-mini") (:short-version)
+                                     (:label . "ChatGPT") (:provider . "OpenAI")
+                                     (:path . "/v1/chat/completions") (:token-width . 3)
+                                     (:context-window . 128000)
+                                     (:handler . chatgpt-shell-openai--handle-chatgpt-command)
+                                     (:filter . chatgpt-shell-openai--filter-output)
+                                     (:payload . chatgpt-shell-openai--make-payload)
+                                     (:headers . chatgpt-shell-openai--make-headers)
+                                     (:url . chatgpt-shell-openai--make-url)
+                                     (:key . chatgpt-shell-openai-key)
+                                     (:url-base . chatgpt-shell-api-url-base)
+                                     (:validate-command . chatgpt-shell-openai--validate-command)))
 
 (use-package ob-chatgpt-shell
   :ensure t)
