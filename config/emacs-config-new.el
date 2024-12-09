@@ -340,7 +340,6 @@
   :config
 
   (diminish 'org-mode  "")
-  (diminish 'org-indent-mode  "")
   (diminish 'auto-revert-mode)
   (diminish 'yas-minor-mode)
   (diminish 'emmet-mode)
@@ -351,7 +350,6 @@
   (diminish 'ivy-mode)
   (diminish 'global-highline-mode)
   (diminish 'ruby-block-mode)
-  (diminish 'org-variable-pitch-minor-mode)
   (diminish 'ruby-electric-mode)
   (diminish 'buffer-face-mode)
   (diminish 'auto-fill-function)
@@ -361,13 +359,10 @@
   (diminish 'global-highline-mode))
 
 (use-package org
-    :pin nongnu
-    :ensure t
-    :config
-    (set-face-attribute 'org-block nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray30" :weight 'normal)
-    (set-face-attribute 'org-block-begin-line nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray18" :weight 'light)
-    (set-face-attribute 'org-block-end-line nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray18" :weight 'light)
-(setq org-default-notes-file "~/Documents/notes/notes.org"))
+  :pin nongnu
+  :ensure t
+  :config
+  (setq org-default-notes-file "~/Documents/notes/notes.org"))
 
 (require 'org-capture)
 (setq org-capture-templates
@@ -388,17 +383,21 @@
 (setq org-habit-show-all-today t)
 (setq org-habit-show-habits t)
 (setq org-startup-indented t)
-(setq org-variable-pitch-mode 1)
 (visual-line-mode 1)
 (require 'ox-gfm)
+(use-package org-modern
+  :ensure t
+  :init
+  (with-eval-after-load 'org (global-org-modern-mode)(org-variable-pitch-minor-mode))
+  )
 (require 'org-modern)
 (require 'ox-md)
 (require 'ox-confluence)
 (require 'ox-jira)
-(add-hook 'org-mode-hook #'org-modern-mode)
-(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-(add-hook 'after-init-hook #'org-variable-pitch-setup)
+(add-hook 'org-modern-mode-hook 'org-variable-pitch-minor-mode)
 (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
+
+(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 
 (use-package biblio
   :ensure t)
@@ -555,9 +554,6 @@
      (dot . t))))
 (setq org-confirm-babel-evaluate nil)
 
-(use-package org-modern
-  :ensure t
-  )
 (use-package ox-pandoc
   :defer 2
   :ensure t
@@ -565,13 +561,12 @@
   (setq org-pandoc-options '((standalone . t)))
   (setq org-pandoc-command (substring (shell-command-to-string "which pandoc") 0 -1)))
 
-;; (use-package org-variable-pitch
-;;   :defer 2
-;;   :after org
-;;   :ensure t
-;;   :config
-;;   (add-hook 'after-init-hook #'org-variable-pitch-setup)
-;;   (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
+ (use-package org-variable-pitch
+   :after org
+   :ensure t
+   :init
+   :config
+   )
 
 (use-package olivetti
   :after org
@@ -704,6 +699,7 @@
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
+                org-modern-mode
                 erc-mode-hook
                 term-mode-hook
                 eshell-mode-hook

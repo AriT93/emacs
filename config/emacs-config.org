@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-12-09 08:22:48 abturet>
+#+Time-stamp: <2024-12-09 09:48:17 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -414,7 +414,6 @@ Hide stuff from cluttering up the mode line
     :config
 
     (diminish 'org-mode  "")
-    (diminish 'org-indent-mode  "")
     (diminish 'auto-revert-mode)
     (diminish 'yas-minor-mode)
     (diminish 'emmet-mode)
@@ -425,7 +424,6 @@ Hide stuff from cluttering up the mode line
     (diminish 'ivy-mode)
     (diminish 'global-highline-mode)
     (diminish 'ruby-block-mode)
-    (diminish 'org-variable-pitch-minor-mode)
     (diminish 'ruby-electric-mode)
     (diminish 'buffer-face-mode)
     (diminish 'auto-fill-function)
@@ -441,14 +439,11 @@ currently here but will need to move to it's own config file
 eventually to make it more manageable
 
 #+BEGIN_SRC elisp
-    (use-package org
-      :pin nongnu
-      :ensure t
-      :config
-      (set-face-attribute 'org-block nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray30" :weight 'normal)
-      (set-face-attribute 'org-block-begin-line nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray18" :weight 'light)
-      (set-face-attribute 'org-block-end-line nil :family "Cascadia Code Mono" :height 150 :weight 'normal :background "gray18" :weight 'light)
-  (setq org-default-notes-file "~/Documents/notes/notes.org"))
+  (use-package org
+    :pin nongnu
+    :ensure t
+    :config
+    (setq org-default-notes-file "~/Documents/notes/notes.org"))
 #+END_SRC
 
 #+BEGIN_SRC elisp
@@ -473,17 +468,21 @@ eventually to make it more manageable
   (setq org-habit-show-all-today t)
   (setq org-habit-show-habits t)
   (setq org-startup-indented t)
-  (setq org-variable-pitch-mode 1)
   (visual-line-mode 1)
   (require 'ox-gfm)
+  (use-package org-modern
+    :ensure t
+    :init
+    (with-eval-after-load 'org (global-org-modern-mode)(org-variable-pitch-minor-mode))
+    )
   (require 'org-modern)
   (require 'ox-md)
   (require 'ox-confluence)
   (require 'ox-jira)
-  (add-hook 'org-mode-hook #'org-modern-mode)
-  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-  (add-hook 'after-init-hook #'org-variable-pitch-setup)
+  (add-hook 'org-modern-mode-hook 'org-variable-pitch-minor-mode)
   (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
+
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 #+END_SRC
 
 #+BEGIN_SRC elisp
@@ -657,9 +656,6 @@ eventually to make it more manageable
 #+END_SRC
 
 #+BEGIN_SRC elisp
-  (use-package org-modern
-    :ensure t
-    )
   (use-package ox-pandoc
     :defer 2
     :ensure t
@@ -667,13 +663,12 @@ eventually to make it more manageable
     (setq org-pandoc-options '((standalone . t)))
     (setq org-pandoc-command (substring (shell-command-to-string "which pandoc") 0 -1)))
 
-  ;; (use-package org-variable-pitch
-  ;;   :defer 2
-  ;;   :after org
-  ;;   :ensure t
-  ;;   :config
-  ;;   (add-hook 'after-init-hook #'org-variable-pitch-setup)
-  ;;   (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode))
+   (use-package org-variable-pitch
+     :after org
+     :ensure t
+     :init
+     :config
+     )
 #+END_SRC
 
 #+BEGIN_SRC elisp
@@ -820,6 +815,7 @@ This is kinda like that part in the bible with all the begats...
 
   ;; Disable line numbers for some modes
   (dolist (mode '(org-mode-hook
+                  org-modern-mode
                   erc-mode-hook
                   term-mode-hook
                   eshell-mode-hook
