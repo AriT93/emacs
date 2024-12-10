@@ -382,7 +382,7 @@
 (require 'org-habit)
 (setq org-habit-show-all-today t)
 (setq org-habit-show-habits t)
-(setq org-startup-indented t)
+(setq org-startup-indented nil)
 (visual-line-mode 1)
 (require 'ox-gfm)
 (use-package org-modern
