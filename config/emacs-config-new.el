@@ -16,47 +16,62 @@
 
 (require 'load-path-config-new)
 
+(set-face-attribute 'region nil :background "DarkOliveGreen")
+     (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+     (set-face-attribute 'default nil :inherit nil :extend nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'light :height 160 :foundry "microsoft" :family "Cascadia Code" :width 'normal)
+;;    (set-face-attribute 'aw-leading-char-face nil :height 3.0 :foreground "dodgerblue")
+;;(set-face-attribute 'blamer-face nil :foreground "PaleGreen2" :height 120 :family "Helvetica" :italic t )
+    (set-face-attribute 'font-lock-comment-face nil :foreground "PaleGreen4" :italic t)
+    (set-face-attribute 'fringe nil :background "#070018")
+    (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
+    (set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
+    (set-face-attribute 'highlight nil :background "gray40")
+  ;;  '(line-number ((t nil)))
+    (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
+  (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
+  (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
+  (set-face-attribute 'variable-pitch nil :weight 'light :height 160 :family "Helvetica")
+
 (show-paren-mode 1)
-(recentf-mode 1)
-(fringe-mode 10)
-(tool-bar-mode -1)
+  (recentf-mode 1)
+  (fringe-mode 10)
+  (tool-bar-mode -1)
 (menu-bar-mode -1)
-(setq recentf-max-menu-items 25)
-(setq recentf-max-saved-items 25)
-(setq undo-limit 8000000)
-(setq undo-strong-limit 12000000)
-(setq undo-outer-limit 12000000)
-(setq read-process-output-max (* 2048 2048))
-(setq inhibit-startup-screen t)
-(setq inhibit-splash-screen t)
-(setq uniquify-buffer-name-style t)
-(setq uniquify-buffer-name-style (quote post-forward))
-(setq uniquify-min-dir-content 0)
-(electric-pair-mode 1)
-(setq cal-tex-diary t)
-(setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
-(add-hook 'diary-display-hook 'fancy-diary-display)
-(add-hook 'text-mode-hook ' turn-on-auto-fill)
-(add-hook 'before-save-hook 'time-stamp)
-(setq dired-omit-files-p t)
-(setq tramp-auto-save-directory "~/tmp")
-(setq backup-directory-alist
-      '((".*" . "~/tmp/")))
-(setq message-log-max 1000)
-(set-face-attribute 'default nil :family "Cascadia Code" :height 150 :weight 'normal)
-(setq help-at-pt-display-when-idle t)
-(setq help-at-pt-timer-delay 0.1)
-(help-at-pt-set-timer)
-(setq show-paren-style 'mixed)
-(setq mode-line-in-non-selected-windows nil)
-(fset 'yes-or-no-p 'y-or-n-p)
-(setq browse-url-browser-function 'browse-url-default-browser)
-(add-hook 'eww-after-render-hook 'eww-readable)
-(add-hook 'eww-after-render-hook 'visual-line-mode)
-(setq native-comp-speed 2)
-(setq package-native-compile t)
-(require 'xwidget)
-(setq alert-default-style 'notifier)
+  (setq recentf-max-menu-items 25)
+  (setq recentf-max-saved-items 25)
+  (setq undo-limit 8000000)
+  (setq undo-strong-limit 12000000)
+  (setq undo-outer-limit 12000000)
+  (setq read-process-output-max (* 2048 2048))
+  (setq inhibit-startup-screen t)
+  (setq inhibit-splash-screen t)
+  (setq uniquify-buffer-name-style t)
+  (setq uniquify-buffer-name-style (quote post-forward))
+  (setq uniquify-min-dir-content 0)
+  (electric-pair-mode 1)
+  (setq cal-tex-diary t)
+  (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
+  (add-hook 'diary-display-hook 'fancy-diary-display)
+  (add-hook 'text-mode-hook ' turn-on-auto-fill)
+  (add-hook 'before-save-hook 'time-stamp)
+  (setq dired-omit-files-p t)
+  (setq tramp-auto-save-directory "~/tmp")
+  (setq backup-directory-alist
+        '((".*" . "~/tmp/")))
+  (setq message-log-max 1000)
+  (setq help-at-pt-display-when-idle t)
+  (setq help-at-pt-timer-delay 0.1)
+  (help-at-pt-set-timer)
+  (setq show-paren-style 'mixed)
+  (setq mode-line-in-non-selected-windows nil)
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (setq browse-url-browser-function 'browse-url-default-browser)
+  (add-hook 'eww-after-render-hook 'eww-readable)
+  (add-hook 'eww-after-render-hook 'visual-line-mode)
+  (setq native-comp-speed 2)
+  (setq package-native-compile t)
+  (require 'xwidget)
+  (setq alert-default-style 'notifier)
 
 ;;; follow links in xwidgets
 (use-package xwwp-follow-link
@@ -110,8 +125,8 @@
    ("C-x L" . 'counsel-locate)
    ("M-x" . 'counsel-M-x))
   :custom-face
-  (ivy-minibuffer-match-face-2 ((t (:height 180 :family "Cascadia Code Mono" :underline t))))
-  (ivy-current-match (( t (:background "gray40" :height 180 :family "Cascadia Code Mono"))))
+  (ivy-minibuffer-match-face-2 ((t (:height 140 :family "Cascadia Code" :underline t))))
+  (ivy-current-match (( t (:background "gray40" :height 140 :family "Cascadia Code"))))
   :config
   (setq swiper-use-visual-line nil)
   (setq swiper-use-visual-line-p (lambda (a) nil)))
@@ -361,6 +376,13 @@
 (use-package org
   :pin nongnu
   :ensure t
+  :custom-face
+      (org-block ((t :inherit default
+                     :extend t
+                     :background "gray15"
+                     :weight light :height 160 :family "Cascadia Code")))
+    (org-block-begin-line ((t (:background "gray40" :family "Cascadia Code" :italic t))))
+    (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
   :config
   (setq org-default-notes-file "~/Documents/notes/notes.org"))
 
@@ -388,8 +410,7 @@
 (use-package org-modern
   :ensure t
   :init
-  (with-eval-after-load 'org (global-org-modern-mode)(org-variable-pitch-minor-mode))
-  )
+  (with-eval-after-load 'org (global-org-modern-mode)))
 (require 'org-modern)
 (require 'ox-md)
 (require 'ox-confluence)
@@ -564,8 +585,6 @@
  (use-package org-variable-pitch
    :after org
    :ensure t
-   :init
-   :config
    )
 
 (use-package olivetti
@@ -582,8 +601,8 @@
   (venv-initialize-eshell)
   (setq venv-location "~/.virtualenvs")
   )
-(setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2022.5/libexec/plantuml.jar")
-(setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2022.5/libexec/plantuml.jar")
+(setq org-plantuml-jar-path "/opt/homebrew/Cellar/plantuml/1.2024.8/libexec/plantuml.jar")
+(setq plantuml-jar-path "/opt/homebrew/Cellar/plantuml/1.2024.8/libexec/plantuml.jar")
 
 
 (setq org-mime-export-options '(:section-numbers nil
@@ -616,7 +635,21 @@
 (require 'org-crypt)
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance (quote("crypt")))
-(setq org-crypt-key (substring (shell-command-to-string "gpg --list-secret-key --keyid-format short | grep sec | grep -o -P '(?<=/)[A-Z0-9]{8}'") 0 -1))
+(if (memq window-system '(mac ns x))
+    (let* ((gpg-command "gpg --list-secret-key --keyid-format short")
+           (grep-sec "grep sec")
+           (grep-key "ggrep -o -P '(?<=/)[A-Z0-9]{8}'")
+           (head-command "head -1")
+           (full-command (format "%s | %s | %s | %s" gpg-command grep-sec grep-key head-command))
+           (key (substring (shell-command-to-string full-command) 0 -1)))
+      (setq org-crypt-key key))
+  (let* ((gpg-command "gpg --list-secret-key --keyid-format short")
+         (grep-sec "grep sec")
+         (grep-key "grep -o -P '(?<=/)[A-Z0-9]{8}'")
+         (head-command "head -1")
+         (full-command (format "%s | %s | %s | %s" gpg-command grep-sec grep-key head-command))
+         (key (substring (shell-command-to-string full-command) 0 -1)))
+    (setq org-crypt-key key)))
 
 (use-package exec-path-from-shell
   :ensure t
@@ -689,9 +722,7 @@
   :config
   (global-highline-mode t)
   (setq highline-face '((:background "gray40")))
-  (set-face-attribute 'region nil :background "DarkOliveGreen")
-  (setq highline-vertical-face '(( :background "lemonChiffon2")))
-  (set-face-attribute 'show-paren-match nil :foreground "CadetBlue"))
+  (setq highline-vertical-face '(( :background "lemonChiffon2"))))
 
 
 (column-number-mode)
@@ -1173,7 +1204,7 @@
   :ensure t ; or :straight t
   :bind (("C-`"   . popper-toggle-latest)
          ("M-`"   . popper-cycle)
-         ("C-M-`" . popper-toggle-type))
+         ("C-M-`" . popper-toggle))
   :init
   (setq popper-reference-buffers
         '("\\*Messages\\*"
@@ -1197,9 +1228,10 @@
   (blamer-idle-time 1.0)
   (blamer-min-offset 10)
   :custom-face
-  (blamer-face ((t :foreground "#E46876"
-                   :height 140
+  (blamer-face ((t :foreground "PaleGreen2"
+                   :height 120
                    :italic t
+                   :family "Helvetica"
                    :background "gray40"))))
 (global-blamer-mode)
 
