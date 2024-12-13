@@ -16,23 +16,22 @@
 
 (require 'load-path-config-new)
 
-(set-face-attribute 'region nil :background "DarkOliveGreen")
-   (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-   (set-face-attribute 'default nil
-                       :inherit nil
-                       :height 160
-                       :weight 'Regular
-                       :foundry "microsoft"
-                       :family "Cascadia Code")
-  (set-face-attribute 'font-lock-comment-face nil :foreground "PaleGreen4" :italic t)
-  (set-face-attribute 'fringe nil :background "#070018")
-  (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
-  (set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
-  (set-face-attribute 'highlight nil :background "gray40")
-  (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
+(set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+(set-face-attribute 'default nil
+                    :inherit nil
+                    :height 160
+                    :weight 'Regular
+                    :foundry "microsoft"
+                    :family "Cascadia Code")
+(set-face-attribute 'fringe nil :background "#070018")
+(set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
+(set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
+(set-face-attribute 'highlight nil :background "DarkSeaGreen4")
+(set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
 (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
 (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
 (set-face-attribute 'variable-pitch nil :weight 'light :height 160 :family "Helvetica")
+(set-face-attribute 'region nil :background "DarkOliveGreen")
 
 (show-paren-mode 1)
   (recentf-mode 1)
@@ -83,6 +82,10 @@
               ("v" . xwwp-follow-link)))
 (use-package string-inflection
   :ensure t)
+(use-package font-lock
+  :ensure nil
+  :custom-face
+      (font-lock-comment-face ((t (:foreground "PaleGreen4" :italic t)))))
 
 (use-package vterm
   :ensure t
@@ -127,8 +130,8 @@
    ("C-x L" . 'counsel-locate)
    ("M-x" . 'counsel-M-x))
   :custom-face
-  (ivy-minibuffer-match-face-2 ((t (:height 160 :family "Cascadia Code" :underline t))))
-  (ivy-current-match (( t (:background "gray40" :height 160 :family "Cascadia Code"))))
+  (ivy-minibuffer-match-face-2 ((t (:height 160 :family "Cascadia Code" :underline t :backgound "DarkSeagreen4"))))
+  (ivy-current-match (( t ( :background "DarkSeaGreen4" :height 160 :family "Cascadia Code"))))
   :config
   (setq swiper-use-visual-line nil)
   (setq swiper-use-visual-line-p (lambda (a) nil)))
