@@ -18,7 +18,12 @@
 
 (set-face-attribute 'region nil :background "DarkOliveGreen")
    (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-   (set-face-attribute 'default nil :inherit nil :extend nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'light :height 160 :foundry "microsoft" :family "Cascadia Code" :width 'normal)
+   (set-face-attribute 'default nil
+                       :inherit nil
+                       :height 160
+                       :weight 'Regular
+                       :foundry "microsoft"
+                       :family "Cascadia Code")
   (set-face-attribute 'font-lock-comment-face nil :foreground "PaleGreen4" :italic t)
   (set-face-attribute 'fringe nil :background "#070018")
   (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
@@ -377,7 +382,7 @@
       (org-block ((t :inherit default
                      :extend t
                      :background "gray15"
-                     :weight light :height 160 :family "Cascadia Code")))
+                     :height 160 :family "Cascadia Code")))
     (org-block-begin-line ((t (:background "gray40" :family "Cascadia Code" :italic t))))
     (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
   :config

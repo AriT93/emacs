@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-12-13 09:13:11 ari.turetzky>
+#+Time-stamp: <2024-12-13 09:34:50 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -47,18 +47,23 @@ config file [[file:load-path-config.org][load-path-config]]
 moving these out of custom-set faces to make sure I get the results I
 want from faces
 #+begin_src elisp
-       (set-face-attribute 'region nil :background "DarkOliveGreen")
-       (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-       (set-face-attribute 'default nil :inherit nil :extend nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'light :height 160 :foundry "microsoft" :family "Cascadia Code" :width 'normal)
-      (set-face-attribute 'font-lock-comment-face nil :foreground "PaleGreen4" :italic t)
-      (set-face-attribute 'fringe nil :background "#070018")
-      (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
-      (set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
-      (set-face-attribute 'highlight nil :background "gray40")
-      (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
-    (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
-    (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
-    (set-face-attribute 'variable-pitch nil :weight 'light :height 160 :family "Helvetica")
+     (set-face-attribute 'region nil :background "DarkOliveGreen")
+     (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+     (set-face-attribute 'default nil
+                         :inherit nil
+                         :height 160
+                         :weight 'Regular
+                         :foundry "microsoft"
+                         :family "Cascadia Code")
+    (set-face-attribute 'font-lock-comment-face nil :foreground "PaleGreen4" :italic t)
+    (set-face-attribute 'fringe nil :background "#070018")
+    (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
+    (set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
+    (set-face-attribute 'highlight nil :background "gray40")
+    (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
+  (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
+  (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
+  (set-face-attribute 'variable-pitch nil :weight 'light :height 160 :family "Helvetica")
 #+end_src
 #+BEGIN_SRC elisp
     (show-paren-mode 1)
@@ -462,7 +467,7 @@ eventually to make it more manageable
               (org-block ((t :inherit default
                              :extend t
                              :background "gray15"
-                             :weight light :height 160 :family "Cascadia Code")))
+                             :height 160 :family "Cascadia Code")))
             (org-block-begin-line ((t (:background "gray40" :family "Cascadia Code" :italic t))))
             (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
           :config
