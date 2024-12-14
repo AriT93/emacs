@@ -41,7 +41,7 @@
 ;;  (require 'mu4e-view-xwidget)
   (when (fboundp 'imagemagick-register-types)
     (imagemagick-register-types))
-  (setq mu4e-mu-binary "/opt/homebrew/bin/mu")
+  (setq mu4e-mu-binary (substring (shell-command-to-string "which mu") 0 -1))
   (setq mu4e-compose-reply-to-address nil)
 
   ;; don't save message to Sent Messages, GMail/IMAP will take care of this
