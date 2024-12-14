@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-12-13 17:54:21 abturet>
+#+Time-stamp: <2024-12-13 18:13:24 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -61,7 +61,7 @@ want from faces
   (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
   (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
   (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
-  (set-face-attribute 'variable-pitch nil :weight 'light :height 160 :family "Helvetica")
+  (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Sans Serif")
   (set-face-attribute 'region nil :background "DarkOliveGreen")
 
 #+end_src
@@ -1432,7 +1432,7 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
     (blamer-face ((t :foreground "PaleGreen2"
                      :height 120
                      :italic t
-                     :family "Helvetica"
+                     :family "Sans Serif"
                      :background "gray40"))))
   (global-blamer-mode)
 #+end_src
