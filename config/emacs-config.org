@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-12-13 15:32:34 ari.turetzky>
+#+Time-stamp: <2024-12-13 17:54:21 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -1144,8 +1144,8 @@ setting this up for roam and keeping deft for notes
 #+begin_src elisp
   (add-to-list 'load-path "~/dev/git/notdeft/")
   (add-to-list 'load-path "~/dev/git/notdeft/extras")
-  (setq notdeft-directories '("~/Documents/org-roam"))
-  (setq notdeft-xapian-program "/Users/ari.turetzky/dev/git/notdeft/xapian/notdeft-xapian")
+  (setq notdeft-directories '("~/Documents/org-roam/"))
+  (setq notdeft-xapian-program "/home/abturet/Development/git/notdeft/xapian/notdeft-xapian")
   (require 'notdeft-autoloads)
   (global-set-key (kbd "<f9>") 'notdeft)
 #+end_src
