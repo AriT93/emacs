@@ -30,7 +30,7 @@
 (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
 (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
 (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
-(set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Sans Serif")
+(set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
 (set-face-attribute 'region nil :background "DarkOliveGreen")
 
 (show-paren-mode 1)
@@ -1236,7 +1236,7 @@
   (blamer-face ((t :foreground "PaleGreen2"
                    :height 120
                    :italic t
-                   :family "Sans Serif"
+                   :family "Helvetica"
                    :background "gray40"))))
 (global-blamer-mode)
 
