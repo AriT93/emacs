@@ -637,6 +637,17 @@
 ;;   :init
 ;;   (load-theme 'vscode-dark-plus t))
 
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (setq exec-path-from-shell-check-startup-files t)
+  (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
+  (setq exec-path-from-shell-arguments '("-l" "-i"))
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
+
+
 (require 'org-crypt)
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance (quote("crypt")))
@@ -655,15 +666,6 @@
          (full-command (format "%s | %s | %s | %s" gpg-command grep-sec grep-key head-command))
          (key (substring (shell-command-to-string full-command) 0 -1)))
     (setq org-crypt-key key)))
-
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-  (setq exec-path-from-shell-check-startup-files t)
-  (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
-  (setq exec-path-from-shell-arguments '("-l" "-i"))
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize)))
 
 (use-package inf-ruby
   :defer 2
