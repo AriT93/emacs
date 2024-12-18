@@ -16,22 +16,22 @@
 
 (require 'load-path-config-new)
 
-(set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 (set-face-attribute 'default nil
                     :inherit nil
                     :height 160
                     :weight 'Regular
                     :foundry "microsoft"
                     :family "Cascadia Code")
+(set-face-attribute 'region nil :background "DarkOliveGreen")
+(set-face-attribute 'highlight nil :background "DarkSeaGreen4")
 (set-face-attribute 'fringe nil :background "#070018")
 (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
 (set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
-(set-face-attribute 'highlight nil :background "DarkSeaGreen4")
 (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
 (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
 (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
 (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
-(set-face-attribute 'region nil :background "DarkOliveGreen")
+(set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
 (show-paren-mode 1)
   (recentf-mode 1)
@@ -976,8 +976,9 @@
 
 (add-to-list 'load-path "~/dev/git/notdeft/")
 (add-to-list 'load-path "~/dev/git/notdeft/extras")
+(setq notdeft-directory "~/Documents/org-roam/")
 (setq notdeft-directories '("~/Documents/org-roam/"))
-(setq notdeft-xapian-program "/home/abturet/Development/git/notdeft/xapian/notdeft-xapian")
+(setq notdeft-xapian-program (expand-file-name"~/dev/git/notdeft/xapian/notdeft-xapian"))
 (require 'notdeft-autoloads)
 (global-set-key (kbd "<f9>") 'notdeft)
 
@@ -1292,4 +1293,20 @@
   :config
   (procress-load-default-svg-images))
 
+(set-face-attribute 'default nil
+                    :inherit nil
+                    :height 160
+                    :weight 'Regular
+                    :foundry "microsoft"
+                    :family "Cascadia Code")
+(set-face-attribute 'region nil :background "DarkOliveGreen")
+(set-face-attribute 'highlight nil :background "DarkSeaGreen4")
+(set-face-attribute 'fringe nil :background "#070018")
+(set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
+(set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
+(set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
+(set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
+(set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
+(set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
+(set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 (provide 'emacs-config-new)
