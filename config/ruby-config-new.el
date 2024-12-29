@@ -7,14 +7,7 @@
 (setq auto-mode-alist (cons '("\\.rhtml$" . web-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.erb$" . web-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.html.erb$" . web-mode) auto-mode-alist))
-
-(yas-global-mode)
-(global-flycheck-mode)
-
-;; yaml
-(require 'yaml-mode)
-(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.html?" . web-mode))
 
 (use-package ruby-tools
    :ensure t
@@ -46,42 +39,17 @@
   (add-hook 'after-init-hook  'inf-ruby-switch-setup)
 
   (require 'ruby-block)
-  (diminish 'ruby-block-mode)
   (require 'ruby-electric)
-  (diminish 'ruby-electric-mode)
   (add-hook 'ruby-mode-hook
             (lambda()
-              (add-hook 'write-file-functions
-                        #'(lambda()
-                           (save-excursion
-                             (untabify (point-min) (point-max))
-                             (delete-trailing-whitespace)
-                             )))
               (set (make-local-variable 'indent-tabs-mode) 'nil)
               (set (make-local-variable 'tab-width) 2)
               (ruby-electric-mode t)
               (ruby-block-mode t)
               (local-set-key (kbd "<return>") 'newline-and-indent)
-              (diminish 'org-mode  "")
-              (diminish 'auto-revert-mode)
-              (diminish 'yas-minor-mode)
-              (diminish 'eldoc-mode)
-              (diminish 'org-src-mode)
-              (diminish 'eclim-mode)
-              (diminish 'abbrev-mode)
-              (diminish 'ivy-mode)
-              (diminish 'battery-mode)
-              (diminish 'global-highline-mode)
-              (diminish 'ruby-block-mode)
-              (diminish 'ruby-electric-mode)
-              (diminish "seeing-is-believing")
-              (diminish 'hs-minor-mode)
-              (diminish 'ruby-block-mode)
-              (diminish 'global-highline-mode)
               ))
 
-(add-to-list 'auto-mode-alist '("\\.html?" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.html\\.erb" . web-mode))
+
 
 (use-package rbenv
   :ensure t
@@ -92,11 +60,6 @@
   (setq rbenv-executable "/opt/homebrew/bin/rbenv")
   (global-rbenv-mode t))
 
-     (require 'lsp)
-     (add-hook 'ruby-mode-hook #'lsp)
-
-;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
-  ;; (autoload 'ri "ri-ruby.el" nil t)
 (use-package autotest
   :ensure t
   )
