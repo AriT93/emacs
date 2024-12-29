@@ -232,30 +232,38 @@
   (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
 
 (use-package magit
-  :ensure t)
-(require 'magit)
+    :ensure t)
+  (require 'magit)
 
-(use-package git-timemachine
-  :defer 2
-  :ensure t
-  :diminish
-  )
-(use-package git-gutter
-  :ensure t
-  :hook (prog-mode . git-gutter-mode)
-  :config
-  (global-git-gutter-mode)
-  (setq git-gutter:update-interval 0.02)
-  )
+  (use-package git-timemachine
+    :defer 2
+    :ensure t
+    :diminish
+    )
+  (use-package git-gutter
+    :ensure t
+    :hook (prog-mode . git-gutter-mode)
+    :config
+    (setq git-gutter:update-interval 0.02)
+     (defun rpo/git-gutter-mode ()
+    "Enable git-gutter mode if current buffer's file is under version control."
+    (if (and (buffer-file-name)
+        (vc-backend (buffer-file-name))
+            (not (cl-some (lambda (suffix) (string-suffix-p suffix (buffer-file-name)))
+                        '(".pdf" ".svg" ".png"))))
+        (git-gutter-mode 1)))
+(add-hook 'find-file-hook #'rpo/git-gutter-mode)
 
-(use-package git-gutter-fringe
-  :ensure t
-  :config
-  (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
-  (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
-  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
-  )
-(require 'git-gutter-fringe)
+    )
+
+  (use-package git-gutter-fringe
+    :ensure t
+    :config
+    (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
+    (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+    (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
+    )
+  (require 'git-gutter-fringe)
 
 (use-package persistent-scratch
   :ensure t
@@ -378,18 +386,28 @@
   (diminish 'ruby-block-mode)
   (diminish 'global-highline-mode))
 
+(require 'ox-latex)
 (use-package org
   :pin nongnu
   :ensure t
   :custom-face
-      (org-block ((t :inherit default
-                     :extend t
-                     :background "gray15"
-                     :height 160 :family "Cascadia Code")))
-    (org-block-begin-line ((t (:background "gray40" :family "Cascadia Code" :italic t))))
-    (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
+  (org-block ((t :inherit default
+                 :extend t
+                 :background "gray15"
+                 :height 160 :family "Cascadia Code")))
+  (org-block-begin-line ((t (:background "gray40" :family "Cascadia Code" :italic t))))
+  (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
   :config
-  (setq org-default-notes-file "~/Documents/notes/notes.org"))
+  (setq org-default-notes-file "~/Documents/notes/notes.org")
+  (add-to-list 'org-latex-classes
+               '("novel" "\\documentclass{novel}"
+                 (
+                  "\\begin{ChapterStart}\\ChapterTitle{{%s} \\the\\value{novelcn}\\stepcounter{novelcn}}\\end{ChapterStart}"  "\\newline")               (
+                  "\\QuickChapter[3em]{%s}"  "\\newline" 
+                  "\\begin{ChapterStart}\\ChapterTitle{%s}\\end{ChapterStart}"  "\\newline" 
+                  "\\begin{ChapterStart}\\ChapterTitle{%s}\\end{ChapterStart}"  "\\newline")))
+  (setq org-latex-pdf-process
+        '("latexmk -f -pdf -%latex  -shell-escape -interaction=nonstopmode -output-directory=%o %f")))
 
 (require 'org-capture)
 (setq org-capture-templates
@@ -438,14 +456,8 @@
         reftex-default-bibliography '("~/Documents/references.bib")
         org-ref-completion-library 'org-ref-ivy-cite
         org-cite-csl-styles-dir "~/Zotero/styles")
-  (setq org-latex-pdf-process
-        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "bibtex %b"))
-  )
+)
 
-(require 'ox-latex)
 (setq org-latex-listings 'minted)
 (add-to-list 'org-latex-packages-alist '("" "minted" t))
 

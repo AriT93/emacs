@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-12-16 15:49:21 ari.turetzky>
+#+Time-stamp: <2024-12-27 18:26:51 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -303,8 +303,16 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     :ensure t
     :hook (prog-mode . git-gutter-mode)
     :config
-    (global-git-gutter-mode)
     (setq git-gutter:update-interval 0.02)
+     (defun rpo/git-gutter-mode ()
+    "Enable git-gutter mode if current buffer's file is under version control."
+    (if (and (buffer-file-name)
+        (vc-backend (buffer-file-name))
+            (not (cl-some (lambda (suffix) (string-suffix-p suffix (buffer-file-name)))
+                        '(".pdf" ".svg" ".png"))))
+        (git-gutter-mode 1)))
+(add-hook 'find-file-hook #'rpo/git-gutter-mode)
+
     )
 
   (use-package git-gutter-fringe
@@ -464,18 +472,28 @@ currently here but will need to move to it's own config file
 eventually to make it more manageable
 
 #+BEGIN_SRC elisp
-        (use-package org
-          :pin nongnu
-          :ensure t
-          :custom-face
-              (org-block ((t :inherit default
-                             :extend t
-                             :background "gray15"
-                             :height 160 :family "Cascadia Code")))
-            (org-block-begin-line ((t (:background "gray40" :family "Cascadia Code" :italic t))))
-            (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
-          :config
-          (setq org-default-notes-file "~/Documents/notes/notes.org"))
+  (require 'ox-latex)
+  (use-package org
+    :pin nongnu
+    :ensure t
+    :custom-face
+    (org-block ((t :inherit default
+                   :extend t
+                   :background "gray15"
+                   :height 160 :family "Cascadia Code")))
+    (org-block-begin-line ((t (:background "gray40" :family "Cascadia Code" :italic t))))
+    (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
+    :config
+    (setq org-default-notes-file "~/Documents/notes/notes.org")
+    (add-to-list 'org-latex-classes
+                 '("novel" "\\documentclass{novel}"
+                   (
+                    "\\begin{ChapterStart}\\ChapterTitle{{%s} \\the\\value{novelcn}\\stepcounter{novelcn}}\\end{ChapterStart}"  "\\newline")               (
+                    "\\QuickChapter[3em]{%s}"  "\\newline" 
+                    "\\begin{ChapterStart}\\ChapterTitle{%s}\\end{ChapterStart}"  "\\newline" 
+                    "\\begin{ChapterStart}\\ChapterTitle{%s}\\end{ChapterStart}"  "\\newline")))
+    (setq org-latex-pdf-process
+          '("latexmk -f -pdf -%latex  -shell-escape -interaction=nonstopmode -output-directory=%o %f")))
 #+END_SRC
 
 #+BEGIN_SRC elisp
@@ -530,16 +548,10 @@ eventually to make it more manageable
           reftex-default-bibliography '("~/Documents/references.bib")
           org-ref-completion-library 'org-ref-ivy-cite
           org-cite-csl-styles-dir "~/Zotero/styles")
-    (setq org-latex-pdf-process
-          '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-            "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-            "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-            "bibtex %b"))
-    )
+  )
 #+END_SRC
 #+BEGIN_SRC elisp
 
-  (require 'ox-latex)
   (setq org-latex-listings 'minted)
   (add-to-list 'org-latex-packages-alist '("" "minted" t))
 
