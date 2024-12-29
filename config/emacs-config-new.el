@@ -355,6 +355,7 @@
   :init
   (setq flycheck-emacs-lisp-initialize-packages 1)
   (setq flycheck-emacs-lisp-load-path 'inherit)
+  (global-flycheck-mode)
   :config
   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
   (flycheck-add-mode 'javascript-jshint 'rjsx-mode)
@@ -395,7 +396,7 @@
                  :extend t
                  :background "gray15"
                  :height 160 :family "Cascadia Code")))
-  (org-block-begin-line ((t (:background "gray40" :family "Cascadia Code" :italic t))))
+  (org-block-begin-line ((t (:family "Cascadia Code" :italic t))))
   (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
   :config
   (setq org-default-notes-file "~/Documents/notes/notes.org")
@@ -403,8 +404,8 @@
                '("novel" "\\documentclass{novel}"
                  (
                   "\\begin{ChapterStart}\\ChapterTitle{{%s} \\the\\value{novelcn}\\stepcounter{novelcn}}\\end{ChapterStart}"  "\\newline")               (
-                  "\\QuickChapter[3em]{%s}"  "\\newline" 
-                  "\\begin{ChapterStart}\\ChapterTitle{%s}\\end{ChapterStart}"  "\\newline" 
+                  "\\QuickChapter[3em]{%s}"  "\\newline"
+                  "\\begin{ChapterStart}\\ChapterTitle{%s}\\end{ChapterStart}"  "\\newline"
                   "\\begin{ChapterStart}\\ChapterTitle{%s}\\end{ChapterStart}"  "\\newline")))
   (setq org-latex-pdf-process
         '("latexmk -f -pdf -%latex  -shell-escape -interaction=nonstopmode -output-directory=%o %f")))
@@ -678,6 +679,11 @@
          (full-command (format "%s | %s | %s | %s" gpg-command grep-sec grep-key head-command))
          (key (substring (shell-command-to-string full-command) 0 -1)))
     (setq org-crypt-key key)))
+
+;; yaml
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
 (use-package inf-ruby
   :defer 2

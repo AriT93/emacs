@@ -20,24 +20,9 @@ first a little housekeeping for the linter
 (setq auto-mode-alist (cons '("\\.rhtml$" . web-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.erb$" . web-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.html.erb$" . web-mode) auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.html?" . web-mode))
 
 #+END_SRC
-** Yasnippet integeraton
-   Apparently this is also where I manage it's  configuration
-*** TODO Migrate yasnippet to =emacs-config.org=
-#+BEGIN_SRC elisp
-  (yas-global-mode)
-  (global-flycheck-mode)
-#+END_SRC
-** Yaml
-*** TODO  Move yaml to =emacs-config.org=
-    #+BEGIN_SRC elisp
-
-   ;; yaml
- (require 'yaml-mode)
- (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
- (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
-    #+END_SRC
 ** Ruby Tools
    convenience stuff, mostly string to symbol, single to double qouts
    and such
@@ -81,49 +66,23 @@ is going on while you write code.
     (add-hook 'after-init-hook  'inf-ruby-switch-setup)
 
     (require 'ruby-block)
-    (diminish 'ruby-block-mode)
     (require 'ruby-electric)
-    (diminish 'ruby-electric-mode)
     (add-hook 'ruby-mode-hook
               (lambda()
-                ;; (add-hook 'write-file-functions
-                ;;           #'(lambda()
-                ;;              (save-excursion
-                ;;                (untabify (point-min) (point-max))
-                ;;                (delete-trailing-whitespace)
-                ;;                )))
                 (set (make-local-variable 'indent-tabs-mode) 'nil)
                 (set (make-local-variable 'tab-width) 2)
                 (ruby-electric-mode t)
                 (ruby-block-mode t)
                 (local-set-key (kbd "<return>") 'newline-and-indent)
-                (diminish 'org-mode  "")
-                (diminish 'auto-revert-mode)
-                (diminish 'yas-minor-mode)
-                (diminish 'eldoc-mode)
-                (diminish 'org-src-mode)
-                (diminish 'eclim-mode)
-                (diminish 'abbrev-mode)
-                (diminish 'ivy-mode)
-                (diminish 'battery-mode)
-                (diminish 'global-highline-mode)
-                (diminish 'ruby-block-mode)
-                (diminish 'ruby-electric-mode)
-                (diminish "seeing-is-believing")
-                (diminish 'hs-minor-mode)
-                (diminish 'ruby-block-mode)
-                (diminish 'global-highline-mode)
                 ))
 #+END_SRC
 
+#+
 ** File associations
 
 #+BEGIN_SRC elisp
-
-(add-to-list 'auto-mode-alist '("\\.html?" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.html\\.erb" . web-mode))
 #+END_SRC
-** Set up some autocomplete goodness
+** Set Up RBENV
 
    #+BEGIN_SRC elisp
           (use-package rbenv
@@ -135,16 +94,11 @@ is going on while you write code.
             (setq rbenv-executable "/opt/homebrew/bin/rbenv")
             (global-rbenv-mode t))
 
-               (require 'lsp)
-               (add-hook 'ruby-mode-hook #'lsp)
    #+END_SRC
 ** Key-bindings some still used and some more ac config
 damn this is a mess
 #+BEGIN_SRC elisp
 
-
-  ;; (setq ri-ruby-script (expand-file-name "~/emacs/site/lisp/ri-emacs.rb"))
-    ;; (autoload 'ri "ri-ruby.el" nil t)
   (use-package autotest
     :ensure t
     )
