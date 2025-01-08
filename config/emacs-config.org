@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2024-12-29 08:41:08 abturet>
+#+Time-stamp: <2025-01-08 12:52:35 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -311,18 +311,15 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
             (not (cl-some (lambda (suffix) (string-suffix-p suffix (buffer-file-name)))
                         '(".pdf" ".svg" ".png"))))
         (git-gutter-mode 1)))
-(add-hook 'find-file-hook #'rpo/git-gutter-mode)
-
+     (add-hook 'find-file-hook #'rpo/git-gutter-mode)
     )
 
   (use-package git-gutter-fringe
     :ensure t
-    :config
-    (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
-    (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
-    (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
+    :init
+    (with-eval-after-load 'git-gutter (require 'git-gutter-fringe))
     )
-  (require 'git-gutter-fringe)
+
 #+END_SRC
 ** Preserve all the crap I put in the =*scrach*= buffer
 #+BEGIN_SRC elisp
@@ -430,6 +427,8 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     :config
     (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
     (flycheck-add-mode 'javascript-jshint 'rjsx-mode)
+    (flycheck-add-mode 'javascript-eslint 'jtsx-jsx-mode)
+    (flycheck-add-mode 'javascript-jshint 'jrsx-jsx-mode)
     (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
     )
 #+END_SRC
@@ -924,7 +923,7 @@ This is kinda like that part in the bible with all the begats...
     :ensure t
     :pin melpa
     :commands (lsp lsp-deferred)
-    :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
+    :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(jtsx-jsx-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
     :custom
     (lsp-auto-configure t)
     (lsp-prefer-flymake nil)
@@ -1127,21 +1126,31 @@ set up sql mode
 ** Javascript
 #+BEGIN_SRC elisp
 
-  (use-package rjsx-mode
-    :defer 2
-    :ensure t)
-  (add-hook 'js2-mode-hook 'lsp)
-  (add-hook 'js-mode-hook 'lsp)
-  (add-hook 'rjsx-mode-hook 'lsp)
-  (add-hook 'rjsx-mode-hook 'emmet-mode)
+    (use-package rjsx-mode
+      :defer 2
+      :ensure t)
+    (add-hook 'js2-mode-hook 'lsp)
+    (add-hook 'js-mode-hook 'lsp)
+    (add-hook 'rjsx-mode-hook 'lsp)
+    (add-hook 'rjsx-mode-hook 'emmet-mode)
 
-  (use-package prettier-js
-    :config
-    (add-hook 'js2-mode-hook 'prettier-js-mode)
-    (add-hook 'rjsx-mode-hook 'prettier-js-mode)
-    )
+    (use-package jtsx
+      :ensure t
+      :hook((jtsx-jsx-mode . lsp-deferred)(jtsx-jsx-mode . emmet-mode)(jtsx-jsx-mode . prettier-js-mode))
+      )
+    (use-package prettier-js
+      :config
+      (add-hook 'js2-mode-hook 'prettier-js-mode)
+      (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+      (add-hook 'jtsx-jsx-mode 'prettier-js-mode)
+      )
 
   (setq emmet-expand-jsx-className? t)
+
+  (use-package emmet-mode
+    :ensure t
+    :config
+    (add-to-list 'emmet-jsx-major-modes 'jtsx-jsx-mode))
 #+END_SRC
 ** Deft
 #+begin_src elisp

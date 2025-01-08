@@ -232,38 +232,34 @@
   (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
 
 (use-package magit
-    :ensure t)
-  (require 'magit)
+  :ensure t)
+(require 'magit)
 
-  (use-package git-timemachine
-    :defer 2
-    :ensure t
-    :diminish
-    )
-  (use-package git-gutter
-    :ensure t
-    :hook (prog-mode . git-gutter-mode)
-    :config
-    (setq git-gutter:update-interval 0.02)
-     (defun rpo/git-gutter-mode ()
-    "Enable git-gutter mode if current buffer's file is under version control."
-    (if (and (buffer-file-name)
-        (vc-backend (buffer-file-name))
-            (not (cl-some (lambda (suffix) (string-suffix-p suffix (buffer-file-name)))
-                        '(".pdf" ".svg" ".png"))))
-        (git-gutter-mode 1)))
-(add-hook 'find-file-hook #'rpo/git-gutter-mode)
+(use-package git-timemachine
+  :defer 2
+  :ensure t
+  :diminish
+  )
+(use-package git-gutter
+  :ensure t
+  :hook (prog-mode . git-gutter-mode)
+  :config
+  (setq git-gutter:update-interval 0.02)
+   (defun rpo/git-gutter-mode ()
+  "Enable git-gutter mode if current buffer's file is under version control."
+  (if (and (buffer-file-name)
+      (vc-backend (buffer-file-name))
+          (not (cl-some (lambda (suffix) (string-suffix-p suffix (buffer-file-name)))
+                      '(".pdf" ".svg" ".png"))))
+      (git-gutter-mode 1)))
+   (add-hook 'find-file-hook #'rpo/git-gutter-mode)
+  )
 
-    )
-
-  (use-package git-gutter-fringe
-    :ensure t
-    :config
-    (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
-    (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
-    (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom)
-    )
-  (require 'git-gutter-fringe)
+(use-package git-gutter-fringe
+  :ensure t
+  :init
+  (with-eval-after-load 'git-gutter (require 'git-gutter-fringe))
+  )
 
 (use-package persistent-scratch
   :ensure t
@@ -359,6 +355,8 @@
   :config
   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
   (flycheck-add-mode 'javascript-jshint 'rjsx-mode)
+  (flycheck-add-mode 'javascript-eslint 'jtsx-jsx-mode)
+  (flycheck-add-mode 'javascript-jshint 'jrsx-jsx-mode)
   (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
   )
 
@@ -794,7 +792,7 @@
   :ensure t
   :pin melpa
   :commands (lsp lsp-deferred)
-  :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
+  :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(jtsx-jsx-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
   :custom
   (lsp-auto-configure t)
   (lsp-prefer-flymake nil)
@@ -960,20 +958,30 @@
 (setq sql-mysql-login-params (append sql-mysql-login-params '(port)))
 
 (use-package rjsx-mode
-  :defer 2
-  :ensure t)
-(add-hook 'js2-mode-hook 'lsp)
-(add-hook 'js-mode-hook 'lsp)
-(add-hook 'rjsx-mode-hook 'lsp)
-(add-hook 'rjsx-mode-hook 'emmet-mode)
+    :defer 2
+    :ensure t)
+  (add-hook 'js2-mode-hook 'lsp)
+  (add-hook 'js-mode-hook 'lsp)
+  (add-hook 'rjsx-mode-hook 'lsp)
+  (add-hook 'rjsx-mode-hook 'emmet-mode)
 
-(use-package prettier-js
-  :config
-  (add-hook 'js2-mode-hook 'prettier-js-mode)
-  (add-hook 'rjsx-mode-hook 'prettier-js-mode)
-  )
+  (use-package jtsx
+    :ensure t
+    :hook((jtsx-jsx-mode . lsp-deferred)(jtsx-jsx-mode . emmet-mode)(jtsx-jsx-mode . prettier-js-mode))
+    )
+  (use-package prettier-js
+    :config
+    (add-hook 'js2-mode-hook 'prettier-js-mode)
+    (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+    (add-hook 'jtsx-jsx-mode 'prettier-js-mode)
+    )
 
 (setq emmet-expand-jsx-className? t)
+
+(use-package emmet-mode
+  :ensure t
+  :config
+  (add-to-list 'emmet-jsx-major-modes 'jtsx-jsx-mode))
 
 (use-package deft
   :ensure t
