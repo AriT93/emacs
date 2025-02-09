@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-02-08 18:28:55 abturet>
+#+Time-stamp: <2025-02-08 19:25:32 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -1427,43 +1427,56 @@ Da General give command-t like ease to emacs
 #+end_src
 ** Copilot
 #+begin_src elisp
-  (use-package quelpa-use-package
-    :ensure t)
-  (require 'quelpa-use-package)
-  (use-package copilot
-    :quelpa (copilot :fetcher github
-                     :repo "copilot-emacs/copilot.el"
-                     :branch "main"
-                     :files ("*.el")))
+        (use-package quelpa-use-package
+          :ensure t)
+        (use-package copilot
+          :quelpa (copilot :fetcher github
+                           :repo "copilot-emacs/copilot.el"
+                           :branch "main"
+                           :files ("*.el")))
 
-  ;; you can utilize :map :hook and :config to customize copilot
-  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+        (use-package gptel-aibo
+          :quelpa (gptel-aibo :fetcher github
+                              :repo "dolmens/gptel-aibo"
+                              :branch "main"))
+        ;; you can utilize :map :hook and :config to customize copilot
+        (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
 
-  (use-package chatgpt-shell
-    :ensure t)
-  (use-package gptel
-    :ensure t)
-  (use-package copilot-chat
-    :ensure t)
+        (use-package chatgpt-shell
+          :ensure t)
+        (use-package gptel
+          :ensure t)
+        (use-package copilot-chat
+          :ensure t)
 
-  (add-to-list 'chatgpt-shell-models '((:version . "gpt-4o-mini") (:short-version)
-                                       (:label . "ChatGPT") (:provider . "OpenAI")
-                                       (:path . "/v1/chat/completions") (:token-width . 3)
-                                       (:context-window . 128000)
-                                       (:handler . chatgpt-shell-openai--handle-chatgpt-command)
-                                       (:filter . chatgpt-shell-openai--filter-output)
-                                       (:payload . chatgpt-shell-openai--make-payload)
-                                       (:headers . chatgpt-shell-openai--make-headers)
-                                       (:url . chatgpt-shell-openai--make-url)
-                                       (:key . chatgpt-shell-openai-key)
-                                       (:url-base . chatgpt-shell-api-url-base)
-                                       (:validate-command . chatgpt-shell-openai--validate-command)))
+        (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
+                               (:label . "ChatGPT") (:provider . "OpenAI")
+                               (:path . "/v1/chat/completions") (:token-width . 3)
+                               (:context-window . 128000)
+                               (:handler . chatgpt-shell-openai--handle-chatgpt-command)
+                               (:filter . chatgpt-shell-openai--filter-output)
+                               (:payload . chatgpt-shell-openai--make-payload)
+                               (:headers . chatgpt-shell-openai--make-headers)
+                               (:url . chatgpt-shell-openai--make-url)
+                               (:key . chatgpt-shell-openai-key)
+                               (:url-base . chatgpt-shell-api-url-base)
+                               (:validate-command . chatgpt-shell-openai--validate-command))))
+          (add-to-list 'chatgpt-shell-models model-config))
 
-  (use-package ob-chatgpt-shell
-    :ensure t)
-  (require 'ob-chatgpt-shell)
-  (ob-chatgpt-shell-setup)
+        (gptel-make-ollama "Ollama"             ;Any name of your choosing
+        :host "localhost:11434"               ;Where it's running
+        :stream t                             ;Stream responses
+        :models '(mistral:latest))             ;List of models
+
+        ;; :key can be a function that returns the API key.
+      (gptel-make-gemini "Gemini"
+        :key (gptel-api-key-from-auth-source "generativelanguage.googleapis.com")
+        :stream t)
+
+        (use-package ob-chatgpt-shell
+          :ensure t)
+        (require 'ob-chatgpt-shell)
+        (ob-chatgpt-shell-setup)
 
 #+end_src
 ** Magit Delta
