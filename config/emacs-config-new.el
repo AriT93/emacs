@@ -1373,6 +1373,7 @@
   (add-hook 'LaTeX/P-mode-hook #'procress-auctex-mode)
 
   :config
+  (setq TeX-command-extra-options "-shell-escape")
   (procress-load-default-svg-images))
 
 (set-face-attribute 'default nil
