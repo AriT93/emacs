@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-02-08 19:25:32 abturet>
+#+Time-stamp: <2025-02-09 14:16:48 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -1586,6 +1586,7 @@ who knows it might catch on
     (add-hook 'LaTeX/P-mode-hook #'procress-auctex-mode)
 
     :config
+    (setq TeX-command-extra-options "-shell-escape")
     (procress-load-default-svg-images))
 #+end_src
 ** Tell the world we are providing something useful
