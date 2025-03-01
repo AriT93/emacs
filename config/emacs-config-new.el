@@ -803,83 +803,83 @@
   :defer 2
   :ensure t)
 
-(use-package lsp-mode
-    :ensure t
-    :pin melpa
-    :commands (lsp lsp-deferred)
-    :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(jtsx-jsx-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
-    :custom
-    (lsp-auto-configure t)
-    (lsp-prefer-flymake nil)
-    (lsp-inhibit-message t)
-    (lsp-eldoc-render-all t)
-    :config
-    (setq lsp-enable-which-key-integration t)
-    (setq lsp-enable-symbol-highlighting t)
-    (setq lsp-modeline-code-actions-enable t)
-    (setq lsp-diagnostics-provider :auto)
-    (setq lsp-diagnostics-mode nil)
-    (setq lsp-semantic-tokens-enable t)
-    (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-    (setq lsp-idle-delay 0.500)
-    (setq lsp-log-io nil)
-    (setq lsp-completion-provider :capf)
-    (setq lsp-enable-file-watchers nil)
-    )
+;;   (use-package lsp-mode
+;;     :ensure t
+;;     :pin melpa
+;;     :commands (lsp lsp-deferred)
+;;     :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(jtsx-jsx-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
+;;     :custom
+;;     (lsp-auto-configure t)
+;;     (lsp-prefer-flymake nil)
+;;     (lsp-inhibit-message t)
+;;     (lsp-eldoc-render-all t)
+;;     :config
+;;     (setq lsp-enable-which-key-integration t)
+;;     (setq lsp-enable-symbol-highlighting t)
+;;     (setq lsp-modeline-code-actions-enable t)
+;;     (setq lsp-diagnostics-provider :auto)
+;;     (setq lsp-diagnostics-mode nil)
+;;     (setq lsp-semantic-tokens-enable t)
+;;     (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+;;     (setq lsp-idle-delay 0.500)
+;;     (setq lsp-log-io nil)
+;;     (setq lsp-completion-provider :capf)
+;;     (setq lsp-enable-file-watchers nil)
+;;     )
 
 
-(use-package lsp-bridge
-  :straight '(lsp-bridge :type git :host github :repo "manateelazycat/lsp-bridge"
-            :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
-            :build (:not compile))
-:hook
-  (prog-mode . lsp-bridge-mode))
+;; (use-package lsp-bridge
+;;   :straight '(lsp-bridge :type git :host github :repo "manateelazycat/lsp-bridge"
+;;             :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+;;             :build (:not compile))
+;; :hook
+;;   (prog-mode . lsp-bridge-mode))
 
 
-  (use-package lsp-java
-    :ensure t
-    :config (add-hook 'java-mode-hook #'lsp))
+;;   (use-package lsp-java
+;;     :ensure t
+;;     :config (add-hook 'java-mode-hook #'lsp))
 
-  (setenv "JAVA_HOME" "/opt/homebrew/Cellar/openjdk/22.0.2/")
-  (setq lsp-java-java-path "/opt/homebrew/Cellar/openjdk/22.0.2/bin/java")
-  (use-package lsp-ivy
-    :defer 2
-    :ensure t)
+;;   (setenv "JAVA_HOME" "/opt/homebrew/Cellar/openjdk/22.0.2/")
+;;   (setq lsp-java-java-path "/opt/homebrew/Cellar/openjdk/22.0.2/bin/java")
+;;   (use-package lsp-ivy
+;;     :defer 2
+;;     :ensure t)
 
-  (use-package lsp-ui
-    :defer 2
-    :commands lsp-ui-mode
-    :after lsp-mode
-    :config
-    (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
-    (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-    (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
-    (setq lsp-ui-sideline-enable t)
-    (setq lsp-lens-enable t)
-    (setq lsp-ui-sideline-enable t
-          lsp-ui-sideline-show-symbol t
-          lsp-ui-sideline-show-hover t
-          lsp-ui-sideline-show-flycheck t
-          lsp-ui-sideline-show-code-actions t
-          lsp-ui-sideline-show-diagnostics t)
+;;   (use-package lsp-ui
+;;     :defer 2
+;;     :commands lsp-ui-mode
+;;     :after lsp-mode
+;;     :config
+;;     (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
+;;     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+;;     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+;;     (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
+;;     (setq lsp-ui-sideline-enable t)
+;;     (setq lsp-lens-enable t)
+;;     (setq lsp-ui-sideline-enable t
+;;           lsp-ui-sideline-show-symbol t
+;;           lsp-ui-sideline-show-hover t
+;;           lsp-ui-sideline-show-flycheck t
+;;           lsp-ui-sideline-show-code-actions t
+;;           lsp-ui-sideline-show-diagnostics t)
 
-    (setq lsp-ui-doc-enable nil)
-    (setq lsp-ui-imenu-enable nil)
-    (setq lsp-ui-peek-enable t)       )
+;;     (setq lsp-ui-doc-enable nil)
+;;     (setq lsp-ui-imenu-enable nil)
+;;     (setq lsp-ui-peek-enable t)       )
 
-  (use-package lsp-treemacs
-    :defer 2
-    :after lsp
-    :config
-    (lsp-treemacs-sync-mode t)
-    )
-  (require 'lsp-ui-flycheck)
-  (setq lsp-inhibit-message t)
-  (setq lsp-prefer-flymake nil)
-  (setq lsp-eldoc-render-all t)
+;;   (use-package lsp-treemacs
+;;     :defer 2
+;;     :after lsp
+;;     :config
+;;     (lsp-treemacs-sync-mode t)
+;;     )
+;;   (require 'lsp-ui-flycheck)
+;;   (setq lsp-inhibit-message t)
+;;   (setq lsp-prefer-flymake nil)
+;;   (setq lsp-eldoc-render-all t)
 
-  (setq lsp-auto-guess-root nil)
+;;   (setq lsp-auto-guess-root nil)
 
   (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
   (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
@@ -1029,10 +1029,10 @@
 (use-package rjsx-mode
     :defer 2
     :ensure t)
-  (add-hook 'js2-mode-hook 'lsp)
-  (add-hook 'js-mode-hook 'lsp)
-  (add-hook 'rjsx-mode-hook 'lsp)
-  (add-hook 'rjsx-mode-hook 'emmet-mode)
+  (add-hook 'js2-mode-hook 'eglot-ensure)
+  (add-hook 'js-mode-hook 'eglot-ensure)
+  (add-hook 'rjsx-mode-hook 'eglot-ensure)
+  (add-hook 'jtsx-jsx-mode-hook 'eglot-ensure)
 
   (use-package jtsx
     :ensure t
@@ -1258,7 +1258,14 @@
     "ql" '(copilot-accept-completion-by-line :which-key "copilot-accept-completion-by-line")
     "qw" '(copilot-accept-completion-by-word :which-key "copilot-accept-completion-by-word")
     "qp" '(copilot-previous-completion :which-key "copilot-previous-completion")
-    "qn" '(copilot-next-completion :which-key "copilot-next-completion")))
+    "qn" '(copilot-next-completion :which-key "copilot-next-completion")
+    "e" '(:ignore t :which-key "eglot")
+    "ef" '(eglot-format :which-key "format buffer")
+    "ea" '(eglot-code-actions :which-key "code actions")
+    "er" '(eglot-rename :which-key "rename")
+    "ed" '(xref-find-definitions :which-key "find definition")
+    "eR" '(eglot-reconnect :which-key "reconnect")
+    "eq" '(eglot-shutdown :which-key "shutdown server")))
 
 (use-package quelpa-use-package
     :ensure t)
@@ -1423,3 +1430,56 @@
 (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 (provide 'emacs-config-new)
+
+(use-package eglot
+  :ensure t
+  :hook ((ruby-mode . eglot-ensure)
+         (python-mode . eglot-ensure)
+         (java-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
+         (go-ts-mode . eglot-ensure)
+         (js2-mode . eglot-ensure)
+         (js-mode . eglot-ensure)
+         (rjsx-mode . eglot-ensure)
+         (jtsx-jsx-mode . eglot-ensure))
+  :config
+  ;; Performance settings equivalent to your lsp-mode settings
+  (setq eglot-events-buffer-size 0) ;; Don't keep events buffer
+  (setq eglot-sync-connect nil)     ;; Don't block when connecting
+  (setq eglot-autoshutdown t)       ;; Shutdown unused servers
+  
+  ;; Extend timeout for large projects
+  (setq eglot-connect-timeout 10)
+  
+  ;; Custom servers configuration if needed
+;;  (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "solargraph" "stdio")))
+  
+  ;; Key bindings similar to your LSP setup
+  :bind (:map eglot-mode-map
+              ("C-c l f" . eglot-format)
+              ("C-c l a" . eglot-code-actions)
+              ("C-c l r" . eglot-rename)
+              ("C-c l d" . xref-find-definitions)))
+
+;; Using built-in flymake instead of flycheck for diagnostics
+(use-package flymake
+  :ensure t
+  :hook (eglot-managed-mode . flymake-mode))
+
+;; Alternative to lsp-ui-doc using eldoc
+(setq eldoc-echo-area-use-multiline-p t)
+(setq eldoc-echo-area-display-truncation-message nil)
+(setq eldoc-echo-area-prefer-doc-buffer t)
+
+;; Replace lsp-java with eglot-java configuration
+(use-package eglot-java
+  :ensure t
+  :after eglot
+  :config
+  (setq eglot-java-eclipse-jdt-args 
+        '("-configuration" "~/.emacs.d/share/eclipse.jdt.ls/config"
+          "-data" "/path/to/eclipse-workspace")))
+
+;; (setq eglot-server-programs
+;;       (append eglot-server-programs
+;;               '((java-mode . ("jdtls" "-data" "/path/to/eclipse-workspace")))))
