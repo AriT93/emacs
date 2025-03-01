@@ -130,9 +130,7 @@ want from faces
         ;;; follow links in xwidgets
         (use-package xwwp-follow-link
           :custom
-          (xwwp-follow-link-completion-backend 'ivy)
-          :bind (:map xwidget-webkit-mode-map
-                      ("v" . xwwp-follow-link)))
+          (xwwp-follow-link-completion-backend 'default))
         (use-package string-inflection
           :ensure t)
         (use-package font-lock
@@ -170,75 +168,153 @@ Lets use some fzf here too
 #+END_SRC
 Use Ivy, counsel and Swiper(no swiping!) for isearch
 #+BEGIN_SRC elisp
-  (use-package swiper
-    :ensure t)
-  (use-package counsel
-    :ensure t)
-  (use-package ivy
+  (use-package vertico
     :ensure t
     :init
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-use-selectable-prompt t)
-    (setq enable-recursive-minibuffers t)
-    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+    (vertico-mode)
+    :custom
+    (vertico-cycle t)
+    (vertico-count 15)
+    (vertico-resize t)
+    :config
+    ;; Add prompt indicator to `completing-read-multiple'
+    (defun crm-indicator (args)
+      (cons (format "[CRM%s] %s"
+                    (replace-regexp-in-string
+                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                     crm-separator)
+                    (car args))
+            (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator))
+
+  ;; Persist history over Emacs restarts
+  (use-package savehist
+    :ensure t
+    :init
+    (savehist-mode))
+
+  ;; Add annotations to completion candidates
+  (use-package marginalia
+    :ensure t
+    :bind (:map minibuffer-local-map
+                ("M-A" . marginalia-cycle))
+    :init
+    (marginalia-mode))
+
+  ;; Consult commands with enhanced search and navigation
+  (use-package consult
+    :ensure t
+    :bind (;; C-c bindings in `mode-specific-map'
+           ("C-c M-x" . consult-mode-command)
+           ("C-c h" . consult-history)
+           ("C-c k" . consult-kmacro)
+           ("C-c m" . consult-man)
+           ("C-c i" . consult-info)
+           ;; C-x bindings in `ctl-x-map'
+           ("C-x M-:" . consult-complex-command)
+           ("C-x b" . consult-buffer)
+           ("C-x 4 b" . consult-buffer-other-window)
+           ("C-x 5 b" . consult-buffer-other-frame)
+           ("C-x r b" . consult-bookmark)
+           ("C-x p b" . consult-project-buffer)
+           ;; Custom M-# bindings for fast register access
+           ("M-#" . consult-register-load)
+           ("M-'" . consult-register-store)
+           ("C-M-#" . consult-register)
+           ;; Other custom bindings
+           ("M-y" . consult-yank-pop)
+           ;; Replace search commands
+           ("C-s" . consult-line)
+           ("M-s g" . consult-grep)
+           ("M-s G" . consult-git-grep)
+           ("M-s r" . consult-ripgrep)
+           ;; Replace isearch bindings
+           ("M-s s" . consult-isearch-history)
+           :map isearch-mode-map
+           ("M-e" . consult-isearch-history)
+           ("M-s e" . consult-isearch-history)
+           ("M-s l" . consult-line))
+    :init
+    ;; Optionally configure preview. Note that the preview-key can also be
+    ;; configured on a per-command basis via `consult-config'.
+    (setq consult-preview-key "M-.")
+    ;; For some commands and buffer sources, use a different key that is defined here
+    (setq consult-narrow-key "<") ;; "C-+"
+    :config
+    ;; Configure file preview
+    (consult-customize
+     consult-theme :preview-key '(:debounce 0.2 any)
+     consult-ripgrep consult-git-grep consult-grep
+     consult-bookmark consult-recent-file consult-xref
+     consult--source-bookmark consult--source-file-register
+     consult--source-recent-file consult--source-project-recent-file
+     :preview-key '(:debounce 0.4 any))
+
+    ;; Configure buffer preview
+    (setq consult-buffer-sources
+          '(consult--source-buffer
+            consult--source-recent-file
+            consult--source-project-recent-file)))
+
+  ;; Flexible text matching - replacement for ivy-prescient
+  (use-package orderless
+    :ensure t
+    :custom
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles partial-completion)))))
+
+  ;; Contextual actions - similar to ivy actions but more powerful
+  (use-package embark
+    :ensure t
     :bind
-    (("\C-s" . 'swiper-isearch)
-     ("C-x C-f" . 'fzf-find-file)
-     ("C-c j" . 'fzf-git-grep)
-     ("C-c k" . 'counsel-ag)
-     ("C-x L" . 'counsel-locate)
-     ("M-x" . 'counsel-M-x))
-    :custom-face
-    (ivy-minibuffer-match-face-2 ((t (:height 160 :family "Cascadia Code" :underline t :backgound "DarkSeagreen4"))))
-    (ivy-current-match (( t ( :background "DarkSeaGreen4" :height 160 :family "Cascadia Code"))))
-    :config
-    (setq swiper-use-visual-line nil)
-    (setq swiper-use-visual-line-p (lambda (a) nil)))
-
-  (use-package ivy-rich
+    (("C-." . embark-act)
+     ("M-." . embark-dwim)
+     ("C-h B" . embark-bindings))
     :init
-    (ivy-rich-mode 1)
-    :config
-    (setq ivy-format-function #'ivy-format-function-line))
-  (use-package nerd-icons-ivy-rich
+    ;; Replace the key help with a completing-read interface
+    (setq prefix-help-command #'embark-prefix-help-command))
+
+  ;; Consult integration with Embark
+  (use-package embark-consult
     :ensure t
-    :init
-    (nerd-icons-ivy-rich-mode 1))
+    :after (embark consult)
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
 
-  (use-package ivy-posframe
-    :ensure t
-    :after ivy
-    :init
-    (setq ivy-posframe-hide-minibuffer t)
-    (setq ivy-posframe-min-width nil)
-    (setq ivy-posframe-width nil)
-    (setq ivy-posframe-border-width 10)
-    (setq ivy-posframe-parameters
-          '((left-fringe . 8)
-            (right-fringe .8)))
-    )
-
-  (defun my-ivy-posframe-get-size ()
-    "Set the ivy-posframe size according to the current frame."
-    (let ((height (or ivy-posframe-height (or ivy-height 10)))
-          (width (min (or ivy-posframe-width 200) (round (* 1 (frame-width))))))
-      (list :height height :width width :min-height height :min-width width)))
-
-  (setq ivy-posframe-size-function 'my-ivy-posframe-get-size)
-
+  ;; Add nerd-icons to marginalia
   (use-package nerd-icons-completion
     :ensure t
     :after marginalia
     :config
     (nerd-icons-completion-mode)
     (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+
+  ;; Add a posframe-like UI for Vertico (if desired)
+  (use-package vertico-posframe
+    :ensure t  
+    :after vertico
+    :config
+    (setq vertico-posframe-parameters
+          '((left-fringe . 8)
+            (right-fringe . 8)))
+    (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center)
+    (vertico-posframe-mode 1))
+
+  ;; Add visual directory navigation
+  (use-package vertico-directory
+    :after vertico
+    :ensure nil
+    :bind (:map vertico-map
+                ("RET" . vertico-directory-enter)
+                ("DEL" . vertico-directory-delete-char)
+                ("M-DEL" . vertico-directory-delete-word))
+    :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 #+END_SRC
 
 Pop yank gives you a pop up of recent yanks,  a "yank bank"
 
 #+BEGIN_SRC elisp
-  (global-set-key "\C-cy" 'counsel-yank-pop)
+  (global-set-key "\C-cy" 'consult-yank-pop)
 
   (use-package no-littering
     :ensure t)
@@ -466,6 +542,8 @@ Hide stuff from cluttering up the mode line
     :config
 
     (diminish 'org-mode  "")
+    (diminish 'auto-revert-mode)
+    (diminish 'yas-minor-mode)
     (diminish 'auto-revert-mode)
     (diminish 'yas-minor-mode)
     (diminish 'emmet-mode)
@@ -1038,12 +1116,10 @@ Projectile helps looking around in projects
     (setq projectile-require-project-root nil)
     (setq projectile-indexing-method 'alien)
     :custom
-    ((projectile-completion-system 'ivy)))
+    ((projectile-completion-system 'default)))
 
-  (use-package counsel-projectile
-    :ensure t
-    :init
-    (counsel-projectile-mode))
+  (use-package consult-project-extra
+    :ensure t)
 #+END_SRC
 
 ** Auto-Modes
@@ -1405,7 +1481,7 @@ Da General give command-t like ease to emacs
     (general-create-definer my-leader-def
       :prefix "C-c")
     (my-leader-def
-      "t" 'fzf-projectile
+      "t" 'project-find-file  ;; Was 'fzf-projectile
       "a" 'ace-jump-mode
       "g" '(:ignore t :which-key "rspec")
       "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
@@ -1459,7 +1535,16 @@ Da General give command-t like ease to emacs
       "er" '(eglot-rename :which-key "rename")
       "ed" '(xref-find-definitions :which-key "find definition")
       "eR" '(eglot-reconnect :which-key "reconnect")
-      "eq" '(eglot-shutdown :which-key "shutdown server")))
+      "eq" '(eglot-shutdown :which-key "shutdown server")
+      "s" '(:ignore t :which-key "search")
+      "sl" '(consult-line :which-key "search line")
+      "sL" '(consult-line-multi :which-key "search line in buffers")
+      "so" '(consult-outline :which-key "search outline")
+      "sm" '(consult-mark :which-key "search marks")
+      "si" '(consult-imenu :which-key "search imenu")
+      "sI" '(consult-imenu-multi :which-key "search imenu in buffers")
+      "sr" '(consult-ripgrep :which-key "ripgrep")
+      "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
 #+end_src
 ** Copilot
 #+begin_src elisp
