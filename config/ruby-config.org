@@ -6,6 +6,7 @@
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 * Ruby Mode!
+
 first a little housekeeping for the linter
 #+BEGIN_SRC elisp
 ;;; ruby-config --- Summary
@@ -75,6 +76,8 @@ is going on while you write code.
                 (ruby-block-mode t)
                 (local-set-key (kbd "<return>") 'newline-and-indent)
                 ))
+    (add-hook 'ruby-mode-hook #'eglot-ensure)
+;;    (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "solargraph" "stdio")))
 #+END_SRC
 
 #+
