@@ -983,85 +983,85 @@
               (add-to-list 'completion-at-point-functions #'cape-keyword))))
 
 ;;   (use-package lsp-mode
-;;     :ensure t
-;;     :pin melpa
-;;     :commands (lsp lsp-deferred)
-;;     :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(jtsx-jsx-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
-;;     :custom
-;;     (lsp-auto-configure t)
-;;     (lsp-prefer-flymake nil)
-;;     (lsp-inhibit-message t)
-;;     (lsp-eldoc-render-all t)
-;;     :config
-;;     (setq lsp-enable-which-key-integration t)
-;;     (setq lsp-enable-symbol-highlighting t)
-;;     (setq lsp-modeline-code-actions-enable t)
-;;     (setq lsp-diagnostics-provider :auto)
-;;     (setq lsp-diagnostics-mode nil)
-;;     (setq lsp-semantic-tokens-enable t)
-;;     (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-;;     (setq lsp-idle-delay 0.500)
-;;     (setq lsp-log-io nil)
-;;     (setq lsp-completion-provider :capf)
-;;     (setq lsp-enable-file-watchers nil)
-;;     )
+  ;;     :ensure t
+  ;;     :pin melpa
+  ;;     :commands (lsp lsp-deferred)
+  ;;     :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(jtsx-jsx-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
+  ;;     :custom
+  ;;     (lsp-auto-configure t)
+  ;;     (lsp-prefer-flymake nil)
+  ;;     (lsp-inhibit-message t)
+  ;;     (lsp-eldoc-render-all t)
+  ;;     :config
+  ;;     (setq lsp-enable-which-key-integration t)
+  ;;     (setq lsp-enable-symbol-highlighting t)
+  ;;     (setq lsp-modeline-code-actions-enable t)
+  ;;     (setq lsp-diagnostics-provider :auto)
+  ;;     (setq lsp-diagnostics-mode nil)
+  ;;     (setq lsp-semantic-tokens-enable t)
+  ;;     (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+  ;;     (setq lsp-idle-delay 0.500)
+  ;;     (setq lsp-log-io nil)
+  ;;     (setq lsp-completion-provider :capf)
+  ;;     (setq lsp-enable-file-watchers nil)
+  ;;     )
 
 
-;; (use-package lsp-bridge
-;;   :straight '(lsp-bridge :type git :host github :repo "manateelazycat/lsp-bridge"
-;;             :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
-;;             :build (:not compile))
-;; :hook
-;;   (prog-mode . lsp-bridge-mode))
+  ;; (use-package lsp-bridge
+  ;;   :straight '(lsp-bridge :type git :host github :repo "manateelazycat/lsp-bridge"
+  ;;             :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+  ;;             :build (:not compile))
+  ;; :hook
+  ;;   (prog-mode . lsp-bridge-mode))
 
 
-;;   (use-package lsp-java
-;;     :ensure t
-;;     :config (add-hook 'java-mode-hook #'lsp))
+  ;;   (use-package lsp-java
+  ;;     :ensure t
+  ;;     :config (add-hook 'java-mode-hook #'lsp))
 
-;;   (setenv "JAVA_HOME" "/opt/homebrew/Cellar/openjdk/22.0.2/")
-;;   (setq lsp-java-java-path "/opt/homebrew/Cellar/openjdk/22.0.2/bin/java")
-;;   (use-package lsp-ivy
-;;     :defer 2
-;;     :ensure t)
+  ;;   (setenv "JAVA_HOME" "/opt/homebrew/Cellar/openjdk/22.0.2/")
+  ;;   (setq lsp-java-java-path "/opt/homebrew/Cellar/openjdk/22.0.2/bin/java")
+  ;;   (use-package lsp-ivy
+  ;;     :defer 2
+  ;;     :ensure t)
 
-;;   (use-package lsp-ui
-;;     :defer 2
-;;     :commands lsp-ui-mode
-;;     :after lsp-mode
-;;     :config
-;;     (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
-;;     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-;;     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-;;     (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
-;;     (setq lsp-ui-sideline-enable t)
-;;     (setq lsp-lens-enable t)
-;;     (setq lsp-ui-sideline-enable t
-;;           lsp-ui-sideline-show-symbol t
-;;           lsp-ui-sideline-show-hover t
-;;           lsp-ui-sideline-show-flycheck t
-;;           lsp-ui-sideline-show-code-actions t
-;;           lsp-ui-sideline-show-diagnostics t)
+  ;;   (use-package lsp-ui
+  ;;     :defer 2
+  ;;     :commands lsp-ui-mode
+  ;;     :after lsp-mode
+  ;;     :config
+  ;;     (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
+  ;;     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  ;;     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+  ;;     (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
+  ;;     (setq lsp-ui-sideline-enable t)
+  ;;     (setq lsp-lens-enable t)
+  ;;     (setq lsp-ui-sideline-enable t
+  ;;           lsp-ui-sideline-show-symbol t
+  ;;           lsp-ui-sideline-show-hover t
+  ;;           lsp-ui-sideline-show-flycheck t
+  ;;           lsp-ui-sideline-show-code-actions t
+  ;;           lsp-ui-sideline-show-diagnostics t)
 
-;;     (setq lsp-ui-doc-enable nil)
-;;     (setq lsp-ui-imenu-enable nil)
-;;     (setq lsp-ui-peek-enable t)       )
+  ;;     (setq lsp-ui-doc-enable nil)
+  ;;     (setq lsp-ui-imenu-enable nil)
+  ;;     (setq lsp-ui-peek-enable t)       )
 
-;;   (use-package lsp-treemacs
-;;     :defer 2
-;;     :after lsp
-;;     :config
-;;     (lsp-treemacs-sync-mode t)
-;;     )
-;;   (require 'lsp-ui-flycheck)
-;;   (setq lsp-inhibit-message t)
-;;   (setq lsp-prefer-flymake nil)
-;;   (setq lsp-eldoc-render-all t)
+  ;;   (use-package lsp-treemacs
+  ;;     :defer 2
+  ;;     :after lsp
+  ;;     :config
+  ;;     (lsp-treemacs-sync-mode t)
+  ;;     )
+  ;;   (require 'lsp-ui-flycheck)
+  ;;   (setq lsp-inhibit-message t)
+  ;;   (setq lsp-prefer-flymake nil)
+  ;;   (setq lsp-eldoc-render-all t)
 
-;;   (setq lsp-auto-guess-root nil)
+  ;;   (setq lsp-auto-guess-root nil)
 
-  (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+;;    (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+ ;;   (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
 
 (use-package project
   :ensure nil  ;; Built into Emacs
@@ -1368,10 +1368,10 @@
 ;;           (t . ivy-prescient-re-builder))))
 
 ;; (use-package company-prescient
-  :ensure t
-  :after company
-  :config
-  (company-prescient-mode 1))
+  ;; :ensure t
+  ;; :after company
+  ;; :config
+  ;; (company-prescient-mode 1))
 
 (use-package general
   :ensure t
