@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-01 14:22:43 abturet>
+#+Time-stamp: <2025-03-01 16:47:00 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -127,16 +127,15 @@ want from faces
     (setq alert-default-style 'notifier)
 #+END_SRC
 #+BEGIN_SRC elisp
-        ;;; follow links in xwidgets
-        (use-package xwwp-follow-link
-          :custom
-          (xwwp-follow-link-completion-backend 'default))
-        (use-package string-inflection
-          :ensure t)
-        (use-package font-lock
-          :ensure nil
-          :custom-face
-              (font-lock-comment-face ((t (:foreground "PaleGreen4" :italic t)))))
+  ;;; follow links in xwidgets
+  (use-package xwwp
+    :ensure t)
+  (use-package string-inflection
+    :ensure t)
+  (use-package font-lock
+    :ensure nil
+    :custom-face
+        (font-lock-comment-face ((t (:foreground "PaleGreen4" :italic t)))))
 #+END_SRC
 ** Vterm for emulation
 #+begin_src elisp
@@ -266,13 +265,70 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
   ;; Contextual actions - similar to ivy actions but more powerful
   (use-package embark
     :ensure t
+  
+    ;; Basic keybindings
     :bind
-    (("C-." . embark-act)
-     ("M-." . embark-dwim)
-     ("C-h B" . embark-bindings))
+    (("C-." . embark-act)         ;; Main command to show actions
+     ("C-;" . embark-dwim)        ;; Most likely action (Do What I Mean)
+     ("C-h B" . embark-bindings)  ;; Alternative to describe-bindings
+     :map minibuffer-local-map
+     ("M-o" . embark-export)      ;; Export candidates to buffer
+     ("C-c C-o" . embark-collect))  ;; Collect candidates in buffer
+  
     :init
-    ;; Replace the key help with a completing-read interface
-    (setq prefix-help-command #'embark-prefix-help-command))
+    ;; Replace the key help with Embark's helpful indicator
+    (setq prefix-help-command #'embark-prefix-help-command)
+  
+    :config
+    ;; Hide the mode line of the Embark live/completions buffers
+    (add-to-list 'display-buffer-alist
+                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                   nil
+                   (window-parameters (mode-line-format . none))))
+  
+    ;; Configure which-key integration - show embark actions in which-key
+    (setq embark-action-indicator
+          (lambda (map _target)
+            (which-key--show-keymap "Embark" map nil nil 'no-paging)
+            #'which-key--hide-popup-ignore-command)
+          embark-become-indicator embark-action-indicator)
+  
+    ;; Custom actions for specific categories
+    (defun embark-insert-relative-path (file)
+      "Insert relative path to FILE."
+      (interactive "fFile: ")
+      (let ((path (file-relative-name file)))
+        (insert path)))
+        
+    (defun embark-save-relative-path (file)
+      "Save relative path to FILE in kill ring."
+      (interactive "fFile: ")
+      (kill-new (file-relative-name file)))
+        
+    ;; Add custom actions for file targets
+    (define-key embark-file-map (kbd "r") #'embark-insert-relative-path)
+    (define-key embark-file-map (kbd "R") #'embark-save-relative-path))
+  
+  ;; Enhanced Embark+Consult integration
+  (use-package embark-consult
+    :ensure t
+    :after (embark consult)
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode)
+    :config
+    ;; Make embark-export work with consult-* commands
+    (defun embark-export-consult-grep (lines)
+      "Create a grep mode buffer with LINES."
+      (let ((buffer (generate-new-buffer "*Embark Export Grep*")))
+        (with-current-buffer buffer
+          (insert (string-join lines "\n"))
+          (grep-mode))
+        (pop-to-buffer buffer)))
+  
+    ;; Register the consult-grep exporter for ripgrep, grep, git-grep, etc.
+    (setf (alist-get 'consult-grep embark-exporters-alist) #'embark-export-consult-grep)
+    (setf (alist-get 'consult-git-grep embark-exporters-alist) #'embark-export-consult-grep)
+    (setf (alist-get 'consult-ripgrep embark-exporters-alist) #'embark-export-consult-grep))
 
   ;; Consult integration with Embark
   (use-package embark-consult
@@ -290,15 +346,15 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
   ;; Add a posframe-like UI for Vertico (if desired)
-  (use-package vertico-posframe
-    :ensure t  
-    :after vertico
-    :config
-    (setq vertico-posframe-parameters
-          '((left-fringe . 8)
-            (right-fringe . 8)))
-    (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center)
-    (vertico-posframe-mode 1))
+  ;; (use-package vertico-posframe
+  ;;   :ensure t  
+  ;;   :after vertico
+  ;;   :config
+  ;;   (setq vertico-posframe-parameters
+  ;;         '((left-fringe . 8)
+  ;;           (right-fringe . 8)))
+  ;;   (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center)
+  ;;   (vertico-posframe-mode 1))
 
   ;; Add visual directory navigation
   (use-package vertico-directory
@@ -1107,19 +1163,24 @@ This is kinda like that part in the bible with all the begats...
 ** Projectile
 Projectile helps looking around in projects
 #+BEGIN_SRC elisp
-  (use-package projectile
-    :ensure t
-    :init
-    (projectile-global-mode)
-    (setq projectile-switch-project-action #'projectile-dired)
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-    (setq projectile-require-project-root nil)
-    (setq projectile-indexing-method 'alien)
-    :custom
-    ((projectile-completion-system 'default)))
-
-  (use-package consult-project-extra
-    :ensure t)
+(use-package project
+  :ensure nil  ;; Built into Emacs
+  :config
+  ;; Project switching should open dired, like your projectile config
+  (setq project-switch-commands 'project-dired)
+  
+  ;; Customize project.el
+  (setq project-switch-use-entire-map t)
+  
+  ;; Add project root detection for common VCS beyond Git
+  (add-to-list 'project-find-functions #'project-try-vc)
+  
+  ;; Project completion uses the same system as your other completions
+  (setq project-read-file-name-function #'project--read-file-cpd-relative)
+  
+  ;; Global keybinding for project commands (similar to your C-c p for projectile)
+  :bind-keymap
+  ("C-c p" . project-prefix-map))
 #+END_SRC
 
 ** Auto-Modes
@@ -1489,8 +1550,8 @@ Da General give command-t like ease to emacs
       "gs" '(rspec-verify-single :which-key "run single spec")
       "gr" '(rspec-rerun :which-key "rerun spec")
       "gf" '(rspec-run-last-failed :which-key "rerun last failed")
-      "i"  '(:ignore t :which-key "inf-ruby")
-      "ib" '(ruby-send-buffer :which-key "ruby-send-buffer")
+      "r"  '(:ignore t :which-key "inf-ruby")
+      "rb" '(ruby-send-buffer :which-key "ruby-send-buffer")
       "v"  '(:ignore t :which-key "avy")
       "va" '(avy-goto-word-1 :which-key "avy-goto-word-1")
       "vl" '(avy-goto-line :which-key "avy-goto-line")
