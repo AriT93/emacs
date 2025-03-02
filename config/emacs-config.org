@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-01 17:07:58 abturet>
+#+Time-stamp: <2025-03-01 18:51:03 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -257,7 +257,7 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
   ;; Contextual actions - similar to ivy actions but more powerful
   (use-package embark
     :ensure t
-  
+
     ;; Basic keybindings
     :bind
     (("C-." . embark-act)         ;; Main command to show actions
@@ -266,25 +266,25 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
      :map minibuffer-local-map
      ("M-o" . embark-export)      ;; Export candidates to buffer
      ("C-c C-o" . embark-collect))  ;; Collect candidates in buffer
-  
+
     :init
     ;; Replace the key help with Embark's helpful indicator
     (setq prefix-help-command #'embark-prefix-help-command)
-  
+
     :config
     ;; Hide the mode line of the Embark live/completions buffers
     (add-to-list 'display-buffer-alist
                  '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                    nil
                    (window-parameters (mode-line-format . none))))
-  
+
     ;; Configure which-key integration - show embark actions in which-key
     (setq embark-action-indicator
           (lambda (map _target)
             (which-key--show-keymap "Embark" map nil nil 'no-paging)
             #'which-key--hide-popup-ignore-command)
           embark-become-indicator embark-action-indicator)
-  
+
     ;; Custom actions for specific categories
     (defun embark-insert-relative-path (file)
       "Insert relative path to FILE."
@@ -300,7 +300,7 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     ;; Add custom actions for file targets
     (define-key embark-file-map (kbd "r") #'embark-insert-relative-path)
     (define-key embark-file-map (kbd "R") #'embark-save-relative-path))
-  
+
   ;; Enhanced Embark+Consult integration
   (use-package embark-consult
     :ensure t
@@ -316,7 +316,7 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
           (insert (string-join lines "\n"))
           (grep-mode))
         (pop-to-buffer buffer)))
-  
+
     ;; Register the consult-grep exporter for ripgrep, grep, git-grep, etc.
     (setf (alist-get 'consult-grep embark-exporters-alist) #'embark-export-consult-grep)
     (setf (alist-get 'consult-git-grep embark-exporters-alist) #'embark-export-consult-grep)
@@ -331,15 +331,15 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
   ;; Add a posframe-like UI for Vertico (if desired)
-  ;; (use-package vertico-posframe
-  ;;   :ensure t  
-  ;;   :after vertico
-  ;;   :config
-  ;;   (setq vertico-posframe-parameters
-  ;;         '((left-fringe . 8)
-  ;;           (right-fringe . 8)))
-  ;;   (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center)
-  ;;   (vertico-posframe-mode 1))
+  (use-package vertico-posframe
+    :ensure t  
+    :after vertico
+    :config
+    (setq vertico-posframe-parameters
+          '((left-fringe . 8)
+            (right-fringe . 8)))
+    (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center)
+    (vertico-posframe-mode 1))
 
   ;; Add visual directory navigation
   (use-package vertico-directory
@@ -1224,25 +1224,27 @@ Projectile helps looking around in projects
 ** Auto-Modes
 associate some files wit the right modes
 #+BEGIN_SRC elisp
-  (add-to-list 'auto-mode-alist
-               (cons
-                (concat "\\." (regexp-opt '("xml" "xsd" "svg" "rss" "rng" "build" "config") t) "\\'" )'nxml-mode))
+    (add-to-list 'auto-mode-alist
+                 (cons
+                  (concat "\\." (regexp-opt '("xml" "xsd" "svg" "rss" "rng" "build" "config") t) "\\'" )'nxml-mode))
 
-  ;;
-  ;; What files to invoke the new html-mode for?
-  (add-to-list 'auto-mode-alist '("\\.inc\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.[sj]?html?\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.t\\'" . perl-mode))
-  (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  ;;
+    ;;
+    ;; What files to invoke the new html-mode for?
+    (add-to-list 'auto-mode-alist '("\\.inc\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.[sj]?html?\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.t\\'" . perl-mode))
+    (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+    ;;
 
 
-  (add-hook 'html-mode-hook 'abbrev-mode)
-  (add-hook 'web-mode-hook 'abbrev-mode)
+    (add-hook 'html-mode-hook 'abbrev-mode)
+    (add-hook 'web-mode-hook 'abbrev-mode)
+    (use-package 'web-mode
+      :ensure t)
 #+END_SRC
 
 ** Markdown Mode
