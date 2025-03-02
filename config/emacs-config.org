@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-01 18:51:03 abturet>
+#+Time-stamp: <2025-03-02 11:54:22 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -1664,7 +1664,10 @@ Da General give command-t like ease to emacs
 
 
     (use-package copilot-chat
-      :ensure t)
+      :ensure t
+      :custom
+      (copilot-chat-frontend  'org))
+
 
     (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
                            (:label . "ChatGPT") (:provider . "OpenAI")
@@ -1694,7 +1697,6 @@ Da General give command-t like ease to emacs
       :ensure t)
     (require 'ob-chatgpt-shell)
     (ob-chatgpt-shell-setup)
-
 #+end_src
 ** Magit Delta
 delta is better diffs for git
