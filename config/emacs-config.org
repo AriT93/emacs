@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-02-18 08:28:53 ari.turetzky>
+#+Time-stamp: <2025-03-01 13:45:44 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -877,7 +877,6 @@ This is kinda like that part in the bible with all the begats...
   (require 'erc-config)
   (require 'gnus-config)
   (require 'mail-config)
-  (require 'gnus-config)
   (require 'blog)
 #+END_SRC
 
@@ -956,6 +955,10 @@ This is kinda like that part in the bible with all the begats...
      (setq lsp-diagnostics-mode nil)
      (setq lsp-semantic-tokens-enable t)
      (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+     (setq lsp-idle-delay 0.500)
+     (setq lsp-log-io nil)
+     (setq lsp-completion-provider :capf)
+     (setq lsp-enable-file-watchers nil)
      )
 
 
@@ -1419,7 +1422,7 @@ Da General give command-t like ease to emacs
       "vc" '(avy-goto-char :which-key "avy-goto-char")
       "f" '(:ignore t :which-key "cucumber")
       "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
-      "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
+      "fs" '(feature-verify-scenario-at-pos :which-key "run cuke at point")
       "fv" '(feature-verify-all-scenarios-in-buffer :which-key "run all cukes in buffer")
       "fg" '(feature-goto-step-definition :which-key "goto step definition")
       "fr" '(feature-register-verify-redo :which-key "repeat last cuke")
@@ -1448,8 +1451,8 @@ Da General give command-t like ease to emacs
       "qd" '(copilot-diagnose :which-key "copilot-diagnose")
       "ql" '(copilot-accept-completion-by-line :which-key "copilot-accept-completion-by-line")
       "qw" '(copilot-accept-completion-by-word :which-key "copilot-accept-completion-by-word")
-      "qp" '(copilot-previous-completion :whick-key "copilot-previous-completion")
-      "qn" '(copilot-next-completion :whick-key "copilot-next-completion")))
+      "qp" '(copilot-previous-completion :which-key "copilot-previous-completion")
+      "qn" '(copilot-next-completion :which-key "copilot-next-completion")))
 #+end_src
 ** Copilot
 #+begin_src elisp

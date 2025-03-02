@@ -752,7 +752,6 @@
 (require 'erc-config)
 (require 'gnus-config)
 (require 'mail-config)
-(require 'gnus-config)
 (require 'blog)
 
 (use-package highline
@@ -822,6 +821,10 @@
     (setq lsp-diagnostics-mode nil)
     (setq lsp-semantic-tokens-enable t)
     (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+    (setq lsp-idle-delay 0.500)
+    (setq lsp-log-io nil)
+    (setq lsp-completion-provider :capf)
+    (setq lsp-enable-file-watchers nil)
     )
 
 
@@ -1225,7 +1228,7 @@
     "vc" '(avy-goto-char :which-key "avy-goto-char")
     "f" '(:ignore t :which-key "cucumber")
     "ff" '(feature-verify-all-scenarios-in-project :which-key "run all cukes")
-    "fs" '(feature-verify-scenario-at-pos :whick-key "run cuke at point")
+    "fs" '(feature-verify-scenario-at-pos :which-key "run cuke at point")
     "fv" '(feature-verify-all-scenarios-in-buffer :which-key "run all cukes in buffer")
     "fg" '(feature-goto-step-definition :which-key "goto step definition")
     "fr" '(feature-register-verify-redo :which-key "repeat last cuke")
@@ -1254,8 +1257,8 @@
     "qd" '(copilot-diagnose :which-key "copilot-diagnose")
     "ql" '(copilot-accept-completion-by-line :which-key "copilot-accept-completion-by-line")
     "qw" '(copilot-accept-completion-by-word :which-key "copilot-accept-completion-by-word")
-    "qp" '(copilot-previous-completion :whick-key "copilot-previous-completion")
-    "qn" '(copilot-next-completion :whick-key "copilot-next-completion")))
+    "qp" '(copilot-previous-completion :which-key "copilot-previous-completion")
+    "qn" '(copilot-next-completion :which-key "copilot-next-completion")))
 
 (use-package quelpa-use-package
     :ensure t)
