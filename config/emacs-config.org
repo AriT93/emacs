@@ -1030,28 +1030,88 @@ This is kinda like that part in the bible with all the begats...
 
 ** Company
 #+BEGIN_SRC elisp
-  (use-package company
-    :ensure t
-    :defer 2
-    :diminish
-    :custom
-    (company-minimum-prefix-length 1)
-    (company-idle-begin 0.0)
-    (company-show-numbers t)
-    (company-tooltip-align-annotations 't)
-    (global-company-mode t))
+(use-package corfu
+  :ensure t
+  :custom
+  ;; Enable auto completion
+  (corfu-auto t)
+  ;; Start completion immediately (not after company-idle-delay)
+  (corfu-auto-delay 0.0)
+  ;; Show documentation in a separate popup
+  (corfu-popupinfo-delay 0.2)
+  ;; Matches company settings
+  (corfu-min-width 80)
+  (corfu-max-width corfu-min-width)
+  (corfu-count 10)
+  (corfu-scroll-margin 5)
+  (corfu-cycle t)
+  ;; Enable Corfu only for certain modes
+  :hook ((prog-mode . corfu-mode)
+         (shell-mode . corfu-mode)
+         (eshell-mode . corfu-mode)
+         (org-mode . corfu-mode))
+  :bind
+  (:map corfu-map
+        ("C-n" . corfu-next)
+        ("C-p" . corfu-previous)
+        ("<tab>" . corfu-insert)
+        ("TAB" . corfu-insert))
+  :init
+  (global-corfu-mode)
+  ;; Enable corfu in minibuffer too
+  (defun corfu-enable-in-minibuffer ()
+    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+    (when (where-is-internal #'completion-at-point (list (current-local-map)))
+      (corfu-mode 1)))
+  (add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer)
+  :config
+  ;; Show documentation popup with M-h
+  (corfu-popupinfo-mode))
 
-  (require 'company)
-  (add-hook  'after-init-hook 'global-company-mode)
-  (use-package company-quickhelp
-    :ensure t
-    :config
-    :after company
-    :init
-    (company-quickhelp-mode))
-  (use-package terraform-mode
-    :defer 2
-    :ensure t)
+;; Additional enhancements for corfu
+(use-package corfu-popupinfo
+  :after corfu
+  :ensure nil  ;; Part of corfu
+  :hook (corfu-mode . corfu-popupinfo-mode)
+  :custom
+  (corfu-popupinfo-delay '(0.2 . 0.1))
+  :bind (:map corfu-map
+              ("M-p" . corfu-popupinfo-scroll-down)
+              ("M-n" . corfu-popupinfo-scroll-up)
+              ("M-d" . corfu-popupinfo-toggle)))
+
+;; Icons for corfu
+(use-package kind-icon
+  :ensure t
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+;; Integration with orderless
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+;; Enhance completion at point via cape
+(use-package cape
+  :ensure t
+  :init
+  ;; Add useful completion sources
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  
+  ;; Programming language specific
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (add-to-list 'completion-at-point-functions #'cape-keyword)))
+  (add-hook 'ruby-mode-hook
+            (lambda ()
+              (add-to-list 'completion-at-point-functions #'cape-keyword))))
 #+END_SRC
 
 ** LSP-Mode
@@ -1136,13 +1196,6 @@ This is kinda like that part in the bible with all the begats...
 
     (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
     (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
-    (use-package company-box
-      :after company
-      :ensure t
-      :diminish
-      :hook
-      (company-mode . company-box-mode)
-      :custom (company-box-icons-alist 'company-box-icons-all-the-icons))
 #+END_SRC
 
 ** Projectile
