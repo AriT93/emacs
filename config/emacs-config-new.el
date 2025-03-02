@@ -287,15 +287,15 @@
   (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
 ;; Add a posframe-like UI for Vertico (if desired)
-;; (use-package vertico-posframe
-;;   :ensure t  
-;;   :after vertico
-;;   :config
-;;   (setq vertico-posframe-parameters
-;;         '((left-fringe . 8)
-;;           (right-fringe . 8)))
-;;   (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center)
-;;   (vertico-posframe-mode 1))
+(use-package vertico-posframe
+  :ensure t  
+  :after vertico
+  :config
+  (setq vertico-posframe-parameters
+        '((left-fringe . 8)
+          (right-fringe . 8)))
+  (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center)
+  (vertico-posframe-mode 1))
 
 ;; Add visual directory navigation
 (use-package vertico-directory
@@ -1101,6 +1101,8 @@
 
 (add-hook 'html-mode-hook 'abbrev-mode)
 (add-hook 'web-mode-hook 'abbrev-mode)
+(use-package 'web-mode
+  :ensure t)
 
 (autoload 'markdown-mode' "markdown-mode" "Major Mode for editing Markdown" t)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
