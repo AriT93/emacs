@@ -1281,7 +1281,9 @@
 
 
   (use-package copilot-chat
-    :ensure t)
+    :ensure t
+    :config
+    (setq copilot-chat-frontend 'org))
 
   (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
                          (:label . "ChatGPT") (:provider . "OpenAI")
