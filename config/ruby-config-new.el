@@ -32,22 +32,24 @@
   )
 
 (use-package rspec-mode
-  :ensure t
-  :config
-  (setq rspec-use-spring-when-possible nil)
-  (setq rspec-command-options "--format progress"))
-  (add-hook 'after-init-hook  'inf-ruby-switch-setup)
+    :ensure t
+    :config
+    (setq rspec-use-spring-when-possible nil)
+    (setq rspec-command-options "--format progress"))
+    (add-hook 'after-init-hook  'inf-ruby-switch-setup)
 
-  (require 'ruby-block)
-  (require 'ruby-electric)
-  (add-hook 'ruby-mode-hook
-            (lambda()
-              (set (make-local-variable 'indent-tabs-mode) 'nil)
-              (set (make-local-variable 'tab-width) 2)
-              (ruby-electric-mode t)
-              (ruby-block-mode t)
-              (local-set-key (kbd "<return>") 'newline-and-indent)
-              ))
+    (require 'ruby-block)
+    (require 'ruby-electric)
+    (add-hook 'ruby-mode-hook
+              (lambda()
+                (set (make-local-variable 'indent-tabs-mode) 'nil)
+                (set (make-local-variable 'tab-width) 2)
+                (ruby-electric-mode t)
+                (ruby-block-mode t)
+                (local-set-key (kbd "<return>") 'newline-and-indent)
+                ))
+    (add-hook 'ruby-mode-hook #'eglot-ensure)
+;;    (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "solargraph" "stdio")))
 
 
 
@@ -75,8 +77,8 @@
       ,(rx (or "#" "=begin"))                        ; Comment start
       ruby-forward-sexp nil)))
 
-(global-set-key (kbd "C-c h") 'hs-hide-block)
-(global-set-key (kbd "C-c s") 'hs-show-block)
+;; (global-set-key (kbd "C-c h") 'hs-hide-block)
+;; (global-set-key (kbd "C-c s") 'hs-show-block)
 
 (provide 'ruby-config-new)
 ;;; ruby-config-new ends here
