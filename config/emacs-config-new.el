@@ -148,14 +148,6 @@
   :init
   (savehist-mode))
 
-;; Add annotations to completion candidates
-(use-package marginalia
-  :ensure t
-  :bind (:map minibuffer-local-map
-              ("M-A" . marginalia-cycle))
-  :init
-  (marginalia-mode))
-
 ;; Consult commands with enhanced search and navigation
 (use-package consult
   :ensure t
@@ -285,13 +277,6 @@
   (setf (alist-get 'consult-grep embark-exporters-alist) #'embark-export-consult-grep)
   (setf (alist-get 'consult-git-grep embark-exporters-alist) #'embark-export-consult-grep)
   (setf (alist-get 'consult-ripgrep embark-exporters-alist) #'embark-export-consult-grep))
-
-;; Consult integration with Embark
-(use-package embark-consult
-  :ensure t
-  :after (embark consult)
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; Add nerd-icons to marginalia
 (use-package nerd-icons-completion
@@ -1110,13 +1095,6 @@
 :hook
 (markdown-mode . abbrev-mode))
 
-(autoload 'ruby-mode "ruby-mode"
-  "Mode for editing ruby source files" t)
-(setq auto-mode-alist
-      (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
-(setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
-                                     interpreter-mode-alist))
-
 (require 'dired-x)
 (setq dired-omit-files
       (rx(or(seq bol(? ".") "#")
@@ -1173,7 +1151,7 @@
 
   (use-package jtsx
     :ensure t
-    :hook((jtsx-jsx-mode . lsp-deferred)(jtsx-jsx-mode . emmet-mode)(jtsx-jsx-mode . prettier-js-mode))
+    :hook((jtsx-jsx-mode . emmet-mode)(jtsx-jsx-mode . prettier-js-mode))
     )
   (use-package prettier-js
     :config
@@ -1319,24 +1297,24 @@
   :config
   (prescient-persist-mode 1))
 
-(use-package ivy-prescient
-  :ensure t
-  :after counsel
-  :config
-  (ivy-prescient-mode 1)
-  (setq  prescient-sort-length-enable nil)
-  (setq ivy-prescient-retain-classic-highlighting t)
-  (setq ivy-prescient-enable-filtering nil)
-  (setq ivy-prescient-enable-sorting t)
-  (setq ivy-re-builders-alist
-        '(
-          (counsel-M-x . ivy--regex-plus)
-          (ivy-switch-buffer . ivy--regex-plus)
-          (ivy-switch-buffer-other-window . ivy--regex-plus)
-          (counsel-ag . ivy--regex-plus)
-          (t . ivy-prescient-re-builder))))
+;; (use-package ivy-prescient
+;;   :ensure t
+;;   :after counsel
+;;   :config
+;;   (ivy-prescient-mode 1)
+;;   (setq  prescient-sort-length-enable nil)
+;;   (setq ivy-prescient-retain-classic-highlighting t)
+;;   (setq ivy-prescient-enable-filtering nil)
+;;   (setq ivy-prescient-enable-sorting t)
+;;   (setq ivy-re-builders-alist
+;;         '(
+;;           (counsel-M-x . ivy--regex-plus)
+;;           (ivy-switch-buffer . ivy--regex-plus)
+;;           (ivy-switch-buffer-other-window . ivy--regex-plus)
+;;           (counsel-ag . ivy--regex-plus)
+;;           (t . ivy-prescient-re-builder))))
 
-(use-package company-prescient
+;; (use-package company-prescient
   :ensure t
   :after company
   :config
@@ -1559,24 +1537,6 @@
   (setq TeX-command-extra-options "-shell-escape")
   (procress-load-default-svg-images))
 
-(set-face-attribute 'default nil
-                    :inherit nil
-                    :height 160
-                    :weight 'Regular
-                    :foundry "microsoft"
-                    :family "Cascadia Code")
-(set-face-attribute 'region nil :background "DarkOliveGreen")
-(set-face-attribute 'highlight nil :background "DarkSeaGreen4")
-(set-face-attribute 'fringe nil :background "#070018")
-(set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
-(set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
-(set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
-(set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
-(set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
-(set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
-(set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-(provide 'emacs-config-new)
-
 (use-package eglot
   :ensure t
   :hook ((ruby-mode . eglot-ensure)
@@ -1629,3 +1589,5 @@
 ;; (setq eglot-server-programs
 ;;       (append eglot-server-programs
 ;;               '((java-mode . ("jdtls" "-data" "/path/to/eclipse-workspace")))))
+
+(provide 'emacs-config-new)

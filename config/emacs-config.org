@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-01 16:47:00 abturet>
+#+Time-stamp: <2025-03-01 16:57:29 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -192,14 +192,6 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     :init
     (savehist-mode))
 
-  ;; Add annotations to completion candidates
-  (use-package marginalia
-    :ensure t
-    :bind (:map minibuffer-local-map
-                ("M-A" . marginalia-cycle))
-    :init
-    (marginalia-mode))
-
   ;; Consult commands with enhanced search and navigation
   (use-package consult
     :ensure t
@@ -329,13 +321,6 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (setf (alist-get 'consult-grep embark-exporters-alist) #'embark-export-consult-grep)
     (setf (alist-get 'consult-git-grep embark-exporters-alist) #'embark-export-consult-grep)
     (setf (alist-get 'consult-ripgrep embark-exporters-alist) #'embark-export-consult-grep))
-
-  ;; Consult integration with Embark
-  (use-package embark-consult
-    :ensure t
-    :after (embark consult)
-    :hook
-    (embark-collect-mode . consult-preview-at-point-mode))
 
   ;; Add nerd-icons to marginalia
   (use-package nerd-icons-completion
@@ -1257,15 +1242,6 @@ associate some files wit the right modes
 
 #+END_SRC
 
-** Ruby stuff that should be in another file actually.
-#+BEGIN_SRC elisp
-  (autoload 'ruby-mode "ruby-mode"
-    "Mode for editing ruby source files" t)
-  (setq auto-mode-alist
-        (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
-  (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
-                                       interpreter-mode-alist))
-#+END_SRC
 ** Dired-X
 better dir listings
 #+BEGIN_SRC elisp
@@ -1346,7 +1322,7 @@ set up sql mode
 
     (use-package jtsx
       :ensure t
-      :hook((jtsx-jsx-mode . lsp-deferred)(jtsx-jsx-mode . emmet-mode)(jtsx-jsx-mode . prettier-js-mode))
+      :hook((jtsx-jsx-mode . emmet-mode)(jtsx-jsx-mode . prettier-js-mode))
       )
     (use-package prettier-js
       :config
@@ -1510,24 +1486,24 @@ setting this up for roam and keeping deft for notes
     :config
     (prescient-persist-mode 1))
 
-  (use-package ivy-prescient
-    :ensure t
-    :after counsel
-    :config
-    (ivy-prescient-mode 1)
-    (setq  prescient-sort-length-enable nil)
-    (setq ivy-prescient-retain-classic-highlighting t)
-    (setq ivy-prescient-enable-filtering nil)
-    (setq ivy-prescient-enable-sorting t)
-    (setq ivy-re-builders-alist
-          '(
-            (counsel-M-x . ivy--regex-plus)
-            (ivy-switch-buffer . ivy--regex-plus)
-            (ivy-switch-buffer-other-window . ivy--regex-plus)
-            (counsel-ag . ivy--regex-plus)
-            (t . ivy-prescient-re-builder))))
+  ;; (use-package ivy-prescient
+  ;;   :ensure t
+  ;;   :after counsel
+  ;;   :config
+  ;;   (ivy-prescient-mode 1)
+  ;;   (setq  prescient-sort-length-enable nil)
+  ;;   (setq ivy-prescient-retain-classic-highlighting t)
+  ;;   (setq ivy-prescient-enable-filtering nil)
+  ;;   (setq ivy-prescient-enable-sorting t)
+  ;;   (setq ivy-re-builders-alist
+  ;;         '(
+  ;;           (counsel-M-x . ivy--regex-plus)
+  ;;           (ivy-switch-buffer . ivy--regex-plus)
+  ;;           (ivy-switch-buffer-other-window . ivy--regex-plus)
+  ;;           (counsel-ag . ivy--regex-plus)
+  ;;           (t . ivy-prescient-re-builder))))
 
-  (use-package company-prescient
+  ;; (use-package company-prescient
     :ensure t
     :after company
     :config
@@ -1775,27 +1751,6 @@ who knows it might catch on
     (setq TeX-command-extra-options "-shell-escape")
     (procress-load-default-svg-images))
 #+end_src
-** Tell the world we are providing something useful
-End
-#+BEGIN_SRC elisp
-  (set-face-attribute 'default nil
-                      :inherit nil
-                      :height 160
-                      :weight 'Regular
-                      :foundry "microsoft"
-                      :family "Cascadia Code")
-  (set-face-attribute 'region nil :background "DarkOliveGreen")
-  (set-face-attribute 'highlight nil :background "DarkSeaGreen4")
-  (set-face-attribute 'fringe nil :background "#070018")
-  (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
-  (set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
-  (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
-  (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
-  (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
-  (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
-  (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-  (provide 'emacs-config-new)
-#+END_SRC
 #+BEGIN_SRC elisp
 (use-package eglot
   :ensure t
@@ -1852,6 +1807,11 @@ End
   ;;       (append eglot-server-programs
   ;;               '((java-mode . ("jdtls" "-data" "/path/to/eclipse-workspace")))))
 #+end_src
+** Tell the world we are providing something useful
+End
+#+BEGIN_SRC elisp
+  (provide 'emacs-config-new)
+#+END_SRC
 
 #+DESCRIPTION: Literate source for my Emacs configuration
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
