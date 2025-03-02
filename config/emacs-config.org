@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-01 16:57:29 abturet>
+#+Time-stamp: <2025-03-01 17:07:58 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -1194,8 +1194,8 @@ This is kinda like that part in the bible with all the begats...
 
   ;;   (setq lsp-auto-guess-root nil)
 
-    (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-    (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+;;    (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+ ;;   (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
 #+END_SRC
 
 ** Projectile
@@ -1557,10 +1557,10 @@ setting this up for roam and keeping deft for notes
   ;;           (t . ivy-prescient-re-builder))))
 
   ;; (use-package company-prescient
-    :ensure t
-    :after company
-    :config
-    (company-prescient-mode 1))
+    ;; :ensure t
+    ;; :after company
+    ;; :config
+    ;; (company-prescient-mode 1))
 #+end_src
 ** General
 Da General give command-t like ease to emacs
