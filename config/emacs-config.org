@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-02 11:54:22 abturet>
+#+Time-stamp: <2025-03-02 16:35:32 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -1240,11 +1240,11 @@ associate some files wit the right modes
     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
     ;;
 
+    (use-package web-mode
+      :ensure t)
 
     (add-hook 'html-mode-hook 'abbrev-mode)
     (add-hook 'web-mode-hook 'abbrev-mode)
-    (use-package 'web-mode
-      :ensure t)
 #+END_SRC
 
 ** Markdown Mode
