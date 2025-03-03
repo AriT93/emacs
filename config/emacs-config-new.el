@@ -1098,11 +1098,11 @@
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 ;;
 
+(use-package web-mode
+  :ensure t)
 
 (add-hook 'html-mode-hook 'abbrev-mode)
 (add-hook 'web-mode-hook 'abbrev-mode)
-(use-package 'web-mode
-  :ensure t)
 
 (autoload 'markdown-mode' "markdown-mode" "Major Mode for editing Markdown" t)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
