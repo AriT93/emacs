@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-07 14:01:57 ari.turetzky>
+#+Time-stamp: <2025-03-07 14:18:04 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -233,6 +233,7 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (setq consult-narrow-key "<") ;; "C-+"
     :config
     ;; Configure file preview
+    (setq consult-fontify-preserve nil)
     (consult-customize
      consult-theme :preview-key '(:debounce 0.2 any)
      consult-ripgrep consult-git-grep consult-grep
