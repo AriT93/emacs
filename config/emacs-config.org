@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-07 13:47:21 ari.turetzky>
+#+Time-stamp: <2025-03-07 14:01:57 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -496,7 +496,10 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
       :ensure t
       :custom-face
       (region ((t (:background "DarkOliveGreen"))))
-      (highlight ((t (:background "DarkSeaGreen4")))))
+      (highlight ((t (:background "DarkSeaGreen4"))))
+      (consult-highlight-match ((t (:background "DarkSeaGreen4"))))
+      (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
+      (lazy-highlight ((t (:background "DarkSeaGreen4")))))
     (load-theme 'hc-zenburn t) 
 #+END_SRC
 ** Doom Modeline
