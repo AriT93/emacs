@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-06 07:46:26 ari.turetzky>
+#+Time-stamp: <2025-03-07 13:47:21 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -466,35 +466,38 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
 #+END_SRC
 ** Treemacs
 #+BEGIN_SRC elisp
-  (use-package treemacs-projectile
-    :after treemacs projectile
-    :ensure t)
-  (use-package treemacs-magit
-    :after treemacs magit
-    :ensure t)
-  (use-package treemacs
-    :ensure t
-    :config
-    (setq treemacs-space-between-root-nodes nil)
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode t)
-    (doom-themes-treemacs-config)
-    (setq doom-themes-treemacs-theme "doom-colors")
-    (global-set-key (kbd "M-0") 'treemacs-select-window))
+    (use-package treemacs-projectile
+      :after treemacs projectile
+      :ensure t)
+    (use-package treemacs-magit
+      :after treemacs magit
+      :ensure t)
+    (use-package treemacs
+      :ensure t
+      :config
+      (setq treemacs-space-between-root-nodes nil)
+      (treemacs-follow-mode t)
+      (treemacs-filewatch-mode t)
+      (treemacs-fringe-indicator-mode t)
+      (doom-themes-treemacs-config)
+      (setq doom-themes-treemacs-theme "doom-colors")
+      (global-set-key (kbd "M-0") 'treemacs-select-window))
 
-  (use-package doom-themes
-    :ensure t
-    :config
-    (setq doom-themes-enable-bold t)
-    (setq doom-themes-enable-italic t)
+    (use-package doom-themes
+      :ensure t
+      :config
+      (setq doom-themes-enable-bold t)
+      (setq doom-themes-enable-italic t)
+      (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+      (doom-themes-org-config)
+      (require 'doom-themes-ext-org))
     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-    (doom-themes-org-config)
-    (require 'doom-themes-ext-org))
-  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-  (use-package hc-zenburn-theme
-    :ensure t)
-  (load-theme 'hc-zenburn t)
+    (use-package hc-zenburn-theme
+      :ensure t
+      :custom-face
+      (region ((t (:background "DarkOliveGreen"))))
+      (highlight ((t (:background "DarkSeaGreen4")))))
+    (load-theme 'hc-zenburn t) 
 #+END_SRC
 ** Doom Modeline
 #+BEGIN_SRC elisp
@@ -1868,22 +1871,22 @@ who knows it might catch on
 ** Tell the world we are providing something useful
 End
 #+BEGIN_SRC elisp
-     (set-face-attribute 'default nil
-                        :inherit nil
-                        :height 160
-                        :weight 'Regular
-                        :foundry "microsoft"
-                        :family "Cascadia Code")
-    (set-face-attribute 'region nil :background "DarkOliveGreen")
-    (set-face-attribute 'highlight nil :background "DarkSeaGreen4")
-    (set-face-attribute 'fringe nil :background "#070018")
-    (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
-    (set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
-    (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
-    (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
-    (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
-    (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
-    (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+    ;;  (set-face-attribute 'default nil
+    ;;                     :inherit nil
+    ;;                     :height 160
+    ;;                     :weight 'Regular
+    ;;                     :foundry "microsoft"
+    ;;                     :family "Cascadia Code")
+    ;; (set-face-attribute 'region nil :background "DarkOliveGreen")
+    ;; (set-face-attribute 'highlight nil :background "DarkSeaGreen4")
+    ;; (set-face-attribute 'fringe nil :background "#070018")
+    ;; (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
+    ;; (set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
+    ;; (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
+    ;; (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
+    ;; (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
+    ;; (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
+    ;; (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
   (provide 'emacs-config-new)
 #+END_SRC
