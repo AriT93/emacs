@@ -189,6 +189,7 @@
   (setq consult-narrow-key "<") ;; "C-+"
   :config
   ;; Configure file preview
+  (setq consult-fontify-preserve nil)
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
