@@ -426,7 +426,10 @@
   (require 'doom-themes-ext-org))
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (use-package hc-zenburn-theme
-  :ensure t)
+  :ensure t
+  :custom-face
+  (region ((t (:background "DarkOliveGreen"))))
+  (highlight ((t (:background "DarkSeaGreen4")))))
 (load-theme 'hc-zenburn t)
 
 (use-package nerd-icons
@@ -1649,21 +1652,21 @@
 ;;       (append eglot-server-programs
 ;;               '((java-mode . ("jdtls" "-data" "/path/to/eclipse-workspace")))))
 
-(set-face-attribute 'default nil
-                      :inherit nil
-                      :height 160
-                      :weight 'Regular
-                      :foundry "microsoft"
-                      :family "Cascadia Code")
-  (set-face-attribute 'region nil :background "DarkOliveGreen")
-  (set-face-attribute 'highlight nil :background "DarkSeaGreen4")
-  (set-face-attribute 'fringe nil :background "#070018")
-  (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
-  (set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
-  (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
-  (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
-  (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
-  (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
-  (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+;;  (set-face-attribute 'default nil
+  ;;                     :inherit nil
+  ;;                     :height 160
+  ;;                     :weight 'Regular
+  ;;                     :foundry "microsoft"
+  ;;                     :family "Cascadia Code")
+  ;; (set-face-attribute 'region nil :background "DarkOliveGreen")
+  ;; (set-face-attribute 'highlight nil :background "DarkSeaGreen4")
+  ;; (set-face-attribute 'fringe nil :background "#070018")
+  ;; (set-face-attribute 'header-line nil :box '(:line-width 4 :color "#1d1a26" :style nil))
+  ;; (set-face-attribute 'header-line-highlight nil :box '(:color "#d0d0d0"))
+  ;; (set-face-attribute 'line-number-current-line nil :foreground "PaleGreen2" :italic t)
+  ;; (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
+  ;; (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
+  ;; (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
+  ;; (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
 (provide 'emacs-config-new)
