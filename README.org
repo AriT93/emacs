@@ -1,3 +1,13 @@
-* Emacs Configuration
+#+TITLE: My Emacs Configuration
 
-This repository contains my personal Emacs configuration files.  It includes customizations for various modes, themes, and other settings to enhance my Emacs experience.
+This repository contains my personal Emacs configuration files. It provides a tailored Emacs environment with customizations for various modes, themes, and settings. Key features include:
+
+- Enhanced user interface with a custom theme
+- Streamlined workflow with optimized keybindings
+- Improved support for Org mode and other major modes
+
+To use this configuration:
+
+1.  Clone the repository to `~/.emacs.d`.
+2.  Create a symbolic link to your init file (e.g., `init.el` or `init.org`).
+3.  Start Emacs.
