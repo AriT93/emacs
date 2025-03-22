@@ -1,4 +1,3 @@
 * Emacs Configuration
-Repos need a README. So here is one.
 
-this comment is just testing commit signing test 
+This repository contains my personal Emacs configuration files.  It includes customizations for various modes, themes, and other settings to enhance my Emacs experience.
