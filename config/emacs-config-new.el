@@ -1511,6 +1511,13 @@
     :ensure t)
   (require 'ob-chatgpt-shell)
   (ob-chatgpt-shell-setup)
+(use-package aidermacs
+:bind (("C-c a" . aidermacs-transient-menu))
+:custom
+(aidermacs-use-architect-mode t)
+(aidermacs-default-model "gemini/gemini-2.0-flash"))
+
+(use-package aider)
 
 (use-package magit-delta
   :ensure t

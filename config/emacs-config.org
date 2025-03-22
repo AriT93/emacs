@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-22 13:38:01 abturet>
+#+Time-stamp: <2025-03-22 13:44:37 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -1645,7 +1645,7 @@ Da General give command-t like ease to emacs
       "sr" '(consult-ripgrep :which-key "ripgrep")
       "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
 #+end_src
-** Copilot
+** Copilot and other AI tools
 #+begin_src elisp
     (use-package quelpa-use-package
       :ensure t)
@@ -1705,6 +1705,13 @@ Da General give command-t like ease to emacs
       :ensure t)
     (require 'ob-chatgpt-shell)
     (ob-chatgpt-shell-setup)
+  (use-package aidermacs
+  :bind (("C-c a" . aidermacs-transient-menu))
+  :custom
+  (aidermacs-use-architect-mode t)
+  (aidermacs-default-model "gemini/gemini-2.0-flash"))
+
+  (use-package aider)
 #+end_src
 ** Magit Delta
 delta is better diffs for git
