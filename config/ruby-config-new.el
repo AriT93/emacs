@@ -48,7 +48,7 @@
                 (ruby-block-mode t)
                 (local-set-key (kbd "<return>") 'newline-and-indent)
                 ))
-    (add-hook 'ruby-mode-hook #'eglot-ensure)
+    (add-hook 'ruby-mode-hook #'eglot-ensure))
 ;;    (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "solargraph" "stdio")))
 
 

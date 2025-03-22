@@ -301,7 +301,7 @@
 ;; Add visual directory navigation
 (use-package vertico-directory
   :after vertico
-  :ensure nil
+  :ensure t
   :bind (:map vertico-map
               ("RET" . vertico-directory-enter)
               ("DEL" . vertico-directory-delete-char)
@@ -482,8 +482,8 @@
   :defer 2
   :after flycheck
   :config
-  (flycheck-pos-tip-mode)
-  )
+  (flycheck-pos-tip-mode))
+
 (use-package flycheck
   :defer 2
   :diminish flycheck-mode
@@ -497,8 +497,7 @@
   (flycheck-add-mode 'javascript-jshint 'rjsx-mode)
   (flycheck-add-mode 'javascript-eslint 'jtsx-jsx-mode)
   (flycheck-add-mode 'javascript-jshint 'jrsx-jsx-mode)
-  (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
-  )
+  (flycheck-add-mode 'ruby-rubocop 'ruby-mode))
 
 (server-start)
 
@@ -1072,22 +1071,17 @@
 
 (use-package project
   :ensure nil  ;; Built into Emacs
+  :bind-keymap
+  ("C-c p" . project-prefix-map)
   :config
   ;; Project switching should open dired, like your projectile config
   (setq project-switch-commands 'project-dired)
-  
   ;; Customize project.el
   (setq project-switch-use-entire-map t)
-  
   ;; Add project root detection for common VCS beyond Git
   (add-to-list 'project-find-functions #'project-try-vc)
-  
   ;; Project completion uses the same system as your other completions
-  (setq project-read-file-name-function #'project--read-file-cpd-relative)
-  
-  ;; Global keybinding for project commands (similar to your C-c p for projectile)
-  :bind-keymap
-  ("C-c p" . project-prefix-map))
+  (setq project-read-file-name-function #'project--read-file-cpd-relative))
 
 (add-to-list 'auto-mode-alist
              (cons
@@ -1619,13 +1613,13 @@
   (setq eglot-events-buffer-size 0) ;; Don't keep events buffer
   (setq eglot-sync-connect nil)     ;; Don't block when connecting
   (setq eglot-autoshutdown t)       ;; Shutdown unused servers
-  
+
   ;; Extend timeout for large projects
   (setq eglot-connect-timeout 10)
-  
+
   ;; Custom servers configuration if needed
-;;  (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "solargraph" "stdio")))
-  
+  ;;  (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "solargraph" "stdio")))
+
   ;; Key bindings similar to your LSP setup
   :bind (:map eglot-mode-map
               ("C-c l f" . eglot-format)
@@ -1641,20 +1635,22 @@
 ;; Alternative to lsp-ui-doc using eldoc
 (setq eldoc-echo-area-use-multiline-p t)
 (setq eldoc-echo-area-display-truncation-message nil)
-(setq eldoc-echo-area-prefer-doc-buffer t)
+(setq eldoc-echo-area-prefer-doc-buffer t))
 
-;; Replace lsp-java with eglot-java configuration
-(use-package eglot-java
-  :ensure t
-  :after eglot
-  :config
-  (setq eglot-java-eclipse-jdt-args 
-        '("-configuration" "~/.emacs.d/share/eclipse.jdt.ls/config"
-          "-data" "/path/to/eclipse-workspace")))
+#+begin_src elisp
+  ;; Replace lsp-java with eglot-java configuration
+  (use-package eglot-java
+    :ensure t
+    :after eglot
+    :config
+    (setq eglot-java-eclipse-jdt-args
+          '("-configuration" "~/.emacs.d/share/eclipse.jdt.ls/config"
+            "-data" "/path/to/eclipse-workspace")))
 
-;; (setq eglot-server-programs
-;;       (append eglot-server-programs
-;;               '((java-mode . ("jdtls" "-data" "/path/to/eclipse-workspace")))))
+  ;; (setq eglot-server-programs
+  ;;       (append eglot-server-programs
+  ;;               '((java-mode . ("jdtls" "-data" "/path/to/eclipse-workspace")))))
+#+end_src
 
 ;;  (set-face-attribute 'default nil
   ;;                     :inherit nil
