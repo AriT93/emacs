@@ -4,7 +4,7 @@
 ;;; this is my custom functions
 ;;; History: long ago in a different time.  check git log for deets
 ;;; Code:
-;;; test
+
 (defun dos-to-unix ()
   "Convert DOS line endings to Unix line endings in the current buffer."
   (interactive)
@@ -14,6 +14,8 @@
       (goto-char (point-min))
       (while (search-forward "\r\n" nil t)
         (replace-match "\n" nil t)))))
+
+
 
 (defun unix-to-dos ()
   "Convert Unix line endings to DOS line endings in the current buffer."
@@ -34,12 +36,11 @@
 
 (defun djcb-opacity-modify (&optional dec)
   "Modify the transparency of the EMACS frame; If DEC is t, decrease the transparency, otherwise increase it in 10%-steps."
-  (interactive)
   (let* ((alpha-or-nil (frame-parameter nil 'alpha)) ; nil before setting
          (oldalpha (if alpha-or-nil alpha-or-nil 100))
          (newalpha (if dec (- oldalpha 10) (+ oldalpha 10))))
     (when (and (>= newalpha frame-alpha-lower-limit) (<= newalpha 100))
-      (modify-frame-parameters nil `((alpha . ,newalpha))))))
+      (modify-frame-parameters nil (list (cons 'alpha newalpha))))))
 
 (defun fg/jira-update-heading ()
 "Update heading for Jira Issue at point."

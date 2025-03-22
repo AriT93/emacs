@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-03-15 08:20:52 abturet>
+#+Time-stamp: <2025-03-22 13:38:01 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
