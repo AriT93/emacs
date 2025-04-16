@@ -17,14 +17,14 @@
 ;;(setq user-mail-address "arit93@gmail.com")
 (defvar starttls-use-gnutls t)
 (defvar gnus-nntp-server "news.eternal-september.org")
-(setq gnus-select-method '(nnspool ""))
+(setq gnus-select-method '(nntp "news-eternal-september.org"(nntp-port 119)))
 (defvar nntp-authinfo-file "~/.authinfo.gpg")
 (add-hook 'gnus-article-mode-hook 'visual-line-mode)
 
 (use-package nnreddit
   :ensure t
   :init
-  (setq nnreddit-python-command "python3")
+  (setq nnreddit-python-command "python3.8")
   :config
   (add-to-list 'gnus-secondary-select-methods '(nnreddit ""))
 )
