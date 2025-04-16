@@ -17,6 +17,7 @@
 ;;(setq user-mail-address "arit93@gmail.com")
 (defvar starttls-use-gnutls t)
 (defvar gnus-nntp-server "news.eternal-september.org")
+(setq gnus-select-method '(nnspool ""))
 (defvar nntp-authinfo-file "~/.authinfo.gpg")
 (add-hook 'gnus-article-mode-hook 'visual-line-mode)
 

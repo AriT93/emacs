@@ -32,6 +32,13 @@
 
 (require 'load-path-config-new)
 
+(defun ensure-gpg-agent-running ()
+  "Ensure that gpg-agent is running."
+  (unless (get-process "gpg-agent")
+    (start-process "gpg-agent" nil "gpg-agent" "--daemon")))
+
+(add-hook 'emacs-startup-hook 'ensure-gpg-agent-running)
+
 (set-face-attribute 'default nil
                     :inherit nil
                     :height 160
@@ -50,45 +57,45 @@
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
 (show-paren-mode 1)
-  (recentf-mode 1)
-  (fringe-mode 10)
-  (tool-bar-mode -1)
-(menu-bar-mode -1)
-  (setq recentf-max-menu-items 25)
-  (setq recentf-max-saved-items 25)
-  (setq undo-limit 8000000)
-  (setq undo-strong-limit 12000000)
-  (setq undo-outer-limit 12000000)
-  (setq read-process-output-max (* 2048 2048))
-  (setq inhibit-startup-screen t)
-  (setq inhibit-splash-screen t)
-  (setq uniquify-buffer-name-style t)
-  (setq uniquify-buffer-name-style (quote post-forward))
-  (setq uniquify-min-dir-content 0)
-  (electric-pair-mode 1)
-  (setq cal-tex-diary t)
-  (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
-  (add-hook 'diary-display-hook 'fancy-diary-display)
-  (add-hook 'text-mode-hook ' turn-on-auto-fill)
-  (add-hook 'before-save-hook 'time-stamp)
-  (setq dired-omit-files-p t)
-  (setq tramp-auto-save-directory "~/tmp")
-  (setq backup-directory-alist
-        '((".*" . "~/tmp/")))
-  (setq message-log-max 1000)
-  (setq help-at-pt-display-when-idle t)
-  (setq help-at-pt-timer-delay 0.1)
-  (help-at-pt-set-timer)
-  (setq show-paren-style 'mixed)
-  (setq mode-line-in-non-selected-windows nil)
-  (fset 'yes-or-no-p 'y-or-n-p)
-  (setq browse-url-browser-function 'browse-url-default-browser)
-  (add-hook 'eww-after-render-hook 'eww-readable)
-  (add-hook 'eww-after-render-hook 'visual-line-mode)
-  (setq native-comp-speed 2)
-  (setq package-native-compile t)
-  (require 'xwidget)
-  (setq alert-default-style 'notifier)
+(recentf-mode 1)
+(fringe-mode 10)
+(tool-bar-mode -1)
+(menu-bar-mode t)
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 25)
+(setq undo-limit 8000000)
+(setq undo-strong-limit 12000000)
+(setq undo-outer-limit 12000000)
+(setq read-process-output-max (* 2048 2048))
+(setq inhibit-startup-screen t)
+(setq inhibit-splash-screen t)
+(setq uniquify-buffer-name-style t)
+(setq uniquify-buffer-name-style (quote post-forward))
+(setq uniquify-min-dir-content 0)
+(electric-pair-mode 1)
+(setq cal-tex-diary t)
+(setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
+(add-hook 'diary-display-hook 'fancy-diary-display)
+(add-hook 'text-mode-hook ' turn-on-auto-fill)
+(add-hook 'before-save-hook 'time-stamp)
+(setq dired-omit-files-p t)
+(setq tramp-auto-save-directory "~/tmp")
+(setq backup-directory-alist
+      '((".*" . "~/tmp/")))
+(setq message-log-max 1000)
+(setq help-at-pt-display-when-idle t)
+(setq help-at-pt-timer-delay 0.1)
+(help-at-pt-set-timer)
+(setq show-paren-style 'mixed)
+(setq mode-line-in-non-selected-windows nil)
+(fset 'yes-or-no-p 'y-or-n-p)
+(setq browse-url-browser-function 'browse-url-default-browser)
+(add-hook 'eww-after-render-hook 'eww-readable)
+(add-hook 'eww-after-render-hook 'visual-line-mode)
+(setq native-comp-speed 2)
+(setq package-native-compile t)
+(require 'xwidget)
+(setq alert-default-style 'notifier)
 
 ;;; follow links in xwidgets
 (use-package xwwp
@@ -539,6 +546,7 @@
   (org-block-begin-line ((t (:family "Cascadia Code" :italic t))))
   (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
   :config
+  (setq org-startup-indented t)
   (setq org-default-notes-file "~/Documents/notes/notes.org")
   (add-to-list 'org-latex-classes
                '("novel" "\\documentclass{novel}"
@@ -581,7 +589,7 @@
 (require 'ox-jira)
 (add-hook 'org-modern-mode-hook 'org-variable-pitch-minor-mode)
 (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
-
+(add-hook 'org-mode-hook 'org-indent-mode)
 (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 
 (use-package biblio
@@ -784,11 +792,10 @@
 ;;   (setq zenburn-scale-outline-headlines t)
 ;;   )
 
-;; (use-package vscode-dark-plus-theme
-;;   :ensure t
-;;   :after ace-window
-;;   :init
-;;   (load-theme 'vscode-dark-plus t))
+ ;; (use-package vscode-dark-plus-theme
+ ;;   :ensure t
+ ;;   :config
+ ;;   (load-theme 'vscode-dark-plus t))
 
 (use-package exec-path-from-shell
   :ensure t
