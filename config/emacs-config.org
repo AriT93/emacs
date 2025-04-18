@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-04-16 13:27:30 ari.turetzky>
+#+Time-stamp: <2025-04-18 15:20:37 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -628,6 +628,7 @@ eventually to make it more manageable
 #+BEGIN_SRC elisp
   (require 'ox-latex)
   (use-package org
+    :straight :type (built-in)
     :pin nongnu
     :ensure t
     :custom-face
@@ -1887,6 +1888,12 @@ who knows it might catch on
   ;; (setq eglot-server-programs
   ;;       (append eglot-server-programs
   ;;               '((java-mode . ("jdtls" "-data" "/path/to/eclipse-workspace")))))
+#+end_src
+** Go Mode
+#+begin_src elisp
+  (use-package go-mode
+    :ensure t
+    :hook (go-mode . eglot-ensure))
 #+end_src
 ** Tell the world we are providing something useful
 End

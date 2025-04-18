@@ -536,6 +536,7 @@
 
 (require 'ox-latex)
 (use-package org
+  :straight :type (built-in)
   :pin nongnu
   :ensure t
   :custom-face
@@ -1669,6 +1670,10 @@
 ;; (setq eglot-server-programs
 ;;       (append eglot-server-programs
 ;;               '((java-mode . ("jdtls" "-data" "/path/to/eclipse-workspace")))))
+
+(use-package go-mode
+  :ensure t
+  :hook (go-mode . eglot-ensure))
 
 ;;  (set-face-attribute 'default nil
   ;;                     :inherit nil
