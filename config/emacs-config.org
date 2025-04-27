@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-04-27 11:51:03 abturet>
+#+Time-stamp: <2025-04-27 11:52:48 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -1934,6 +1934,8 @@ the slackiest way to slack in emacs
     (slack-block-highlight-source t)
     (slack-enable-wysiwyg t)
     (slack-buffer-emojify t)
+    (slack-buffer-emojify t)
+    (slack-thread-also-send-to-room nil)
     :config
     (slack-register-team
      :name "arit93"
@@ -1944,7 +1946,6 @@ the slackiest way to slack in emacs
               :host "arit93.slack.com"
               :user "arit93^cookie")
      :full-and-display-names t
-     :default t
      :subscribed-channels nil ; Can change it dynamically
      )
     (slack-register-team
@@ -1961,6 +1962,7 @@ the slackiest way to slack in emacs
      )
     (slack-register-team
      :name "Development"
+     :default t
      :enterprise-token (auth-source-pick-first-password
                         :host "workdaydev.slack.com"
                         :user "etoken")

@@ -1711,6 +1711,8 @@
   (slack-block-highlight-source t)
   (slack-enable-wysiwyg t)
   (slack-buffer-emojify t)
+  (slack-buffer-emojify t)
+  (slack-thread-also-send-to-room nil)
   :config
   (slack-register-team
    :name "arit93"
@@ -1721,7 +1723,6 @@
             :host "arit93.slack.com"
             :user "arit93^cookie")
    :full-and-display-names t
-   :default t
    :subscribed-channels nil ; Can change it dynamically
    )
   (slack-register-team
@@ -1738,6 +1739,7 @@
    )
   (slack-register-team
    :name "Development"
+   :default t
    :enterprise-token (auth-source-pick-first-password
                       :host "workdaydev.slack.com"
                       :user "etoken")
