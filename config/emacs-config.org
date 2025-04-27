@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-04-27 11:04:55 abturet>
+#+Time-stamp: <2025-04-27 11:51:03 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -1898,6 +1898,8 @@ who knows it might catch on
 ** emacs-slack
 the slackiest way to slack in emacs
 #+begin_src elisp
+  (use-package language-detection
+    :ensure t)
   (use-package slack
     :ensure t
     :bind (("C-c S K" . slack-stop)
@@ -1929,6 +1931,8 @@ the slackiest way to slack in emacs
     :custom
     (slack-extra-subscribed-channels (mapcar 'intern (list "general" "devx-isb-console")))
     (slack-update-quick t)
+    (slack-block-highlight-source t)
+    (slack-enable-wysiwyg t)
     (slack-buffer-emojify t)
     :config
     (slack-register-team

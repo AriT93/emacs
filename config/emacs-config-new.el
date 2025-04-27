@@ -1675,6 +1675,8 @@
   :ensure t
   :hook (go-mode . eglot-ensure))
 
+(use-package language-detection
+  :ensure t)
 (use-package slack
   :ensure t
   :bind (("C-c S K" . slack-stop)
@@ -1706,6 +1708,8 @@
   :custom
   (slack-extra-subscribed-channels (mapcar 'intern (list "general" "devx-isb-console")))
   (slack-update-quick t)
+  (slack-block-highlight-source t)
+  (slack-enable-wysiwyg t)
   (slack-buffer-emojify t)
   :config
   (slack-register-team
