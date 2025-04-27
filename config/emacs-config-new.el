@@ -1706,6 +1706,7 @@
   :custom
   (slack-extra-subscribed-channels (mapcar 'intern (list "general" "devx-isb-console")))
   (slack-update-quick t)
+  (slack-buffer-emojify t)
   :config
   (slack-register-team
    :name "arit93"
