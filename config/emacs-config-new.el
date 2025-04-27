@@ -1675,6 +1675,75 @@
   :ensure t
   :hook (go-mode . eglot-ensure))
 
+(use-package slack
+  :ensure t
+  :bind (("C-c S K" . slack-stop)
+         ("C-c S c" . slack-select-rooms)
+         ("C-c S u" . slack-select-unread-rooms)
+         ("C-c S U" . slack-user-select)
+         ("C-c S s" . slack-search-from-messages)
+         ("C-c S J" . slack-jump-to-browser)
+         ("C-c S j" . slack-jump-to-app)
+         ("C-c S e" . slack-insert-emoji)
+         ("C-c S E" . slack-message-edit)
+         ("C-c S r" . slack-message-add-reaction)
+         ("C-c S t" . slack-thread-show-or-create)
+         ("C-c S g" . slack-message-redisplay)
+         ("C-c S G" . slack-conversations-list-update-quick)
+         ("C-c S q" . slack-quote-and-reply)
+         ("C-c S Q" . slack-quote-and-reply-with-link)
+         (:map slack-mode-map
+               (("@" . slack-message-embed-mention)
+                ("#" . slack-message-embed-channel)))
+         (:map slack-thread-message-buffer-mode-map
+               (("C-c '" . slack-message-write-another-buffer)
+                ("@" . slack-message-embed-mention)
+                ("#" . slack-message-embed-channel)))
+         (:map slack-message-buffer-mode-map
+               (("C-c '" . slack-message-write-another-buffer)))
+         (:map slack-message-compose-buffer-mode-map
+               (("C-c '" . slack-message-send-from-buffer))))
+  :custom
+  (slack-extra-subscribed-channels (mapcar 'intern (list "general" "devx-isb-console")))
+  (slack-update-quick t)
+  :config
+  (slack-register-team
+   :name "arit93"
+   :token (auth-source-pick-first-password
+           :host "arit93.slack.com"
+           :user "arit93")
+   :cookie (auth-source-pick-first-password
+            :host "arit93.slack.com"
+            :user "arit93^cookie")
+   :full-and-display-names t
+   :default t
+   :subscribed-channels nil ; Can change it dynamically
+   )
+  (slack-register-team
+   :name "uhacc"
+   :token (auth-source-pick-first-password
+           :host "uhacc.slack.com"
+           :user "arit93")
+   :cookie (auth-source-pick-first-password
+            :host "uhacc.slack.com"
+            :user "arit93^cookie")
+   :full-and-display-names t
+   :default t
+   :subscribed-channels nil ; Can change it dynamically
+   )
+  (slack-register-team
+   :name "Development"
+   :enterprise-token (auth-source-pick-first-password
+                      :host "workdaydev.slack.com"
+                      :user "etoken")
+   :token (auth-source-pick-first-password
+           :host "workdaydev.slack.com"
+           :user "arit93")
+   :cookie (auth-source-pick-first-password
+            :host "workdaydev.slack.com"
+            :user "cookie")
+   :subsribed-channels nil ))
+
 ;;  (set-face-attribute 'default nil
   ;;                     :inherit nil
   ;;                     :height 160
