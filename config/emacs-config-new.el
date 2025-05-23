@@ -1480,9 +1480,16 @@
 ;; ;; you can utilize :map :hook and :config to customize copilot
   (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
 
-  (use-package chatgpt-shell
-    :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
-    :ensure t)
+(use-package chatgpt-shell
+  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
+  :ensure t
+  :custom
+  (chatgpt-shell-openai-key
+      (auth-source-pick-first-password :host  "api.openai.com" :user "apikey"))
+  (chatgpt-shell-anthropic-key
+   (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey")))
+(require 'chatgpt-shell)
+
   (straight-use-package 'gptel
     :ensure t)
 (with-eval-after-load 'gptel (add-hook 'gptel-post-stream-hook  'gptel-auto-scroll))
