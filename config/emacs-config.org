@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-04-27 11:52:48 abturet>
+#+Time-stamp: <2025-05-01 13:30:20 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -91,6 +91,7 @@ want from faces
   (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
   (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
   (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
+  
 
 #+end_src
 #+BEGIN_SRC elisp
@@ -582,7 +583,8 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (flycheck-add-mode 'javascript-eslint 'jtsx-jsx-mode)
     (flycheck-add-mode 'javascript-jshint 'jrsx-jsx-mode)
     (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
-    )
+    :custom 
+    (flycheck-disabled-checkers '(ruby-reek)))
 #+END_SRC
 
 ** Start up the emacs server
@@ -1018,31 +1020,33 @@ This is kinda like that part in the bible with all the begats...
 
 ** Set up HighLine mode
 #+BEGIN_SRC elisp
-  (use-package highline
-    :ensure t
-    :defer 2
-    :config
-    (global-highline-mode t)
-    (setq highline-face '((:background "gray40")))
-    (setq highline-vertical-face '(( :background "lemonChiffon2"))))
+      (use-package highline
+        :ensure t
+        :defer 2
+        :config
+        (global-highline-mode t)
+        (setq highline-face '((:background "gray40")))
+        (setq highline-vertical-face '(( :background "lemonChiffon2"))))
 
 
-  (column-number-mode)
-  (global-display-line-numbers-mode t)
+      (column-number-mode)
+      (global-display-line-numbers-mode t)
 
-  ;; Disable line numbers for some modes
-  (dolist (mode '(org-mode-hook
-                  org-modern-mode
-                  erc-mode-hook
-                  term-mode-hook
-                  eshell-mode-hook
-                  vterm-mode-hook
-                  treemacs-mode-hook
-                  gnus-mode-hook
-                  mu4e-view-mode-hook
-                  gnus-article-mode-hook
-                  dashboard-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+      ;; Disable line numbers for some modes
+      (dolist (mode '(org-mode-hook
+                      org-modern-mode
+                      erc-mode-hook
+                      term-mode-hook
+                      eshell-mode-hook
+                      vterm-mode-hook
+                      treemacs-mode-hook
+                      gnus-mode-hook
+                      mu4e-view-mode-hook
+                      gnus-article-mode-hook
+                      dashboard-mode-hook
+                      slack-mode-hook
+                      slack-message-buffer-mode-hook))
+        (add-hook mode (lambda () (display-line-numbers-mode 0))))
 #+END_SRC
 
 ** Company
@@ -1683,6 +1687,8 @@ Da General give command-t like ease to emacs
 
     (use-package copilot-chat
       :ensure t
+      :config
+      (copilot-chat-default-model "claude-3.7-sonnet-thought")
       :custom
       (copilot-chat-frontend  'org))
 
@@ -1901,6 +1907,9 @@ the slackiest way to slack in emacs
   (use-package language-detection
     :ensure t)
   (use-package slack
+    :custom-face
+    (slack-mrkdwn-code-face ((t ( :foreground "DarkOrange3"))))
+    (lui-button-face ((t (:foreground "DodgerBlue" :underline t))))
     :ensure t
     :bind (("C-c S K" . slack-stop)
            ("C-c S c" . slack-select-rooms)

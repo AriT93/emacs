@@ -505,7 +505,8 @@
   (flycheck-add-mode 'javascript-eslint 'jtsx-jsx-mode)
   (flycheck-add-mode 'javascript-jshint 'jrsx-jsx-mode)
   (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
-  )
+  :custom 
+  (flycheck-disabled-checkers '(ruby-reek)))
 
 (server-start)
 
@@ -911,7 +912,9 @@
                 gnus-mode-hook
                 mu4e-view-mode-hook
                 gnus-article-mode-hook
-                dashboard-mode-hook))
+                dashboard-mode-hook
+                slack-mode-hook
+                slack-message-buffer-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package corfu
@@ -1487,6 +1490,8 @@
 
   (use-package copilot-chat
     :ensure t
+    :config
+    (copilot-chat-default-model "claude-3.7-sonnet-thought")
     :custom
     (copilot-chat-frontend  'org))
 
@@ -1678,6 +1683,9 @@
 (use-package language-detection
   :ensure t)
 (use-package slack
+  :custom-face
+  (slack-mrkdwn-code-face ((t ( :foreground "DarkOrange3"))))
+  (lui-button-face ((t (:foreground "DodgerBlue" :underline t))))
   :ensure t
   :bind (("C-c S K" . slack-stop)
          ("C-c S c" . slack-select-rooms)

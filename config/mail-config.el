@@ -1,4 +1,4 @@
-;;;mail-config --- Summary
+;;; mail-config --- Summary -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -180,3 +180,4 @@
       epg-gpg-program "gpg2"                    ; program for encryption
       )
   (provide 'mail-config)
+;;; mail-config.el ends here

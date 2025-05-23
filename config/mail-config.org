@@ -7,7 +7,7 @@
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
 #+BEGIN_SRC elisp
-;;;mail-config --- Summary
+;;; mail-config --- Summary -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 #+END_SRC
@@ -191,6 +191,7 @@
         epg-gpg-program "gpg2"                    ; program for encryption
         )
     (provide 'mail-config)
+  ;;; mail-config.el ends here
 #+END_SRC
 
 #+DESCRIPTION: Literate source for my Emacs configuration
