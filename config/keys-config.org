@@ -6,6 +6,7 @@
 * Keyboard shortcuts
 ** Navigation commands
 #+BEGIN_SRC elisp
+;; -*- lexical-binding: t; -*-
  (global-set-key [home] 'beginning-of-line)
  (global-set-key [end]  'end-of-line)
  (global-set-key [C-home] 'beginning-of-buffer)

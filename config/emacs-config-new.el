@@ -1,4 +1,5 @@
-(require 'package)
+;; -*- lexical-binding: t; -*-
+  (require 'package)
 
 (setq package-archives '(
                          ("melpa"  . "https://melpa.org/packages/")
@@ -537,7 +538,7 @@
 
 (require 'ox-latex)
 (use-package org
-  :straight :type (built-in)
+  :straight
   :pin nongnu
   :ensure t
   :custom-face
@@ -1497,10 +1498,9 @@
 
   (use-package copilot-chat
     :ensure t
-    :config
-    (copilot-chat-default-model "claude-3.7-sonnet-thought")
     :custom
-    (copilot-chat-frontend  'org))
+    (copilot-chat-frontend  'org)
+    (copilot-chat-default-model "claude-3.7-sonnet-thought"))
 
 
   (let ((model-config '((:version . "gpt-4o-mini") (:short-version)

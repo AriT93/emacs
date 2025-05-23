@@ -1,10 +1,11 @@
-(global-set-key [home] 'beginning-of-line)
-(global-set-key [end]  'end-of-line)
-(global-set-key [C-home] 'beginning-of-buffer)
-(global-set-key [C-end] 'end-of-buffer)
+;; -*- lexical-binding: t; -*-
+ (global-set-key [home] 'beginning-of-line)
+ (global-set-key [end]  'end-of-line)
+ (global-set-key [C-home] 'beginning-of-buffer)
+ (global-set-key [C-end] 'end-of-buffer)
 
-(global-set-key [pause] 'erase-buffer)
-(global-set-key [f4] 'goto-line )
+ (global-set-key [pause] 'erase-buffer)
+ (global-set-key [f4] 'goto-line )
 
 (global-set-key [f12] 'write-blog)
 (global-set-key [S-f12] 'write-blog-daily)

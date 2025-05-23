@@ -5,6 +5,7 @@
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Load path setting to add stuff that isn't around in a packae yet
 #+BEGIN_SRC elisp
+;; -*- lexical-binding: t; -*-
   (message "loading load-path-config")
   (add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
   (add-to-list 'load-path (expand-file-name "~/emacs/site/color-theme/themes"))

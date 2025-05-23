@@ -1,5 +1,4 @@
-# coding: utf-8
-#+TITLE: Ruby Configuration options
+TITLE: Ruby Configuration options
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config ruby
@@ -9,9 +8,11 @@
 
 first a little housekeeping for the linter
 #+BEGIN_SRC elisp
-;;; ruby-config --- Summary
+;; -*- lexical-binding: t; -*-
+;;; ruby-config --- Summary 
 ;;; Commentary:
 ;;; Code:
+;;; coding: utf-8  -*- lexical-binding: t; -*-
 #+END_SRC
 
 ** Set up some autoloads and associate files
@@ -127,10 +128,10 @@ damn this is a mess
 (provide 'ruby-config-new)
 ;;; ruby-config-new ends here
 #+END_SRC
-    #+DESCRIPTION: Literate source for my Ruby configuration
-    #+PROPERTY: header-args:elisp :tangle ~/emacs/config/ruby-config-new.el
-    #+PROPERTY: header-args:ruby :tangle no
-    #+PROPERTY: header-args:shell :tangle no
-    #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
-    #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
-    #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+DESCRIPTION: Literate source for my Ruby configuration
+#+PROPERTY: header-args:elisp :tangle ~/emacs/config/ruby-config-new.el
+#+PROPERTY: header-args:ruby :tangle no
+#+PROPERTY: header-args:shell :tangle no
+#+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
+#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js

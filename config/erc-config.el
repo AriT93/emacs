@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 
 
 (message "loading erc-config")

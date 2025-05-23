@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;;; gnus-config --- Summary
 ;;; Commentary:
 ;;; Code:

@@ -1,6 +1,8 @@
-;;; ruby-config --- Summary
+;; -*- lexical-binding: t; -*-
+;;; ruby-config --- Summary 
 ;;; Commentary:
 ;;; Code:
+;;; coding: utf-8  -*- lexical-binding: t; -*-
 
 (autoload 'ruby-mode "ruby-mode" "Ruby editing mode." t)
 (setq auto-mode-alist (cons '("\\.rb$" . ruby-mode)  auto-mode-alist))
