@@ -1,4 +1,3 @@
-# coding: utf-8
 #+TITLE:  Emacs Mail Configuration options
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
@@ -6,12 +5,14 @@
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/mail-config.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
+* Mail Configuration
 #+BEGIN_SRC elisp
 ;;; mail-config --- Summary -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 #+END_SRC
 
+* SMTP and Mu4e Setup
 #+BEGIN_SRC elisp
     (require 'smtpmail)
     (add-to-list 'load-path "~/dev/git/mu/build/mu4e/")

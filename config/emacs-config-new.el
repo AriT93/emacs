@@ -1632,8 +1632,7 @@
 
 (use-package eglot
   :ensure t
-  :hook ((ruby-mode . eglot-ensure)
-         (python-ts-mode . eglot-ensure)
+  :hook ((python-ts-mode . eglot-ensure)
          (java-mode . eglot-ensure)
          (go-ts-mode . eglot-ensure)
          (js-ts-mode . eglot-ensure)
@@ -1648,14 +1647,15 @@
          (js2-mode . eglot-ensure)
          (js-mode . eglot-ensure)
          (rjsx-mode . eglot-ensure)
-         (jtsx-jsx-mode . eglot-ensure))
+         (jtsx-jsx-mode . eglot-ensure)
+         (text-mode . eglot-ensure))
   :config
   ;; Performance settings
   (setq eglot-events-buffer-size 0) ;; Don't keep events buffer
   (setq eglot-sync-connect nil)     ;; Don't block when connecting
   (setq eglot-autoshutdown t)       ;; Shutdown unused servers
   (setq eglot-connect-timeout 10)   ;; Extend timeout for large projects
-  
+  (add-to-list 'eglot-server-programs '(text-mode . ("harper-ls" "--stdio")))
   ;; Better completion and diagnostics
   (setq eglot-send-changes-idle-time 0.5)
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
@@ -1676,6 +1676,14 @@
               ("C-c l a" . eglot-code-actions)
               ("C-c l r" . eglot-rename)
               ("C-c l d" . xref-find-definitions)))
+
+;; Add EGLOT for Ruby tree-sitter mode if available
+(when (fboundp 'ruby-ts-mode)
+  (add-hook 'ruby-ts-mode-hook #'eglot-ensure))
+
+;; Fallback for traditional ruby-mode if tree-sitter not available
+(unless (fboundp 'ruby-ts-mode)
+  (add-hook 'ruby-mode-hook #'eglot-ensure))
 
 ;; Using built-in flymake instead of flycheck for diagnostics
 (use-package flymake

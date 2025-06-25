@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-05-23 11:04:47 abturet>
+#+Time-stamp: <2025-06-25 13:53:24 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -1847,163 +1847,170 @@ who knows it might catch on
     (procress-load-default-svg-images))
 #+end_src
 #+BEGIN_SRC elisp
-(use-package eglot
-  :ensure t
-  :hook ((ruby-mode . eglot-ensure)
-         (python-ts-mode . eglot-ensure)
-         (java-mode . eglot-ensure)
-         (go-ts-mode . eglot-ensure)
-         (js-ts-mode . eglot-ensure)
-         (typescript-ts-mode . eglot-ensure)
-         (tsx-ts-mode . eglot-ensure)
-         (rust-ts-mode . eglot-ensure)
-         (c-ts-mode . eglot-ensure)
-         (c++-ts-mode . eglot-ensure)
-         ;; Keep legacy modes for compatibility
-         (python-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         (js2-mode . eglot-ensure)
-         (js-mode . eglot-ensure)
-         (rjsx-mode . eglot-ensure)
-         (jtsx-jsx-mode . eglot-ensure))
-  :config
-  ;; Performance settings
-  (setq eglot-events-buffer-size 0) ;; Don't keep events buffer
-  (setq eglot-sync-connect nil)     ;; Don't block when connecting
-  (setq eglot-autoshutdown t)       ;; Shutdown unused servers
-  (setq eglot-connect-timeout 10)   ;; Extend timeout for large projects
+  (use-package eglot
+    :ensure t
+    :hook ((python-ts-mode . eglot-ensure)
+           (java-mode . eglot-ensure)
+           (go-ts-mode . eglot-ensure)
+           (js-ts-mode . eglot-ensure)
+           (typescript-ts-mode . eglot-ensure)
+           (tsx-ts-mode . eglot-ensure)
+           (rust-ts-mode . eglot-ensure)
+           (c-ts-mode . eglot-ensure)
+           (c++-ts-mode . eglot-ensure)
+           ;; Keep legacy modes for compatibility
+           (python-mode . eglot-ensure)
+           (go-mode . eglot-ensure)
+           (js2-mode . eglot-ensure)
+           (js-mode . eglot-ensure)
+           (rjsx-mode . eglot-ensure)
+           (jtsx-jsx-mode . eglot-ensure)
+           (text-mode . eglot-ensure))
+    :config
+    ;; Performance settings
+    (setq eglot-events-buffer-size 0) ;; Don't keep events buffer
+    (setq eglot-sync-connect nil)     ;; Don't block when connecting
+    (setq eglot-autoshutdown t)       ;; Shutdown unused servers
+    (setq eglot-connect-timeout 10)   ;; Extend timeout for large projects
+    (add-to-list 'eglot-server-programs '(text-mode . ("harper-ls" "--stdio")))
+    ;; Better completion and diagnostics
+    (setq eglot-send-changes-idle-time 0.5)
+    (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+    
+    ;; Additional performance optimizations
+    (setq eglot-extend-to-xref t)
+    (setq eglot-prefer-plaintext t)
+    
+    ;; Better error handling and logging
+    (setq eglot-confirm-server-initiated-edits nil)
+    
+    ;; Completion improvements
+    (setq eglot-completion-at-point-function #'eglot-completion-at-point)
+    
+    ;; Key bindings
+    :bind (:map eglot-mode-map
+                ("C-c l f" . eglot-format)
+                ("C-c l a" . eglot-code-actions)
+                ("C-c l r" . eglot-rename)
+                ("C-c l d" . xref-find-definitions)))
+
+  ;; Add EGLOT for Ruby tree-sitter mode if available
+  (when (fboundp 'ruby-ts-mode)
+    (add-hook 'ruby-ts-mode-hook #'eglot-ensure))
   
-  ;; Better completion and diagnostics
-  (setq eglot-send-changes-idle-time 0.5)
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
-  
-  ;; Additional performance optimizations
-  (setq eglot-extend-to-xref t)
-  (setq eglot-prefer-plaintext t)
-  
-  ;; Better error handling and logging
-  (setq eglot-confirm-server-initiated-edits nil)
-  
-  ;; Completion improvements
-  (setq eglot-completion-at-point-function #'eglot-completion-at-point)
-  
-  ;; Key bindings
-  :bind (:map eglot-mode-map
-              ("C-c l f" . eglot-format)
-              ("C-c l a" . eglot-code-actions)
-              ("C-c l r" . eglot-rename)
-              ("C-c l d" . xref-find-definitions)))
+  ;; Fallback for traditional ruby-mode if tree-sitter not available
+  (unless (fboundp 'ruby-ts-mode)
+    (add-hook 'ruby-mode-hook #'eglot-ensure))
 
-;; Using built-in flymake instead of flycheck for diagnostics
-(use-package flymake
-  :ensure t
-  :hook (eglot-managed-mode . flymake-mode))
+  ;; Using built-in flymake instead of flycheck for diagnostics
+  (use-package flymake
+    :ensure t
+    :hook (eglot-managed-mode . flymake-mode))
 
-;; Enhanced eldoc configuration
-(setq eldoc-echo-area-use-multiline-p t)
-(setq eldoc-echo-area-display-truncation-message nil)
-(setq eldoc-echo-area-prefer-doc-buffer t)
+  ;; Enhanced eldoc configuration
+  (setq eldoc-echo-area-use-multiline-p t)
+  (setq eldoc-echo-area-display-truncation-message nil)
+  (setq eldoc-echo-area-prefer-doc-buffer t)
 
-;; Better EGLOT integration with consult and embark
-(use-package consult-eglot
-  :ensure t
-  :after (eglot consult)
-  :config
-  ;; Use consult for EGLOT commands
-  (setq eglot-completion-at-point-function #'eglot-completion-at-point)
-  
-  ;; Better xref integration
-  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+  ;; Better EGLOT integration with consult and embark
+  (use-package consult-eglot
+    :ensure t
+    :after (eglot consult)
+    :config
+    ;; Use consult for EGLOT commands
+    (setq eglot-completion-at-point-function #'eglot-completion-at-point)
+    
+    ;; Better xref integration
+    (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
 
-;; EGLOT code actions with embark
-(use-package embark
-  :ensure t
-  :after eglot
-  :config
-  ;; Add EGLOT actions to embark
-  (add-to-list 'embark-keymap-alist '(eglot-mode . embark-eglot-map)))
+  ;; EGLOT code actions with embark
+  (use-package embark
+    :ensure t
+    :after eglot
+    :config
+    ;; Add EGLOT actions to embark
+    (add-to-list 'embark-keymap-alist '(eglot-mode . embark-eglot-map)))
 
-;; Better language server fallbacks and error handling
-(defun eglot-safe-ensure ()
-  "Safely ensure EGLOT is enabled with error handling."
-  (interactive)
-  (condition-case err
-      (eglot-ensure)
-    (error
-     (message "EGLOT failed to start: %s" (error-message-string err))
-     (when (and (boundp 'flycheck-mode) flycheck-mode)
-       (message "Falling back to flycheck for diagnostics")))))
+  ;; Better language server fallbacks and error handling
+  (defun eglot-safe-ensure ()
+    "Safely ensure EGLOT is enabled with error handling."
+    (interactive)
+    (condition-case err
+        (eglot-ensure)
+      (error
+       (message "EGLOT failed to start: %s" (error-message-string err))
+       (when (and (boundp 'flycheck-mode) flycheck-mode)
+         (message "Falling back to flycheck for diagnostics")))))
 
-;; Custom EGLOT hooks for better integration
-(defun eglot-setup-completion ()
-  "Set up completion for EGLOT buffers."
-  (setq-local completion-styles '(basic partial-completion emacs22))
-  (setq-local completion-category-defaults nil)
-  (setq-local completion-category-overrides '((eglot (styles basic partial-completion)))))
+  ;; Custom EGLOT hooks for better integration
+  (defun eglot-setup-completion ()
+    "Set up completion for EGLOT buffers."
+    (setq-local completion-styles '(basic partial-completion emacs22))
+    (setq-local completion-category-defaults nil)
+    (setq-local completion-category-overrides '((eglot (styles basic partial-completion)))))
 
-(add-hook 'eglot-managed-mode-hook #'eglot-setup-completion)
+  (add-hook 'eglot-managed-mode-hook #'eglot-setup-completion)
 
-;; Modern Tree-sitter Configuration for Emacs 31
-(use-package tree-sitter
-  :ensure t
-  :config
-  ;; Enable global tree-sitter mode
-  (global-tree-sitter-mode)
-  
-  ;; Enable tree-sitter-based syntax highlighting
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-  
-  ;; Better performance settings for Emacs 31
-  (setq tree-sitter-hl-default-patterns t)
-  (setq tree-sitter-hl-use-font-lock-keywords nil))
+  ;; Modern Tree-sitter Configuration for Emacs 31
+  (use-package tree-sitter
+    :ensure t
+    :config
+    ;; Enable global tree-sitter mode
+    (global-tree-sitter-mode)
+    
+    ;; Enable tree-sitter-based syntax highlighting
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+    
+    ;; Better performance settings for Emacs 31
+    (setq tree-sitter-hl-default-patterns t)
+    (setq tree-sitter-hl-use-font-lock-keywords nil))
 
-;; Tree-sitter language grammars
-(use-package tree-sitter-langs
-  :ensure t
-  :after tree-sitter
-  :config
-  ;; Load common language grammars
-  (tree-sitter-require 'javascript)
-  (tree-sitter-require 'typescript)
-  (tree-sitter-require 'tsx)
-  (tree-sitter-require 'python)
-  (tree-sitter-require 'ruby)
-  (tree-sitter-require 'go)
-  (tree-sitter-require 'java)
-  (tree-sitter-require 'c)
-  (tree-sitter-require 'cpp)
-  (tree-sitter-require 'rust)
-  (tree-sitter-require 'json)
-  (tree-sitter-require 'yaml)
-  (tree-sitter-require 'html)
-  (tree-sitter-require 'css))
+  ;; Tree-sitter language grammars
+  (use-package tree-sitter-langs
+    :ensure t
+    :after tree-sitter
+    :config
+    ;; Load common language grammars
+    (tree-sitter-require 'javascript)
+    (tree-sitter-require 'typescript)
+    (tree-sitter-require 'tsx)
+    (tree-sitter-require 'python)
+    (tree-sitter-require 'ruby)
+    (tree-sitter-require 'go)
+    (tree-sitter-require 'java)
+    (tree-sitter-require 'c)
+    (tree-sitter-require 'cpp)
+    (tree-sitter-require 'rust)
+    (tree-sitter-require 'json)
+    (tree-sitter-require 'yaml)
+    (tree-sitter-require 'html)
+    (tree-sitter-require 'css))
 
-;; Configure tree-sitter modes for Emacs 31
-;; These modes are built-in and don't need separate packages
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.c\\'" . c-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.cpp\\'\\|\\.cc\\'\\|\\.cxx\\'\\|\\.hpp\\'\\|\\.hh\\'" . c++-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.json\\'" . json-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.yaml\\'\\|\\.yml\\'" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.html\\'" . html-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.css\\'" . css-ts-mode))
+  ;; Configure tree-sitter modes for Emacs 31
+  ;; These modes are built-in and don't need separate packages
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.c\\'" . c-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.cpp\\'\\|\\.cc\\'\\|\\.cxx\\'\\|\\.hpp\\'\\|\\.hh\\'" . c++-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.json\\'" . json-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.yaml\\'\\|\\.yml\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.html\\'" . html-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.css\\'" . css-ts-mode))
 
-;; Configure indentation for tree-sitter modes
-(setq js-ts-mode-indent-offset 2)
-(setq typescript-ts-mode-indent-offset 2)
-(setq tsx-ts-mode-indent-offset 2)
-(setq python-ts-mode-indent-offset 4)
-(setq go-ts-mode-indent-offset 4)
-(setq rust-ts-mode-indent-offset 4)
-(setq c-ts-mode-indent-offset 4)
-(setq c++-ts-mode-indent-offset 4)
+  ;; Configure indentation for tree-sitter modes
+  (setq js-ts-mode-indent-offset 2)
+  (setq typescript-ts-mode-indent-offset 2)
+  (setq tsx-ts-mode-indent-offset 2)
+  (setq python-ts-mode-indent-offset 4)
+  (setq go-ts-mode-indent-offset 4)
+  (setq rust-ts-mode-indent-offset 4)
+  (setq c-ts-mode-indent-offset 4)
+  (setq c++-ts-mode-indent-offset 4)
 #+END_SRC
-
 ** Go Mode
 #+begin_src elisp
   (use-package go-mode

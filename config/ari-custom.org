@@ -4,9 +4,9 @@
 #+TAGS: emacs config
 #+PROPERTY: header-args:sh  :results silent :tangle no
 
-* Custom Functions and things
-  Start with some housekeeping
-  #+BEGIN_SRC elisp
+* Custom Functions and Things
+Start with some housekeeping
+#+BEGIN_SRC elisp
 
         ;;; ari-custom.el --- holds all my own private stuff -*- lexical-binding: t; -*-
         ;;add a comment
@@ -14,12 +14,12 @@
         ;;; this is my custom functions
         ;;; History: long ago in a different time.  check git log for deets
         ;;; Code:
-  #+END_SRC
+#+END_SRC
 
 ** Line endings
    why use the shell when emacs can do it for you!
 
-   #+BEGIN_SRC elisp
+#+BEGIN_SRC elisp
 (defun dos-to-unix ()
   "Convert DOS line endings to Unix line endings in the current buffer."
   (interactive)
@@ -41,25 +41,25 @@
       (goto-char (point-min))
       (while (search-forward "\n" nil t)
         (replace-match "\r\n" nil t)))))
-   #+END_SRC
+#+END_SRC
 
 ** Occur from isearch
    if you see hits in isearch this will pop the current term to an
    occur buffer
-   #+BEGIN_SRC elisp
+#+BEGIN_SRC elisp
      (define-key isearch-mode-map (kbd "C-o")
        (lambda ()
          (interactive)
          (let ((case-fold-search isearch-case-fold-search))
            (occur (if isearch-regexp isearch-string
                     (regexp-quote isearch-string))))))
-   #+END_SRC
+#+END_SRC
 
 ** Transparent Emacs baby!
    it seems weird but this still seems to be the best way to have a
    nice transparent emacs
 
-   #+BEGIN_SRC elisp
+#+BEGIN_SRC elisp
      (defun djcb-opacity-modify (&optional dec)
        "Modify the transparency of the EMACS frame; If DEC is t, decrease the transparency, otherwise increase it in 10%-steps."
        (let* ((alpha-or-nil (frame-parameter nil 'alpha)) ; nil before setting
@@ -67,10 +67,10 @@
               (newalpha (if dec (- oldalpha 10) (+ oldalpha 10))))
          (when (and (>= newalpha frame-alpha-lower-limit) (<= newalpha 100))
            (modify-frame-parameters nil (list (cons 'alpha newalpha))))))
-   #+END_SRC
+#+END_SRC
 
 ** Get some data from Jira!
-#+begin_src elisp
+#+BEGIN_SRC elisp
   (defun fg/jira-update-heading ()
   "Update heading for Jira Issue at point."
   (interactive)
@@ -98,18 +98,18 @@
        by #'cddr
        do (org-entry-put pt property value)))))
 
-#+end_src
+#+END_SRC
 
 
 ** Aaaand we're out
-   #+BEGIN_SRC elisp
+#+BEGIN_SRC elisp
      (provide 'ari-custom-new)
      ;;; ari-custom-new.el ends here
-   #+END_SRC
-   #+DESCRIPTION: Literate source for my Emacs configuration
-   #+PROPERTY: header-args:elisp :tangle ~/emacs/config/ari-custom-new.el
-   #+PROPERTY: header-args:ruby :tangle no
-   #+PROPERTY: header-args:shell :tangle no
-   #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
-   #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
-   #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+END_SRC
+#+DESCRIPTION: Literate source for my Emacs configuration
+#+PROPERTY: header-args:elisp :tangle ~/emacs/config/ari-custom-new.el
+#+PROPERTY: header-args:ruby :tangle no
+#+PROPERTY: header-args:shell :tangle no
+#+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
+#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js

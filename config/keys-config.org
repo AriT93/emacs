@@ -71,7 +71,7 @@ trouble when I do. but these keys are for that
 
 #+END_SRC
 ** Helpful
-   #+begin_src elisp
+#+BEGIN_SRC elisp
      (global-set-key (kbd "C-h f") #'helpful-callable)
      (global-set-key (kbd "C-h F") #'helpful-function)
      (global-set-key (kbd "C-h C") #'helpful-command)
@@ -80,11 +80,11 @@ trouble when I do. but these keys are for that
      (global-set-key (kbd "C-c C-d") #'helpful-at-point)
      (setq counsel-describe-function-function #'helpful-callable)
      (setq counsel-describe-variable-function #'helpful-variable)
-   #+end_src
+#+END_SRC
 ** Dash at point
    open up dash and look up what's at the point
 #+BEGIN_SRC elisp
- (global-set-key "\C-cd" `dash-at-point)
+ (global-set-key "\C-cd" 'dash-at-point)
 
  (provide 'keys-config-new)
 #+END_SRC

@@ -49,6 +49,6 @@
 (setq counsel-describe-function-function #'helpful-callable)
 (setq counsel-describe-variable-function #'helpful-variable)
 
-(global-set-key "\C-cd" `dash-at-point)
+(global-set-key "\C-cd" 'dash-at-point)
 
 (provide 'keys-config-new)
