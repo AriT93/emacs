@@ -22,15 +22,6 @@
 (defvar nntp-authinfo-file "~/.authinfo.gpg")
 (add-hook 'gnus-article-mode-hook 'visual-line-mode)
 
-(use-package nnreddit
-  :ensure t
-  :init
-  (setq nnreddit-python-command "python3.8")
-  :config
-  (add-to-list 'gnus-secondary-select-methods '(nnreddit ""))
-)
-
-
 ;; Set the default value of mm-discouraged-alternatives.
 (with-eval-after-load "gnus-sum"
   (add-to-list

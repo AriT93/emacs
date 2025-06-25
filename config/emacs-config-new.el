@@ -197,7 +197,7 @@
   (setq consult-narrow-key "<") ;; "C-+"
   :config
   ;; Configure file preview
-  (setq consult-fontify-preserve nil)
+  (setq consult-fontify-preserve t)  ; Changed from nil to preserve font-lock in search results
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
@@ -1463,7 +1463,7 @@
     "si" '(consult-imenu :which-key "search imenu")
     "sI" '(consult-imenu-multi :which-key "search imenu in buffers")
     "sr" '(consult-ripgrep :which-key "ripgrep")
-    "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
+    "sR" '(consult-ripgrep :which-key "ripgrep symbol")))
 
 (use-package quelpa-use-package
     :ensure t)
@@ -1640,20 +1640,33 @@
          (js2-mode . eglot-ensure)
          (js-mode . eglot-ensure)
          (rjsx-mode . eglot-ensure)
-         (jtsx-jsx-mode . eglot-ensure))
+         (jtsx-jsx-mode . eglot-ensure)
+         ;; Add modern tree-sitter modes if available
+         (js-ts-mode . eglot-ensure)
+         (typescript-ts-mode . eglot-ensure)
+         (tsx-ts-mode . eglot-ensure))
   :config
-  ;; Performance settings equivalent to your lsp-mode settings
+  ;; Performance settings
   (setq eglot-events-buffer-size 0) ;; Don't keep events buffer
   (setq eglot-sync-connect nil)     ;; Don't block when connecting
   (setq eglot-autoshutdown t)       ;; Shutdown unused servers
+  (setq eglot-connect-timeout 10)   ;; Extend timeout for large projects
   
-  ;; Extend timeout for large projects
-  (setq eglot-connect-timeout 10)
+  ;; Better completion and diagnostics
+  (setq eglot-send-changes-idle-time 0.5)
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
   
-  ;; Custom servers configuration if needed
-;;  (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "solargraph" "stdio")))
+  ;; Additional performance optimizations
+  (setq eglot-extend-to-xref t)
+  (setq eglot-prefer-plaintext t)
   
-  ;; Key bindings similar to your LSP setup
+  ;; Better error handling and logging
+  (setq eglot-confirm-server-initiated-edits nil)
+  
+  ;; Completion improvements
+  (setq eglot-completion-at-point-function #'eglot-completion-at-point)
+  
+  ;; Key bindings
   :bind (:map eglot-mode-map
               ("C-c l f" . eglot-format)
               ("C-c l a" . eglot-code-actions)
@@ -1665,23 +1678,49 @@
   :ensure t
   :hook (eglot-managed-mode . flymake-mode))
 
-;; Alternative to lsp-ui-doc using eldoc
+;; Enhanced eldoc configuration
 (setq eldoc-echo-area-use-multiline-p t)
 (setq eldoc-echo-area-display-truncation-message nil)
 (setq eldoc-echo-area-prefer-doc-buffer t)
 
-;; Replace lsp-java with eglot-java configuration
-(use-package eglot-java
+;; Better EGLOT integration with consult and embark
+(use-package consult-eglot
+  :ensure t
+  :after (eglot consult)
+  :config
+  ;; Use consult for EGLOT commands
+  (setq eglot-completion-at-point-function #'eglot-completion-at-point)
+  
+  ;; Better xref integration
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+
+;; EGLOT code actions with embark
+(use-package embark
   :ensure t
   :after eglot
   :config
-  (setq eglot-java-eclipse-jdt-args 
-        '("-configuration" "~/.emacs.d/share/eclipse.jdt.ls/config"
-          "-data" "/path/to/eclipse-workspace")))
+  ;; Add EGLOT actions to embark
+  (add-to-list 'embark-keymap-alist '(eglot-mode . embark-eglot-map)))
 
-;; (setq eglot-server-programs
-;;       (append eglot-server-programs
-;;               '((java-mode . ("jdtls" "-data" "/path/to/eclipse-workspace")))))
+;; Better language server fallbacks and error handling
+(defun eglot-safe-ensure ()
+  "Safely ensure EGLOT is enabled with error handling."
+  (interactive)
+  (condition-case err
+      (eglot-ensure)
+    (error
+     (message "EGLOT failed to start: %s" (error-message-string err))
+     (when (and (boundp 'flycheck-mode) flycheck-mode)
+       (message "Falling back to flycheck for diagnostics")))))
+
+;; Custom EGLOT hooks for better integration
+(defun eglot-setup-completion ()
+  "Set up completion for EGLOT buffers."
+  (setq-local completion-styles '(basic partial-completion emacs22))
+  (setq-local completion-category-defaults nil)
+  (setq-local completion-category-overrides '((eglot (styles basic partial-completion)))))
+
+(add-hook 'eglot-managed-mode-hook #'eglot-setup-completion)
 
 (use-package go-mode
   :ensure t
