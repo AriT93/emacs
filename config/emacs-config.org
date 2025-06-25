@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-06-25 11:04:21 ari.turetzky>
+#+Time-stamp: <2025-05-23 11:04:47 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -244,7 +244,7 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (setq consult-narrow-key "<") ;; "C-+"
     :config
     ;; Configure file preview
-    (setq consult-fontify-preserve t)  ; Changed from nil to preserve font-lock in search results
+    (setq consult-fontify-preserve nil)
     (consult-customize
      consult-theme :preview-key '(:debounce 0.2 any)
      consult-ripgrep consult-git-grep consult-grep
@@ -1658,7 +1658,7 @@ Da General give command-t like ease to emacs
       "si" '(consult-imenu :which-key "search imenu")
       "sI" '(consult-imenu-multi :which-key "search imenu in buffers")
       "sr" '(consult-ripgrep :which-key "ripgrep")
-      "sR" '(consult-ripgrep :which-key "ripgrep symbol")))
+      "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
 #+end_src
 ** Copilot and other AI tools
 #+begin_src elisp
@@ -1738,7 +1738,7 @@ Da General give command-t like ease to emacs
 #+end_src
 ** Magit Delta
 delta is better diffs for git
-#+BEGIN_SRC elisp
+#+begin_src elisp
   (use-package magit-delta
     :ensure t
     :hook
@@ -1850,18 +1850,22 @@ who knows it might catch on
 (use-package eglot
   :ensure t
   :hook ((ruby-mode . eglot-ensure)
-         (python-mode . eglot-ensure)
+         (python-ts-mode . eglot-ensure)
          (java-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
          (go-ts-mode . eglot-ensure)
+         (js-ts-mode . eglot-ensure)
+         (typescript-ts-mode . eglot-ensure)
+         (tsx-ts-mode . eglot-ensure)
+         (rust-ts-mode . eglot-ensure)
+         (c-ts-mode . eglot-ensure)
+         (c++-ts-mode . eglot-ensure)
+         ;; Keep legacy modes for compatibility
+         (python-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
          (js2-mode . eglot-ensure)
          (js-mode . eglot-ensure)
          (rjsx-mode . eglot-ensure)
-         (jtsx-jsx-mode . eglot-ensure)
-         ;; Add modern tree-sitter modes if available
-         (js-ts-mode . eglot-ensure)
-         (typescript-ts-mode . eglot-ensure)
-         (tsx-ts-mode . eglot-ensure))
+         (jtsx-jsx-mode . eglot-ensure))
   :config
   ;; Performance settings
   (setq eglot-events-buffer-size 0) ;; Don't keep events buffer
@@ -1938,7 +1942,68 @@ who knows it might catch on
   (setq-local completion-category-overrides '((eglot (styles basic partial-completion)))))
 
 (add-hook 'eglot-managed-mode-hook #'eglot-setup-completion)
+
+;; Modern Tree-sitter Configuration for Emacs 31
+(use-package tree-sitter
+  :ensure t
+  :config
+  ;; Enable global tree-sitter mode
+  (global-tree-sitter-mode)
+  
+  ;; Enable tree-sitter-based syntax highlighting
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+  
+  ;; Better performance settings for Emacs 31
+  (setq tree-sitter-hl-default-patterns t)
+  (setq tree-sitter-hl-use-font-lock-keywords nil))
+
+;; Tree-sitter language grammars
+(use-package tree-sitter-langs
+  :ensure t
+  :after tree-sitter
+  :config
+  ;; Load common language grammars
+  (tree-sitter-require 'javascript)
+  (tree-sitter-require 'typescript)
+  (tree-sitter-require 'tsx)
+  (tree-sitter-require 'python)
+  (tree-sitter-require 'ruby)
+  (tree-sitter-require 'go)
+  (tree-sitter-require 'java)
+  (tree-sitter-require 'c)
+  (tree-sitter-require 'cpp)
+  (tree-sitter-require 'rust)
+  (tree-sitter-require 'json)
+  (tree-sitter-require 'yaml)
+  (tree-sitter-require 'html)
+  (tree-sitter-require 'css))
+
+;; Configure tree-sitter modes for Emacs 31
+;; These modes are built-in and don't need separate packages
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.c\\'" . c-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.cpp\\'\\|\\.cc\\'\\|\\.cxx\\'\\|\\.hpp\\'\\|\\.hh\\'" . c++-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . json-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml\\'\\|\\.yml\\'" . yaml-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.html\\'" . html-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.css\\'" . css-ts-mode))
+
+;; Configure indentation for tree-sitter modes
+(setq js-ts-mode-indent-offset 2)
+(setq typescript-ts-mode-indent-offset 2)
+(setq tsx-ts-mode-indent-offset 2)
+(setq python-ts-mode-indent-offset 4)
+(setq go-ts-mode-indent-offset 4)
+(setq rust-ts-mode-indent-offset 4)
+(setq c-ts-mode-indent-offset 4)
+(setq c++-ts-mode-indent-offset 4)
 #+END_SRC
+
 ** Go Mode
 #+begin_src elisp
   (use-package go-mode
