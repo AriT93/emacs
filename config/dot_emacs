@@ -1,0 +1,25 @@
+;;; .emacs --- Summary
+;; my emacs file
+;;; Commentary:
+;;; Code:
+
+(add-to-list 'load-path (expand-file-name "~/emacs/config/"))
+
+(require 'emacs-config-new)
+
+;; Mac-specific key bindings (not in main config)
+;; These set up Command and Option keys for Mac users
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier 'super)
+
+;; Enable some disabled commands for convenience
+;; These commands are disabled by default for safety but are useful
+(put 'dired-find-alternate-file 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+
+(message ".emacs loaded")
+
+(provide '.emacs)
+;;; .emacs ends here
