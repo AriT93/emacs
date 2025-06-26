@@ -1488,7 +1488,8 @@
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host  "api.openai.com" :user "apikey"))
   (chatgpt-shell-anthropic-key
-   (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey")))
+   (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey"))
+   (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey")))
 (require 'chatgpt-shell)
 
   (straight-use-package 'gptel
