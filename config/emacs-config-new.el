@@ -15,6 +15,11 @@
   (package-install 'use-package))
 (require 'use-package)
 
+;; Suppress lexical-binding warnings for third-party packages
+(setq warning-suppress-log-types
+      (append warning-suppress-log-types
+              '((files missing-lexbind-cookie))))
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
@@ -113,23 +118,6 @@
   :init
   (setq vterm-max-scrollback 1000000)
   )
-
-(use-package fzf
-  :bind
-  ;; Don't forget to set keybinds!
-  :config
-  (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
-        fzf/preview-command "bat --style=numbers,changes --color=always --line-range :40 {}"
-        fzf/args-for-preview "bat --style=numbers,changes --color=always --line-range :40 {}"
-        fzf/executable "fzf"
-        fzf/git-grep-args "-i --line-number %s"
-        ;; command used for `fzf-grep-*` functions
-        ;; example usage for ripgrep:
-        ;; fzf/grep-command "rg --no-heading -nH"
-        fzf/grep-command "grep -nrH"
-        ;; If nil, the fzf buffer will appear at the top of the window
-        fzf/position-bottom t
-        fzf/window-height 15))
 
 (use-package vertico
   :ensure t
@@ -549,6 +537,7 @@
   (org-block-begin-line ((t (:family "Cascadia Code" :italic t))))
   (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
   :config
+  (setq org-agenda-files  '("~/Documents/notes/todo.org" "~/Documents/org-roam/daily"))
   (setq org-startup-indented t)
   (setq org-default-notes-file "~/Documents/notes/notes.org")
   (add-to-list 'org-latex-classes
@@ -1656,7 +1645,7 @@
   (setq eglot-sync-connect nil)     ;; Don't block when connecting
   (setq eglot-autoshutdown t)       ;; Shutdown unused servers
   (setq eglot-connect-timeout 10)   ;; Extend timeout for large projects
-  (add-to-list 'eglot-server-programs '(text-mode . ("harper-ls" "--stdio")))
+
   ;; Better completion and diagnostics
   (setq eglot-send-changes-idle-time 0.5)
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))

@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-06-25 13:53:24 ari.turetzky>
+#+Time-stamp: <2025-06-27 07:56:05 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -35,6 +35,15 @@ gets installed from a repository we defined above
     (package-refresh-contents)
     (package-install 'use-package))
   (require 'use-package)
+#+END_SRC
+
+** Suppress Lexical Binding Warnings
+Suppress warnings about missing lexical-binding cookies in third-party packages
+#+BEGIN_SRC elisp
+  ;; Suppress lexical-binding warnings for third-party packages
+  (setq warning-suppress-log-types
+        (append warning-suppress-log-types
+                '((files missing-lexbind-cookie))))
 #+END_SRC
 
 *** Straight.el
@@ -157,26 +166,7 @@ want from faces
     )
 #+end_src
 ** Ivy for isearcing
-Lets use some fzf here too
-#+BEGIN_SRC elisp
-  (use-package fzf
-    :bind
-    ;; Don't forget to set keybinds!
-    :config
-    (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
-          fzf/preview-command "bat --style=numbers,changes --color=always --line-range :40 {}"
-          fzf/args-for-preview "bat --style=numbers,changes --color=always --line-range :40 {}"
-          fzf/executable "fzf"
-          fzf/git-grep-args "-i --line-number %s"
-          ;; command used for `fzf-grep-*` functions
-          ;; example usage for ripgrep:
-          ;; fzf/grep-command "rg --no-heading -nH"
-          fzf/grep-command "grep -nrH"
-          ;; If nil, the fzf buffer will appear at the top of the window
-          fzf/position-bottom t
-          fzf/window-height 15))
-#+END_SRC
-Use Ivy, counsel and Swiper(no swiping!) for isearch
+Use the modern completion stack (vertico, consult, embark, orderless) for enhanced search and navigation
 #+BEGIN_SRC elisp
   (use-package vertico
     :ensure t
@@ -642,6 +632,7 @@ eventually to make it more manageable
     (org-block-begin-line ((t (:family "Cascadia Code" :italic t))))
     (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
     :config
+    (setq org-agenda-files  '("~/Documents/notes/todo.org" "~/Documents/org-roam/daily"))
     (setq org-startup-indented t)
     (setq org-default-notes-file "~/Documents/notes/notes.org")
     (add-to-list 'org-latex-classes
@@ -1739,7 +1730,7 @@ Da General give command-t like ease to emacs
 #+end_src
 ** Magit Delta
 delta is better diffs for git
-#+begin_src elisp
+#+BEGIN_SRC elisp
   (use-package magit-delta
     :ensure t
     :hook
@@ -1873,7 +1864,7 @@ who knows it might catch on
     (setq eglot-sync-connect nil)     ;; Don't block when connecting
     (setq eglot-autoshutdown t)       ;; Shutdown unused servers
     (setq eglot-connect-timeout 10)   ;; Extend timeout for large projects
-    (add-to-list 'eglot-server-programs '(text-mode . ("harper-ls" "--stdio")))
+
     ;; Better completion and diagnostics
     (setq eglot-send-changes-idle-time 0.5)
     (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
