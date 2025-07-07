@@ -670,7 +670,7 @@
 (setq org-roam-completion-everywhere t)
 (setq org-roam-dailies-capture-templates
       '(("d" "default" entry
-         "* %?"
+         "* %<%Y-%m-%d>\n:PROPERTIES:\n:CATEGORY: daily\n:END:\n\n%?"
          :if-new (file+head "%<%Y-%m-%d>.org"
                             "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
    "))
@@ -685,6 +685,10 @@
                            ("Links"))
          :unnarrowed t
          )))
+
+
+(use-package org-ql
+  :ensure t)
 
 (defun ek/babel-ansi ()
   (when-let ((beg (org-babel-where-is-src-block-result nil nil)))

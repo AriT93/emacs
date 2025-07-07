@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-06-27 07:56:05 ari.turetzky>
+#+Time-stamp: <2025-07-07 10:53:01 ari.turetzky>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -778,7 +778,7 @@ eventually to make it more manageable
   (setq org-roam-completion-everywhere t)
   (setq org-roam-dailies-capture-templates
         '(("d" "default" entry
-           "* %?"
+           "* %<%Y-%m-%d>\n:PROPERTIES:\n:CATEGORY: daily\n:END:\n\n%?"
            :if-new (file+head "%<%Y-%m-%d>.org"
                               "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
      "))
@@ -793,6 +793,10 @@ eventually to make it more manageable
                              ("Links"))
            :unnarrowed t
            )))
+
+
+  (use-package org-ql
+    :ensure t)
 #+END_SRC
 
 #+BEGIN_SRC elisp
