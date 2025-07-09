@@ -222,11 +222,11 @@ WEEK-OFFSET is the number of weeks before current (0 = current week)."
                         
                         ;; Add each headline and content
                         (dolist (headline (nreverse headlines))
-                          (insert (format "*** %s\n%s\n" 
+                          (insert (format "*** %s\n%s" 
                                          (car headline)
                                          (cdr headline))))
                         
-                        (insert "\n")))))
+                        ))))
               ;; No entries found by any method
               (insert "No daily entries found for this week.\n")))))
       
@@ -236,15 +236,13 @@ WEEK-OFFSET is the number of weeks before current (0 = current week)."
       (if all-highlights
           (dolist (highlight (nreverse all-highlights))
             (insert highlight "\n"))
-        (insert "- \n"))
-      (insert "\n")
+        (insert "\n"))
       
       (insert "** Goals for next week\n")
       (if all-goals
           (dolist (goal (nreverse all-goals))
-            (insert goal "\n"))
-        (insert "- \n"))
-      (insert "\n")
+            (insert goal ""))
+        (insert "\n"))
       
       (goto-char (point-min))
       (switch-to-buffer recap-buffer-name))))
