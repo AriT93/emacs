@@ -306,11 +306,12 @@
 
 (global-set-key "\C-cy" 'consult-yank-pop)
 
-(use-package no-littering
-  :ensure t)
-
-(setq auto-save-file-name-transforms
-      `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+;; (use-package no-littering
+;;   :straight (:host github :repo "emacscollective/no-littering" :files ("*.el"))
+;;   :ensure t
+;;   :config
+;;   (setq auto-save-file-name-transforms
+;;         '((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 (use-package pos-tip
   :defer 2
@@ -1483,7 +1484,7 @@
   (chatgpt-shell-anthropic-key
    (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey"))
    (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey")))
-(require 'chatgpt-shell)
+   (require 'chatgpt-shell)
 
   (straight-use-package 'gptel
     :ensure t)
@@ -1492,24 +1493,25 @@
 
   (use-package copilot-chat
     :ensure t
+;;    :after (chatgpt-shell)
     :custom
     (copilot-chat-frontend  'org)
     (copilot-chat-default-model "claude-3.7-sonnet-thought"))
 
 
-  (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
-                         (:label . "ChatGPT") (:provider . "OpenAI")
-                         (:path . "/v1/chat/completions") (:token-width . 3)
-                         (:context-window . 128000)
-                         (:handler . chatgpt-shell-openai--handle-chatgpt-command)
-                         (:filter . chatgpt-shell-openai--filter-output)
-                         (:payload . chatgpt-shell-openai--make-payload)
-                         (:headers . chatgpt-shell-openai--make-headers)
-                         (:url . chatgpt-shell-openai--make-url)
-                         (:key . chatgpt-shell-openai-key)
-                         (:url-base . chatgpt-shell-api-url-base)
-                         (:validate-command . chatgpt-shell-openai--validate-command))))
-    (add-to-list 'chatgpt-shell-models model-config))
+   (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
+                          (:label . "ChatGPT") (:provider . "OpenAI")
+                          (:path . "/v1/chat/completions") (:token-width . 3)
+                          (:context-window . 128000)
+                          (:handler . chatgpt-shell-openai--handle-chatgpt-command)
+                          (:filter . chatgpt-shell-openai--filter-output)
+                          (:payload . chatgpt-shell-openai--make-payload) 
+                          (:headers . chatgpt-shell-openai--make-headers)
+                          (:url . chatgpt-shell-openai--make-url)
+                          (:key . chatgpt-shell-openai-key)
+                          (:url-base . chatgpt-shell-api-url-base)
+                          (:validate-command . chatgpt-shell-openai--validate-command))))
+     (add-to-list 'chatgpt-shell-models model-config))
 
   (gptel-make-ollama "Ollama"             ;Any name of your choosing
   :host "localhost:11434"               ;Where it's running
@@ -1870,6 +1872,59 @@
             :host "workdaydev.slack.com"
             :user "cookie")
    :subsribed-channels nil ))
+
+(require 'flyover)
+(add-hook 'flycheck-mode-hook #'flyover-mode)
+(add-hook 'flymake-mode-hook #'flyover-mode)
+
+;; Use theme colors for error/warning/info faces
+(setq flyover-use-theme-colors t)
+
+;; Adjust background lightness (lower values = darker)
+(setq flyover-background-lightness 45)
+
+;; Make icon background darker than foreground
+(setq flyover-percent-darker 40)
+
+(setq flyover-text-tint 'lighter) ;; or 'darker or nil
+;; Enable wrapping of long error messages across multiple lines
+(setq flyover-wrap-messages t)
+
+;; Maximum length of each line when wrapping messages
+(setq flyover-max-line-length 80)
+
+;; "Percentage to lighten or darken the text when tinting is enabled."
+(setq flyover-text-tint-percent 50)
+(setq flyover-levels '(error warning info))
+
+(setq flyover-checkers '(flycheck flymake))
+(setq flyover-debug t)
+
+;;; Hide checker name for a cleaner UI
+(setq flyover-hide-checker-name t) 
+
+;;; show at end of the line instead.
+(setq flyover-show-at-eol t) 
+
+;;; Hide overlay when cursor is at same line, good for show-at-eol.
+(setq flyover-hide-when-cursor-is-on-same-line t) 
+
+;;; Show an arrow (or icon of your choice) before the error to highlight the error a bit more.
+(setq flyover-show-virtual-line t)
+
+;;; Icons
+(setq flyover-info-icon "🛈")
+(setq flyover-warning-icon "⚠")
+(setq flyover-error-icon "✘")
+
+;;; Icon padding
+
+;;; You might want to adjust this setting if you icons are not centererd or if you more or less space.fs
+(setq flyover-icon-left-padding 0.9)
+(setq flyover-icon-right-padding 0.9);;; Icons
+(setq flyover-info-icon "🛈")
+(setq flyover-warning-icon "⚠")
+(setq flyover-error-icon "✘")
 
 ;;  (set-face-attribute 'default nil
   ;;                     :inherit nil
