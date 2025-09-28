@@ -4,7 +4,8 @@
  (global-set-key [C-home] 'beginning-of-buffer)
  (global-set-key [C-end] 'end-of-buffer)
 
- (global-set-key [pause] 'erase-buffer)
+ ;; REMOVED: Too dangerous - Pause key can be accidentally pressed
+ ;; (global-set-key [pause] 'erase-buffer)
  (global-set-key [f4] 'goto-line )
 
 (global-set-key [f12] 'write-blog)
@@ -27,10 +28,11 @@
 ;; (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
 
 (require 'ari-custom-new)
-(global-set-key (kbd "C-9") (lambda()(interactive)(djcb-opacity-modify)))
-(global-set-key (kbd "C-8") (lambda()(interactive)(djcb-opacity-modify t)))
-(global-set-key (kbd "C-0") (lambda()(interactive)
-                               (modify-frame-parameters nil `((alpha . 100)))))
+;; Changed from C-8/C-9/C-0 to preserve digit argument functionality
+(global-set-key (kbd "C-M-9") (lambda()(interactive)(djcb-opacity-modify)))
+(global-set-key (kbd "C-M-8") (lambda()(interactive)(djcb-opacity-modify t)))
+(global-set-key (kbd "C-M-0") (lambda()(interactive)
+                                 (modify-frame-parameters nil `((alpha . 100)))))
 
 ;; S-C-left and right will horizontally resize windows
  ;; S-C-up and down will vertically resize them

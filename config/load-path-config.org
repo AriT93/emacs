@@ -7,20 +7,36 @@
 #+BEGIN_SRC elisp
   ;; -*- lexical-binding: t; -*-
   (message "loading load-path-config")
-  (add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
-  (add-to-list 'load-path (expand-file-name "~/emacs/site/color-theme/themes"))
-  (add-to-list 'load-path (expand-file-name "~/emacs/site/lisp"))
-  (add-to-list 'load-path (expand-file-name "~/emacs/site/ruby-block"))
-  (add-to-list 'load-path (expand-file-name "~/emacs/site/blog"))
-  (add-to-list 'load-path "~/dev/git/lsp-bridge/")
-  (add-to-list 'load-path "~/dev/git/flyover/")
-  (add-to-list 'load-path "~/dev/git/org-block-capf")
-  (require 'org-block-capf)
-  (add-hook 'org-mode-hook #'org-block-capf-add-to-completion-at-point-functions)
+
+  ;; System-wide paths
+  (when (file-exists-p "/usr/local/share/emacs/site-lisp")
+    (add-to-list 'load-path "/usr/local/share/emacs/site-lisp"))
+
+  ;; Local site packages - check each one exists
+  (dolist (site-path '("~/emacs/site/color-theme/themes"
+                       "~/emacs/site/lisp"
+                       "~/emacs/site/ruby-block"
+                       "~/emacs/site/blog"))
+    (let ((expanded-path (expand-file-name site-path)))
+      (when (file-exists-p expanded-path)
+        (add-to-list 'load-path expanded-path))))
+
+  ;; Development packages - check each one exists
+  (dolist (dev-path '("~/dev/git/lsp-bridge/"
+                      "~/dev/git/flyover/"
+                      "~/dev/git/org-block-capf"))
+    (let ((expanded-path (expand-file-name dev-path)))
+      (when (file-exists-p expanded-path)
+        (add-to-list 'load-path expanded-path))))
+
+  ;; Only require org-block-capf if it's available
+  (when (locate-library "org-block-capf")
+    (require 'org-block-capf)
+    (add-hook 'org-mode-hook #'org-block-capf-add-to-completion-at-point-functions))
 #+END_SRC
 
-* Why are these here?
-I don't know, I can move them later (never...)
+* Legacy configurations
+These are older configurations that may need review
 #+BEGIN_SRC elisp
   (load "ps-print")
 
