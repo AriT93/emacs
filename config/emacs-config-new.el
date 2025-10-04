@@ -59,6 +59,12 @@
 (setq auth-source-debug nil)           ; Disable debug logging for security
 (setq auth-source-do-cache t)          ; Enable caching
 
+;; Use Emacs' built-in pinentry for better macOS integration
+(use-package pinentry
+  :ensure t
+  :config
+  (pinentry-start))
+
 ;; Network security configuration
 (setq gnutls-verify-error t)           ; Fail on TLS verification errors
 (setq gnutls-min-prime-bits 2048)      ; Minimum encryption strength
@@ -223,8 +229,10 @@
 (use-package orderless
   :ensure t
   :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion)))))
+  (completion-styles '(orderless basic partial-completion flex))
+  (completion-category-overrides '((file (styles partial-completion))))
+  (tab-always-indent 'complete)  ;; TAB indents first, then completes
+  (completion-cycle-threshold 3))  ;; Cycle through 3 or fewer candidates
 
 ;; Contextual actions - similar to ivy actions but more powerful
 (use-package embark
@@ -849,58 +857,84 @@
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
 (use-package inf-ruby
-  :defer 2
-  :ensure t)
-(require 'ruby-mode)
-(use-package  ruby-electric
-  :ensure t)
-(use-package feature-mode
-  :defer 2
-  :ensure t
-  :config
-  (setq feature-use-docker-compose nil)
-  (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
+    :defer 2
+    :ensure t)
+  (require 'ruby-mode)
+  (use-package  ruby-electric
+    :ensure t)
+  (use-package feature-mode
+    :defer 2
+    :ensure t
+    :config
+    (setq feature-use-docker-compose nil)
+    (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
 
-(use-package yasnippet
-  :defer 2
-  :ensure t
-  :config
-  (yas-global-mode t))
-(use-package yasnippet-snippets
-  :defer 2
-  :ensure t)
-(use-package rake
-  :defer 2
-  :ensure t)
-(use-package inflections
-  :defer 2
-  :ensure t)
-(use-package graphql
-  :defer 2
-  :ensure t)
-(require 'org-protocol)
-(require 'org-roam-protocol)
-(use-package haml-mode
-  :defer 2
-  :ensure t)
-(use-package beacon
-  :defer 2
-  :ensure t
-  :init
-  (beacon-mode))
-(use-package rainbow-mode
-  :defer 2
-  :ensure t)
-(use-package rainbow-delimiters
-  :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode))
-(require 'ruby-config-new)
-(require 'keys-config-new)
-(require 'ari-custom-new)
-(require 'erc-config)
-(require 'gnus-config)
-(require 'mail-config)
-(require 'blog)
+  (use-package yasnippet
+    :defer 2
+    :ensure t
+    :config
+    (yas-global-mode t))
+  (use-package yasnippet-snippets
+    :defer 2
+    :ensure t)
+  (use-package rake
+    :defer 2
+    :ensure t)
+  (use-package inflections
+    :defer 2
+    :ensure t)
+  (use-package graphql
+    :defer 2
+    :ensure t)
+  (require 'org-protocol)
+  (require 'org-roam-protocol)
+  (use-package haml-mode
+    :defer 2
+    :ensure t)
+  (use-package beacon
+    :defer 2
+    :ensure t
+    :init
+    (beacon-mode))
+  (use-package rainbow-mode
+    :defer 2
+    :ensure t)
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+  ;; Configuration validation - check that all required modules exist
+  (defun ari/validate-config-files ()
+    "Validate that all referenced config files can be loaded.
+Checks that required configuration modules exist and are loadable.
+Prints warnings for any missing files but does not halt startup."
+    (let ((required-files '("ruby-config-new"
+                           "keys-config-new"
+                           "ari-custom-new"
+                           "erc-config"
+                           "gnus-config"))
+          (missing-files '()))
+      (dolist (file required-files)
+        (unless (locate-library file)
+          (push file missing-files)
+          (warn "Configuration file not found: %s" file)))
+      (if missing-files
+          (message "⚠️  Missing %d config file(s): %s"
+                   (length missing-files)
+                   (string-join missing-files ", "))
+        (message "✓ All configuration files validated successfully"))
+      (null missing-files)))
+
+  ;; Run validation after init
+  (add-hook 'after-init-hook #'ari/validate-config-files)
+
+  (require 'ruby-config-new)
+  (require 'keys-config-new)
+  (require 'ari-custom-new)
+  (require 'erc-config)
+  (require 'gnus-config)
+  (require 'mail-config)
+  (require 'blog)
 
 (use-package highline
   :ensure t
@@ -1296,6 +1330,9 @@
 
 (use-package helpful
   :ensure t
+  :custom
+  (help-enable-symbol-autoload t)     ;; Show symbols that can be autoloaded
+  (help-enable-completion-autoload t) ;; Enable completion for autoloadable symbols
   :init
   (defun helpful--autoloaded-p (sym buf)
     "Return non-nil if function SYM is autoloaded."
@@ -1607,13 +1644,8 @@
           ("TODO\\b\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'org-todo :crop-left t))))
           )))
 
-(use-package tree-sitter-langs
-  :ensure t )
-(use-package tree-sitter
-  :ensure t
-  :config
-  (require 'tree-sitter-langs)
-  (global-tree-sitter-mode))
+;; Tree-sitter packages removed - using built-in treesit in Emacs 29+
+;; See Programming Languages section below for modern treesit configuration
 
 (use-package pdf-tools
   :ensure t
@@ -1748,48 +1780,52 @@
 
 (add-hook 'eglot-managed-mode-hook #'eglot-setup-completion)
 
-;; Modern Tree-sitter Configuration for Emacs 31
-(use-package tree-sitter
-  :ensure t
-  :config
-  ;; Enable global tree-sitter mode
-  (global-tree-sitter-mode)
-  
-  ;; Enable tree-sitter-based syntax highlighting
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-  
-  ;; Better performance settings for Emacs 31
-  (setq tree-sitter-hl-default-patterns t)
-  (setq tree-sitter-hl-use-font-lock-keywords nil))
+;; Built-in Tree-sitter Configuration (Emacs 29+)
+;; Maximum syntax highlighting detail
+(setq treesit-font-lock-level 4)
 
-;; Tree-sitter language grammars
-(use-package tree-sitter-langs
-  :ensure t
-  :after tree-sitter
-  :config
-  ;; Load common language grammars
-  (tree-sitter-require 'javascript)
-  (tree-sitter-require 'typescript)
-  (tree-sitter-require 'tsx)
-  (tree-sitter-require 'python)
-  (tree-sitter-require 'ruby)
-  (tree-sitter-require 'go)
-  (tree-sitter-require 'java)
-  (tree-sitter-require 'c)
-  (tree-sitter-require 'cpp)
-  (tree-sitter-require 'rust)
-  (tree-sitter-require 'json)
-  (tree-sitter-require 'yaml)
-  (tree-sitter-require 'html)
-  (tree-sitter-require 'css))
+;; Configure tree-sitter language grammar sources
+(setq treesit-language-source-alist
+      '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+        (c "https://github.com/tree-sitter/tree-sitter-c")
+        (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+        (css "https://github.com/tree-sitter/tree-sitter-css")
+        (go "https://github.com/tree-sitter/tree-sitter-go")
+        (html "https://github.com/tree-sitter/tree-sitter-html")
+        (java "https://github.com/tree-sitter/tree-sitter-java")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+        (json "https://github.com/tree-sitter/tree-sitter-json")
+        (python "https://github.com/tree-sitter/tree-sitter-python")
+        (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
+        (rust "https://github.com/tree-sitter/tree-sitter-rust")
+        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
-;; Configure tree-sitter modes for Emacs 31
+;; Auto-install language grammars on first use
+(defun ari/treesit-install-all-languages ()
+  "Install all tree-sitter language grammars defined in treesit-language-source-alist."
+  (interactive)
+  (dolist (lang (mapcar #'car treesit-language-source-alist))
+    (unless (treesit-language-available-p lang)
+      (message "Installing tree-sitter grammar for %s..." lang)
+      (treesit-install-language-grammar lang))))
+
+;; Install grammars on first startup (runs once)
+(add-hook 'after-init-hook
+          (lambda ()
+            (when (and (fboundp 'treesit-available-p)
+                       (treesit-available-p))
+              (ari/treesit-install-all-languages))))
+
+;; Configure tree-sitter modes for Emacs 29+
 ;; These modes are built-in and don't need separate packages
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.c\\'" . c-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.cpp\\'\\|\\.cc\\'\\|\\.cxx\\'\\|\\.hpp\\'\\|\\.hh\\'" . c++-ts-mode))
@@ -1797,12 +1833,15 @@
 (add-to-list 'auto-mode-alist '("\\.yaml\\'\\|\\.yml\\'" . yaml-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\'" . html-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.css\\'" . css-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.sh\\'" . bash-ts-mode))
 
 ;; Configure indentation for tree-sitter modes
 (setq js-ts-mode-indent-offset 2)
 (setq typescript-ts-mode-indent-offset 2)
 (setq tsx-ts-mode-indent-offset 2)
 (setq python-ts-mode-indent-offset 4)
+(setq java-ts-mode-indent-offset 4)
+(setq go-ts-mode-indent-offset 4)
 (setq go-ts-mode-indent-offset 4)
 (setq rust-ts-mode-indent-offset 4)
 (setq c-ts-mode-indent-offset 4)

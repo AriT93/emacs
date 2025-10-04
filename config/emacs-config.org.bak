@@ -7,31 +7,22 @@
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
 configuration  *This is a Work in Progress*
-** Get some package goodness
+** Package Management (using straight.el)
+Previously used package.el, now consolidated to straight.el for better reproducibility
 #+BEGIN_SRC elisp
 ;; -*- lexical-binding: t; -*-
-  (require 'package)
-#+END_SRC
-find our packages in the more reputable places
+;; Package.el is disabled in favor of straight.el
+;; (require 'package)
+;; (setq package-archives '(
+;;                          ("melpa"  . "https://melpa.org/packages/")
+;;                          ("elpa"   . "https://elpa.gnu.org/packages/")
+;;                          ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+;;                          ("melpa-stable" . "https://stable.melpa.org/packages/")
+;;                          ))
+;; (package-initialize)
 
-#+BEGIN_SRC elisp
-  (setq package-archives '(
-                           ("melpa"  . "https://melpa.org/packages/")
-                           ("elpa"   . "https://elpa.gnu.org/packages/")
-                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                           ("melpa-stable" . "https://stable.melpa.org/packages/")
-                           ))
-  (package-initialize)
-#+END_SRC
-
-** Package Security
-Enable package signature verification for enhanced security
-#+BEGIN_SRC elisp
-  ;; Allow unsigned packages but prefer signed ones
-  (setq package-check-signature 'allow-unsigned)
-
-  ;; Configure straight.el to check for modifications
-  (setq straight-check-for-modifications '(check-on-save find-when-checking))
+;; Configure straight.el to check for modifications
+(setq straight-check-for-modifications '(check-on-save find-when-checking))
 #+END_SRC
 
 ** Use Package
@@ -73,6 +64,9 @@ Suppress warnings about missing lexical-binding cookies in third-party packages
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+
+;; Configure straight.el to integrate with use-package
+(setq straight-use-package-by-default t)
 #+end_src
 
 I store the load paths to locally downloaded package in their own
@@ -97,12 +91,6 @@ config file [[file:load-path-config.org][load-path-config]]
 (setq epa-pinentry-mode 'loopback)     ; More secure pinentry mode
 (setq auth-source-debug nil)           ; Disable debug logging for security
 (setq auth-source-do-cache t)          ; Enable caching
-
-;; Use Emacs' built-in pinentry for better macOS integration
-(use-package pinentry
-  :ensure t
-  :config
-  (pinentry-start))
  #+end_src
 
 ** Network Security
@@ -287,10 +275,8 @@ Use the modern completion stack (vertico, consult, embark, orderless) for enhanc
   (use-package orderless
     :ensure t
     :custom
-    (completion-styles '(orderless basic partial-completion flex))
-    (completion-category-overrides '((file (styles partial-completion))))
-    (tab-always-indent 'complete)  ;; TAB indents first, then completes
-    (completion-cycle-threshold 3))  ;; Cycle through 3 or fewer candidates
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles partial-completion)))))
 
   ;; Contextual actions - similar to ivy actions but more powerful
   (use-package embark
@@ -1041,32 +1027,6 @@ This is kinda like that part in the bible with all the begats...
   (use-package rainbow-delimiters
     :ensure t
     :hook (prog-mode . rainbow-delimiters-mode))
-
-  ;; Configuration validation - check that all required modules exist
-  (defun ari/validate-config-files ()
-    "Validate that all referenced config files can be loaded.
-Checks that required configuration modules exist and are loadable.
-Prints warnings for any missing files but does not halt startup."
-    (let ((required-files '("ruby-config-new"
-                           "keys-config-new"
-                           "ari-custom-new"
-                           "erc-config"
-                           "gnus-config"))
-          (missing-files '()))
-      (dolist (file required-files)
-        (unless (locate-library file)
-          (push file missing-files)
-          (warn "Configuration file not found: %s" file)))
-      (if missing-files
-          (message "⚠️  Missing %d config file(s): %s"
-                   (length missing-files)
-                   (string-join missing-files ", "))
-        (message "✓ All configuration files validated successfully"))
-      (null missing-files)))
-
-  ;; Run validation after init
-  (add-hook 'after-init-hook #'ari/validate-config-files)
-
   (require 'ruby-config-new)
   (require 'keys-config-new)
   (require 'ari-custom-new)
@@ -1529,9 +1489,6 @@ setting this up for roam and keeping deft for notes
 #+begin_src elisp
   (use-package helpful
     :ensure t
-    :custom
-    (help-enable-symbol-autoload t)     ;; Show symbols that can be autoloaded
-    (help-enable-completion-autoload t) ;; Enable completion for autoloadable symbols
     :init
     (defun helpful--autoloaded-p (sym buf)
       "Return non-nil if function SYM is autoloaded."
@@ -1864,8 +1821,13 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
 #+end_src
 ** Tree sitter
 #+begin_src elisp
-  ;; Tree-sitter packages removed - using built-in treesit in Emacs 29+
-  ;; See Programming Languages section below for modern treesit configuration
+  (use-package tree-sitter-langs
+    :ensure t )
+  (use-package tree-sitter
+    :ensure t
+    :config
+    (require 'tree-sitter-langs)
+    (global-tree-sitter-mode))
 #+end_src
 ** pdf-tools
 #+begin_src elisp
@@ -2008,52 +1970,48 @@ who knows it might catch on
 
   (add-hook 'eglot-managed-mode-hook #'eglot-setup-completion)
 
-  ;; Built-in Tree-sitter Configuration (Emacs 29+)
-  ;; Maximum syntax highlighting detail
-  (setq treesit-font-lock-level 4)
+  ;; Modern Tree-sitter Configuration for Emacs 31
+  (use-package tree-sitter
+    :ensure t
+    :config
+    ;; Enable global tree-sitter mode
+    (global-tree-sitter-mode)
+    
+    ;; Enable tree-sitter-based syntax highlighting
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+    
+    ;; Better performance settings for Emacs 31
+    (setq tree-sitter-hl-default-patterns t)
+    (setq tree-sitter-hl-use-font-lock-keywords nil))
 
-  ;; Configure tree-sitter language grammar sources
-  (setq treesit-language-source-alist
-        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-          (c "https://github.com/tree-sitter/tree-sitter-c")
-          (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-          (css "https://github.com/tree-sitter/tree-sitter-css")
-          (go "https://github.com/tree-sitter/tree-sitter-go")
-          (html "https://github.com/tree-sitter/tree-sitter-html")
-          (java "https://github.com/tree-sitter/tree-sitter-java")
-          (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
-          (json "https://github.com/tree-sitter/tree-sitter-json")
-          (python "https://github.com/tree-sitter/tree-sitter-python")
-          (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-          (rust "https://github.com/tree-sitter/tree-sitter-rust")
-          (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-          (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+  ;; Tree-sitter language grammars
+  (use-package tree-sitter-langs
+    :ensure t
+    :after tree-sitter
+    :config
+    ;; Load common language grammars
+    (tree-sitter-require 'javascript)
+    (tree-sitter-require 'typescript)
+    (tree-sitter-require 'tsx)
+    (tree-sitter-require 'python)
+    (tree-sitter-require 'ruby)
+    (tree-sitter-require 'go)
+    (tree-sitter-require 'java)
+    (tree-sitter-require 'c)
+    (tree-sitter-require 'cpp)
+    (tree-sitter-require 'rust)
+    (tree-sitter-require 'json)
+    (tree-sitter-require 'yaml)
+    (tree-sitter-require 'html)
+    (tree-sitter-require 'css))
 
-  ;; Auto-install language grammars on first use
-  (defun ari/treesit-install-all-languages ()
-    "Install all tree-sitter language grammars defined in treesit-language-source-alist."
-    (interactive)
-    (dolist (lang (mapcar #'car treesit-language-source-alist))
-      (unless (treesit-language-available-p lang)
-        (message "Installing tree-sitter grammar for %s..." lang)
-        (treesit-install-language-grammar lang))))
-
-  ;; Install grammars on first startup (runs once)
-  (add-hook 'after-init-hook
-            (lambda ()
-              (when (and (fboundp 'treesit-available-p)
-                         (treesit-available-p))
-                (ari/treesit-install-all-languages))))
-
-  ;; Configure tree-sitter modes for Emacs 29+
+  ;; Configure tree-sitter modes for Emacs 31
   ;; These modes are built-in and don't need separate packages
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.c\\'" . c-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.cpp\\'\\|\\.cc\\'\\|\\.cxx\\'\\|\\.hpp\\'\\|\\.hh\\'" . c++-ts-mode))
@@ -2061,15 +2019,12 @@ who knows it might catch on
   (add-to-list 'auto-mode-alist '("\\.yaml\\'\\|\\.yml\\'" . yaml-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.html\\'" . html-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.css\\'" . css-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.sh\\'" . bash-ts-mode))
 
   ;; Configure indentation for tree-sitter modes
   (setq js-ts-mode-indent-offset 2)
   (setq typescript-ts-mode-indent-offset 2)
   (setq tsx-ts-mode-indent-offset 2)
   (setq python-ts-mode-indent-offset 4)
-  (setq java-ts-mode-indent-offset 4)
-  (setq go-ts-mode-indent-offset 4)
   (setq go-ts-mode-indent-offset 4)
   (setq rust-ts-mode-indent-offset 4)
   (setq c-ts-mode-indent-offset 4)

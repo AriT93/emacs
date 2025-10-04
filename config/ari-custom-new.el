@@ -35,39 +35,63 @@
                (regexp-quote isearch-string))))))
 
 (defun djcb-opacity-modify (&optional dec)
-  "Modify the transparency of the EMACS frame; If DEC is t, decrease the transparency, otherwise increase it in 10%-steps."
-  (let* ((alpha-or-nil (frame-parameter nil 'alpha)) ; nil before setting
-         (oldalpha (if alpha-or-nil alpha-or-nil 100))
-         (newalpha (if dec (- oldalpha 10) (+ oldalpha 10))))
-    (when (and (>= newalpha frame-alpha-lower-limit) (<= newalpha 100))
-      (modify-frame-parameters nil (list (cons 'alpha newalpha))))))
+       "Modify the transparency of the Emacs frame in 10% steps.
+If DEC is non-nil, decrease transparency by 10%, otherwise increase it.
+Transparency is constrained between `frame-alpha-lower-limit' and 100.
+Returns the new alpha value, or nil if no change was made."
+       (interactive "P")
+       (condition-case err
+           (let* ((alpha-or-nil (frame-parameter nil 'alpha))
+                  (oldalpha (if alpha-or-nil alpha-or-nil 100))
+                  (newalpha (if dec (- oldalpha 10) (+ oldalpha 10))))
+             (if (and (>= newalpha frame-alpha-lower-limit) (<= newalpha 100))
+                 (progn
+                   (modify-frame-parameters nil (list (cons 'alpha newalpha)))
+                   (message "Frame alpha set to %d%%" newalpha)
+                   newalpha)
+               (message "Alpha value %d is out of bounds (%d-100)"
+                        newalpha frame-alpha-lower-limit)
+               nil))
+         (error
+          (message "Error modifying frame opacity: %s" (error-message-string err))
+          nil)))
 
 (defun fg/jira-update-heading ()
-"Update heading for Jira Issue at point."
-(interactive)
-(when-let* ((pt (point))
-            (issue-key (and (org-at-heading-p)
-                            (org-entry-get pt "JIRAISSUEKEY"))))
-  (let-alist (jiralib2-get-issue issue-key)
-    ;; Update headline
-    (let ((headline (format "%s %s" .key .fields.summary)))
-      (message "Updating %s" headline)
-      (org-edit-headline headline))
-    ;; Update properties
-    (cl-loop
-     for (property value)
-     on (list
-         "JiraAssignee" .fields.assignee.displayName
-         "JiraCreated" .fields.created
-         "JiraIssueKey" .key
-         "JiraIssueType" .fields.issuetype.name
-         "JiraPriority" .fields.priority.name
-         "JiraProjectKey" .fields.project.key
-         "JiraReporter" .fields.reporter.displayName
-         "JiraStatus" .fields.status.name
-         "JiraSummary" .fields.summary)
-     by #'cddr
-     do (org-entry-put pt property value)))))
+    "Update current org heading with data from Jira.
+Fetches issue details from Jira using the JIRAISSUEKEY property and updates
+the heading text and properties with current issue data. Requires jiralib2 to
+be configured and the point to be on an org heading with a JIRAISSUEKEY property.
+
+Returns nil if not on a heading or JIRAISSUEKEY is missing, otherwise updates
+the heading and properties."
+    (interactive)
+    (condition-case err
+        (when-let* ((pt (point))
+                    (issue-key (and (org-at-heading-p)
+                                    (org-entry-get pt "JIRAISSUEKEY"))))
+          (let-alist (jiralib2-get-issue issue-key)
+      ;; Update headline
+      (let ((headline (format "%s %s" .key .fields.summary)))
+        (message "Updating %s" headline)
+        (org-edit-headline headline))
+      ;; Update properties
+      (cl-loop
+       for (property value)
+       on (list
+           "JiraAssignee" .fields.assignee.displayName
+           "JiraCreated" .fields.created
+           "JiraIssueKey" .key
+           "JiraIssueType" .fields.issuetype.name
+           "JiraPriority" .fields.priority.name
+           "JiraProjectKey" .fields.project.key
+           "JiraReporter" .fields.reporter.displayName
+           "JiraStatus" .fields.status.name
+           "JiraSummary" .fields.summary)
+       by #'cddr
+       do (org-entry-put pt property value))))
+      (error
+       (message "Error updating Jira heading: %s" (error-message-string err))
+       nil)))
 
 (defun my/org-roam-weekly-recap (&optional week-offset)
   "Generate a weekly recap from daily notes.
