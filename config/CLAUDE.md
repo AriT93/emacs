@@ -37,6 +37,10 @@ The main entry point appears to be `emacs-config-new.el` which:
 
 ## Development Workflow
 
+### Emacs Binary Location
+- **Emacs path**: `/Users/abturet/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs`
+- Use this path for batch mode testing and validation
+
 ### Making Configuration Changes
 1. Edit the appropriate `.org` file (not the `.el` file directly)
 2. Use `C-c C-v t` (org-babel-tangle) to regenerate the `.el` files

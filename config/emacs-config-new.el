@@ -9,6 +9,12 @@
                          ))
 (package-initialize)
 
+;; Allow unsigned packages but prefer signed ones
+(setq package-check-signature 'allow-unsigned)
+
+;; Configure straight.el to check for modifications
+(setq straight-check-for-modifications '(check-on-save find-when-checking))
+
 (setq treesit-extra-load-path nil)
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -45,6 +51,19 @@
 
 (add-hook 'emacs-startup-hook 'ensure-gpg-agent-running)
 
+;; Enhanced GPG and auth-source configuration
+(setq epg-gpg-program "gpg2")
+(setq auth-sources '("~/.authinfo.gpg"))
+(setq auth-source-cache-expiry 3600)  ; 1 hour cache
+(setq epa-pinentry-mode 'loopback)     ; More secure pinentry mode
+(setq auth-source-debug nil)           ; Disable debug logging for security
+(setq auth-source-do-cache t)          ; Enable caching
+
+;; Network security configuration
+(setq gnutls-verify-error t)           ; Fail on TLS verification errors
+(setq gnutls-min-prime-bits 2048)      ; Minimum encryption strength
+(setq network-security-level 'high)    ; High security level for network connections
+
 (set-face-attribute 'default nil
                     :inherit nil
                     :height 160
@@ -66,7 +85,7 @@
 (recentf-mode 1)
 (fringe-mode 10)
 (tool-bar-mode -1)
-(menu-bar-mode t)
+;; (menu-bar-mode t) ; Removed - conflicts with early-init.el which disables for performance
 (setq recentf-max-menu-items 25)
 (setq recentf-max-saved-items 25)
 (setq undo-limit 8000000)
@@ -94,7 +113,7 @@
 (help-at-pt-set-timer)
 (setq show-paren-style 'mixed)
 (setq mode-line-in-non-selected-windows nil)
-(fset 'yes-or-no-p 'y-or-n-p)
+(setq use-short-answers t)  ; Modern replacement for (fset 'yes-or-no-p 'y-or-n-p) - Emacs 28+
 (setq browse-url-browser-function 'browse-url-default-browser)
 (add-hook 'eww-after-render-hook 'eww-readable)
 (add-hook 'eww-after-render-hook 'visual-line-mode)
@@ -279,9 +298,9 @@
 (use-package nerd-icons-completion
   :ensure t
   :after marginalia
+  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup)
   :config
-  (nerd-icons-completion-mode)
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+  (nerd-icons-completion-mode))
 
 ;; Add a posframe-like UI for Vertico (if desired)
 (use-package vertico-posframe
@@ -874,8 +893,7 @@
   :ensure t)
 (use-package rainbow-delimiters
   :ensure t
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+  :hook (prog-mode . rainbow-delimiters-mode))
 (require 'ruby-config-new)
 (require 'keys-config-new)
 (require 'ari-custom-new)

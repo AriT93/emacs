@@ -24,6 +24,16 @@ find our packages in the more reputable places
   (package-initialize)
 #+END_SRC
 
+** Package Security
+Enable package signature verification for enhanced security
+#+BEGIN_SRC elisp
+  ;; Allow unsigned packages but prefer signed ones
+  (setq package-check-signature 'allow-unsigned)
+
+  ;; Configure straight.el to check for modifications
+  (setq straight-check-for-modifications '(check-on-save find-when-checking))
+#+END_SRC
+
 ** Use Package
 =use-package= makes it easy to require a file without a bunch of
 requires like you'll find just below a bit and it will also ensure it`
@@ -79,7 +89,25 @@ config file [[file:load-path-config.org][load-path-config]]
     (start-process "gpg-agent" nil "gpg-agent" "--daemon")))
 
 (add-hook 'emacs-startup-hook 'ensure-gpg-agent-running)
+
+;; Enhanced GPG and auth-source configuration
+(setq epg-gpg-program "gpg2")
+(setq auth-sources '("~/.authinfo.gpg"))
+(setq auth-source-cache-expiry 3600)  ; 1 hour cache
+(setq epa-pinentry-mode 'loopback)     ; More secure pinentry mode
+(setq auth-source-debug nil)           ; Disable debug logging for security
+(setq auth-source-do-cache t)          ; Enable caching
  #+end_src
+
+** Network Security
+Enhanced network security settings for secure communication
+#+begin_src elisp
+;; Network security configuration
+(setq gnutls-verify-error t)           ; Fail on TLS verification errors
+(setq gnutls-min-prime-bits 2048)      ; Minimum encryption strength
+(setq network-security-level 'high)    ; High security level for network connections
+#+end_src
+
 ** Looks and Behaviors
 *** Faces that I like.
 moving these out of custom-set faces to make sure I get the results I
@@ -109,7 +137,7 @@ want from faces
     (recentf-mode 1)
     (fringe-mode 10)
     (tool-bar-mode -1)
-    (menu-bar-mode t)
+    ;; (menu-bar-mode t) ; Removed - conflicts with early-init.el which disables for performance
     (setq recentf-max-menu-items 25)
     (setq recentf-max-saved-items 25)
     (setq undo-limit 8000000)
@@ -137,7 +165,7 @@ want from faces
     (help-at-pt-set-timer)
     (setq show-paren-style 'mixed)
     (setq mode-line-in-non-selected-windows nil)
-    (fset 'yes-or-no-p 'y-or-n-p)
+    (setq use-short-answers t)  ; Modern replacement for (fset 'yes-or-no-p 'y-or-n-p) - Emacs 28+
     (setq browse-url-browser-function 'browse-url-default-browser)
     (add-hook 'eww-after-render-hook 'eww-readable)
     (add-hook 'eww-after-render-hook 'visual-line-mode)
@@ -328,9 +356,9 @@ Use the modern completion stack (vertico, consult, embark, orderless) for enhanc
   (use-package nerd-icons-completion
     :ensure t
     :after marginalia
+    :hook (marginalia-mode . nerd-icons-completion-marginalia-setup)
     :config
-    (nerd-icons-completion-mode)
-    (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+    (nerd-icons-completion-mode))
 
   ;; Add a posframe-like UI for Vertico (if desired)
   (use-package vertico-posframe
@@ -1004,8 +1032,7 @@ This is kinda like that part in the bible with all the begats...
     :ensure t)
   (use-package rainbow-delimiters
     :ensure t
-    :config
-    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+    :hook (prog-mode . rainbow-delimiters-mode))
   (require 'ruby-config-new)
   (require 'keys-config-new)
   (require 'ari-custom-new)
