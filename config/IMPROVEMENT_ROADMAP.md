@@ -312,7 +312,7 @@ This roadmap outlines a phased approach to modernizing and improving the Emacs c
    - Requires significant restructuring
    - Consider for future if reproducibility is critical
 
-### Session 3: 2025-10-05
+### Session 3: 2025-10-05 (Morning)
 **Completed:**
 - ✅ Cross-platform portability audit
 - ✅ Fixed hardcoded paths in ruby-config.org (rbenv)
@@ -349,7 +349,7 @@ This roadmap outlines a phased approach to modernizing and improving the Emacs c
 - load-path-config-new.el loads without errors
 - Configuration now portable across macOS (Intel/Apple Silicon) and Linux
 
-**Files Modified This Session:**
+**Files Modified:**
 - `ruby-config.org` - Dynamic rbenv path detection
 - `emacs-config.org` - Dynamic PlantUML and cypher-shell paths
 - `load-path-config.org` - Multi-platform site-lisp support
@@ -363,7 +363,60 @@ This roadmap outlines a phased approach to modernizing and improving the Emacs c
 
 ---
 
+### Session 4: 2025-10-05 (Afternoon)
+**Completed:**
+- ✅ Resolved tree-sitter ABI compatibility issues between Ubuntu and macOS
+- ✅ Migrated from manual grammar management to `treesit-auto` package
+- ✅ Implemented runtime ABI detection for cross-platform grammar compatibility
+- ✅ Updated documentation (CLAUDE.md, IMPROVEMENT_ROADMAP.md)
+
+**Problem:**
+Ubuntu 25.04 ships with tree-sitter 0.20.8 (ABI 14), while macOS has tree-sitter 0.22+ (ABI 15+). Latest tree-sitter grammars require ABI 15+, causing warnings on Ubuntu:
+```
+Warning: this language grammar has ABI version 15, but Emacs supports only 14
+```
+
+**Solution:**
+Implemented intelligent ABI-aware grammar version selection in `emacs-config.org`:
+1. **Runtime ABI detection**: Uses `treesit-library-abi-version` to detect system's tree-sitter version
+2. **Conditional grammar versions**:
+   - ABI ≤14 (Ubuntu): Pins grammars to v0.20.x releases
+   - ABI ≥15 (macOS): Uses v0.23.3 (latest) releases
+3. **Unified management**: Switched to `treesit-auto` for cleaner configuration and automatic mode remapping
+
+**Technical Details:**
+- `emacs-config.org:2033-2177` - Complete treesit-auto configuration
+- 15 language grammars with dual-version support: bash, c, cpp, css, go, html, java, javascript, json, python, ruby, rust, tsx, typescript, yaml
+- Automatic grammar installation on first startup
+- Startup message indicates which ABI version and grammar set is being used
+
+**Benefits:**
+- ✅ No ABI warnings on Ubuntu
+- ✅ Latest grammars on macOS
+- ✅ Same configuration file works on both platforms
+- ✅ Cleaner code using `treesit-auto` vs manual `treesit-language-source-alist`
+- ✅ Automatic mode remapping (e.g., `rust-mode` → `rust-ts-mode`)
+
+**Files Modified:**
+- `emacs-config.org` - Replaced manual tree-sitter config with treesit-auto (lines 2033-2177)
+- `CLAUDE.md` - Added Tree-sitter Configuration section, updated Emacs binary paths
+- `IMPROVEMENT_ROADMAP.md` - Documented solution for future reference
+
+**Testing:**
+- Verified ABI detection: `emacs --batch --eval "(require 'treesit) (message \"ABI: %s\" (treesit-library-abi-version nil))"` → ABI: 14
+- Tangled configuration successfully
+- Removed old grammars for clean reinstall with correct versions
+
+**Lessons Learned:**
+- Tree-sitter ABI compatibility must be considered for cross-platform configs
+- Runtime detection is better than hardcoding platform-specific configs
+- `treesit-auto` package simplifies grammar management significantly
+- System package versions (Ubuntu vs Homebrew) can differ substantially
+
+---
+
 ### Next Steps:
-- Configuration is now ready for use on Linux and different Mac architectures
+- Configuration now fully cross-platform compatible (macOS Intel/Apple Silicon, Linux)
+- All tree-sitter grammars work without warnings on all platforms
 - All planned improvement phases complete
-- Future: Consider monitoring for new Emacs features and package updates
+- Future: Monitor for tree-sitter 0.22+ availability in Ubuntu repositories

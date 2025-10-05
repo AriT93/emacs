@@ -27,6 +27,14 @@ This is a personal Emacs configuration repository using org-mode for literate co
 - Also uses `straight.el` for more advanced package management
 - `use-package` for clean package configuration
 
+### Tree-sitter Configuration
+- Uses `treesit-auto` package for automatic grammar management
+- **ABI-aware grammar selection**: Automatically detects tree-sitter ABI version
+  - ABI 14 (tree-sitter 0.20.x on Ubuntu): Uses v0.20.x grammar versions
+  - ABI 15+ (tree-sitter 0.22+ on macOS): Uses v0.23.3 grammar versions
+- Provides seamless cross-platform compatibility without ABI warnings
+- Grammars are automatically installed on first startup
+
 ### Load Order
 The main entry point appears to be `emacs-config-new.el` which:
 1. Sets up package repositories (MELPA, ELPA, NonGNU, MELPA Stable)
@@ -38,8 +46,9 @@ The main entry point appears to be `emacs-config-new.el` which:
 ## Development Workflow
 
 ### Emacs Binary Location
-- **Emacs path**: `/Users/abturet/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs`
-- Use this path for batch mode testing and validation
+- **macOS**: `/Users/abturet/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs`
+- **Linux**: `/home/abturet/dev/emacs/src/emacs`
+- Use these paths for batch mode testing and validation
 
 ### Making Configuration Changes
 1. Edit the appropriate `.org` file (not the `.el` file directly)

@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-09-28 08:23:28 abturet>
+#+Time-stamp: <2025-10-05 08:53:52 abturet>
 #+PROPERTY: header-args:sh  :results silent :tangle no
 * Simple Settings
 Contained herein are my general non-mode specific(mostly)
@@ -194,7 +194,7 @@ want from faces
 ** Vterm for emulation
 #+begin_src elisp
   (use-package vterm
-    :ensure t
+    :straight t
     :init
     (setq vterm-max-scrollback 1000000)
     )
@@ -1870,6 +1870,7 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
 ** SVG-Tag-mode
 #+begin_src elisp
   (use-package svg-tag-mode
+    :straight t
     :hook ((prog-mode . svg-tag-mode))
     :config
     (setq svg-tag-tags
@@ -2033,56 +2034,147 @@ who knows it might catch on
   ;; Maximum syntax highlighting detail
   (setq treesit-font-lock-level 4)
 
-  ;; Configure tree-sitter language grammar sources
-  (setq treesit-language-source-alist
-        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-          (c "https://github.com/tree-sitter/tree-sitter-c")
-          (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-          (css "https://github.com/tree-sitter/tree-sitter-css")
-          (go "https://github.com/tree-sitter/tree-sitter-go")
-          (html "https://github.com/tree-sitter/tree-sitter-html")
-          (java "https://github.com/tree-sitter/tree-sitter-java")
-          (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
-          (json "https://github.com/tree-sitter/tree-sitter-json")
-          (python "https://github.com/tree-sitter/tree-sitter-python")
-          (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-          (rust "https://github.com/tree-sitter/tree-sitter-rust")
-          (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-          (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+  ;; Use treesit-auto for automatic grammar installation and mode management
+  (use-package treesit-auto
+    :ensure t
+    :demand t
+    :config
+    ;; Detect ABI version and use appropriate grammar revisions
+    ;; ABI 14 (tree-sitter 0.20.x) -> v0.20.x grammars
+    ;; ABI 15+ (tree-sitter 0.22+) -> v0.23.3 grammars
+    (let* ((abi-version (and (fboundp 'treesit-library-abi-version)
+                             (treesit-library-abi-version nil)))
+           (use-legacy (and abi-version (<= abi-version 14)))
+           (grammar-rev (if use-legacy "v0.20.4" "v0.23.3"))
+           (bash-rev (if use-legacy "v0.20.5" "v0.23.3"))
+           (c-rev (if use-legacy "v0.20.6" "v0.23.3"))
+           (cpp-rev (if use-legacy "v0.20.0" "v0.23.3"))
+           (css-rev (if use-legacy "v0.19.0" "v0.23.3"))
+           (go-rev (if use-legacy "v0.20.0" "v0.23.3"))
+           (html-rev (if use-legacy "v0.20.0" "v0.23.3"))
+           (java-rev (if use-legacy "v0.20.2" "v0.23.3"))
+           (js-rev (if use-legacy "v0.20.1" "v0.23.3"))
+           (json-rev (if use-legacy "v0.20.2" "v0.23.3"))
+           (ruby-rev (if use-legacy "v0.20.0" "v0.23.3"))
+           (rust-rev (if use-legacy "v0.20.4" "v0.23.3"))
+           (ts-rev (if use-legacy "v0.20.3" "v0.23.3"))
+           (yaml-rev (if use-legacy "v0.5.0" "v0.5.0")))
 
-  ;; Auto-install language grammars on first use
-  (defun ari/treesit-install-all-languages ()
-    "Install all tree-sitter language grammars defined in treesit-language-source-alist."
-    (interactive)
-    (dolist (lang (mapcar #'car treesit-language-source-alist))
-      (unless (treesit-language-available-p lang)
-        (message "Installing tree-sitter grammar for %s..." lang)
-        (treesit-install-language-grammar lang))))
+      (message "Tree-sitter ABI version: %s, using %s grammars"
+               abi-version (if use-legacy "legacy (0.20.x)" "modern (0.23.3)"))
 
-  ;; Install grammars on first startup (runs once)
-  (add-hook 'after-init-hook
-            (lambda ()
-              (when (and (fboundp 'treesit-available-p)
-                         (treesit-available-p))
-                (ari/treesit-install-all-languages))))
+      (setq treesit-auto-recipe-list
+            (list
+             (make-treesit-auto-recipe
+              :lang 'bash
+              :ts-mode 'bash-ts-mode
+              :remap 'sh-mode
+              :url "https://github.com/tree-sitter/tree-sitter-bash"
+              :revision bash-rev
+              :ext "\\.sh\\'")
+             (make-treesit-auto-recipe
+              :lang 'c
+              :ts-mode 'c-ts-mode
+              :remap 'c-mode
+              :url "https://github.com/tree-sitter/tree-sitter-c"
+              :revision c-rev
+              :ext "\\.c\\'")
+             (make-treesit-auto-recipe
+              :lang 'cpp
+              :ts-mode 'c++-ts-mode
+              :remap 'c++-mode
+              :url "https://github.com/tree-sitter/tree-sitter-cpp"
+              :revision cpp-rev
+              :ext "\\.\\(cpp\\|cc\\|cxx\\|hpp\\|hh\\)\\'")
+             (make-treesit-auto-recipe
+              :lang 'css
+              :ts-mode 'css-ts-mode
+              :remap 'css-mode
+              :url "https://github.com/tree-sitter/tree-sitter-css"
+              :revision css-rev
+              :ext "\\.css\\'")
+             (make-treesit-auto-recipe
+              :lang 'go
+              :ts-mode 'go-ts-mode
+              :remap 'go-mode
+              :url "https://github.com/tree-sitter/tree-sitter-go"
+              :revision go-rev
+              :ext "\\.go\\'")
+             (make-treesit-auto-recipe
+              :lang 'html
+              :ts-mode 'html-ts-mode
+              :remap 'html-mode
+              :url "https://github.com/tree-sitter/tree-sitter-html"
+              :revision html-rev
+              :ext "\\.html\\'")
+             (make-treesit-auto-recipe
+              :lang 'java
+              :ts-mode 'java-ts-mode
+              :remap 'java-mode
+              :url "https://github.com/tree-sitter/tree-sitter-java"
+              :revision java-rev
+              :ext "\\.java\\'")
+             (make-treesit-auto-recipe
+              :lang 'javascript
+              :ts-mode 'js-ts-mode
+              :remap 'js-mode
+              :url "https://github.com/tree-sitter/tree-sitter-javascript"
+              :revision js-rev
+              :ext "\\.js\\'")
+             (make-treesit-auto-recipe
+              :lang 'json
+              :ts-mode 'json-ts-mode
+              :remap 'json-mode
+              :url "https://github.com/tree-sitter/tree-sitter-json"
+              :revision json-rev
+              :ext "\\.json\\'")
+             (make-treesit-auto-recipe
+              :lang 'python
+              :ts-mode 'python-ts-mode
+              :remap 'python-mode
+              :url "https://github.com/tree-sitter/tree-sitter-python"
+              :revision grammar-rev
+              :ext "\\.py\\'")
+             (make-treesit-auto-recipe
+              :lang 'ruby
+              :ts-mode 'ruby-ts-mode
+              :remap 'ruby-mode
+              :url "https://github.com/tree-sitter/tree-sitter-ruby"
+              :revision ruby-rev
+              :ext "\\.rb\\'")
+             (make-treesit-auto-recipe
+              :lang 'rust
+              :ts-mode 'rust-ts-mode
+              :remap 'rust-mode
+              :url "https://github.com/tree-sitter/tree-sitter-rust"
+              :revision rust-rev
+              :ext "\\.rs\\'")
+             (make-treesit-auto-recipe
+              :lang 'tsx
+              :ts-mode 'tsx-ts-mode
+              :remap 'typescript-mode
+              :url "https://github.com/tree-sitter/tree-sitter-typescript"
+              :revision ts-rev
+              :ext "\\.tsx\\'"
+              :source-dir "tsx/src")
+             (make-treesit-auto-recipe
+              :lang 'typescript
+              :ts-mode 'typescript-ts-mode
+              :remap 'typescript-mode
+              :url "https://github.com/tree-sitter/tree-sitter-typescript"
+              :revision ts-rev
+              :ext "\\.ts\\'"
+              :source-dir "typescript/src")
+             (make-treesit-auto-recipe
+              :lang 'yaml
+              :ts-mode 'yaml-ts-mode
+              :remap 'yaml-mode
+              :url "https://github.com/ikatyang/tree-sitter-yaml"
+              :revision yaml-rev
+              :ext "\\.\\(yaml\\|yml\\)\\'"))))
 
-  ;; Configure tree-sitter modes for Emacs 29+
-  ;; These modes are built-in and don't need separate packages
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.c\\'" . c-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.cpp\\'\\|\\.cc\\'\\|\\.cxx\\'\\|\\.hpp\\'\\|\\.hh\\'" . c++-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.json\\'" . json-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.yaml\\'\\|\\.yml\\'" . yaml-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.html\\'" . html-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.css\\'" . css-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.sh\\'" . bash-ts-mode))
+    ;; Enable global auto mode
+    (global-treesit-auto-mode))
 
   ;; Configure indentation for tree-sitter modes
   (setq js-ts-mode-indent-offset 2)
