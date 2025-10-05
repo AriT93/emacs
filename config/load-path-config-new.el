@@ -1,9 +1,12 @@
 ;; -*- lexical-binding: t; -*-
 (message "loading load-path-config")
 
-;; System-wide paths
-(when (file-exists-p "/usr/local/share/emacs/site-lisp")
-  (add-to-list 'load-path "/usr/local/share/emacs/site-lisp"))
+;; System-wide paths - check both Homebrew locations (Intel and Apple Silicon)
+(dolist (sys-path '("/usr/local/share/emacs/site-lisp"     ; Intel Mac Homebrew
+                    "/opt/homebrew/share/emacs/site-lisp"  ; Apple Silicon Mac Homebrew
+                    "/usr/share/emacs/site-lisp"))         ; Linux
+  (when (file-exists-p sys-path)
+    (add-to-list 'load-path sys-path)))
 
 ;; Local site packages - check each one exists
 (dolist (site-path '("~/emacs/site/color-theme/themes"

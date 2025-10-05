@@ -791,8 +791,27 @@
   (venv-initialize-eshell)
   (setq venv-location "~/.virtualenvs")
   )
-(setq org-plantuml-jar-path "/opt/homebrew/Cellar/plantuml/1.2024.8/libexec/plantuml.jar")
-(setq plantuml-jar-path "/opt/homebrew/Cellar/plantuml/1.2024.8/libexec/plantuml.jar")
+
+;; PlantUML JAR path - use executable-find for cross-platform compatibility
+(let ((plantuml-bin (executable-find "plantuml")))
+  (when plantuml-bin
+    ;; For systems where plantuml is a script wrapper, try to find the actual JAR
+    (let* ((resolved-path (file-truename plantuml-bin))
+           (bin-dir (file-name-directory resolved-path))
+           (possible-jar-paths
+            (list
+             ;; Apple Silicon Homebrew
+             (expand-file-name "../Cellar/plantuml/*/libexec/plantuml.jar" bin-dir)
+             ;; Intel Homebrew
+             (expand-file-name "../../Cellar/plantuml/*/libexec/plantuml.jar" bin-dir)
+             ;; Linux package managers often put it here
+             "/usr/share/plantuml/plantuml.jar"
+             "/usr/share/java/plantuml.jar")))
+      (let ((found-jar (seq-find #'file-exists-p
+                                 (mapcar #'file-expand-wildcards possible-jar-paths))))
+        (when found-jar
+          (setq org-plantuml-jar-path (if (listp found-jar) (car found-jar) found-jar))
+          (setq plantuml-jar-path (if (listp found-jar) (car found-jar) found-jar)))))))
 
 
 (setq org-mime-export-options '(:section-numbers nil
@@ -1314,8 +1333,10 @@ Prints warnings for any missing files but does not halt startup."
 
 (use-package cypher-mode
   :ensure t)
-;;     (setq n4js-cli-program "~/Downloads/cypher-shell/cypher-shell")
-(setq n4js-cli-program "/opt/homebrew/bin/cypher-shell")
+
+;; Use executable-find for cross-platform compatibility
+(when-let ((cypher-shell-path (executable-find "cypher-shell")))
+  (setq n4js-cli-program cypher-shell-path))
 (setq n4js-cli-arguments '("-u" "neo4j"))
 (setq n4js-pop-to-buffer t)
 (setq n4js-font-lock-keywords cypher-font-lock-keywords)

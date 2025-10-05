@@ -65,8 +65,16 @@
   :init
   (setq rbenv-show-active-ruby-in-modeline nil)
   :config
-  (setq rbenv-installation-dir "/opt/homebrew/Cellar/rbenv/1.2.0")
-  (setq rbenv-executable "/opt/homebrew/bin/rbenv")
+  ;; Use executable-find for cross-platform compatibility
+  (let ((rbenv-path (executable-find "rbenv")))
+    (when rbenv-path
+      (setq rbenv-executable rbenv-path)
+      ;; Derive installation dir from executable path
+      ;; e.g., /opt/homebrew/bin/rbenv -> /opt/homebrew
+      (setq rbenv-installation-dir
+            (file-name-directory
+             (directory-file-name
+              (file-name-directory rbenv-path))))))
   (global-rbenv-mode t))
 
 (use-package autotest

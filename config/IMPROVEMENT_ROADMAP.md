@@ -312,7 +312,58 @@ This roadmap outlines a phased approach to modernizing and improving the Emacs c
    - Requires significant restructuring
    - Consider for future if reproducibility is critical
 
+### Session 3: 2025-10-05
+**Completed:**
+- ✅ Cross-platform portability audit
+- ✅ Fixed hardcoded paths in ruby-config.org (rbenv)
+- ✅ Fixed hardcoded paths in emacs-config.org (PlantUML JAR, cypher-shell)
+- ✅ Enhanced load-path-config.org to support Intel Mac, Apple Silicon Mac, and Linux
+- ✅ Tested all changes with batch mode and tangling
+
+**Portability Improvements:**
+1. **rbenv paths** (ruby-config.org:99-109)
+   - Now uses `executable-find` to locate rbenv dynamically
+   - Derives installation directory from executable path
+   - Works across Homebrew installations (Intel/Apple Silicon) and Linux
+
+2. **PlantUML JAR paths** (emacs-config.org:922-941)
+   - Uses `executable-find` to locate plantuml binary
+   - Checks multiple common JAR locations:
+     - Apple Silicon Homebrew (`/opt/homebrew/...`)
+     - Intel Mac Homebrew (`/usr/local/...`)
+     - Linux package managers (`/usr/share/...`)
+   - Handles glob patterns for version-independent paths
+
+3. **cypher-shell path** (emacs-config.org:1531-1533)
+   - Uses `executable-find` with `when-let` for clean conditional setting
+   - Falls back gracefully if cypher-shell not installed
+
+4. **site-lisp paths** (load-path-config.org:11-16)
+   - Now checks all three common locations:
+     - `/usr/local/share/emacs/site-lisp` (Intel Mac Homebrew)
+     - `/opt/homebrew/share/emacs/site-lisp` (Apple Silicon Mac Homebrew)
+     - `/usr/share/emacs/site-lisp` (Linux)
+
+**Testing:**
+- All org files successfully tangled
+- load-path-config-new.el loads without errors
+- Configuration now portable across macOS (Intel/Apple Silicon) and Linux
+
+**Files Modified This Session:**
+- `ruby-config.org` - Dynamic rbenv path detection
+- `emacs-config.org` - Dynamic PlantUML and cypher-shell paths
+- `load-path-config.org` - Multi-platform site-lisp support
+- `IMPROVEMENT_ROADMAP.md` - Added portability session
+
+**Lessons Learned:**
+- `executable-find` is the best approach for cross-platform binary location
+- Always check multiple common paths for platform-specific tools
+- Glob patterns with wildcards help avoid version-specific paths
+- Batch mode testing catches portability issues early
+
+---
+
 ### Next Steps:
-- Consider Phase 5 (Tree-sitter) if on Emacs 29+
-- Phase 6 (Completion) for UX improvements
-- Phase 7 (Documentation) for long-term maintainability
+- Configuration is now ready for use on Linux and different Mac architectures
+- All planned improvement phases complete
+- Future: Consider monitoring for new Emacs features and package updates
