@@ -103,3 +103,26 @@ The following safety and architectural improvements have been implemented:
 - **Standardized naming convention**: All configuration files now use consistent `-new` suffix
 - **Enhanced portability**: Load path configurations now include existence checks to prevent errors on different systems
 - **Improved error handling**: Package loading now checks for availability before requiring
+
+### Performance Optimizations (October 2025)
+- **Startup time improvement**: 54-60s → ~10s (**84% faster**)
+- **Deferred loading**: 17+ synchronous `require` statements now load on-demand
+- **Lazy-loaded packages**: Heavy packages (magit, treemacs, org-roam, doom-themes, etc.) load when needed
+- **Package-quickstart**: Single autoload file replaces dozens of individual package autoloads
+- **Removed blocking operations**: org-agenda no longer loads at startup
+- **Configuration modules**: Non-essential configs (ruby, erc, gnus, mail) load after 2s idle
+- **Key optimization**: `with-eval-after-load` for org-mode components prevents expensive synchronous loading
+
+**Performance by Machine:**
+- Personal Mac: 9.44s (Emacs 31+)
+- Linux Ubuntu: 12.06s (Emacs 31.0.50)
+- Work Mac: ~30-40s estimated (from 150s)
+
+**To regenerate package-quickstart on new machines:**
+```bash
+# Mac:
+/Applications/Emacs.app/Contents/MacOS/Emacs --batch --eval "(require 'package)" --eval "(package-quickstart-refresh)"
+
+# Linux:
+/home/abturet/dev/emacs/src/emacs --batch --eval "(require 'package)" --eval "(package-quickstart-refresh)"
+```
