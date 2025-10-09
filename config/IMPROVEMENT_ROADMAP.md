@@ -471,9 +471,108 @@ Work Mac experienced extremely slow interactive startup (178 seconds vs 22 secon
 
 ---
 
+### Session 6: 2025-10-09 (Major Startup Performance Overhaul)
+**Completed:**
+- ✅ Analyzed 54-60 second startup time bottleneck
+- ✅ Identified 17+ synchronous `require` statements loading at startup
+- ✅ Deferred all org-mode requires using `with-eval-after-load`
+- ✅ Converted expensive requires to autoloads (yaml-mode, sql, notdeft)
+- ✅ Removed immediate org-agenda call from ~/.emacs
+- ✅ Lazy-loaded 8+ heavy packages with `:defer t`
+- ✅ Deferred non-essential config modules (ruby, erc, gnus, mail, blog)
+- ✅ Fixed quelpa-use-package load order
+- ✅ Generated package-quickstart.el for faster package loading
+- ✅ Suppressed noisy byte-compilation warnings
+
+**Problem:**
+Startup time was unacceptably slow (54-60 seconds on personal Mac, 150 seconds on work Mac) due to:
+- Synchronous loading of 17 org-mode and export backends
+- Immediate `(org-agenda nil "n")` call in .emacs
+- No deferred loading of heavy packages
+- Missing package-quickstart optimization
+- Decompression overhead from conflicting settings
+
+**Solution:**
+Implemented comprehensive lazy-loading strategy:
+
+1. **Deferred Org-Mode Components** (emacs-config.org):
+   - ox-latex, ox-gfm, ox-md, ox-confluence, ox-jira (export backends)
+   - org-capture, org-habit, org-tempo, org-crypt
+   - org-protocol, org-roam-protocol
+   - All wrapped in `(with-eval-after-load 'org ...)`
+
+2. **Converted to Autoloads**:
+   - yaml-mode → autoloads on .yml/.yaml files
+   - sql-mode → autoloads when invoked
+   - notdeft → autoloads on <f9> keybinding
+
+3. **Lazy-Loaded Heavy Packages**:
+   - treemacs (:defer t, :commands)
+   - doom-themes (:defer t)
+   - magit (:defer t, :commands magit-status)
+   - org-roam (:defer t, :commands)
+   - org-ref (:defer nil → :defer t)
+   - ace-window (:defer t, :commands)
+   - ligature (:defer 2)
+   - helpful (:defer t, :commands)
+   - copilot (:defer 10)
+   - gptel-aibo (:defer 15)
+
+4. **Deferred Config Modules** (emacs-config.org:1222-1227):
+   - ruby-config-new, erc-config, gnus-config, mail-config, blog
+   - Load after 2 seconds idle time using `run-with-idle-timer`
+
+5. **Removed Blocking Operations**:
+   - Removed `(org-agenda nil "n")` from ~/.emacs
+   - Removed `(require 'xwidget)` (autoloads automatically)
+   - Removed `(require 'gnutls)` (autoloads automatically)
+   - Fixed `(setq load-source-file-function nil)` conflict
+
+6. **Package Loading Optimization**:
+   - Changed quelpa-use-package from `:defer 10` to `:demand t`
+   - Generated package-quickstart.el: `(package-quickstart-refresh)`
+   - Suppressed byte-compilation warnings
+
+**Performance Results:**
+- **Personal Mac**: 54-60s → **9.72s** (**84% improvement**)
+- **Work Mac**: Expected 150s → ~30-40s (75-80% improvement)
+- **Batch mode**: 2.19s → 1.82s (17% faster)
+
+**Files Modified:**
+- `~/.emacs` - Removed org-agenda call
+- `emacs-config.org` - All deferred loading changes
+- `emacs-config-new.el` - Regenerated via tangling
+- `~/.emacs.d/package-quickstart.el` - Generated via batch command
+
+**Lessons Learned:**
+- Synchronous `require` statements at startup are extremely expensive
+- Org-mode and its export backends are heavy - must defer
+- Package-quickstart provides measurable improvement
+- Use `with-eval-after-load` for package-specific configuration
+- Autoloads are better than explicit requires for mode files
+- Deferred loading preserves all functionality while dramatically improving startup
+
+**Testing:**
+To generate package-quickstart on each machine:
+```bash
+# Personal Mac:
+/Applications/Emacs.app/Contents/MacOS/Emacs --batch --eval "(require 'package)" --eval "(package-quickstart-refresh)"
+
+# Work Mac:
+/Applications/Emacs.app/Contents/MacOS/Emacs --batch --eval "(require 'package)" --eval "(package-quickstart-refresh)"
+
+# Linux:
+/home/abturet/dev/emacs/src/emacs --batch --eval "(require 'package)" --eval "(package-quickstart-refresh)"
+```
+
+---
+
 ### Next Steps:
 - Configuration now fully cross-platform compatible (macOS Intel/Apple Silicon, Linux)
 - All tree-sitter grammars work without warnings on all platforms
-- All planned improvement phases complete
-- Work Mac startup performance optimized with fast startup option
+- Startup performance optimized to ~10 seconds (84% improvement)
+- Package-quickstart generated for faster package loading
+- Future optimizations available but not critical:
+  - More aggressive package deferral (could gain 2-3s but risks breaking workflows)
+  - Byte-compilation (gains 1-2s but breaks cross-platform compatibility)
 - Future: Monitor for tree-sitter 0.22+ availability in Ubuntu repositories

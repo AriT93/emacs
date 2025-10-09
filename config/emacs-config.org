@@ -43,31 +43,36 @@ gets installed from a repository we defined above
   (setq treesit-extra-load-path nil)
   
   ;; Suppress lexical binding warnings during startup for better performance
-  (setq warning-suppress-log-types '((files)))
+  (setq warning-suppress-log-types '((files) (package reinitialization)))
   
   ;; Suppress verbose messages during startup
   (setq flycheck-verbose nil)           ; Disable flycheck verbose messages
   (setq flyover-debug nil)              ; Disable flyover debug messages
   (setq flycheck-mode-line nil)         ; Disable flycheck mode line messages
   (setq flycheck-display-errors-function nil)  ; Disable flycheck error display during startup
-  
+
   ;; Additional message suppressions
   (setq flycheck-checker-error-threshold nil)  ; Disable flycheck error threshold messages
   (setq flycheck-checker-warning-threshold nil) ; Disable flycheck warning threshold messages
   (setq flycheck-indication-mode nil)           ; Disable flycheck indication messages
-  
+
   ;; Suppress org-mode verbose messages
   (setq org-element-cache-persistent nil)  ; Disable org cache messages
   (setq org-startup-folded nil)           ; Disable org startup messages
   (setq org-agenda-start-with-log-mode nil) ; Disable org agenda log messages
-  
+
   ;; Suppress general verbose messages
   (setq message-log-max nil)             ; Disable message log during startup
   (setq inhibit-startup-echo-area-message t) ; Already set, but ensure it's on
+
+  ;; Suppress byte-compilation warnings during startup
+  (setq native-comp-async-report-warnings-errors nil)  ; Silence native-comp warnings
+  (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
   
   ;; Optimize file loading for better startup performance
-  (setq load-prefer-newer t)
-  (setq load-source-file-function nil)  ; Disable source file loading for better performance
+  (setq load-prefer-newer t)  ; Prefer .elc over .el when .elc is newer
+  ;; Removed load-source-file-function setting - it conflicts with load-prefer-newer
+  ;; and causes unnecessary decompression of .el.gz files during startup
   
   ;; Aggressive startup optimizations
   (setq package-enable-at-startup nil)  ; Prevent double package initialization
@@ -76,7 +81,7 @@ gets installed from a repository we defined above
   
   ;; Defer package operations during startup
   (setq package-check-signature nil)    ; Skip signature checking during startup
-  (setq package-archives nil)           ; Disable package archives during startup
+  ;; Removed: (setq package-archives nil) - this breaks packages with archive dependencies
   
   ;; Reduce startup overhead
   (setq inhibit-startup-screen t)
@@ -233,7 +238,7 @@ want from faces
     (add-hook 'eww-after-render-hook 'visual-line-mode)
     (setq native-comp-speed 2)
     (setq package-native-compile t)
-    (require 'xwidget)
+    ;; xwidget will autoload when needed
     (setq alert-default-style 'notifier)
 #+END_SRC
 #+BEGIN_SRC elisp
@@ -511,19 +516,22 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
 #+BEGIN_SRC elisp
   (use-package ace-window
     :ensure t
+    :defer t  ; Lazy-load ace-window - only load when invoked
+    :commands (ace-window)
+    :bind
+    ("M-o" . ace-window)
     :config
     (ace-window-display-mode)
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-    :bind
-    ("M-o" . 'ace-window)
     :custom-face
     (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
 #+END_SRC
 ** Git
 #+BEGIN_SRC elisp
   (use-package magit
-    :ensure t)
-  (require 'magit)
+    :ensure t
+    :defer t  ; Lazy-load magit - only load when git commands are used
+    :commands (magit-status magit-dispatch magit-file-dispatch))
 
   (use-package git-timemachine
     :defer 2
@@ -569,6 +577,8 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     :ensure t)
   (use-package treemacs
     :ensure t
+    :defer t  ; Lazy-load treemacs - only load when explicitly invoked
+    :commands (treemacs treemacs-select-window)
     :config
     (setq treemacs-space-between-root-nodes nil)
     (treemacs-follow-mode t)
@@ -576,14 +586,18 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (treemacs-fringe-indicator-mode t)
     (doom-themes-treemacs-config)
     (setq doom-themes-treemacs-theme "doom-colors")
-    (global-set-key (kbd "M-0") 'treemacs-select-window))
+    :bind
+    ("M-0" . treemacs-select-window))
 
   (use-package doom-themes
     :ensure t
-    :config
+    :defer t  ; Lazy-load doom-themes - load after startup
+    :init
+    ;; Set theme early to avoid visual flashing
     (setq doom-themes-enable-bold t)
     (setq doom-themes-enable-italic t)
     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+    :config
     (doom-themes-org-config)
     (require 'doom-themes-ext-org))
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
@@ -611,7 +625,7 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (setq doom-modeline-vcs-max-length 40)
     (setq doom-modeline-battery nil)
     (doom-modeline-mode 1))
-  (require 'gnutls)
+  ;; gnutls loads automatically when needed
   (setq starttls-use-gnutls t)
   (setq auto-revert-check-vc-info t)
 #+END_SRC
@@ -619,6 +633,7 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
 #+BEGIN_SRC elisp
   (use-package ligature
     :load-path "~/dev/git/ligature.el"
+    :defer 2  ; Defer ligature loading - not critical for startup
     :config
     ;; Enable the "www" ligature in every possible major mode
     (ligature-set-ligatures 't '("www"))
@@ -712,7 +727,8 @@ currently here but will need to move to it's own config file
 eventually to make it more manageable
 
 #+BEGIN_SRC elisp
-  (require 'ox-latex)
+  ;; Defer ox-latex loading - only needed when exporting
+  (with-eval-after-load 'org (require 'ox-latex))
   (use-package org
     :straight
     :pin nongnu
@@ -740,7 +756,8 @@ eventually to make it more manageable
 #+END_SRC
 
 #+BEGIN_SRC elisp
-  (require 'org-capture)
+  ;; Defer org-capture loading - only needed when capturing
+  (with-eval-after-load 'org (require 'org-capture))
   (setq org-capture-templates
         '(
           ("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
@@ -757,20 +774,23 @@ eventually to make it more manageable
 #+BEGIN_SRC elisp
   (use-package ox-jira
     :ensure t)
-  (require 'org-habit)
+  ;; Defer org-habit loading
+  (with-eval-after-load 'org (require 'org-habit))
   (setq org-habit-show-all-today t)
   (setq org-habit-show-habits t)
   (setq org-startup-indented nil)
   (visual-line-mode 1)
-  (require 'ox-gfm)
+  ;; Defer org export backends - only needed when exporting
+  (with-eval-after-load 'org (require 'ox-gfm))
   (use-package org-modern
     :ensure t
     :init
     (with-eval-after-load 'org (global-org-modern-mode)))
-  (require 'org-modern)
-  (require 'ox-md)
-  (require 'ox-confluence)
-  (require 'ox-jira)
+  (with-eval-after-load 'org
+    (require 'org-modern)
+    (require 'ox-md)
+    (require 'ox-confluence)
+    (require 'ox-jira))
   (add-hook 'org-modern-mode-hook 'org-variable-pitch-minor-mode)
   (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
   (add-hook 'org-mode-hook 'org-indent-mode)
@@ -783,7 +803,7 @@ eventually to make it more manageable
   (use-package org-ref
     :ensure t
     :after (biblio)
-    :defer nil
+    :defer t  ; Changed from nil to t - lazy-load org-ref
     :config
     (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
           org-ref-default-bibliography '("~/Documents/references.bib")
@@ -799,7 +819,7 @@ eventually to make it more manageable
   (add-to-list 'org-latex-packages-alist '("" "minted" t))
 
   ;; This is needed as of Org 9.2
-  (require 'org-tempo)
+  (with-eval-after-load 'org (require 'org-tempo))
 
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
@@ -837,6 +857,9 @@ eventually to make it more manageable
   (use-package org-roam
     :after org
     :ensure t
+    :defer t  ; Lazy-load org-roam - only load when needed
+    :commands (org-roam-node-find org-roam-node-insert org-roam-buffer-toggle
+               org-roam-dailies-goto-today org-roam-dailies-capture-today)
     :init
     (setq org-roam-v2-ack t)
     :custom
@@ -1000,12 +1023,12 @@ eventually to make it more manageable
                   (when (and (not found-jar) (file-exists-p path))
                     (setq found-jar path))))))
           (when found-jar
-  (setq org-plantuml-jar-path found-jar)
-          (setq plantuml-jar-path found-jar)
-          (message "PlantUML JAR found at: %s" found-jar))
-          (ari/startup-timer "plantuml-configured")
+            (setq org-plantuml-jar-path found-jar)
+            (setq plantuml-jar-path found-jar)
+            (message "PlantUML JAR found at: %s" found-jar)
+            (ari/startup-timer "plantuml-configured"))
           (unless found-jar
-            (message "Warning: PlantUML JAR not found. Searched patterns: %s" possible-jar-paths)))))))
+            (message "Warning: PlantUML JAR not found. Searched patterns: %s" possible-jar-paths))))))
   
   ;; Final startup timing
   (ari/startup-timer "config-complete")
@@ -1088,7 +1111,7 @@ encrypt the stoff that needs encrypting
 
 
 
-  (require 'org-crypt)
+  (with-eval-after-load 'org (require 'org-crypt))
   (org-crypt-use-before-save-magic)
   (setq org-tags-exclude-from-inheritance (quote("crypt")))
   (if (memq window-system '(mac ns x))
@@ -1110,8 +1133,10 @@ encrypt the stoff that needs encrypting
 ** Yaml
     #+BEGIN_SRC elisp
    ;; yaml
- (require 'yaml-mode)
+ ;; Defer yaml-mode - only load when opening yaml files
+ (autoload 'yaml-mode "yaml-mode" "Major mode for editing YAML files" t)
  (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+ (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
  (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
     #+END_SRC
     
@@ -1150,8 +1175,9 @@ This is kinda like that part in the bible with all the begats...
   (use-package graphql
     :defer 2
     :ensure t)
-  (require 'org-protocol)
-  (require 'org-roam-protocol)
+  ;; Defer org-protocol and org-roam-protocol
+  (with-eval-after-load 'org (require 'org-protocol))
+  (with-eval-after-load 'org-roam (require 'org-roam-protocol))
   (use-package haml-mode
     :defer 2
     :ensure t)
@@ -1192,13 +1218,17 @@ Prints warnings for any missing files but does not halt startup."
   ;; Run validation after init
   (add-hook 'after-init-hook #'ari/validate-config-files)
 
-  (require 'ruby-config-new)
+  ;; Load essential configs immediately
   (require 'keys-config-new)
   (require 'ari-custom-new)
-  (require 'erc-config)
-  (require 'gnus-config)
-  (require 'mail-config)
-  (require 'blog)
+
+  ;; Defer non-essential configs to after startup
+  (run-with-idle-timer 2 nil (lambda ()
+    (require 'ruby-config-new)
+    (require 'erc-config)
+    (require 'gnus-config)
+    (require 'mail-config)
+    (require 'blog)))
 #+END_SRC
 
 ** Set up HighLine mode
@@ -1561,12 +1591,16 @@ set up sql mode
     (message "SQL mode hook executed")
     (define-key sql-mode-map [f5] 'sql-send-buffer))
 
-  (setq sql-ms-program "osql")
-  (require 'sql)
-  (setq sql-mysql-program "mysql")
-  (setq sql-pop-to-buffer-after-send-region nil)
-  (setq sql-product (quote ms))
-  (setq sql-mysql-login-params (append sql-mysql-login-params '(port)))
+  ;; Defer SQL - only load when needed
+  (autoload 'sql-mode "sql" "SQL editing mode" t)
+
+  ;; SQL configuration - deferred until sql is loaded
+  (with-eval-after-load 'sql
+    (setq sql-ms-program "osql")
+    (setq sql-mysql-program "mysql")
+    (setq sql-pop-to-buffer-after-send-region nil)
+    (setq sql-product (quote ms))
+    (setq sql-mysql-login-params (append sql-mysql-login-params '(port))))
 #+END_SRC
 ** Javascript
 #+BEGIN_SRC elisp
@@ -1625,7 +1659,8 @@ setting this up for roam and keeping deft for notes
   (setq notdeft-directory "~/Documents/org-roam/")
   (setq notdeft-directories '("~/Documents/org-roam/"))
   (setq notdeft-xapian-program (expand-file-name"~/dev/git/notdeft/xapian/notdeft-xapian"))
-  (require 'notdeft-autoloads)
+  ;; Defer notdeft - only load when invoked
+  (autoload 'notdeft "notdeft" "NotDeft note-taking" t)
   (global-set-key (kbd "<f9>") 'notdeft)
 #+end_src
 
@@ -1656,25 +1691,11 @@ setting this up for roam and keeping deft for notes
 #+begin_src elisp
   (use-package helpful
     :ensure t
-    :custom
-    (help-enable-symbol-autoload t)     ;; Show symbols that can be autoloaded
-    (help-enable-completion-autoload t) ;; Enable completion for autoloadable symbols
-    :init
-    (defun helpful--autoloaded-p (sym buf)
-      "Return non-nil if function SYM is autoloaded."
-      (-when-let* (file-name (buffer-file-name buf))
-        (setq file-name (s-chop-suffix ".gz" file-name))
-        (help-fns--autoloaded-p sym)))
-
-    (defun helpful--skip-advice (docstring)
-      "Remove mentions of advice from DOCSTRING."
-      (let* ((lines (s-lines docstring))
-             (relevant-lines
-              (--take-while
-               (not (or (s-starts-with-p ":around advice:" it)
-                        (s-starts-with-p "This function has :around advice:" it)))
-               lines)))
-        (s-trim (s-join "\n" relevant-lines)))))
+    :defer t  ; Lazy-load helpful - only load when help commands are used
+    :commands (helpful-callable helpful-variable helpful-key helpful-at-point)
+    :config
+    (setq help-enable-symbol-autoload t)     ;; Show symbols that can be autoloaded
+    (setq help-enable-completion-autoload t));; Enable completion for autoloadable symbols
 #+end_src
 ** Elfeed
 #+begin_src elisp
@@ -1851,22 +1872,24 @@ Da General give command-t like ease to emacs
 #+begin_src elisp
     (use-package quelpa-use-package
       :ensure t
-      :defer 10)  ; Defer Quelpa loading
+      :demand t)  ; Load immediately - required for :quelpa keyword
+
     (use-package copilot
       :quelpa (copilot :fetcher github
                        :repo "copilot-emacs/copilot.el"
                        :branch "main"
                        :files ("*.el"))
-      :defer 15)  ; Defer copilot loading
+      :defer 10  ; Defer copilot loading
+      :config
+      ;; you can utilize :map :hook and :config to customize copilot
+      (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion))
 
   (use-package gptel-aibo
     :quelpa (gptel-aibo :fetcher github
                         :repo "dolmens/gptel-aibo"
                         :branch "main")
     :after(gptel flycheck)
-    :defer 20)  ; Defer gptel-aibo loading
-  ;; ;; you can utilize :map :hook and :config to customize copilot
-    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+    :defer 15)  ; Defer gptel-aibo loading
 
   (use-package chatgpt-shell
     :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
@@ -2386,7 +2409,8 @@ the slackiest way to slack in emacs
      :subsribed-channels nil ))
   #+end_src
   #+begin_src elisp
-    (require 'flyover)
+    ;; Defer flyover - load with flycheck
+    (with-eval-after-load 'flycheck (require 'flyover))
     (add-hook 'flycheck-mode-hook #'flyover-mode)
     (add-hook 'flymake-mode-hook #'flyover-mode)
 

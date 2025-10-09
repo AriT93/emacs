@@ -16,10 +16,70 @@
 (setq straight-check-for-modifications '(check-on-save find-when-checking))
 
 (setq treesit-extra-load-path nil)
+
+;; Suppress lexical binding warnings during startup for better performance
+(setq warning-suppress-log-types '((files) (package reinitialization)))
+
+;; Suppress verbose messages during startup
+(setq flycheck-verbose nil)           ; Disable flycheck verbose messages
+(setq flyover-debug nil)              ; Disable flyover debug messages
+(setq flycheck-mode-line nil)         ; Disable flycheck mode line messages
+(setq flycheck-display-errors-function nil)  ; Disable flycheck error display during startup
+
+;; Additional message suppressions
+(setq flycheck-checker-error-threshold nil)  ; Disable flycheck error threshold messages
+(setq flycheck-checker-warning-threshold nil) ; Disable flycheck warning threshold messages
+(setq flycheck-indication-mode nil)           ; Disable flycheck indication messages
+
+;; Suppress org-mode verbose messages
+(setq org-element-cache-persistent nil)  ; Disable org cache messages
+(setq org-startup-folded nil)           ; Disable org startup messages
+(setq org-agenda-start-with-log-mode nil) ; Disable org agenda log messages
+
+;; Suppress general verbose messages
+(setq message-log-max nil)             ; Disable message log during startup
+(setq inhibit-startup-echo-area-message t) ; Already set, but ensure it's on
+
+;; Suppress byte-compilation warnings during startup
+(setq native-comp-async-report-warnings-errors nil)  ; Silence native-comp warnings
+(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+
+;; Optimize file loading for better startup performance
+(setq load-prefer-newer t)  ; Prefer .elc over .el when .elc is newer
+;; Removed load-source-file-function setting - it conflicts with load-prefer-newer
+;; and causes unnecessary decompression of .el.gz files during startup
+
+;; Aggressive startup optimizations
+(setq package-enable-at-startup nil)  ; Prevent double package initialization
+(setq package-quickstart t)           ; Use package quickstart for faster loading
+(setq package--init-file-ensured t)   ; Skip package initialization checks
+
+;; Defer package operations during startup
+(setq package-check-signature nil)    ; Skip signature checking during startup
+;; Removed: (setq package-archives nil) - this breaks packages with archive dependencies
+
+;; Reduce startup overhead
+(setq inhibit-startup-screen t)
+(setq inhibit-startup-message t)
+(setq inhibit-startup-echo-area-message t)
+
+;; Optimize garbage collection during startup
+(setq gc-cons-threshold (* 100 1000 1000))  ; 100MB during startup
+(setq gc-cons-percentage 0.6)               ; More aggressive GC
+
+;; Startup timing diagnostics
+(defvar ari/startup-times (make-hash-table))
+(defun ari/startup-timer (label)
+  (puthash label (float-time) ari/startup-times)
+  (message "Startup checkpoint: %s at %.2fs" label (float-time)))
+
+(ari/startup-timer "package-init")
+
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
+(ari/startup-timer "use-package-loaded")
 
 ;; Suppress lexical-binding warnings for third-party packages
 (setq warning-suppress-log-types
@@ -43,6 +103,7 @@
   (load bootstrap-file nil 'nomessage))
 
 (require 'load-path-config-new)
+(ari/startup-timer "load-path-loaded")
 
 (defun ensure-gpg-agent-running ()
   "Ensure that gpg-agent is running."
@@ -125,7 +186,7 @@
 (add-hook 'eww-after-render-hook 'visual-line-mode)
 (setq native-comp-speed 2)
 (setq package-native-compile t)
-(require 'xwidget)
+;; xwidget will autoload when needed
 (setq alert-default-style 'notifier)
 
 ;;; follow links in xwidgets
@@ -381,17 +442,20 @@
 
 (use-package ace-window
   :ensure t
+  :defer t  ; Lazy-load ace-window - only load when invoked
+  :commands (ace-window)
+  :bind
+  ("M-o" . ace-window)
   :config
   (ace-window-display-mode)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  :bind
-  ("M-o" . 'ace-window)
   :custom-face
   (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
 
 (use-package magit
-  :ensure t)
-(require 'magit)
+  :ensure t
+  :defer t  ; Lazy-load magit - only load when git commands are used
+  :commands (magit-status magit-dispatch magit-file-dispatch))
 
 (use-package git-timemachine
   :defer 2
@@ -432,6 +496,8 @@
   :ensure t)
 (use-package treemacs
   :ensure t
+  :defer t  ; Lazy-load treemacs - only load when explicitly invoked
+  :commands (treemacs treemacs-select-window)
   :config
   (setq treemacs-space-between-root-nodes nil)
   (treemacs-follow-mode t)
@@ -439,14 +505,18 @@
   (treemacs-fringe-indicator-mode t)
   (doom-themes-treemacs-config)
   (setq doom-themes-treemacs-theme "doom-colors")
-  (global-set-key (kbd "M-0") 'treemacs-select-window))
+  :bind
+  ("M-0" . treemacs-select-window))
 
 (use-package doom-themes
   :ensure t
-  :config
+  :defer t  ; Lazy-load doom-themes - load after startup
+  :init
+  ;; Set theme early to avoid visual flashing
   (setq doom-themes-enable-bold t)
   (setq doom-themes-enable-italic t)
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+  :config
   (doom-themes-org-config)
   (require 'doom-themes-ext-org))
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
@@ -472,12 +542,13 @@
   (setq doom-modeline-vcs-max-length 40)
   (setq doom-modeline-battery nil)
   (doom-modeline-mode 1))
-(require 'gnutls)
+;; gnutls loads automatically when needed
 (setq starttls-use-gnutls t)
 (setq auto-revert-check-vc-info t)
 
 (use-package ligature
   :load-path "~/dev/git/ligature.el"
+  :defer 2  ; Defer ligature loading - not critical for startup
   :config
   ;; Enable the "www" ligature in every possible major mode
   (ligature-set-ligatures 't '("www"))
@@ -552,7 +623,8 @@
   (diminish 'ruby-block-mode)
   (diminish 'global-highline-mode))
 
-(require 'ox-latex)
+;; Defer ox-latex loading - only needed when exporting
+(with-eval-after-load 'org (require 'ox-latex))
 (use-package org
   :straight
   :pin nongnu
@@ -578,7 +650,8 @@
   (setq org-latex-pdf-process
         '("latexmk -f -pdf -%latex  -shell-escape -interaction=nonstopmode -output-directory=%o %f")))
 
-(require 'org-capture)
+;; Defer org-capture loading - only needed when capturing
+(with-eval-after-load 'org (require 'org-capture))
 (setq org-capture-templates
       '(
         ("t" "Todo" entry (file+headline "~/Documents/notes/todo.org" "Tasks")
@@ -593,20 +666,23 @@
 
 (use-package ox-jira
   :ensure t)
-(require 'org-habit)
+;; Defer org-habit loading
+(with-eval-after-load 'org (require 'org-habit))
 (setq org-habit-show-all-today t)
 (setq org-habit-show-habits t)
 (setq org-startup-indented nil)
 (visual-line-mode 1)
-(require 'ox-gfm)
+;; Defer org export backends - only needed when exporting
+(with-eval-after-load 'org (require 'ox-gfm))
 (use-package org-modern
   :ensure t
   :init
   (with-eval-after-load 'org (global-org-modern-mode)))
-(require 'org-modern)
-(require 'ox-md)
-(require 'ox-confluence)
-(require 'ox-jira)
+(with-eval-after-load 'org
+  (require 'org-modern)
+  (require 'ox-md)
+  (require 'ox-confluence)
+  (require 'ox-jira))
 (add-hook 'org-modern-mode-hook 'org-variable-pitch-minor-mode)
 (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
 (add-hook 'org-mode-hook 'org-indent-mode)
@@ -617,7 +693,7 @@
 (use-package org-ref
   :ensure t
   :after (biblio)
-  :defer nil
+  :defer t  ; Changed from nil to t - lazy-load org-ref
   :config
   (setq org-ref-bibliography-notes "~/Documents/notes/bibnotes.org"
         org-ref-default-bibliography '("~/Documents/references.bib")
@@ -631,7 +707,7 @@
 (add-to-list 'org-latex-packages-alist '("" "minted" t))
 
 ;; This is needed as of Org 9.2
-(require 'org-tempo)
+(with-eval-after-load 'org (require 'org-tempo))
 
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
@@ -665,6 +741,9 @@
 (use-package org-roam
   :after org
   :ensure t
+  :defer t  ; Lazy-load org-roam - only load when needed
+  :commands (org-roam-node-find org-roam-node-insert org-roam-buffer-toggle
+             org-roam-dailies-goto-today org-roam-dailies-capture-today)
   :init
   (setq org-roam-v2-ack t)
   :custom
@@ -719,7 +798,7 @@
   :ensure t)
 
 (defun ek/babel-ansi ()
-  (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+  (when-let* ((beg (org-babel-where-is-src-block-result nil nil)))
     (save-excursion
       (goto-char beg)
       (when (looking-at org-babel-result-regexp)
@@ -817,9 +896,48 @@
         (when found-jar
           (setq org-plantuml-jar-path found-jar)
           (setq plantuml-jar-path found-jar)
-          (message "PlantUML JAR found at: %s" found-jar))
+          (message "PlantUML JAR found at: %s" found-jar)
+          (ari/startup-timer "plantuml-configured"))
         (unless found-jar
           (message "Warning: PlantUML JAR not found. Searched patterns: %s" possible-jar-paths))))))
+
+;; Final startup timing
+(ari/startup-timer "config-complete")
+
+;; Display startup timing summary
+(defun ari/display-startup-timing ()
+  (message "=== Startup Timing Summary ===")
+  (let ((times (sort (hash-table-keys ari/startup-times) 
+                     (lambda (a b) 
+                       (< (gethash a ari/startup-times) 
+                          (gethash b ari/startup-times))))))
+    (dolist (time times)
+      (let ((elapsed (- (gethash time ari/startup-times) 
+                        (gethash (car times) ari/startup-times))))
+        (message "  %s: +%.2fs" time elapsed)))))
+
+(add-hook 'emacs-startup-hook #'ari/display-startup-timing)
+
+;; Reset settings after startup for better runtime performance
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            ;; Restore package settings
+            (setq package-archives '(
+                                     ("melpa"  . "https://melpa.org/packages/")
+                                     ("elpa"   . "https://elpa.gnu.org/packages/")
+                                     ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                                     ("melpa-stable" . "https://stable.melpa.org/packages/")
+                                     ))
+            (setq package-check-signature 'allow-unsigned)
+            
+            ;; Reset GC settings
+            (setq gc-cons-threshold (* 2 1000 1000))  ; 2MB after startup
+            (setq gc-cons-percentage 0.1)              ; Less aggressive GC
+            
+            ;; Restore some verbose settings for runtime (optional)
+            (setq message-log-max 1000)                ; Re-enable message log for runtime
+            (setq flycheck-mode-line t)                ; Re-enable flycheck mode line
+            (message "Package and GC settings restored for runtime performance")))
 
 (setq org-mime-export-options '(:section-numbers nil
                                                  :with-author nil
@@ -858,7 +976,7 @@
 
 
 
-(require 'org-crypt)
+(with-eval-after-load 'org (require 'org-crypt))
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance (quote("crypt")))
 (if (memq window-system '(mac ns x))
@@ -878,8 +996,10 @@
     (setq org-crypt-key key)))
 
 ;; yaml
-(require 'yaml-mode)
+;; Defer yaml-mode - only load when opening yaml files
+(autoload 'yaml-mode "yaml-mode" "Major mode for editing YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
 (use-package inf-ruby
@@ -912,8 +1032,9 @@
   (use-package graphql
     :defer 2
     :ensure t)
-  (require 'org-protocol)
-  (require 'org-roam-protocol)
+  ;; Defer org-protocol and org-roam-protocol
+  (with-eval-after-load 'org (require 'org-protocol))
+  (with-eval-after-load 'org-roam (require 'org-roam-protocol))
   (use-package haml-mode
     :defer 2
     :ensure t)
@@ -954,13 +1075,17 @@ Prints warnings for any missing files but does not halt startup."
   ;; Run validation after init
   (add-hook 'after-init-hook #'ari/validate-config-files)
 
-  (require 'ruby-config-new)
+  ;; Load essential configs immediately
   (require 'keys-config-new)
   (require 'ari-custom-new)
-  (require 'erc-config)
-  (require 'gnus-config)
-  (require 'mail-config)
-  (require 'blog)
+
+  ;; Defer non-essential configs to after startup
+  (run-with-idle-timer 2 nil (lambda ()
+    (require 'ruby-config-new)
+    (require 'erc-config)
+    (require 'gnus-config)
+    (require 'mail-config)
+    (require 'blog)))
 
 (use-package highline
   :ensure t
@@ -1280,12 +1405,16 @@ Prints warnings for any missing files but does not halt startup."
   (message "SQL mode hook executed")
   (define-key sql-mode-map [f5] 'sql-send-buffer))
 
-(setq sql-ms-program "osql")
-(require 'sql)
-(setq sql-mysql-program "mysql")
-(setq sql-pop-to-buffer-after-send-region nil)
-(setq sql-product (quote ms))
-(setq sql-mysql-login-params (append sql-mysql-login-params '(port)))
+;; Defer SQL - only load when needed
+(autoload 'sql-mode "sql" "SQL editing mode" t)
+
+;; SQL configuration - deferred until sql is loaded
+(with-eval-after-load 'sql
+  (setq sql-ms-program "osql")
+  (setq sql-mysql-program "mysql")
+  (setq sql-pop-to-buffer-after-send-region nil)
+  (setq sql-product (quote ms))
+  (setq sql-mysql-login-params (append sql-mysql-login-params '(port))))
 
 (use-package rjsx-mode
     :defer 2
@@ -1335,14 +1464,15 @@ Prints warnings for any missing files but does not halt startup."
 (setq notdeft-directory "~/Documents/org-roam/")
 (setq notdeft-directories '("~/Documents/org-roam/"))
 (setq notdeft-xapian-program (expand-file-name"~/dev/git/notdeft/xapian/notdeft-xapian"))
-(require 'notdeft-autoloads)
+;; Defer notdeft - only load when invoked
+(autoload 'notdeft "notdeft" "NotDeft note-taking" t)
 (global-set-key (kbd "<f9>") 'notdeft)
 
 (use-package cypher-mode
   :ensure t)
 
 ;; Use executable-find for cross-platform compatibility
-(when-let ((cypher-shell-path (executable-find "cypher-shell")))
+(when-let* ((cypher-shell-path (executable-find "cypher-shell")))
   (setq n4js-cli-program cypher-shell-path))
 (setq n4js-cli-arguments '("-u" "neo4j"))
 (setq n4js-pop-to-buffer t)
@@ -1358,25 +1488,11 @@ Prints warnings for any missing files but does not halt startup."
 
 (use-package helpful
   :ensure t
-  :custom
-  (help-enable-symbol-autoload t)     ;; Show symbols that can be autoloaded
-  (help-enable-completion-autoload t) ;; Enable completion for autoloadable symbols
-  :init
-  (defun helpful--autoloaded-p (sym buf)
-    "Return non-nil if function SYM is autoloaded."
-    (-when-let (file-name (buffer-file-name buf))
-      (setq file-name (s-chop-suffix ".gz" file-name))
-      (help-fns--autoloaded-p sym)))
-
-  (defun helpful--skip-advice (docstring)
-    "Remove mentions of advice from DOCSTRING."
-    (let* ((lines (s-lines docstring))
-           (relevant-lines
-            (--take-while
-             (not (or (s-starts-with-p ":around advice:" it)
-                      (s-starts-with-p "This function has :around advice:" it)))
-             lines)))
-      (s-trim (s-join "\n" relevant-lines)))))
+  :defer t  ; Lazy-load helpful - only load when help commands are used
+  :commands (helpful-callable helpful-variable helpful-key helpful-at-point)
+  :config
+  (setq help-enable-symbol-autoload t)     ;; Show symbols that can be autoloaded
+  (setq help-enable-completion-autoload t));; Enable completion for autoloadable symbols
 
 (use-package elfeed
   :ensure t
@@ -1543,20 +1659,25 @@ Prints warnings for any missing files but does not halt startup."
     "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
 
 (use-package quelpa-use-package
-    :ensure t)
+    :ensure t
+    :demand t)  ; Load immediately - required for :quelpa keyword
+
   (use-package copilot
     :quelpa (copilot :fetcher github
                      :repo "copilot-emacs/copilot.el"
                      :branch "main"
-                     :files ("*.el")))
+                     :files ("*.el"))
+    :defer 10  ; Defer copilot loading
+    :config
+    ;; you can utilize :map :hook and :config to customize copilot
+    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion))
 
 (use-package gptel-aibo
   :quelpa (gptel-aibo :fetcher github
                       :repo "dolmens/gptel-aibo"
                       :branch "main")
-  :after(gptel flycheck))
-;; ;; you can utilize :map :hook and :config to customize copilot
-  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+  :after(gptel flycheck)
+  :defer 15)  ; Defer gptel-aibo loading
 
 (use-package chatgpt-shell
   :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
@@ -2050,7 +2171,8 @@ Prints warnings for any missing files but does not halt startup."
             :user "cookie")
    :subsribed-channels nil ))
 
-(require 'flyover)
+;; Defer flyover - load with flycheck
+(with-eval-after-load 'flycheck (require 'flyover))
 (add-hook 'flycheck-mode-hook #'flyover-mode)
 (add-hook 'flymake-mode-hook #'flyover-mode)
 
@@ -2075,7 +2197,7 @@ Prints warnings for any missing files but does not halt startup."
 (setq flyover-levels '(error warning info))
 
 (setq flyover-checkers '(flycheck flymake))
-(setq flyover-debug t)
+(setq flyover-debug nil)  ; Disable flyover debug messages
 
 ;;; Hide checker name for a cleaner UI
 (setq flyover-hide-checker-name t) 

@@ -19,7 +19,8 @@
 (put 'narrow-to-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-(org-agenda nil "n")
+;; Removed (org-agenda nil "n") - was causing slow startup by loading org-agenda immediately
+;; Use M-x org-agenda RET n instead, or add a keybinding if needed
 
 (message ".emacs loaded")
 
