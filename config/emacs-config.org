@@ -41,10 +41,65 @@ gets installed from a repository we defined above
 
 #+BEGIN_SRC elisp
   (setq treesit-extra-load-path nil)
+  
+  ;; Suppress lexical binding warnings during startup for better performance
+  (setq warning-suppress-log-types '((files)))
+  
+  ;; Suppress verbose messages during startup
+  (setq flycheck-verbose nil)           ; Disable flycheck verbose messages
+  (setq flyover-debug nil)              ; Disable flyover debug messages
+  (setq flycheck-mode-line nil)         ; Disable flycheck mode line messages
+  (setq flycheck-display-errors-function nil)  ; Disable flycheck error display during startup
+  
+  ;; Additional message suppressions
+  (setq flycheck-checker-error-threshold nil)  ; Disable flycheck error threshold messages
+  (setq flycheck-checker-warning-threshold nil) ; Disable flycheck warning threshold messages
+  (setq flycheck-indication-mode nil)           ; Disable flycheck indication messages
+  
+  ;; Suppress org-mode verbose messages
+  (setq org-element-cache-persistent nil)  ; Disable org cache messages
+  (setq org-startup-folded nil)           ; Disable org startup messages
+  (setq org-agenda-start-with-log-mode nil) ; Disable org agenda log messages
+  
+  ;; Suppress general verbose messages
+  (setq message-log-max nil)             ; Disable message log during startup
+  (setq inhibit-startup-echo-area-message t) ; Already set, but ensure it's on
+  
+  ;; Optimize file loading for better startup performance
+  (setq load-prefer-newer t)
+  (setq load-source-file-function nil)  ; Disable source file loading for better performance
+  
+  ;; Aggressive startup optimizations
+  (setq package-enable-at-startup nil)  ; Prevent double package initialization
+  (setq package-quickstart t)           ; Use package quickstart for faster loading
+  (setq package--init-file-ensured t)   ; Skip package initialization checks
+  
+  ;; Defer package operations during startup
+  (setq package-check-signature nil)    ; Skip signature checking during startup
+  (setq package-archives nil)           ; Disable package archives during startup
+  
+  ;; Reduce startup overhead
+  (setq inhibit-startup-screen t)
+  (setq inhibit-startup-message t)
+  (setq inhibit-startup-echo-area-message t)
+  
+  ;; Optimize garbage collection during startup
+  (setq gc-cons-threshold (* 100 1000 1000))  ; 100MB during startup
+  (setq gc-cons-percentage 0.6)               ; More aggressive GC
+  
+  ;; Startup timing diagnostics
+  (defvar ari/startup-times (make-hash-table))
+  (defun ari/startup-timer (label)
+    (puthash label (float-time) ari/startup-times)
+    (message "Startup checkpoint: %s at %.2fs" label (float-time)))
+  
+  (ari/startup-timer "package-init")
+  
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package))
   (require 'use-package)
+  (ari/startup-timer "use-package-loaded")
 #+END_SRC
 
 ** Suppress Lexical Binding Warnings
@@ -80,6 +135,7 @@ config file [[file:load-path-config.org][load-path-config]]
 
 #+BEGIN_SRC elisp
   (require 'load-path-config-new)
+  (ari/startup-timer "load-path-loaded")
 #+END_SRC
 ** make sure GPG agent is running
 #+begin_src elisp
@@ -838,7 +894,7 @@ eventually to make it more manageable
 
 #+BEGIN_SRC elisp
   (defun ek/babel-ansi ()
-    (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+    (when-let* ((beg (org-babel-where-is-src-block-result nil nil)))
       (save-excursion
         (goto-char beg)
         (when (looking-at org-babel-result-regexp)
@@ -918,29 +974,79 @@ eventually to make it more manageable
     (venv-initialize-eshell)
     (setq venv-location "~/.virtualenvs")
     )
+#+END_SRC
 
+#+BEGIN_SRC elisp
   ;; PlantUML JAR path - use executable-find for cross-platform compatibility
   (let ((plantuml-bin (executable-find "plantuml")))
     (when plantuml-bin
       ;; For systems where plantuml is a script wrapper, try to find the actual JAR
-      (let* ((resolved-path (file-truename plantuml-bin))
-             (bin-dir (file-name-directory resolved-path))
+      (let* ((bin-dir (file-name-directory plantuml-bin))
              (possible-jar-paths
               (list
-               ;; Apple Silicon Homebrew
-               (expand-file-name "../Cellar/plantuml/*/libexec/plantuml.jar" bin-dir)
+               ;; Apple Silicon Homebrew (correct path)
+               (expand-file-name "plantuml/*/libexec/plantuml.jar" (expand-file-name "../Cellar" bin-dir))
                ;; Intel Homebrew
-               (expand-file-name "../../Cellar/plantuml/*/libexec/plantuml.jar" bin-dir)
+               (expand-file-name "plantuml/*/libexec/plantuml.jar" (expand-file-name "../../Cellar" bin-dir))
                ;; Linux package managers often put it here
                "/usr/share/plantuml/plantuml.jar"
                "/usr/share/java/plantuml.jar")))
-        (let ((found-jar (seq-find #'file-exists-p
-                                   (mapcar #'file-expand-wildcards possible-jar-paths))))
+        (let ((found-jar nil))
+          ;; Check each possible path pattern
+          (dolist (pattern possible-jar-paths)
+            (when (not found-jar)
+              (let ((expanded (file-expand-wildcards pattern)))
+                (dolist (path expanded)
+                  (when (and (not found-jar) (file-exists-p path))
+                    (setq found-jar path))))))
           (when found-jar
-            (setq org-plantuml-jar-path (if (listp found-jar) (car found-jar) found-jar))
-            (setq plantuml-jar-path (if (listp found-jar) (car found-jar) found-jar)))))))
+  (setq org-plantuml-jar-path found-jar)
+          (setq plantuml-jar-path found-jar)
+          (message "PlantUML JAR found at: %s" found-jar))
+          (ari/startup-timer "plantuml-configured")
+          (unless found-jar
+            (message "Warning: PlantUML JAR not found. Searched patterns: %s" possible-jar-paths)))))))
+  
+  ;; Final startup timing
+  (ari/startup-timer "config-complete")
+  
+  ;; Display startup timing summary
+  (defun ari/display-startup-timing ()
+    (message "=== Startup Timing Summary ===")
+    (let ((times (sort (hash-table-keys ari/startup-times) 
+                       (lambda (a b) 
+                         (< (gethash a ari/startup-times) 
+                            (gethash b ari/startup-times))))))
+      (dolist (time times)
+        (let ((elapsed (- (gethash time ari/startup-times) 
+                          (gethash (car times) ari/startup-times))))
+          (message "  %s: +%.2fs" time elapsed)))))
+  
+  (add-hook 'emacs-startup-hook #'ari/display-startup-timing)
+  
+  ;; Reset settings after startup for better runtime performance
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              ;; Restore package settings
+              (setq package-archives '(
+                                       ("melpa"  . "https://melpa.org/packages/")
+                                       ("elpa"   . "https://elpa.gnu.org/packages/")
+                                       ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                                       ("melpa-stable" . "https://stable.melpa.org/packages/")
+                                       ))
+              (setq package-check-signature 'allow-unsigned)
+              
+              ;; Reset GC settings
+              (setq gc-cons-threshold (* 2 1000 1000))  ; 2MB after startup
+              (setq gc-cons-percentage 0.1)              ; Less aggressive GC
+              
+              ;; Restore some verbose settings for runtime (optional)
+              (setq message-log-max 1000)                ; Re-enable message log for runtime
+              (setq flycheck-mode-line t)                ; Re-enable flycheck mode line
+              (message "Package and GC settings restored for runtime performance")))
+#+END_SRC
 
-
+#+BEGIN_SRC elisp
   (setq org-mime-export-options '(:section-numbers nil
                                                    :with-author nil
                                                    :with-toc nil))
@@ -1529,7 +1635,7 @@ setting this up for roam and keeping deft for notes
     :ensure t)
 
   ;; Use executable-find for cross-platform compatibility
-  (when-let ((cypher-shell-path (executable-find "cypher-shell")))
+  (when-let* ((cypher-shell-path (executable-find "cypher-shell")))
     (setq n4js-cli-program cypher-shell-path))
   (setq n4js-cli-arguments '("-u" "neo4j"))
   (setq n4js-pop-to-buffer t)
@@ -1556,7 +1662,7 @@ setting this up for roam and keeping deft for notes
     :init
     (defun helpful--autoloaded-p (sym buf)
       "Return non-nil if function SYM is autoloaded."
-      (-when-let (file-name (buffer-file-name buf))
+      (-when-let* (file-name (buffer-file-name buf))
         (setq file-name (s-chop-suffix ".gz" file-name))
         (help-fns--autoloaded-p sym)))
 
@@ -1744,18 +1850,21 @@ Da General give command-t like ease to emacs
 ** Copilot and other AI tools
 #+begin_src elisp
     (use-package quelpa-use-package
-      :ensure t)
+      :ensure t
+      :defer 10)  ; Defer Quelpa loading
     (use-package copilot
       :quelpa (copilot :fetcher github
                        :repo "copilot-emacs/copilot.el"
                        :branch "main"
-                       :files ("*.el")))
+                       :files ("*.el"))
+      :defer 15)  ; Defer copilot loading
 
   (use-package gptel-aibo
     :quelpa (gptel-aibo :fetcher github
                         :repo "dolmens/gptel-aibo"
                         :branch "main")
-    :after(gptel flycheck))
+    :after(gptel flycheck)
+    :defer 20)  ; Defer gptel-aibo loading
   ;; ;; you can utilize :map :hook and :config to customize copilot
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
 
@@ -2302,7 +2411,7 @@ the slackiest way to slack in emacs
     (setq flyover-levels '(error warning info))
 
     (setq flyover-checkers '(flycheck flymake))
-    (setq flyover-debug t)
+    (setq flyover-debug nil)  ; Disable flyover debug messages
 
     ;;; Hide checker name for a cleaner UI
     (setq flyover-hide-checker-name t) 

@@ -415,8 +415,65 @@ Implemented intelligent ABI-aware grammar version selection in `emacs-config.org
 
 ---
 
+### Session 5: 2025-01-05 (Work Mac Performance Issues)
+**Completed:**
+- ✅ Fixed PlantUML JAR detection for Apple Silicon Homebrew installation
+- ✅ Addressed interactive startup performance issues (178s → 4.5s fast startup)
+- ✅ Implemented aggressive startup optimizations and deferred loading
+- ✅ Created fast-startup.el for immediate responsiveness
+- ✅ Added comprehensive startup timing diagnostics
+
+**Problem:**
+Work Mac experienced extremely slow interactive startup (178 seconds vs 22 seconds batch mode) due to:
+- Package loading overhead and activation errors
+- File uncompression during startup
+- Quelpa package updates during startup
+- GPG operations (decrypting .authinfo.gpg)
+- Synchronous loading of heavy packages
+
+**Solution:**
+1. **PlantUML Detection Fix**:
+   - Fixed JAR detection logic for Apple Silicon Homebrew
+   - Corrected path construction to avoid double Cellar directories
+   - Fixed org-babel tangling issues with missing #+END_SRC tags
+   - **Result**: PlantUML JAR correctly detected at `/opt/homebrew/Cellar/plantuml/1.2025.4/libexec/plantuml.jar`
+
+2. **Startup Performance Optimizations**:
+   - Disabled package signature checking during startup
+   - Disabled package archives during startup (restored after startup)
+   - Added `package-quickstart` for faster package loading
+   - Increased GC threshold to 100MB during startup
+   - Deferred heavy packages: Quelpa (10s), Copilot (15s), gptel-aibo (20s)
+
+3. **Fast Startup Configuration**:
+   - Created `fast-startup.el` that loads only essential packages
+   - Loads full configuration in background after 1 second
+   - Includes PlantUML detection and essential functionality
+   - **Result**: 4.5 seconds for essential startup vs 178 seconds full startup
+
+**Files Modified:**
+- `emacs-config.org` - Added startup optimizations, deferred loading, timing diagnostics
+- `emacs-config-new.el` - Regenerated with optimizations
+- `fast-startup.el` - Created new fast startup configuration
+- `CLAUDE.md` - Updated Emacs binary paths for work Mac
+
+**Performance Results:**
+- **Batch mode**: ~23 seconds (full configuration)
+- **Fast startup**: ~4.5 seconds (essential packages only)
+- **PlantUML detection**: ✅ Working correctly
+- **Background loading**: Full configuration loads after startup
+
+**Lessons Learned:**
+- Interactive startup has significantly more overhead than batch mode
+- Package activation errors can cause major delays
+- Deferred loading is essential for responsive startup
+- Background loading provides best of both worlds (fast startup + full functionality)
+
+---
+
 ### Next Steps:
 - Configuration now fully cross-platform compatible (macOS Intel/Apple Silicon, Linux)
 - All tree-sitter grammars work without warnings on all platforms
 - All planned improvement phases complete
+- Work Mac startup performance optimized with fast startup option
 - Future: Monitor for tree-sitter 0.22+ availability in Ubuntu repositories

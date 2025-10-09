@@ -46,7 +46,8 @@ The main entry point appears to be `emacs-config-new.el` which:
 ## Development Workflow
 
 ### Emacs Binary Location
-- **macOS**: `/Users/abturet/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs`
+- **macOS (Work)**: `/Applications/Emacs.app/Contents/MacOS/Emacs`
+- **macOS (Home)**: `/Users/abturet/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs`
 - **Linux**: `/home/abturet/dev/emacs/src/emacs`
 - Use these paths for batch mode testing and validation
 

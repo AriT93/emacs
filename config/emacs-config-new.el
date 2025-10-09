@@ -796,23 +796,30 @@
 (let ((plantuml-bin (executable-find "plantuml")))
   (when plantuml-bin
     ;; For systems where plantuml is a script wrapper, try to find the actual JAR
-    (let* ((resolved-path (file-truename plantuml-bin))
-           (bin-dir (file-name-directory resolved-path))
+    (let* ((bin-dir (file-name-directory plantuml-bin))
            (possible-jar-paths
             (list
-             ;; Apple Silicon Homebrew
-             (expand-file-name "../Cellar/plantuml/*/libexec/plantuml.jar" bin-dir)
+             ;; Apple Silicon Homebrew (correct path)
+             (expand-file-name "plantuml/*/libexec/plantuml.jar" (expand-file-name "../Cellar" bin-dir))
              ;; Intel Homebrew
-             (expand-file-name "../../Cellar/plantuml/*/libexec/plantuml.jar" bin-dir)
+             (expand-file-name "plantuml/*/libexec/plantuml.jar" (expand-file-name "../../Cellar" bin-dir))
              ;; Linux package managers often put it here
              "/usr/share/plantuml/plantuml.jar"
              "/usr/share/java/plantuml.jar")))
-      (let ((found-jar (seq-find #'file-exists-p
-                                 (mapcar #'file-expand-wildcards possible-jar-paths))))
+      (let ((found-jar nil))
+        ;; Check each possible path pattern
+        (dolist (pattern possible-jar-paths)
+          (when (not found-jar)
+            (let ((expanded (file-expand-wildcards pattern)))
+              (dolist (path expanded)
+                (when (and (not found-jar) (file-exists-p path))
+                  (setq found-jar path))))))
         (when found-jar
-          (setq org-plantuml-jar-path (if (listp found-jar) (car found-jar) found-jar))
-          (setq plantuml-jar-path (if (listp found-jar) (car found-jar) found-jar)))))))
-
+          (setq org-plantuml-jar-path found-jar)
+          (setq plantuml-jar-path found-jar)
+          (message "PlantUML JAR found at: %s" found-jar))
+        (unless found-jar
+          (message "Warning: PlantUML JAR not found. Searched patterns: %s" possible-jar-paths))))))
 
 (setq org-mime-export-options '(:section-numbers nil
                                                  :with-author nil
