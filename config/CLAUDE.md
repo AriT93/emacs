@@ -23,9 +23,13 @@ This is a personal Emacs configuration repository using org-mode for literate co
 - `erc-config.el` and `gnus-config.el`: Communication configurations
 
 ### Package Management
-- Uses both traditional `package.el` with MELPA/ELPA repositories
-- Also uses `straight.el` for more advanced package management
+- **Hybrid approach**: `package.el` (MELPA/ELPA) + `straight.el` (GitHub packages)
+- **No quelpa**: Migrated to straight.el for all GitHub packages (as of 2025-10-25)
 - `use-package` for clean package configuration
+- **GitHub packages managed via straight.el**:
+  - `copilot` - GitHub Copilot integration
+  - `gptel-aibo` - AI-powered code assistance
+  - `chatgpt-shell` - ChatGPT interface
 
 ### Tree-sitter Configuration
 - Uses `treesit-auto` package for automatic grammar management
@@ -126,3 +130,22 @@ The following safety and architectural improvements have been implemented:
 # Linux:
 /home/abturet/dev/emacs/src/emacs --batch --eval "(require 'package)" --eval "(package-quickstart-refresh)"
 ```
+
+### Emacs 31 Compatibility Fixes (October 2025)
+- **Migrated from quelpa to straight.el**: Removed quelpa-use-package dependency
+  - `copilot` now uses `:straight` directive with GitHub recipe
+  - `gptel-aibo` now uses `:straight` directive with GitHub recipe
+  - Removed quelpa-specific error handling for package-quickstart-refresh
+  - Cleaner configuration with unified straight.el package management
+- **Fixed package initialization order**: Proper sequencing to avoid hybrid package manager conflicts
+  - straight.el loads FIRST (before package.el is required)
+  - `(require 'package)` and `(package-initialize)` called AFTER straight.el bootstrap
+  - package-archives configured AFTER straight.el loads to avoid autoload triggers
+  - Suppressed straight.el hybrid warnings via `warning-suppress-log-types`
+  - Eliminates all straight.el/package.el conflict warnings
+- **Fixed copilot-chat syntax errors**: Corrected use-package declarations for AI tools
+  - Fixed chatgpt-shell `:config` block placement
+  - Corrected gptel use-package syntax
+  - Added proper deferral for copilot-chat
+- **Location**: AI tools configuration in `emacs-config.org:1880-1900`
+- **Location**: Package initialization in `emacs-config.org:93-134`

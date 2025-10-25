@@ -1,19 +1,6 @@
 ;; -*- lexical-binding: t; -*-
-  (require 'package)
-
-(setq package-archives '(
-                         ("melpa"  . "https://melpa.org/packages/")
-                         ("elpa"   . "https://elpa.gnu.org/packages/")
-                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                         ("melpa-stable" . "https://stable.melpa.org/packages/")
-                         ))
-(package-initialize)
-
-;; Allow unsigned packages but prefer signed ones
-(setq package-check-signature 'allow-unsigned)
-
-;; Configure straight.el to check for modifications
-(setq straight-check-for-modifications '(check-on-save find-when-checking))
+  ;; Don't configure package.el yet - it will be set up AFTER straight.el loads
+  ;; to avoid triggering package.el autoload before straight.el
 
 (setq treesit-extra-load-path nil)
 
@@ -75,17 +62,16 @@
 
 (ari/startup-timer "package-init")
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
-(ari/startup-timer "use-package-loaded")
-
-;; Suppress lexical-binding warnings for third-party packages
+;; Suppress lexical-binding and straight.el hybrid warnings for third-party packages
 (setq warning-suppress-log-types
       (append warning-suppress-log-types
-              '((files missing-lexbind-cookie))))
+              '((files missing-lexbind-cookie)
+                (straight))))  ; Suppress straight.el hybrid package.el warnings
 
+;; Configure straight.el settings BEFORE loading
+(setq straight-check-for-modifications '(check-on-save find-when-checking))
+
+;; Load straight.el FIRST before package.el initialization
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
@@ -101,6 +87,25 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+
+;; NOW configure and initialize package.el AFTER straight.el is loaded
+;; This order prevents the "package.el already loaded" or "straight.el already loaded" warnings
+(require 'package)
+(setq package-archives '(
+                         ("melpa"  . "https://melpa.org/packages/")
+                         ("elpa"   . "https://elpa.gnu.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")
+                         ))
+(setq package-check-signature 'allow-unsigned)  ; Allow unsigned packages but prefer signed ones
+(package-initialize)
+
+;; Install and load use-package (needs package.el to be initialized)
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+(ari/startup-timer "use-package-loaded")
 
 (require 'load-path-config-new)
 (ari/startup-timer "load-path-loaded")
@@ -1658,24 +1663,18 @@ Prints warnings for any missing files but does not halt startup."
     "sr" '(consult-ripgrep :which-key "ripgrep")
     "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
 
-(use-package quelpa-use-package
-    :ensure t
-    :demand t)  ; Load immediately - required for :quelpa keyword
-
-  (use-package copilot
-    :quelpa (copilot :fetcher github
-                     :repo "copilot-emacs/copilot.el"
-                     :branch "main"
-                     :files ("*.el"))
+(use-package copilot
+    :straight (:host github :repo "copilot-emacs/copilot.el"
+               :branch "main"
+               :files ("*.el"))
     :defer 10  ; Defer copilot loading
     :config
     ;; you can utilize :map :hook and :config to customize copilot
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion))
 
 (use-package gptel-aibo
-  :quelpa (gptel-aibo :fetcher github
-                      :repo "dolmens/gptel-aibo"
-                      :branch "main")
+  :straight (:host github :repo "dolmens/gptel-aibo"
+             :branch "main")
   :after(gptel flycheck)
   :defer 15)  ; Defer gptel-aibo loading
 
@@ -1687,20 +1686,21 @@ Prints warnings for any missing files but does not halt startup."
       (auth-source-pick-first-password :host  "api.openai.com" :user "apikey"))
   (chatgpt-shell-anthropic-key
    (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey"))
-   (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey")))
-   (require 'chatgpt-shell)
+  (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey"))
+  :config
+  (require 'chatgpt-shell))
 
-  (straight-use-package 'gptel
-    :ensure t)
-(with-eval-after-load 'gptel (add-hook 'gptel-post-stream-hook  'gptel-auto-scroll))
+(use-package gptel
+  :ensure t
+  :config
+  (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
 
-
-  (use-package copilot-chat
-    :ensure t
-;;    :after (chatgpt-shell)
-    :custom
-    (copilot-chat-frontend  'org)
-    (copilot-chat-default-model "claude-3.7-sonnet-thought"))
+(use-package copilot-chat
+  :ensure t
+  :defer t
+  :custom
+  (copilot-chat-frontend  'org)
+  (copilot-chat-default-model "claude-3.7-sonnet-thought"))
 
 
    (let ((model-config '((:version . "gpt-4o-mini") (:short-version)

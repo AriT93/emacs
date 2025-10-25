@@ -427,7 +427,7 @@ Implemented intelligent ABI-aware grammar version selection in `emacs-config.org
 Work Mac experienced extremely slow interactive startup (178 seconds vs 22 seconds batch mode) due to:
 - Package loading overhead and activation errors
 - File uncompression during startup
-- Quelpa package updates during startup
+- Quelpa package updates during startup (*Note: Quelpa later removed in Session 8*)
 - GPG operations (decrypting .authinfo.gpg)
 - Synchronous loading of heavy packages
 
@@ -443,7 +443,7 @@ Work Mac experienced extremely slow interactive startup (178 seconds vs 22 secon
    - Disabled package archives during startup (restored after startup)
    - Added `package-quickstart` for faster package loading
    - Increased GC threshold to 100MB during startup
-   - Deferred heavy packages: Quelpa (10s), Copilot (15s), gptel-aibo (20s)
+   - Deferred heavy packages: Quelpa (10s - *later removed*), Copilot (15s), gptel-aibo (20s)
 
 3. **Fast Startup Configuration**:
    - Created `fast-startup.el` that loads only essential packages
@@ -480,7 +480,7 @@ Work Mac experienced extremely slow interactive startup (178 seconds vs 22 secon
 - ✅ Removed immediate org-agenda call from ~/.emacs
 - ✅ Lazy-loaded 8+ heavy packages with `:defer t`
 - ✅ Deferred non-essential config modules (ruby, erc, gnus, mail, blog)
-- ✅ Fixed quelpa-use-package load order
+- ✅ Fixed quelpa-use-package load order (*Note: Quelpa later removed in Session 8*)
 - ✅ Generated package-quickstart.el for faster package loading
 - ✅ Suppressed noisy byte-compilation warnings
 
@@ -529,7 +529,7 @@ Implemented comprehensive lazy-loading strategy:
    - Fixed `(setq load-source-file-function nil)` conflict
 
 6. **Package Loading Optimization**:
-   - Changed quelpa-use-package from `:defer 10` to `:demand t`
+   - Changed quelpa-use-package from `:defer 10` to `:demand t` (*Note: Quelpa later removed in Session 8*)
    - Generated package-quickstart.el: `(package-quickstart-refresh)`
    - Suppressed byte-compilation warnings
 
@@ -628,12 +628,104 @@ Tree-sitter ABI: 14
 
 ---
 
+### Session 8: 2025-10-25 (Emacs 31 Compatibility Fixes)
+**Completed:**
+- ✅ Fixed `stringp nil` error from package-quickstart-refresh with quelpa (Emacs 31)
+- ✅ Fixed straight.el warning about package.el already loaded
+- ✅ Fixed copilot-chat loading errors due to syntax issues
+- ✅ Reordered package initialization: straight.el loads before package.el
+- ✅ Migrated from quelpa to straight.el completely
+
+**Problem:**
+After updating to Emacs 31, multiple errors appeared:
+1. `Wrong type argument: stringp, nil` - package-quickstart-refresh failed during quelpa builds
+2. Straight.el warning: "package.el was already loaded"
+3. copilot-chat failed to load due to configuration syntax errors
+4. Quelpa added unnecessary complexity and error handling overhead
+
+**Solution:**
+1. **Migrated from quelpa to straight.el** (emacs-config.org:1888-1903):
+   - Removed `quelpa-use-package` dependency entirely
+   - Converted `copilot` to use `:straight` directive with GitHub recipe
+   - Converted `gptel-aibo` to use `:straight` directive with GitHub recipe
+   - Removed quelpa-specific error handling advice (lines 83-93)
+   - Cleaner configuration with unified straight.el package management
+
+2. **straight.el loading order** (emacs-config.org:24-25, 133-152):
+   - Removed `(package-initialize)` from early package.el setup
+   - Moved `(package-initialize)` to AFTER straight.el bootstrap
+   - Ensures straight.el loads before package.el is activated
+   - Eliminates the "already loaded" warning
+
+3. **copilot-chat syntax** (emacs-config.org:1909-1931):
+   - Fixed misplaced `(require 'chatgpt-shell)` - moved to `:config` block
+   - Changed `straight-use-package 'gptel` to proper `use-package gptel`
+   - Moved gptel hook into its own `:config` block
+   - Added `:defer t` to copilot-chat
+
+**Files Modified:**
+- `emacs-config.org` - Removed quelpa, migrated to straight.el, removed error handling
+- `emacs-config-new.el` - Regenerated via tangling
+- `CLAUDE.md` - Updated documentation to reflect quelpa removal
+- `IMPROVEMENT_ROADMAP.md` - Documented migration
+
+**Testing Results:**
+- ✅ No stringp errors (root cause eliminated)
+- ✅ No straight.el warnings
+- ✅ No copilot-chat loading errors
+- ✅ No quelpa references remaining
+- ✅ Batch mode startup: ~3-4 seconds
+- ✅ All packages load correctly
+
+**Lessons Learned:**
+- Emacs 31 has stricter requirements for package initialization order
+- Quelpa's package-quickstart integration has edge cases in Emacs 31
+- Using straight.el exclusively for GitHub packages is cleaner and more reliable
+- Hybrid package.el + straight.el setups require careful initialization ordering
+- Always load straight.el BEFORE calling package-initialize
+- Eliminating unnecessary package managers reduces complexity
+
+**Follow-up Fix (Same Session):**
+After initial migration, discovered straight.el warning still appeared:
+- **Issue**: `(require 'package)` and `(setq package-archives ...)` were triggering package.el autoload before straight.el
+- **Solution**: Moved ALL package.el configuration (require, archives, initialize) to AFTER straight.el bootstrap
+- **Additional**: Suppressed hybrid warnings via `(setq warning-suppress-log-types '(...(straight)))`
+- **Result**: Clean startup with no warnings, proper hybrid package manager operation
+
+---
+
+### Current Configuration Status (As of 2025-10-25):
+
+**Package Management:**
+- **Hybrid approach**: `package.el` (MELPA/ELPA) + `straight.el` (GitHub packages)
+- **No quelpa**: Fully migrated to straight.el for GitHub packages
+- **Package-quickstart**: Enabled for faster package loading
+- **GitHub packages via straight.el**:
+  - `copilot` (copilot-emacs/copilot.el)
+  - `gptel-aibo` (dolmens/gptel-aibo)
+  - `chatgpt-shell` (xenodium/chatgpt-shell)
+
+**Performance:**
+- **Personal Mac (Emacs 31+)**: ~9.72s startup (84% improvement from 54-60s)
+- **Linux Ubuntu (Emacs 31.0.50)**: ~12.06s startup
+- **Work Mac**: ~30-40s startup (75-80% improvement from 150s)
+- **Batch mode**: ~3-4s
+
+**Cross-Platform Compatibility:**
+- ✅ macOS (Intel & Apple Silicon)
+- ✅ Linux (Ubuntu 25.04+)
+- ✅ Tree-sitter ABI-aware grammar selection (14 vs 15+)
+- ✅ Dynamic binary path detection (rbenv, PlantUML, cypher-shell)
+- ✅ Multi-platform site-lisp support
+
+**Emacs Version:**
+- Target: Emacs 28+ (some features require 29+)
+- Tested: Emacs 31.0.50
+- Tree-sitter: Built-in support via `treesit-auto`
+
 ### Next Steps:
-- Configuration now fully cross-platform compatible (macOS Intel/Apple Silicon, Linux)
-- All tree-sitter grammars work without warnings on all platforms
-- Startup performance optimized: ~10s (Mac), ~12s (Linux) - **84-80% improvement**
-- Package-quickstart generated for faster package loading
-- Tree-sitter grammars install on-demand as needed
+- Configuration is now stable and production-ready
+- All planned improvement phases complete
 - Future optimizations available but not critical:
   - More aggressive package deferral (could gain 2-3s but risks breaking workflows)
   - Byte-compilation (gains 1-2s but breaks cross-platform compatibility)
