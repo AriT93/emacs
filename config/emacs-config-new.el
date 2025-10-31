@@ -1664,80 +1664,92 @@ Prints warnings for any missing files but does not halt startup."
     "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
 
 (use-package copilot
-    :straight (:host github :repo "copilot-emacs/copilot.el"
-               :branch "main"
-               :files ("*.el"))
-    :defer 10  ; Defer copilot loading
-    :config
-    ;; you can utilize :map :hook and :config to customize copilot
-    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion))
+      :straight (:host github :repo "copilot-emacs/copilot.el"
+                 :branch "main"
+                 :files ("*.el"))
+      :defer 10  ; Defer copilot loading
+      :config
+      ;; you can utilize :map :hook and :config to customize copilot
+      (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion))
 
-(use-package gptel-aibo
-  :straight (:host github :repo "dolmens/gptel-aibo"
-             :branch "main")
-  :after(gptel flycheck)
-  :defer 15)  ; Defer gptel-aibo loading
+  (use-package gptel-aibo
+    :straight (:host github :repo "dolmens/gptel-aibo"
+               :branch "main")
+    :after(gptel flycheck)
+    :defer 15)  ; Defer gptel-aibo loading
 
-(use-package chatgpt-shell
-  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
-  :ensure t
-  :custom
-  (chatgpt-shell-openai-key
-      (auth-source-pick-first-password :host  "api.openai.com" :user "apikey"))
-  (chatgpt-shell-anthropic-key
-   (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey"))
-  (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey"))
-  :config
-  (require 'chatgpt-shell))
-
-(use-package gptel
-  :ensure t
-  :config
-  (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
-
-(use-package copilot-chat
-  :ensure t
-  :defer t
-  :custom
-  (copilot-chat-frontend  'org)
-  (copilot-chat-default-model "claude-3.7-sonnet-thought"))
-
-
-   (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
-                          (:label . "ChatGPT") (:provider . "OpenAI")
-                          (:path . "/v1/chat/completions") (:token-width . 3)
-                          (:context-window . 128000)
-                          (:handler . chatgpt-shell-openai--handle-chatgpt-command)
-                          (:filter . chatgpt-shell-openai--filter-output)
-                          (:payload . chatgpt-shell-openai--make-payload) 
-                          (:headers . chatgpt-shell-openai--make-headers)
-                          (:url . chatgpt-shell-openai--make-url)
-                          (:key . chatgpt-shell-openai-key)
-                          (:url-base . chatgpt-shell-api-url-base)
-                          (:validate-command . chatgpt-shell-openai--validate-command))))
-     (add-to-list 'chatgpt-shell-models model-config))
-
-  (gptel-make-ollama "Ollama"             ;Any name of your choosing
-  :host "localhost:11434"               ;Where it's running
-  :stream t                             ;Stream responses
-  :models '(mistral:latest))             ;List of models
-
-  ;; :key can be a function that returns the API key.
-(gptel-make-gemini "Gemini"
-  :key (gptel-api-key-from-auth-source "generativelanguage.googleapis.com")
-  :stream t)
-
-  (use-package ob-chatgpt-shell
+  (use-package shell-maker
+    :straight (:host github :repo "xenodium/shell-maker" :files ("*.el"))
     :ensure t)
-  (require 'ob-chatgpt-shell)
-  (ob-chatgpt-shell-setup)
-(use-package aidermacs
-:bind (("C-c a" . aidermacs-transient-menu))
-:custom
-(aidermacs-use-architect-mode t)
-(aidermacs-default-model "gemini/gemini-2.0-flash"))
+    
+  (use-package chatgpt-shell
+    :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
+    :ensure t
+    :custom
+    (chatgpt-shell-openai-key
+        (auth-source-pick-first-password :host  "api.openai.com" :user "apikey"))
+    (chatgpt-shell-anthropic-key
+     (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey"))
+    (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey"))
+    :config
+    (require 'chatgpt-shell))
+(use-package acp
+  :vc (:url "https://github.com/xenodium/acp.el")
+  :ensure t)
+(use-package agent-shell
+  :vc (:url "https://github.com/xenodium/agent-shell")
+  :ensure t)
+(require 'acp)
+(require 'agent-shell)
+  (use-package gptel
+    :ensure t
+    :config
+    (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
 
-(use-package aider)
+  (use-package copilot-chat
+    :ensure t
+    :defer t
+    :custom
+    (copilot-chat-frontend  'org)
+    (copilot-chat-default-model "claude-3.7-sonnet-thought"))
+
+
+     (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
+                            (:label . "ChatGPT") (:provider . "OpenAI")
+                            (:path . "/v1/chat/completions") (:token-width . 3)
+                            (:context-window . 128000)
+                            (:handler . chatgpt-shell-openai--handle-chatgpt-command)
+                            (:filter . chatgpt-shell-openai--filter-output)
+                            (:payload . chatgpt-shell-openai--make-payload) 
+                            (:headers . chatgpt-shell-openai--make-headers)
+                            (:url . chatgpt-shell-openai--make-url)
+                            (:key . chatgpt-shell-openai-key)
+                            (:url-base . chatgpt-shell-api-url-base)
+                            (:validate-command . chatgpt-shell-openai--validate-command))))
+       (add-to-list 'chatgpt-shell-models model-config))
+
+    (gptel-make-ollama "Ollama"             ;Any name of your choosing
+    :host "localhost:11434"               ;Where it's running
+    :stream t                             ;Stream responses
+    :models '(mistral:latest))             ;List of models
+
+    ;; :key can be a function that returns the API key.
+  (gptel-make-gemini "Gemini"
+    :key (gptel-api-key-from-auth-source "generativelanguage.googleapis.com")
+    :stream t)
+
+    (use-package ob-chatgpt-shell
+      :straight t
+      :ensure t)
+    (require 'ob-chatgpt-shell)
+    (ob-chatgpt-shell-setup)
+  (use-package aidermacs
+  :bind (("C-c a" . aidermacs-transient-menu))
+  :custom
+  (aidermacs-use-architect-mode t)
+  (aidermacs-default-model "gemini/gemini-2.0-flash"))
+
+  (use-package aider)
 
 (use-package magit-delta
   :ensure t
