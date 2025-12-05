@@ -758,49 +758,73 @@
   (setq org-roam-database-connector 'sqlite-builtin))
 
 (setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
-                                    (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-                                    :unnarrowed t)
-                                   ("c" "region" plain "%i" :if-new
-                                    (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-                                    :unnarrowed t)
-                                   ("i" "Jira Issue" entry "* TODO ${title}\n:PROPERTIES:\n:JiraIssueKey: ${title}\n:END:\n"
-                                    :if-new
-                                    (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                                               "#+title: ${title}\n\n" )
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     ("c" "region" plain "%i" :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     ("i" "Jira Issue" entry "* TODO ${title}\n:PROPERTIES:\n:JiraIssueKey: ${title}\n:END:\n"
+                                      :if-new
+                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                 "#+title: ${title}\n\n" )
 
-                                    :unnarrowed t)
-                                   ))
-(setq org-roam-capture-ref-templates '(("r" "ref" plain "%a %i"
-                                        :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
-                                        :jump-to-captured t
-                                        :unnarrowed t)))
-(setq org-roam-node-display-template
-      (concat "${title:30} "
-              (propertize "${tags:*}" 'face 'org-tag)))
+                                      :unnarrowed t)
+                                     ))
+  (setq org-roam-capture-ref-templates '(("r" "ref" plain "%a %i"
+                                          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
+                                          :jump-to-captured t
+                                          :unnarrowed t)))
+  (setq org-roam-node-display-template
+        (concat "${title:30} "
+                (propertize "${tags:*}" 'face 'org-tag)))
 
-(setq org-roam-dailies-directory "daily/")
-(setq org-roam-completion-everywhere t)
-(setq org-roam-dailies-capture-templates
-      '(("d" "default" entry
-         "* %<%Y-%m-%d>\n:PROPERTIES:\n:CATEGORY: daily\n:END:\n\n%?"
-         :if-new (file+head "%<%Y-%m-%d>.org"
-                            "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
-   "))
-        ("c" "region" entry
-         "* %? %i"
-         :if-new (file+head "%<%Y-%m-%d>.org"
-                            "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
-   "))
-        ("l" "link" entry
-         "* %? \n%i"
-         :target (file+olp "%<%Y-%m-%d>.org"
-                           ("Links"))
-         :unnarrowed t
-         )))
+  (setq org-roam-dailies-directory "daily/")
+  (setq org-roam-completion-everywhere t)
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry
+           "* %<%Y-%m-%d>\n:PROPERTIES:\n:CATEGORY: daily\n:END:\n\n%?"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
+     "))
+          ("c" "region" entry
+           "* %? %i"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
+     "))
+          ("l" "link" entry
+           "* %? \n%i"
+           :target (file+olp "%<%Y-%m-%d>.org"
+                             ("Links"))
+           :unnarrowed t
+           )))
 
+  ;;
+CLI helper function for creating org-roam nodes from command line
+  ;; Used by research-investigator agent to programmatically create nodes
+  (defun create-org-roam-node-cli (title tags content)
+    "Create org-roam node non-interactively from CLI.
+TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the body text."
+    (let* ((slug (org-roam-node-slug
+                  (org-roam-node-create :title title)))
+           (timestamp (format-time-string "%Y%m%d%H%M%S"))
+           (filename (expand-file-name
+                      (format "%s-%s.org" timestamp slug)
+                      org-roam-directory))
+           (org-id-overriding-file-name filename)
+           id)
+      (with-temp-buffer
+        (insert ":PROPERTIES:\n:ID:        \n:END:\n")
+        (insert (format "#+title: %s\n" title))
+        (when tags (insert (format "#+filetags: %s\n" tags)))
+        (insert "\n" content)
+        (goto-char 25)
+        (setq id (org-id-get-create))
+        (write-file filename)
+        (org-roam-db-update-file filename))
+      filename))
 
-(use-package org-ql
-  :ensure t)
+  (use-package org-ql
+    :ensure t)
 
 (defun ek/babel-ansi ()
   (when-let* ((beg (org-babel-where-is-src-block-result nil nil)))
