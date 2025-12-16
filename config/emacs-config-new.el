@@ -1632,7 +1632,8 @@ Prints warnings for any missing files but does not halt startup."
     (org-capture-finalize))
   (bind-keys :map elfeed-show-mode-map
              ("l" . elfeed-show-link-title)
-             ("v" . elfeed-show-quick-url-note))
+             ("v" . elfeed-show-quick-url-note)
+             ("r" . ari/elfeed-capture-to-roam))
   )
 
 (use-package elfeed-org
@@ -1746,6 +1747,8 @@ Prints warnings for any missing files but does not halt startup."
     "zp"  '(ari/promote-reference-to-permanent :which-key "promote to permanent")
     "zu"  '(org-roam-ui-mode :which-key "roam-ui")
     "zw"  '(ari/find-unprocessed-insights :which-key "weekly review")
+    "zo"  '(ari/find-orphan-references :which-key "orphan refs")
+    "zc"  '(ari/find-connected-references :which-key "connected refs")
     "q" '(:ignore t :which-key "copilot")
     "qa" '(copilot-accept-completion :which-key "copilot-accept-completion")
     "qd" '(copilot-diagnose :which-key "copilot-diagnose")

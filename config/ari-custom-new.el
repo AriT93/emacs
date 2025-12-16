@@ -310,16 +310,75 @@ processed into permanent notes."
 
 (defun ari/find-orphan-references ()
   "Find reference notes with no backlinks.
-These are candidates for processing into permanent notes
-or deletion if no longer relevant."
+These are candidates for deletion if no longer relevant."
   (interactive)
-  (let ((refs (org-roam-db-query
-               [:select [nodes:id nodes:file nodes:title]
-                :from nodes
-                :left-join tags :on (= nodes:id tags:node-id)
-                :where (like tags:tag "%reference%")])))
-    (message "Found %d reference notes to review" (length refs))
-    refs))
+  (let* ((all-refs (org-roam-db-query
+                    [:select [nodes:id nodes:file nodes:title]
+                     :from nodes
+                     :left-join tags :on (= nodes:id tags:node-id)
+                     :where (= tags:tag "reference")]))
+         (orphans (cl-remove-if
+                   (lambda (row)
+                     (let ((id (car row)))
+                       (org-roam-db-query
+                        [:select [source]
+                         :from links
+                         :where (= dest $s1)
+                         :limit 1]
+                        id)))
+                   all-refs)))
+    (if orphans
+        (let ((buf (get-buffer-create "*Orphan References*")))
+          (with-current-buffer buf
+            (read-only-mode -1)
+            (erase-buffer)
+            (insert (format "# Orphan Reference Notes (%d)\n\n" (length orphans)))
+            (insert "Reference notes with no backlinks (candidates for review/deletion):\n\n")
+            (dolist (row orphans)
+              (let ((file (nth 1 row))
+                    (title (nth 2 row)))
+                (insert (format "- [[file:%s][%s]]\n" file title))))
+            (org-mode)
+            (read-only-mode 1)
+            (goto-char (point-min)))
+          (switch-to-buffer buf))
+      (message "No orphan references found!"))))
+
+(defun ari/find-connected-references ()
+  "Find reference notes WITH backlinks.
+These are good candidates for promotion to permanent notes."
+  (interactive)
+  (let* ((all-refs (org-roam-db-query
+                    [:select [nodes:id nodes:file nodes:title]
+                     :from nodes
+                     :left-join tags :on (= nodes:id tags:node-id)
+                     :where (= tags:tag "reference")]))
+         (connected (cl-remove-if-not
+                     (lambda (row)
+                       (let ((id (car row)))
+                         (org-roam-db-query
+                          [:select [source]
+                           :from links
+                           :where (= dest $s1)
+                           :limit 1]
+                          id)))
+                     all-refs)))
+    (if connected
+        (let ((buf (get-buffer-create "*Connected References*")))
+          (with-current-buffer buf
+            (read-only-mode -1)
+            (erase-buffer)
+            (insert (format "# Connected Reference Notes (%d)\n\n" (length connected)))
+            (insert "Reference notes with backlinks (candidates for promotion):\n\n")
+            (dolist (row connected)
+              (let ((file (nth 1 row))
+                    (title (nth 2 row)))
+                (insert (format "- [[file:%s][%s]]\n" file title))))
+            (org-mode)
+            (read-only-mode 1)
+            (goto-char (point-min)))
+          (switch-to-buffer buf))
+      (message "No connected references found!"))))
 
 (defun ari/batch-tag-jira-notes ()
   "Add :work-item: tag to all JIRA-related notes.
@@ -327,7 +386,7 @@ Run this once to tag existing JIRA notes."
   (interactive)
   (let ((count 0))
     (dolist (file (directory-files org-roam-directory t
-                                   ".*\\(CONSOLE\\|DEVTOOLS\\|DEPLOY\\|ISD\\|STEM\\)-[0-9]+.*\\.org$"))
+                                   ".*\\(console\\|devtools\\|deploy\\|isd\\|stem\\|engenv\\|riak\\|be\\|cortex\\|hrcomply\\)_[0-9]+.*\\.org$"))
       (with-current-buffer (find-file-noselect file)
         (goto-char (point-min))
         (if (re-search-forward "^#\\+filetags:" nil t)
