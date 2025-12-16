@@ -173,7 +173,7 @@
 (setq cal-tex-diary t)
 (setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
 (add-hook 'diary-display-hook 'fancy-diary-display)
-(add-hook 'text-mode-hook ' turn-on-auto-fill)
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'before-save-hook 'time-stamp)
 (setq dired-omit-files-p t)
 (setq tramp-auto-save-directory "~/tmp")
@@ -552,6 +552,7 @@
 (setq auto-revert-check-vc-info t)
 
 (use-package ligature
+  :if (file-exists-p (expand-file-name "~/dev/git/ligature.el"))
   :load-path "~/dev/git/ligature.el"
   :defer 2  ; Defer ligature loading - not critical for startup
   :config
@@ -610,8 +611,6 @@
   (diminish 'org-mode  "")
   (diminish 'auto-revert-mode)
   (diminish 'yas-minor-mode)
-  (diminish 'auto-revert-mode)
-  (diminish 'yas-minor-mode)
   (diminish 'emmet-mode)
   (diminish 'rjsx-minor-mode)
   (diminish 'eldoc-mode)
@@ -624,9 +623,7 @@
   (diminish 'buffer-face-mode)
   (diminish 'auto-fill-function)
   (diminish "seeing-is-believing")
-  (diminish 'hs-minor-mode)
-  (diminish 'ruby-block-mode)
-  (diminish 'global-highline-mode))
+  (diminish 'hs-minor-mode))
 
 ;; Defer ox-latex loading - only needed when exporting
 (with-eval-after-load 'org (require 'ox-latex))
@@ -1192,7 +1189,7 @@ Prints warnings for any missing files but does not halt startup."
     (require 'ruby-config-new)
     (require 'erc-config)
     (require 'gnus-config)
-    (require 'mail-config)
+    (require 'mail-config-new)
     (require 'blog)))
 
 (use-package highline
@@ -1805,12 +1802,12 @@ Prints warnings for any missing files but does not halt startup."
     (require 'chatgpt-shell))
 (use-package acp
   :vc (:url "https://github.com/xenodium/acp.el")
-  :ensure t)
+  :ensure t
+  :demand t)  ; Load immediately - used for AI code completion
 (use-package agent-shell
   :vc (:url "https://github.com/xenodium/agent-shell")
-  :ensure t)
-(require 'acp)
-(require 'agent-shell)
+  :ensure t
+  :demand t)  ; Load immediately - used for AI shell commands
   (use-package gptel
     :ensure t
     :config

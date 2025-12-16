@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(cat:*)",
+      "Bash(emacs:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.gnu.org)",
+      "Bash(curl:*)",
+      "WebFetch(domain:reddit.com)",
+      "WebFetch(domain:protesilaos.com)"
+    ]
+  }
+}

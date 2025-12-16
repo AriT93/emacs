@@ -23,13 +23,17 @@ This is a personal Emacs configuration repository using org-mode for literate co
 - `erc-config.el` and `gnus-config.el`: Communication configurations
 
 ### Package Management
-- **Hybrid approach**: `package.el` (MELPA/ELPA) + `straight.el` (GitHub packages)
+- **Hybrid approach**: `package.el` (MELPA/ELPA) + `straight.el` (GitHub packages) + `:vc` (Emacs 30+)
 - **No quelpa**: Migrated to straight.el for all GitHub packages (as of 2025-10-25)
 - `use-package` for clean package configuration
 - **GitHub packages managed via straight.el**:
   - `copilot` - GitHub Copilot integration
   - `gptel-aibo` - AI-powered code assistance
   - `chatgpt-shell` - ChatGPT interface
+- **Emacs 30+ packages using `:vc` directive**:
+  - `acp` - AI code completion (xenodium/acp.el)
+  - `agent-shell` - AI shell commands (xenodium/agent-shell)
+  - Use `:vc (:url "https://github.com/user/repo")` for new GitHub packages on Emacs 30+
 
 ### Tree-sitter Configuration
 - Uses `treesit-auto` package for automatic grammar management

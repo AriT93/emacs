@@ -16,8 +16,7 @@
       (add-to-list 'load-path sys-path)))
 
   ;; Local site packages - check each one exists
-  (dolist (site-path '("~/emacs/site/color-theme/themes"
-                       "~/emacs/site/lisp"
+  (dolist (site-path '("~/emacs/site/lisp"
                        "~/emacs/site/ruby-block"
                        "~/emacs/site/blog"))
     (let ((expanded-path (expand-file-name site-path)))
