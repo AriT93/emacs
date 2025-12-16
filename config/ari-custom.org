@@ -322,6 +322,128 @@ WEEK-OFFSET is the number of weeks before current (0 = current week)."
     (fill-region beg end)))
 #+end_src
 
+** Org-roam Zettelkasten Workflow Functions
+   Functions to support the Zettelkasten workflow for knowledge capture and relation.
+
+*** Promote Reference to Permanent Note
+#+begin_src elisp
+(defun ari/promote-reference-to-permanent ()
+  "Create a permanent note from the current reference note.
+Opens a new capture buffer pre-filled with reference info.
+Use this when a reference note has been valuable enough to
+extract your own insights into a permanent note."
+  (interactive)
+  (let* ((node (org-roam-node-at-point))
+         (title (org-roam-node-title node))
+         (id (org-roam-node-id node))
+         (file (org-roam-node-file node)))
+    (org-roam-capture-
+     :node (org-roam-node-create :title (concat "Insight: " title))
+     :templates
+     `(("p" "promoted" plain
+        ,(format "#+filetags: :permanent-note:\n\n* Source\n[[id:%s][%s]]\n\n* Key Insights\n%%%%?\n\n* My Understanding\n\n* Connections\n- Related to:\n" id title)
+        :if-new (file+head "%%%%<%%%%Y%%%%m%%%%d%%%%H%%%%M%%%%S>-${slug}.org"
+                           "#+title: ${title}\n#+date: %%%%t\n")
+        :unnarrowed t)))))
+#+end_src
+
+*** Weekly Review Helpers
+#+begin_src elisp
+(defun ari/find-unprocessed-insights ()
+  "Find daily entries marked with PROCESS property.
+Use during weekly review to find insights that need to be
+processed into permanent notes."
+  (interactive)
+  (org-ql-search (expand-file-name "daily" org-roam-directory)
+    '(property "PROCESS")
+    :title "Unprocessed Insights"))
+
+(defun ari/find-orphan-references ()
+  "Find reference notes with no backlinks.
+These are candidates for processing into permanent notes
+or deletion if no longer relevant."
+  (interactive)
+  (let ((refs (org-roam-db-query
+               [:select [nodes:id nodes:file nodes:title]
+                :from nodes
+                :left-join tags :on (= nodes:id tags:node-id)
+                :where (like tags:tag "%reference%")])))
+    (message "Found %d reference notes to review" (length refs))
+    refs))
+#+end_src
+
+*** Batch Tagging Functions
+    One-time functions to tag existing notes. Run these after initial setup.
+
+#+begin_src elisp
+(defun ari/batch-tag-jira-notes ()
+  "Add :work-item: tag to all JIRA-related notes.
+Run this once to tag existing JIRA notes."
+  (interactive)
+  (let ((count 0))
+    (dolist (file (directory-files org-roam-directory t
+                                   ".*\\(CONSOLE\\|DEVTOOLS\\|DEPLOY\\|ISD\\|STEM\\)-[0-9]+.*\\.org$"))
+      (with-current-buffer (find-file-noselect file)
+        (goto-char (point-min))
+        (if (re-search-forward "^#\\+filetags:" nil t)
+            (unless (looking-at ".*:work-item:")
+              (end-of-line)
+              (insert ":work-item:")
+              (setq count (1+ count)))
+          (goto-char (point-min))
+          (when (re-search-forward "^#\\+title:" nil t)
+            (end-of-line)
+            (insert "\n#+filetags: :work-item:")
+            (setq count (1+ count))))
+        (save-buffer)))
+    (message "Tagged %d JIRA notes with :work-item:" count)))
+
+(defun ari/batch-tag-references ()
+  "Add :reference: tag to notes with ROAM_REFS but no content type tag.
+Run this once to tag existing reference notes captured via org-protocol."
+  (interactive)
+  (let ((count 0)
+        (ref-files (org-roam-db-query
+                    [:select [nodes:file]
+                     :from nodes
+                     :where (like nodes:properties "%ROAM_REFS%")])))
+    (dolist (file-row ref-files)
+      (let ((file (car file-row)))
+        (when (file-exists-p file)
+          (with-current-buffer (find-file-noselect file)
+            (goto-char (point-min))
+            (unless (re-search-forward ":permanent-note:\\|:literature-note:\\|:reference:\\|:work-item:" nil t)
+              (goto-char (point-min))
+              (if (re-search-forward "^#\\+filetags:" nil t)
+                  (progn (end-of-line) (insert ":reference:"))
+                (when (re-search-forward "^#\\+title:" nil t)
+                  (end-of-line)
+                  (insert "\n#+filetags: :reference:")))
+              (setq count (1+ count))
+              (save-buffer))))))
+    (message "Tagged %d reference notes" count)))
+#+end_src
+
+*** Enhanced Elfeed Capture
+#+begin_src elisp
+(defun ari/elfeed-capture-to-roam ()
+  "Capture elfeed entry to org-roam with proper metadata.
+Creates a full org-roam reference note from the current elfeed entry."
+  (interactive)
+  (let* ((entry elfeed-show-entry)
+         (title (elfeed-entry-title entry))
+         (link (elfeed-entry-link entry))
+         (tags (mapcar #'symbol-name (elfeed-entry-tags entry))))
+    (org-roam-capture-
+     :node (org-roam-node-create :title title)
+     :templates
+     `(("e" "elfeed" plain
+        ,(format "#+filetags: :reference:article:%s\n\n[[%s][%s]]\n\n* Summary\n%%%%?\n\n* Key Points\n-\n" (string-join tags ":") link title)
+        :if-new (file+head "%%%%<%%%%Y%%%%m%%%%d%%%%H%%%%M%%%%S>-${slug}.org"
+                           "#+title: ${title}\n#+date: %%%%t\n")
+        :unnarrowed t)))))
+#+end_src
+
 ** Aaaand we're out
 #+BEGIN_SRC elisp
      (provide 'ari-custom-new)

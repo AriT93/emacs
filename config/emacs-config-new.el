@@ -645,6 +645,34 @@
   (setq org-agenda-files  '("~/Documents/notes/todo.org" "~/Documents/org-roam/daily"))
   (setq org-startup-indented t)
   (setq org-default-notes-file "~/Documents/notes/notes.org")
+  ;; Tag vocabulary for org-roam Zettelkasten workflow
+  (setq org-tag-alist
+        '(;; Content types (mutually exclusive)
+          (:startgroup)
+          ("permanent-note" . ?p)
+          ("literature-note" . ?l)
+          ("reference" . ?r)
+          ("structure-note" . ?s)
+          ("work-item" . ?w)
+          ("meeting" . ?m)
+          ("daily" . ?d)
+          (:endgroup)
+          ;; Domain tags
+          ("console" . ?c)
+          ("jenkins" . ?j)
+          ("security" . ?S)
+          ("governance" . ?g)
+          ("infrastructure" . ?i)
+          ("devx" . ?x)
+          ("platform" . ?P)
+          ;; Project tags
+          ("agr" . ?a)
+          ("slsa" . ?L)
+          ("cortex" . ?C)
+          ("backstage" . ?b)
+          ("dora" . ?D)))
+  (setq org-tag-persistent-alist org-tag-alist)
+  (setq org-complete-tags-always-offer-all-agenda-files t)
   (add-to-list 'org-latex-classes
                '("novel" "\\documentclass{novel}"
                  (
@@ -757,23 +785,62 @@
   (org-roam-db-autosync-enable)
   (setq org-roam-database-connector 'sqlite-builtin))
 
-(setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new
-                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-                                      :unnarrowed t)
-                                     ("c" "region" plain "%i" :if-new
-                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-                                      :unnarrowed t)
-                                     ("i" "Jira Issue" entry "* TODO ${title}\n:PROPERTIES:\n:JiraIssueKey: ${title}\n:END:\n"
-                                      :if-new
-                                      (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                                                 "#+title: ${title}\n\n" )
-
-                                      :unnarrowed t)
-                                     ))
-  (setq org-roam-capture-ref-templates '(("r" "ref" plain "%a %i"
-                                          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %t\n\n")
-                                          :jump-to-captured t
-                                          :unnarrowed t)))
+(setq org-roam-capture-templates
+        '(("d" "default" plain "%?" :if-new
+           (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("c" "region" plain "%i" :if-new
+           (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("i" "Jira Issue" entry "* TODO ${title}\n:PROPERTIES:\n:JiraIssueKey: ${title}\n:END:\n"
+           :if-new
+           (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                      "#+title: ${title}\n#+filetags: :work-item:\n\n")
+           :unnarrowed t)
+          ;; Permanent Note (processed knowledge)
+          ("p" "permanent note" plain
+           "#+filetags: :permanent-note:\n\n* Summary\n%?\n\n* Key Insights\n\n* Connections\n- Related to:\n\n* Source\n%i"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: ${title}\n#+date: %t\n")
+           :unnarrowed t)
+          ;; Literature Note (from a specific source)
+          ("l" "literature note" plain
+           "#+filetags: :literature-note:\n\n* Source\n%^{Source URL or Reference}\n\n* Key Points\n- %?\n\n* My Interpretation\n\n* Actionable Items\n- [ ] "
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: ${title}\n#+date: %t\n")
+           :unnarrowed t)
+          ;; Structure Note (MOC/topic index)
+          ("s" "structure note" plain
+           "#+filetags: :structure-note:\n\n* Overview\n%?\n\n* Key Concepts\n\n* Related Notes\n\n* Open Questions\n"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: ${title}\n#+date: %t\n")
+           :unnarrowed t)
+          ;; Meeting Note
+          ("m" "meeting note" plain
+           "#+filetags: :meeting:\n\n* Attendees\n%^{Attendees}\n\n* Agenda\n%?\n\n* Discussion\n\n* Action Items\n- [ ]\n\n* Decisions Made\n"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: Meeting: ${title}\n#+date: %t\n")
+           :unnarrowed t)
+          ;; Quick Reference (URL capture with minimal friction)
+          ("q" "quick reference" plain
+           "#+filetags: :reference:\n%?"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: ${title}\n#+date: %t\n")
+           :unnarrowed t)
+          ))
+  (setq org-roam-capture-ref-templates
+        '(("r" "ref" plain "#+filetags: :reference:\n%?"
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: ${title}\n#+date: %t\n")
+           :jump-to-captured t
+           :unnarrowed t)
+          ;; Annotated reference (when you want to add notes immediately)
+          ("a" "annotated ref" plain
+           "#+filetags: :reference:\n\n* Summary\n%?\n\n* Key Takeaways\n-\n\n* Related To\n"
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: ${title}\n#+date: %t\n")
+           :jump-to-captured t
+           :unnarrowed t)))
   (setq org-roam-node-display-template
         (concat "${title:30} "
                 (propertize "${tags:*}" 'face 'org-tag)))
@@ -782,24 +849,36 @@
   (setq org-roam-completion-everywhere t)
   (setq org-roam-dailies-capture-templates
         '(("d" "default" entry
-           "* %<%Y-%m-%d>\n:PROPERTIES:\n:CATEGORY: daily\n:END:\n\n%?"
+           "* %<%H:%M> %?"
            :if-new (file+head "%<%Y-%m-%d>.org"
-                              "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
-     "))
+                              "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
           ("c" "region" entry
-           "* %? %i"
+           "* %<%H:%M> %? %i"
            :if-new (file+head "%<%Y-%m-%d>.org"
-                              "#+title: %<%Y-%m-%d>\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n
-     "))
+                              "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
           ("l" "link" entry
-           "* %? \n%i"
-           :target (file+olp "%<%Y-%m-%d>.org"
-                             ("Links"))
-           :unnarrowed t
-           )))
+           "* %<%H:%M> [[%^{URL}][%^{Title}]]\n  %?"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
+          ;; Meeting in daily
+          ("m" "meeting" entry
+           "* %<%H:%M> Meeting: %^{Meeting Title}\n:PROPERTIES:\n:MEETING_WITH: %^{With}\n:END:\n** Discussed\n%?\n** Action Items\n- [ ] "
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
+          ;; TODO/Task
+          ("t" "task" entry
+           "* TODO %?"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
+          ;; Insight to process later
+          ("i" "insight" entry
+           "* %<%H:%M> IDEA %?\n:PROPERTIES:\n:PROCESS: t\n:END:"
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
+          ))
 
   ;;
-CLI helper function for creating org-roam nodes from command line
+;;CLI helper function for creating org-roam nodes from command line
   ;; Used by research-investigator agent to programmatically create nodes
   (defun create-org-roam-node-cli (title tags content)
     "Create org-roam node non-interactively from CLI.
@@ -1663,6 +1742,10 @@ Prints warnings for any missing files but does not halt startup."
     "zra" '(org-roam-ref-add :which-key "roam-ref-add")
     "zrr" '(org-roam-ref-remove :which-key "roam-ref-remove")
     "zb"  '(org-roam-buffer-toggle :which-key "roam-buffer-toggle")
+    ;; New Zettelkasten workflow keybindings
+    "zp"  '(ari/promote-reference-to-permanent :which-key "promote to permanent")
+    "zu"  '(org-roam-ui-mode :which-key "roam-ui")
+    "zw"  '(ari/find-unprocessed-insights :which-key "weekly review")
     "q" '(:ignore t :which-key "copilot")
     "qa" '(copilot-accept-completion :which-key "copilot-accept-completion")
     "qd" '(copilot-diagnose :which-key "copilot-diagnose")
