@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Applications/Emacs.app/Contents/MacOS/Emacs --batch -l org --eval '\\(org-babel-tangle-file \"\"/Users/ari.turetzky/emacs/config/ari-custom.org\"\"\\)')"
+    ]
+  }
+}

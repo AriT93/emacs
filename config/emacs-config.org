@@ -961,30 +961,30 @@ eventually to make it more manageable
     (setq org-roam-dailies-capture-templates
           '(("d" "default" entry
              "* %<%H:%M> %?"
-             :if-new (file+head "%<%Y-%m-%d>.org"
+             :target (file+head "%<%Y-%m-%d>.org"
                                 "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
             ("c" "region" entry
              "* %<%H:%M> %? %i"
-             :if-new (file+head "%<%Y-%m-%d>.org"
+             :target (file+head "%<%Y-%m-%d>.org"
                                 "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
             ("l" "link" entry
              "* %<%H:%M> [[%^{URL}][%^{Title}]]\n  %?"
-             :if-new (file+head "%<%Y-%m-%d>.org"
+             :target (file+head "%<%Y-%m-%d>.org"
                                 "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
             ;; Meeting in daily
             ("m" "meeting" entry
              "* %<%H:%M> Meeting: %^{Meeting Title}\n:PROPERTIES:\n:MEETING_WITH: %^{With}\n:END:\n** Discussed\n%?\n** Action Items\n- [ ] "
-             :if-new (file+head "%<%Y-%m-%d>.org"
+             :target (file+head "%<%Y-%m-%d>.org"
                                 "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
             ;; TODO/Task
             ("t" "task" entry
              "* TODO %?"
-             :if-new (file+head "%<%Y-%m-%d>.org"
+             :target (file+head "%<%Y-%m-%d>.org"
                                 "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
             ;; Insight to process later
             ("i" "insight" entry
              "* %<%H:%M> IDEA %?\n:PROPERTIES:\n:PROCESS: t\n:END:"
-             :if-new (file+head "%<%Y-%m-%d>.org"
+             :target (file+head "%<%Y-%m-%d>.org"
                                 "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
             ))
 

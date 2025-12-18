@@ -128,182 +128,643 @@ the heading and properties."
 
 *** weekly status
 #+begin_src elisp
-(defun my/org-roam-weekly-recap (&optional week-offset)
+(defun ari/org-roam-weekly-recap (&optional week-offset)
   "Generate a weekly recap from daily notes.
-WEEK-OFFSET is the number of weeks before current (0 = current week)."
+WEEK-OFFSET is the number of weeks before current (0 = current week).
+With prefix argument, prompts for number of weeks back."
   (interactive "P")
   (let* ((week-offset (or week-offset 0))
          (today (current-time))
          (day-of-week (string-to-number (format-time-string "%w" today)))
          ;; Calculate start of week (Sunday)
-         (start-of-week (time-subtract today 
-                                      (seconds-to-time (* 86400 (+ day-of-week (* 7 week-offset))))))
+         (start-of-week (time-subtract today
+                                       (seconds-to-time (* 86400 (+ day-of-week (* 7 week-offset))))))
          (end-of-week (time-add start-of-week (seconds-to-time (* 86400 6))))
          (start-date-str (format-time-string "%Y-%m-%d" start-of-week))
          (end-date-str (format-time-string "%Y-%m-%d" end-of-week))
-         (recap-buffer-name (format "*Weekly Recap: %s to %s*" 
-                                   start-date-str end-date-str))
-         (all-highlights '())
-         (all-goals '()))
-    
-    ;; Create a new buffer for the recap
+         (recap-buffer-name (format "*Weekly Recap: %s to %s*"
+                                    start-date-str end-date-str))
+         (all-action-items '())
+         (all-people (make-hash-table :test 'equal)) ;; person -> list of (date context)
+         (daily-dir (expand-file-name "daily" org-roam-directory))
+         (daily-files '()))
+
+    ;; Find all daily notes for the specified week by filename
+    (when (file-directory-p daily-dir)
+      (dolist (file (directory-files daily-dir t "\\.org$"))
+        (let ((file-name (file-name-nondirectory file)))
+          ;; Check if filename matches date format YYYY-MM-DD.org
+          (when (string-match "^\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)\\.org$" file-name)
+            (let ((file-date (match-string 1 file-name)))
+              ;; Check if file date is within our range (inclusive)
+              (when (and (not (string< file-date start-date-str))
+                         (not (string> file-date end-date-str)))
+                (push (cons file-date file) daily-files)))))))
+
+    ;; Sort files by date
+    (setq daily-files (sort daily-files (lambda (a b) (string< (car a) (car b)))))
+
+    ;; Create recap buffer
     (with-current-buffer (get-buffer-create recap-buffer-name)
       (erase-buffer)
       (org-mode)
-      
+
       ;; Add header
-      (insert (format "* Weekly Recap: %s to %s\n\n" 
-                     start-date-str end-date-str))
-      
-      ;; Query all daily notes in the date range using org-ql
-      (let ((daily-entries (org-ql-query
-                           :from (org-roam-list-files)
-                           :where `(and (property "CATEGORY" "daily")
-                                       ;; Files that fall within our date range
-                                       (ts :from ,start-date-str :to ,end-date-str)))))
-        
-        ;; Process each daily entry
-        (if daily-entries
-            (dolist (entry daily-entries)
-              (with-current-buffer (find-file-noselect entry)
-                (let ((title (or (save-excursion
-                                   (goto-char (point-min))
-                                   (when (re-search-forward "^#\\+title: \\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)" nil t)
-                                     (match-string 1)))
-                                 (file-name-sans-extension (file-name-nondirectory entry))))
-                      (headlines '()))
-                  
-                  ;; Find all level 2 headlines
-                  (org-map-entries
-                   (lambda ()
-                     (when (= (org-current-level) 2)
-                       ;; Check for special tags/properties
-                       (let ((heading (org-get-heading t t t t))
-                             (tags (org-get-tags)))
-                         ;; Collect highlights and goals based on tags
-                         (when (member "highlight" tags)
-                           (push (format "- %s (from %s)" heading title) all-highlights))
-                         (when (member "goal" tags)
-                           (push (format "- %s (from %s)" heading title) all-goals)))
-                       
-                       (push (cons (org-get-heading t t t t)
-                                   (org-get-entry))
-                             headlines)))
-                   nil 'file)
-                  
-                  ;; Add entry to recap
-                  (with-current-buffer recap-buffer-name
-                    (insert (format "** %s\n" title))
-                    
-                    ;; Add each headline and content
-                    (dolist (headline (nreverse headlines))
-                      (insert (format "*** %s\n%s\n" 
-                                     (car headline)
-                                     (cdr headline))))
-                    
-                    (insert "\n")))))
-          
-          ;; Fallback to file-based search if org-ql query returns no results
-          (let ((daily-files '()))
-            ;; Find all daily notes for the specified week by filename
-            (dolist (file (org-roam-list-files))
-              (let ((file-name (file-name-nondirectory file)))
-                ;; Check if filename matches date format YYYY-MM-DD.org
-                (when (string-match "\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)\\.org$" file-name)
-                  (let ((file-date (match-string 1 file-name)))
-                    ;; Check if file date is within our range
-                    (when (and (string-greaterp file-date start-date-str)
-                               (string-lessp file-date end-date-str))
-                      (push file daily-files))))))
-            
-            (if daily-files
-                ;; Process files found by filename pattern
-                (dolist (file daily-files)
-                  (with-current-buffer (find-file-noselect file)
-                    (let ((title (file-name-sans-extension (file-name-nondirectory file)))
-                          (headlines '()))
-                      
-                      ;; Find all level 2 headlines
-                      (org-map-entries
-                       (lambda ()
-                         (when (= (org-current-level) 2)
-                           ;; Check for special tags
-                           (let ((heading (org-get-heading t t t t))
-                                 (tags (org-get-tags)))
-                             (when (member "highlight" tags)
-                               (push (format "- %s (from %s)" heading title) all-highlights))
-                             (when (member "goal" tags)
-                               (push (format "- %s (from %s)" heading title) all-goals)))
-                           
-                           (push (cons (org-get-heading t t t t)
-                                       (org-get-entry))
-                                 headlines)))
-                       nil 'file)
-                      
-                      ;; Add entry to recap
-                      (with-current-buffer recap-buffer-name
-                        (insert (format "** %s\n" title))
-                        
-                        ;; Add each headline and content
-                        (dolist (headline (nreverse headlines))
-                          (insert (format "*** %s\n%s" 
-                                         (car headline)
-                                         (cdr headline))))
-                        
-                        ))))
-              ;; No entries found by any method
-              (insert "No daily entries found for this week.\n")))))
-      
-      ;; Add summary section with automatically collected highlights and goals
+      (insert (format "* Weekly Recap: %s to %s\n\n"
+                      start-date-str end-date-str))
+
+      (if (null daily-files)
+          (insert "No daily entries found for this week.\n\n")
+        ;; Process each daily file
+        (dolist (date-file daily-files)
+          (let ((date-str (car date-file))
+                (file (cdr date-file))
+                (entries '()))
+
+            ;; Parse file with simple regex-based approach
+            (with-temp-buffer
+              (insert-file-contents file)
+              (goto-char (point-min))
+
+              ;; Find each level 1 headline
+              (while (re-search-forward "^\\* \\(.+\\)$" nil t)
+                (let ((h1-title (match-string 1))
+                      (h1-start (point))
+                      (h1-end (save-excursion
+                                (if (re-search-forward "^\\* " nil t)
+                                    (match-beginning 0)
+                                  (point-max))))
+                      (sub-entries '()))
+
+                  ;; Skip empty titles
+                  (when (and h1-title (not (string-empty-p (string-trim h1-title))))
+                    ;; Extract content between this h1 and next h1
+                    (save-excursion
+                      (goto-char h1-start)
+                      ;; Find all h2 headlines within this h1
+                      (while (re-search-forward "^\\*\\* \\(.+\\)$" h1-end t)
+                        (let ((h2-title (match-string 1))
+                              (h2-content-start (point))
+                              (h2-content-end (save-excursion
+                                                (if (re-search-forward "^\\*\\*+ " h1-end t)
+                                                    (match-beginning 0)
+                                                  h1-end))))
+                          ;; Get content, stripping property drawers
+                          (let ((raw-content (buffer-substring-no-properties
+                                              h2-content-start h2-content-end)))
+                            ;; Remove property drawers
+                            (setq raw-content
+                                  (replace-regexp-in-string
+                                   ":PROPERTIES:[\n[:space:]]*\\(?:[^\n]*\n\\)*?:END:[\n]*"
+                                   "" raw-content))
+                            (setq raw-content (string-trim raw-content))
+                            (when (not (string-empty-p raw-content))
+                              (push (cons h2-title raw-content) sub-entries)))))
+
+                      ;; Also look for action items
+                      (goto-char h1-start)
+                      (while (re-search-forward "^- \\[ \\] +\\(.+\\)$" h1-end t)
+                        (let ((item (string-trim (match-string 1))))
+                          (when (not (string-empty-p item))
+                            (push (format "- [ ] %s (%s: %s)" item date-str h1-title)
+                                  all-action-items))))
+
+                      ;; Look for @mentions
+                      (goto-char h1-start)
+                      (while (re-search-forward "@\\([a-zA-Z]+\\.[a-zA-Z]+\\)" h1-end t)
+                        (let* ((person (match-string 1))
+                               (existing (gethash person all-people)))
+                          (puthash person
+                                   (cons (cons date-str h1-title) existing)
+                                   all-people))))
+
+                    (push (list h1-title (nreverse sub-entries)) entries)))))
+
+            ;; Add to recap buffer
+            (insert (format "** %s\n" date-str))
+            (if (null entries)
+                (insert "   (No entries)\n")
+              (dolist (entry (nreverse entries))
+                (let ((title (nth 0 entry))
+                      (subs (nth 1 entry)))
+                  (insert (format "*** %s\n" title))
+                  (dolist (sub subs)
+                    (insert (format "**** %s\n%s\n" (car sub) (cdr sub)))))))
+            (insert "\n"))))
+
+      ;; Add summary section
       (insert "* Summary\n\n")
-      (insert "** Weekly highlights\n")
-      (if all-highlights
-          (dolist (highlight (nreverse all-highlights))
-            (insert highlight "\n"))
-        (insert "\n"))
-      
-      (insert "** Goals for next week\n")
-      (if all-goals
-          (dolist (goal (nreverse all-goals))
-            (insert goal ""))
-        (insert "\n"))
-      
+
+      (insert "** People Mentioned\n")
+      (if (= (hash-table-count all-people) 0)
+          (insert "- No @mentions found\n")
+        (let ((people (sort (hash-table-keys all-people) #'string<)))
+          (dolist (person people)
+            (let ((refs (gethash person all-people)))
+              (insert (format "- @%s (%d): " person (length refs)))
+              ;; Show unique contexts
+              (let ((contexts (delete-dups (mapcar #'cdr refs))))
+                (insert (string-join contexts ", ")))
+              (insert "\n")))))
+      (insert "\n")
+
+      (insert "** Outstanding Action Items\n")
+      (if all-action-items
+          (dolist (item (nreverse all-action-items))
+            (insert item "\n"))
+        (insert "- No unchecked action items found\n"))
+
       (goto-char (point-min))
       (switch-to-buffer recap-buffer-name))))
-      #+end_src
+#+end_src
       
 *** simple weekly review
 #+begin_src elisp
-(defun my/simple-weekly-recap (&optional week-offset)
-  "Generate simple weekly recap by combining daily notes."
+(defun ari/simple-weekly-recap (&optional week-offset)
+  "Generate simple weekly recap by combining daily notes.
+WEEK-OFFSET is the number of weeks before current (0 = current week).
+This is a simpler version that just concatenates daily note content."
   (interactive "P")
   (let* ((week-offset (or week-offset 0))
          (today (current-time))
-         (start-of-week (time-subtract today 
-                                      (seconds-to-time (* 86400 
-                                                        (+ (string-to-number (format-time-string "%w" today))
-                                                           (* 7 week-offset))))))
-         (recap-buffer (generate-new-buffer "*Weekly Recap*")))
-    
-    (with-current-buffer recap-buffer
+         (start-of-week (time-subtract today
+                                       (seconds-to-time (* 86400
+                                                           (+ (string-to-number (format-time-string "%w" today))
+                                                              (* 7 week-offset))))))
+         (end-of-week (time-add start-of-week (seconds-to-time (* 86400 6))))
+         (recap-buffer-name (format "*Simple Weekly Recap: %s*"
+                                    (format-time-string "%Y-W%V" start-of-week)))
+         (found-any nil))
+
+    (with-current-buffer (get-buffer-create recap-buffer-name)
+      (erase-buffer)
       (org-mode)
-      (insert (format "* Weekly Recap: %s\n\n" 
+      (insert (format "* Weekly Recap: %s\n"
                       (format-time-string "%Y-W%V" start-of-week)))
-      
+      (insert (format "  Week of %s to %s\n\n"
+                      (format-time-string "%Y-%m-%d" start-of-week)
+                      (format-time-string "%Y-%m-%d" end-of-week)))
+
       ;; Loop through each day of the week
       (dotimes (day 7)
         (let* ((current-date (time-add start-of-week (seconds-to-time (* 86400 day))))
                (date-string (format-time-string "%Y-%m-%d" current-date))
                (filename (expand-file-name (format "daily/%s.org" date-string)
-                                         org-roam-directory)))
-          
+                                           org-roam-directory)))
+
           (when (file-exists-p filename)
+            (setq found-any t)
             (insert (format "** %s\n" date-string))
-            (insert-file-contents filename)
-            (insert "\n\n"))))
-      
-      (switch-to-buffer recap-buffer))))
-      #+end_src
+            ;; Read file content, skipping front matter
+            (let ((content
+                   (with-temp-buffer
+                     (insert-file-contents filename)
+                     (goto-char (point-min))
+                     ;; Skip org-roam front matter (#+title, #+filetags, etc.)
+                     (while (and (not (eobp))
+                                 (looking-at "^#\\+\\|^:PROPERTIES:\\|^:"))
+                       (forward-line 1)
+                       ;; Skip property drawers
+                       (when (looking-at ":PROPERTIES:")
+                         (re-search-forward "^:END:" nil t)
+                         (forward-line 1)))
+                     ;; Get rest of file
+                     (buffer-substring-no-properties (point) (point-max)))))
+              (insert (string-trim content))
+              (insert "\n\n")))))
+
+      (unless found-any
+        (insert "No daily entries found for this week.\n"))
+
+      (goto-char (point-min))
+      (switch-to-buffer recap-buffer-name))))
+#+end_src
+
+*** people mentions
+#+begin_src elisp
+(defun ari/find-people-mentions (&optional directory)
+  "Find all @first.last mentions across org-roam files.
+Shows results in a buffer with clickable links back to source.
+DIRECTORY defaults to `org-roam-directory'."
+  (interactive)
+  (unless (or directory (and (boundp 'org-roam-directory) org-roam-directory))
+    (user-error "org-roam-directory is not set. Is org-roam loaded?"))
+
+  (let* ((dir (expand-file-name (or directory org-roam-directory)))
+         (buffer-name "*People Mentions*")
+         (mentions (make-hash-table :test 'equal))) ;; person -> list of (file line context)
+
+    (unless (file-directory-p dir)
+      (user-error "Directory does not exist: %s" dir))
+
+    ;; Scan all org files
+    (dolist (file (directory-files-recursively dir "\\.org$"))
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (let ((line-num 0))
+          (while (not (eobp))
+            (setq line-num (1+ line-num))
+            (let ((line (buffer-substring-no-properties
+                         (line-beginning-position) (line-end-position))))
+              ;; Find all @mentions on this line
+              (let ((start 0))
+                (while (string-match "@\\([a-zA-Z]+\\.[a-zA-Z]+\\)" line start)
+                  (let* ((person (match-string 1 line))
+                         (existing (gethash person mentions)))
+                    (puthash person
+                             (cons (list file line-num (string-trim line))
+                                   existing)
+                             mentions))
+                  (setq start (match-end 0)))))
+            (forward-line 1)))))
+
+    ;; Create results buffer
+    (with-current-buffer (get-buffer-create buffer-name)
+      (erase-buffer)
+      (org-mode)
+      (insert "* People Mentions\n\n")
+
+      (if (= (hash-table-count mentions) 0)
+          (insert "No @mentions found.\n")
+        ;; Sort people alphabetically
+        (let ((people (hash-table-keys mentions)))
+          (setq people (sort people #'string<))
+          (dolist (person people)
+            (let ((refs (gethash person mentions)))
+              (insert (format "** @%s (%d mentions)\n" person (length refs)))
+              (dolist (ref (nreverse refs))
+                (let ((file (nth 0 ref))
+                      (line (nth 1 ref))
+                      (context (nth 2 ref)))
+                  ;; Truncate context if too long
+                  (when (> (length context) 80)
+                    (setq context (concat (substring context 0 77) "...")))
+                  (insert (format "- [[file:%s::%d][%s:%d]] - %s\n"
+                                  file line
+                                  (file-name-nondirectory file) line
+                                  context))))
+              (insert "\n")))))
+
+      (goto-char (point-min))
+      (switch-to-buffer buffer-name))))
+
+(defun ari/find-person-mentions (person)
+  "Find all mentions of a specific PERSON (@first.last format).
+PERSON can be entered with or without the @ prefix."
+  (interactive "sPerson to find (e.g., john.smith): ")
+  ;; Strip @ if provided
+  (when (string-prefix-p "@" person)
+    (setq person (substring person 1)))
+
+  (unless (and (boundp 'org-roam-directory) org-roam-directory)
+    (user-error "org-roam-directory is not set. Is org-roam loaded?"))
+
+  (let* ((dir (expand-file-name org-roam-directory))
+         (buffer-name (format "*Mentions: @%s*" person))
+         (pattern (concat "@" (regexp-quote person)))
+         (matches '()))
+
+    (unless (file-directory-p dir)
+      (user-error "org-roam-directory does not exist: %s" dir))
+
+    ;; Scan all org files in org-roam-directory
+    (dolist (file (directory-files-recursively dir "\\.org$"))
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (let ((line-num 0))
+          (while (not (eobp))
+            (setq line-num (1+ line-num))
+            (let ((line (buffer-substring-no-properties
+                         (line-beginning-position) (line-end-position))))
+              (when (string-match-p pattern line)
+                (push (list file line-num (string-trim line)) matches)))
+            (forward-line 1)))))
+
+    ;; Create results buffer
+    (with-current-buffer (get-buffer-create buffer-name)
+      (erase-buffer)
+      (org-mode)
+      (insert (format "* Mentions of @%s\n\n" person))
+
+      (if (null matches)
+          (insert (format "No mentions of @%s found.\n" person))
+        (insert (format "Found %d mentions:\n\n" (length matches)))
+        (dolist (match (nreverse matches))
+          (let ((file (nth 0 match))
+                (line (nth 1 match))
+                (context (nth 2 match)))
+            (when (> (length context) 100)
+              (setq context (concat (substring context 0 97) "...")))
+            (insert (format "** [[file:%s::%d][%s:%d]]\n%s\n\n"
+                            file line
+                            (file-name-nondirectory file) line
+                            context)))))
+
+      (goto-char (point-min))
+      (switch-to-buffer buffer-name))))
+
+(defun ari/extract-people-from-region-or-buffer ()
+  "Extract unique @mentions from region or buffer.
+Returns a sorted list of people mentioned."
+  (let ((text (if (use-region-p)
+                  (buffer-substring-no-properties (region-beginning) (region-end))
+                (buffer-substring-no-properties (point-min) (point-max))))
+        (people '()))
+    (with-temp-buffer
+      (insert text)
+      (goto-char (point-min))
+      (while (re-search-forward "@\\([a-zA-Z]+\\.[a-zA-Z]+\\)" nil t)
+        (let ((person (match-string 1)))
+          (unless (member person people)
+            (push person people)))))
+    (sort people #'string<)))
+
+;; People autocomplete for @mentions
+(defvar ari/people-cache nil
+  "Cache of known people for @mention completion.")
+
+(defvar ari/people-cache-time nil
+  "Time when people cache was last updated.")
+
+(defvar ari/people-cache-ttl 300
+  "Time-to-live for people cache in seconds (default 5 minutes).")
+
+(defun ari/refresh-people-cache (&optional force)
+  "Refresh the cache of known people from org-roam files.
+With FORCE non-nil, refresh even if cache is still valid."
+  (interactive "P")
+  (condition-case err
+      (when (or force
+                (null ari/people-cache)
+                (null ari/people-cache-time)
+                (> (float-time (time-subtract (current-time) ari/people-cache-time))
+                   ari/people-cache-ttl))
+        (when (and (boundp 'org-roam-directory) org-roam-directory)
+          (let ((dir (expand-file-name org-roam-directory))
+                (people (make-hash-table :test 'equal)))
+            (when (file-directory-p dir)
+              (dolist (file (directory-files-recursively dir "\\.org$"))
+                (ignore-errors
+                  (with-temp-buffer
+                    (insert-file-contents file)
+                    (goto-char (point-min))
+                    (while (re-search-forward "@\\([a-zA-Z]+\\.[a-zA-Z]+\\)" nil t)
+                      (puthash (match-string 1) t people)))))
+              (setq ari/people-cache (sort (hash-table-keys people) #'string<))
+              (setq ari/people-cache-time (current-time))))))
+    (error (message "Error refreshing people cache: %s" (error-message-string err))))
+  (or ari/people-cache '()))
+
+(defun ari/people-completion-at-point ()
+  "Completion-at-point function for @mentions.
+Triggers after typing @ and suggests known people."
+  (condition-case nil
+      (when (and (derived-mode-p 'org-mode)
+                 (looking-back "@\\([a-zA-Z]*\\(?:\\.[a-zA-Z]*\\)?\\)"
+                               (max (- (point) 50) (line-beginning-position))))
+        (let* ((match-start (match-beginning 0))
+               (start (match-beginning 1))
+               (end (point))
+               (candidates (ari/refresh-people-cache)))
+          (when (and start candidates (> (length candidates) 0))
+            (list start end candidates
+                  :exclusive 'no
+                  :annotation-function (lambda (_) " @person")))))
+    (error nil)))
+
+(defun ari/add-person-to-cache (person)
+  "Add PERSON to the people cache if not already present."
+  (unless (member person ari/people-cache)
+    (setq ari/people-cache (sort (cons person ari/people-cache) #'string<))))
+
+(defun ari/enable-people-completion ()
+  "Enable @mention completion in current buffer."
+  (add-hook 'completion-at-point-functions #'ari/people-completion-at-point nil t))
+
+;; Auto-enable in org-mode
+(add-hook 'org-mode-hook #'ari/enable-people-completion)
+
+;; Pre-populate people cache after Emacs is idle at startup
+(run-with-idle-timer 10 nil #'ari/refresh-people-cache)
+#+end_src
+
+*** clickable @mentions with overlays
+#+begin_src elisp
+;; Configurable settings for @mention overlays
+(defgroup ari/people nil
+  "Settings for @mention handling."
+  :group 'convenience)
+
+(defcustom ari/slack-workspace "workday"
+  "Slack workspace name for generating links (e.g., 'mycompany').
+Set this to enable Slack integration."
+  :type '(choice (const :tag "Not configured" nil)
+                 (string :tag "Workspace name"))
+  :group 'ari/people)
+
+(defcustom ari/slack-team-id nil
+  "Slack team ID for deep links (required for desktop app).
+Find it: In Slack web, open browser console and type: boot_data.team_id"
+  :type '(choice (const :tag "Not configured" nil)
+                 (string :tag "Team ID"))
+  :group 'ari/people)
+
+(defcustom ari/slack-prefer-app t
+  "Whether to prefer opening Slack in desktop app vs browser.
+Requires `ari/slack-team-id' to be set for app links."
+  :type 'boolean
+  :group 'ari/people)
+
+(defcustom ari/people-directory (make-hash-table :test 'equal)
+  "Directory of people with metadata.
+Keys are 'first.last' strings, values are plists with:
+  :email, :slack-id, :full-name, :notes"
+  :type 'hash-table
+  :group 'ari/people)
+
+(defvar ari/people-directory-file
+  (expand-file-name "people-directory.el" user-emacs-directory)
+  "File to persist the people directory.")
+
+;; Person directory management
+(defun ari/save-people-directory ()
+  "Save people directory to file."
+  (with-temp-file ari/people-directory-file
+    (insert ";; People directory - auto-generated\n")
+    (insert "(setq ari/people-directory (make-hash-table :test 'equal))\n")
+    (maphash (lambda (k v)
+               (insert (format "(puthash %S '%S ari/people-directory)\n" k v)))
+             ari/people-directory)))
+
+(defun ari/load-people-directory ()
+  "Load people directory from file."
+  (when (file-exists-p ari/people-directory-file)
+    (load ari/people-directory-file t t)))
+
+(defun ari/get-person (name)
+  "Get person record for NAME (first.last format)."
+  (gethash name ari/people-directory))
+
+(defun ari/set-person (name &rest props)
+  "Set person record for NAME with PROPS plist.
+PROPS can include :email :slack-id :full-name :notes"
+  (let ((existing (gethash name ari/people-directory))
+        (new-props props))
+    ;; Merge with existing
+    (when existing
+      (setq new-props (append props existing)))
+    (puthash name new-props ari/people-directory)
+    (ari/save-people-directory)))
+
+(defun ari/add-person (name)
+  "Interactively add a person to the directory."
+  (interactive "sPerson (first.last): ")
+  (when (string-prefix-p "@" name)
+    (setq name (substring name 1)))
+  (let* ((full-name (read-string "Full name: "))
+         (email (read-string "Email: " (concat name "@")))
+         (slack-id (read-string "Slack ID (optional): ")))
+    (ari/set-person name
+                    :full-name (unless (string-empty-p full-name) full-name)
+                    :email (unless (string-empty-p email) email)
+                    :slack-id (unless (string-empty-p slack-id) slack-id))
+    (message "Added %s to people directory" name)))
+
+;; Slack URL generation
+(defun ari/slack-url-for-person (name &optional force-browser)
+  "Generate Slack URL for person NAME.
+If FORCE-BROWSER is non-nil, generate web URL even if app is preferred."
+  (let* ((person (ari/get-person name))
+         (slack-id (plist-get person :slack-id))
+         (use-app (and ari/slack-prefer-app ari/slack-team-id (not force-browser))))
+    (cond
+     ;; Desktop app link with user ID
+     ((and use-app slack-id)
+      (format "slack://user?team=%s&id=%s" ari/slack-team-id slack-id))
+     ;; Desktop app link - open DM by searching (requires team ID)
+     ((and use-app ari/slack-team-id)
+      ;; Use deep link to search for user
+      (format "slack://search?team=%s&query=%s"
+              ari/slack-team-id (url-hexify-string (concat "@" name))))
+     ;; Web link if we have slack ID and workspace
+     ((and slack-id ari/slack-workspace)
+      (format "https://%s.slack.com/team/%s" ari/slack-workspace slack-id))
+     ;; Search by name if we have workspace (web)
+     (ari/slack-workspace
+      (format "https://%s.slack.com/app_redirect?channel=%s"
+              ari/slack-workspace (concat "@" name)))
+     (t nil))))
+
+(defun ari/open-slack-for-person (name)
+  "Open Slack for person NAME, preferring desktop app on macOS."
+  (if-let ((url (ari/slack-url-for-person name)))
+      (if (and ari/slack-prefer-app (eq system-type 'darwin))
+          ;; On macOS, use open command to ensure Slack app handles it
+          (start-process "slack" nil "open" "-a" "Slack" url)
+        (browse-url url))
+    (message "Slack not configured. Set ari/slack-workspace and ari/slack-team-id")))
+
+;; Actions for @mentions
+(defun ari/mention-action-menu (name)
+  "Show action menu for person NAME."
+  (let* ((person (ari/get-person name))
+         (full-name (or (plist-get person :full-name) name))
+         (choices '(("Search mentions in notes" . search)
+                    ("Open in Slack" . slack)
+                    ("Open in Slack (browser)" . slack-browser)
+                    ("Send email" . email)
+                    ("Add/edit person info" . edit)
+                    ("Copy @mention" . copy)))
+         (choice (completing-read (format "Action for @%s: " full-name)
+                                  (mapcar #'car choices) nil t)))
+    (pcase (cdr (assoc choice choices))
+      ('search (ari/find-person-mentions name))
+      ('slack (ari/open-slack-for-person name))
+      ('slack-browser (if-let ((url (ari/slack-url-for-person name t)))
+                          (browse-url url)
+                        (message "Slack not configured. Set ari/slack-workspace")))
+      ('email (if-let ((email (plist-get person :email)))
+                  (compose-mail email)
+                (message "No email for %s. Use 'Add/edit person info'" name)))
+      ('edit (ari/add-person name))
+      ('copy (kill-new (concat "@" name))
+             (message "Copied @%s" name)))))
+
+;; Overlay/button creation
+(defun ari/mention-button-action (button)
+  "Action when @mention button is clicked."
+  (let ((name (button-get button 'person-name)))
+    (ari/mention-action-menu name)))
+
+(defun ari/fontify-mentions (limit)
+  "Fontify @mentions up to LIMIT."
+  (while (re-search-forward "@\\([a-zA-Z]+\\.[a-zA-Z]+\\)" limit t)
+    (let* ((start (match-beginning 0))
+           (end (match-end 0))
+           (name (match-string 1)))
+      ;; Add text properties for clickability
+      (add-text-properties
+       start end
+       (list 'mouse-face 'highlight
+             'help-echo (format "Click for actions on @%s" name)
+             'keymap ari/mention-keymap
+             'person-name name
+             'font-lock-face 'ari/mention-face))))
+  nil)
+
+(defface ari/mention-face
+  '((t :inherit font-lock-constant-face
+       :underline t
+       :weight bold))
+  "Face for @mentions."
+  :group 'ari/people)
+
+(defvar ari/mention-keymap
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-1] #'ari/mention-click)
+    (define-key map (kbd "RET") #'ari/mention-at-point)
+    (define-key map (kbd "C-c C-o") #'ari/mention-at-point)
+    map)
+  "Keymap for @mention overlays.")
+
+(defun ari/mention-click (event)
+  "Handle click on @mention."
+  (interactive (list last-input-event))
+  (let* ((pos (if (mouse-event-p event)
+                  (posn-point (event-end event))
+                (point)))
+         (name (get-text-property pos 'person-name)))
+    (when name
+      (ari/mention-action-menu name))))
+
+(defun ari/mention-at-point ()
+  "Handle action on @mention at point."
+  (interactive)
+  (let ((name (get-text-property (point) 'person-name)))
+    (if name
+        (ari/mention-action-menu name)
+      ;; Try to find @mention near point
+      (save-excursion
+        (when (re-search-backward "@\\([a-zA-Z]+\\.[a-zA-Z]+\\)"
+                                  (line-beginning-position) t)
+          (ari/mention-action-menu (match-string 1)))))))
+
+(defun ari/enable-mention-fontification ()
+  "Enable @mention fontification in current buffer."
+  (font-lock-add-keywords
+   nil
+   '((ari/fontify-mentions))
+   'append)
+  (font-lock-flush))
+
+;; Enable in org-mode
+(add-hook 'org-mode-hook #'ari/enable-mention-fontification)
+
+;; Load people directory on startup
+(add-hook 'emacs-startup-hook #'ari/load-people-directory)
+#+end_src
 
 ** unfilling paragraphs
 #+begin_src elisp
