@@ -126,6 +126,142 @@ the heading and properties."
 
 ** custom org queries
 
+*** migrate meeting IDs
+#+begin_src elisp
+(defun ari/migrate-discussed-ids-to-meetings ()
+  "Migrate IDs from '** Discussed' headings to parent '* Meeting:' headings.
+This fixes the org-roam indexing so meetings show up by title, not 'Discussed'."
+  (interactive)
+  (let ((daily-dir (expand-file-name "daily" org-roam-directory))
+        (migrated 0)
+        (skipped 0)
+        (errors 0))
+    (unless (file-directory-p daily-dir)
+      (user-error "Daily directory not found: %s" daily-dir))
+
+    (dolist (file (directory-files daily-dir t "\\.org$"))
+      (message "Processing %s..." (file-name-nondirectory file))
+      (with-current-buffer (find-file-noselect file)
+        (save-excursion
+          (goto-char (point-min))
+          ;; Find all "** Discussed" headings with IDs
+          (while (re-search-forward "^\\*\\* Discussed" nil t)
+            (let ((discussed-pos (point))
+                  (id nil)
+                  (parent-pos nil)
+                  (parent-has-id nil))
+              ;; Check if this Discussed has an ID
+              (when (re-search-forward ":ID:\\s-+\\([^\n]+\\)"
+                                       (save-excursion (outline-next-heading) (point)) t)
+                (setq id (string-trim (match-string 1)))
+                (let ((id-line-beg (line-beginning-position))
+                      (id-line-end (1+ (line-end-position))))
+
+                  ;; Find the parent heading (level 1)
+                  (goto-char discussed-pos)
+                  (when (re-search-backward "^\\* .*Meeting:" nil t)
+                    (setq parent-pos (point))
+                    ;; Check if parent already has an ID
+                    (save-excursion
+                      (let ((parent-end (save-excursion (outline-next-heading) (point))))
+                        (when (re-search-forward ":ID:" parent-end t)
+                          (setq parent-has-id t))))
+
+                    (cond
+                     ;; Parent already has ID - just remove from Discussed
+                     (parent-has-id
+                      (goto-char id-line-beg)
+                      (delete-region id-line-beg id-line-end)
+                      (setq skipped (1+ skipped))
+                      (message "  Skipped (parent has ID): %s" id))
+
+                     ;; Move ID to parent
+                     (t
+                      ;; Delete ID line from Discussed
+                      (goto-char id-line-beg)
+                      (delete-region id-line-beg id-line-end)
+
+                      ;; Add ID to parent's properties
+                      (goto-char parent-pos)
+                      (if (re-search-forward ":PROPERTIES:"
+                                             (save-excursion (outline-next-heading) (point)) t)
+                          ;; Add after :PROPERTIES:
+                          (progn
+                            (forward-line 1)
+                            (insert (format ":ID:        %s\n" id)))
+                        ;; Create properties drawer
+                        (end-of-line)
+                        (insert (format "\n:PROPERTIES:\n:ID:        %s\n:END:" id)))
+
+                      (setq migrated (1+ migrated))
+                      (message "  Migrated: %s" id))))))
+
+              ;; Move past this Discussed to find next
+              (goto-char discussed-pos)
+              (outline-next-heading))))
+
+        ;; Save if modified
+        (when (buffer-modified-p)
+          (save-buffer))))
+
+    ;; Update org-roam database
+    (message "Updating org-roam database...")
+    (org-roam-db-sync)
+
+    (message "Migration complete: %d migrated, %d skipped (parent had ID), %d errors"
+             migrated skipped errors)))
+
+(defun ari/preview-discussed-ids ()
+  "Preview which '** Discussed' headings have IDs that would be migrated."
+  (interactive)
+  (let ((daily-dir (expand-file-name "daily" org-roam-directory))
+        (results '()))
+    (dolist (file (directory-files daily-dir t "\\.org$"))
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (while (re-search-forward "^\\*\\* Discussed" nil t)
+          (when (re-search-forward ":ID:\\s-+\\([^\n]+\\)"
+                                   (save-excursion (outline-next-heading) (point)) t)
+            (let ((id (match-string 1)))
+              (save-excursion
+                (goto-char (match-beginning 0))
+                (when (re-search-backward "^\\* \\(.+\\)" nil t)
+                  (push (list (file-name-nondirectory file)
+                              (match-string 1)
+                              id)
+                        results))))))))
+
+    ;; Display results
+    (with-current-buffer (get-buffer-create "*Discussed IDs to Migrate*")
+      (erase-buffer)
+      (insert "** Discussed headings with IDs to migrate:\n\n")
+      (if (null results)
+          (insert "None found!\n")
+        (dolist (r (nreverse results))
+          (insert (format "- %s\n  Parent: %s\n  ID: %s\n\n"
+                          (nth 0 r) (nth 1 r) (nth 2 r)))))
+      (goto-char (point-min))
+      (switch-to-buffer (current-buffer)))))
+#+end_src
+
+*** remove ID from Discussed during capture
+Org-roam automatically adds IDs to headings during capture. This removes
+the unwanted ID from the "** Discussed" subheading in meeting captures.
+#+begin_src elisp
+(defun ari/remove-discussed-id-on-capture ()
+  "Remove ID from ** Discussed heading during meeting capture.
+Org-roam adds IDs to all headings; we only want ID on the Meeting heading."
+  (save-excursion
+    (goto-char (point-min))
+    (when (re-search-forward "^\\*\\* Discussed" nil t)
+      (beginning-of-line)
+      (org-delete-property "ID"))))
+
+;; prepare-finalize runs while still in capture buffer, after template expansion
+(add-hook 'org-capture-prepare-finalize-hook #'ari/remove-discussed-id-on-capture)
+#+end_src
+
 *** weekly status
 #+begin_src elisp
 (defun ari/org-roam-weekly-recap (&optional week-offset)
@@ -635,45 +771,215 @@ PROPS can include :email :slack-id :full-name :notes"
 ;; Slack URL generation
 (defun ari/slack-url-for-person (name &optional force-browser)
   "Generate Slack URL for person NAME.
-If FORCE-BROWSER is non-nil, generate web URL even if app is preferred."
+If FORCE-BROWSER is non-nil, generate web URL even if app is preferred.
+For direct DM links, the person needs a :slack-id in the directory."
   (let* ((person (ari/get-person name))
          (slack-id (plist-get person :slack-id))
          (use-app (and ari/slack-prefer-app ari/slack-team-id (not force-browser))))
     (cond
-     ;; Desktop app link with user ID
-     ((and use-app slack-id)
-      (format "slack://user?team=%s&id=%s" ari/slack-team-id slack-id))
-     ;; Desktop app link - open DM by searching (requires team ID)
+     ;; Desktop app - direct DM link using app_redirect (requires user's slack ID)
+     ((and use-app slack-id ari/slack-workspace)
+      ;; This format should open the DM conversation
+      (format "https://%s.slack.com/app_redirect?channel=%s" ari/slack-workspace slack-id))
+     ;; Desktop app - search for user (fallback without slack ID)
      ((and use-app ari/slack-team-id)
-      ;; Use deep link to search for user
       (format "slack://search?team=%s&query=%s"
-              ari/slack-team-id (url-hexify-string (concat "@" name))))
-     ;; Web link if we have slack ID and workspace
+              ari/slack-team-id (url-hexify-string (format "from:@%s" name))))
+     ;; Web link if we have slack ID
      ((and slack-id ari/slack-workspace)
       (format "https://%s.slack.com/team/%s" ari/slack-workspace slack-id))
-     ;; Search by name if we have workspace (web)
+     ;; Search by name on web (fallback)
      (ari/slack-workspace
       (format "https://%s.slack.com/app_redirect?channel=%s"
               ari/slack-workspace (concat "@" name)))
      (t nil))))
 
+(defun ari/open-slack-dm (name)
+  "Open a DM with person NAME using emacs-slack if available."
+  (interactive "sPerson (first.last): ")
+  (when (string-prefix-p "@" name)
+    (setq name (substring name 1)))
+  (let* ((person (ari/get-person name))
+         (slack-id (plist-get person :slack-id)))
+    (cond
+     ;; Use emacs-slack if available and we have the ID
+     ((and slack-id (featurep 'slack) (fboundp 'slack-conversations-open))
+      (require 'slack)
+      (let ((team (or (and (boundp 'slack-current-team) slack-current-team)
+                      (and (fboundp 'slack-team-select) (slack-team-select)))))
+        (when team
+          (message "Opening DM with %s..." name)
+          (slack-conversations-open
+           team
+           :user-ids (list slack-id)
+           :on-success (lambda (response)
+                         ;; Response is plist like (:ok t :channel (:id "D123..."))
+                         (let* ((channel-data (plist-get response :channel))
+                                (channel-id (plist-get channel-data :id))
+                                (room (and channel-id
+                                           (slack-room-find channel-id team))))
+                           (if room
+                               (slack-room-display room team)
+                             ;; If room not in cache, try to select it
+                             (message "DM opened (ID: %s). Use C-c S c to select."
+                                      channel-id))))))))
+     ;; Fall back to URL
+     (slack-id
+      (let ((url (ari/slack-url-for-person name)))
+        (when url
+          (if (eq system-type 'darwin)
+              (start-process "slack" nil "open" url)
+            (browse-url url)))))
+     (t
+      (message "No Slack ID for %s. Use 'Look up Slack ID' first" name)))))
+
 (defun ari/open-slack-for-person (name)
-  "Open Slack for person NAME, preferring desktop app on macOS."
-  (if-let ((url (ari/slack-url-for-person name)))
-      (if (and ari/slack-prefer-app (eq system-type 'darwin))
-          ;; On macOS, use open command to ensure Slack app handles it
-          (start-process "slack" nil "open" "-a" "Slack" url)
-        (browse-url url))
-    (message "Slack not configured. Set ari/slack-workspace and ari/slack-team-id")))
+  "Open Slack for person NAME, preferring emacs-slack for DMs."
+  (let* ((person (ari/get-person name))
+         (slack-id (plist-get person :slack-id)))
+    (cond
+     ;; Try emacs-slack first for direct DM
+     ((and slack-id (featurep 'slack))
+      (ari/open-slack-dm name))
+     ;; Fall back to URL
+     ((ari/slack-url-for-person name)
+      (let ((url (ari/slack-url-for-person name)))
+        (unless slack-id
+          (message "Tip: Add Slack ID for %s for direct DM" name))
+        (if (eq system-type 'darwin)
+            (start-process "slack" nil "open" url)
+          (browse-url url))))
+     (t
+      (message "Slack not configured. Set ari/slack-workspace")))))
+
+(defun ari/open-slack-dm-in-app (name)
+  "Open a DM with person NAME in the Slack desktop app."
+  (interactive "sPerson (first.last): ")
+  (when (string-prefix-p "@" name)
+    (setq name (substring name 1)))
+  (let* ((person (ari/get-person name))
+         (slack-id (plist-get person :slack-id)))
+    (if (not slack-id)
+        (message "No Slack ID for %s. Use 'Look up Slack ID' first" name)
+      ;; Use conversations.open to get the DM channel, then open in app
+      (if (and (featurep 'slack) (fboundp 'slack-conversations-open))
+          (let ((team (or (and (boundp 'slack-current-team) slack-current-team)
+                          (and (fboundp 'slack-team-select) (slack-team-select)))))
+            (when team
+              (message "Opening DM with %s in desktop app..." name)
+              (slack-conversations-open
+               team
+               :user-ids (list slack-id)
+               :on-success (lambda (response)
+                             (let* ((channel-data (plist-get response :channel))
+                                    (channel-id (plist-get channel-data :id))
+                                    (team-id (oref team id))
+                                    (url (format "slack://channel?team=%s&id=%s"
+                                                 team-id channel-id)))
+                               (if (eq system-type 'darwin)
+                                   (start-process "slack" nil "open" url)
+                                 (browse-url url)))))))
+        ;; Fallback without emacs-slack
+        (let ((url (format "https://%s.slack.com/app_redirect?channel=%s"
+                           ari/slack-workspace slack-id)))
+          (if (eq system-type 'darwin)
+              (start-process "slack" nil "open" url)
+            (browse-url url)))))))
+
+(defun ari/lookup-slack-id (name)
+  "Look up Slack ID for NAME using emacs-slack.
+NAME should be in first.last format (with or without @ prefix)."
+  (interactive "sPerson (first.last): ")
+  (when (string-prefix-p "@" name)
+    (setq name (substring name 1)))
+  (require 'slack nil t)
+  (if (not (featurep 'slack))
+      (message "emacs-slack not loaded. Add Slack ID manually with M-x ari/add-person")
+    ;; Get the default team or let user select
+    (let* ((team (or (and (boundp 'slack-current-team) slack-current-team)
+                     (and (fboundp 'slack-team-select) (slack-team-select))))
+           (users (and team (oref team users)))
+           ;; Try to match by name pattern (first.last -> First Last or email)
+           (name-parts (split-string name "\\."))
+           (first-name (downcase (or (car name-parts) "")))
+           (last-name (downcase (or (cadr name-parts) "")))
+           (found-id nil)
+           (found-name nil))
+      (if (not users)
+          (message "No Slack users loaded. Try M-x slack-start first")
+        ;; Search through users - handle both plist and eieio formats
+        (maphash
+         (lambda (id user-data)
+           (when (and (not found-id) user-data)
+             (let* (;; Handle plist format
+                    (profile (if (plistp user-data)
+                                 (plist-get user-data :profile)
+                               (and (eieio-object-p user-data)
+                                    (slot-boundp user-data 'profile)
+                                    (oref user-data profile))))
+                    (real-name (downcase (or (plist-get profile :real_name_normalized)
+                                             (plist-get profile :real_name)
+                                             "")))
+                    (display-name (downcase (or (plist-get profile :display_name_normalized)
+                                                (plist-get profile :display_name)
+                                                "")))
+                    (email (downcase (or (plist-get profile :email) "")))
+                    (user-name (downcase (or (if (plistp user-data)
+                                                 (plist-get user-data :name)
+                                               (and (eieio-object-p user-data)
+                                                    (slot-boundp user-data 'name)
+                                                    (oref user-data name)))
+                                             ""))))
+               ;; Match against email, real name, display name, or username
+               (when (or (string-match-p (regexp-quote name) email)
+                         (string-match-p (regexp-quote name) user-name)
+                         (and (not (string-empty-p first-name))
+                              (not (string-empty-p last-name))
+                              (string-match-p (regexp-quote first-name) real-name)
+                              (string-match-p (regexp-quote last-name) real-name))
+                         (string-match-p (regexp-quote name) display-name))
+                 (setq found-id id
+                       found-name (or (plist-get profile :real_name) user-name))))))
+         users)
+        (if found-id
+            (progn
+              (ari/set-person name
+                              :slack-id found-id
+                              :full-name (unless (or (null found-name)
+                                                     (string-empty-p found-name))
+                                           found-name))
+              (message "Found %s (ID: %s) - saved to directory" found-name found-id))
+          (message "Could not find Slack user matching '%s'" name))))))
+
+(defun ari/bulk-lookup-slack-ids ()
+  "Look up Slack IDs for all people in the cache who don't have one."
+  (interactive)
+  (let ((count 0)
+        (found 0))
+    (dolist (name ari/people-cache)
+      (let ((person (ari/get-person name)))
+        (unless (plist-get person :slack-id)
+          (setq count (1+ count))
+          (message "Looking up %s..." name)
+          (ari/lookup-slack-id name)
+          (when (plist-get (ari/get-person name) :slack-id)
+            (setq found (1+ found)))
+          (sleep-for 0.1)))) ;; Small delay to not hammer
+    (message "Looked up %d people, found %d Slack IDs" count found)))
 
 ;; Actions for @mentions
 (defun ari/mention-action-menu (name)
   "Show action menu for person NAME."
   (let* ((person (ari/get-person name))
          (full-name (or (plist-get person :full-name) name))
-         (choices '(("Search mentions in notes" . search)
-                    ("Open in Slack" . slack)
+         (has-slack-id (plist-get person :slack-id))
+         (choices `(("Search mentions in notes" . search)
+                    (,(if has-slack-id "Open DM in Emacs" "Search in Slack") . slack-emacs)
+                    ,@(when has-slack-id
+                        '(("Open DM in Desktop App" . slack-app)))
                     ("Open in Slack (browser)" . slack-browser)
+                    ,@(unless has-slack-id
+                        '(("Look up Slack ID" . lookup-slack)))
                     ("Send email" . email)
                     ("Add/edit person info" . edit)
                     ("Copy @mention" . copy)))
@@ -681,10 +987,12 @@ If FORCE-BROWSER is non-nil, generate web URL even if app is preferred."
                                   (mapcar #'car choices) nil t)))
     (pcase (cdr (assoc choice choices))
       ('search (ari/find-person-mentions name))
-      ('slack (ari/open-slack-for-person name))
+      ('slack-emacs (ari/open-slack-dm name))
+      ('slack-app (ari/open-slack-dm-in-app name))
       ('slack-browser (if-let ((url (ari/slack-url-for-person name t)))
                           (browse-url url)
                         (message "Slack not configured. Set ari/slack-workspace")))
+      ('lookup-slack (ari/lookup-slack-id name))
       ('email (if-let ((email (plist-get person :email)))
                   (compose-mail email)
                 (message "No email for %s. Use 'Add/edit person info'" name)))
@@ -697,22 +1005,6 @@ If FORCE-BROWSER is non-nil, generate web URL even if app is preferred."
   "Action when @mention button is clicked."
   (let ((name (button-get button 'person-name)))
     (ari/mention-action-menu name)))
-
-(defun ari/fontify-mentions (limit)
-  "Fontify @mentions up to LIMIT."
-  (while (re-search-forward "@\\([a-zA-Z]+\\.[a-zA-Z]+\\)" limit t)
-    (let* ((start (match-beginning 0))
-           (end (match-end 0))
-           (name (match-string 1)))
-      ;; Add text properties for clickability
-      (add-text-properties
-       start end
-       (list 'mouse-face 'highlight
-             'help-echo (format "Click for actions on @%s" name)
-             'keymap ari/mention-keymap
-             'person-name name
-             'font-lock-face 'ari/mention-face))))
-  nil)
 
 (defface ari/mention-face
   '((t :inherit font-lock-constant-face
@@ -735,14 +1027,16 @@ If FORCE-BROWSER is non-nil, generate web URL even if app is preferred."
   (let* ((pos (if (mouse-event-p event)
                   (posn-point (event-end event))
                 (point)))
-         (name (get-text-property pos 'person-name)))
+         (ov (car (overlays-at pos)))
+         (name (and ov (overlay-get ov 'ari-person-name))))
     (when name
       (ari/mention-action-menu name))))
 
 (defun ari/mention-at-point ()
   "Handle action on @mention at point."
   (interactive)
-  (let ((name (get-text-property (point) 'person-name)))
+  (let* ((ov (car (overlays-at (point))))
+         (name (and ov (overlay-get ov 'ari-person-name))))
     (if name
         (ari/mention-action-menu name)
       ;; Try to find @mention near point
@@ -751,16 +1045,59 @@ If FORCE-BROWSER is non-nil, generate web URL even if app is preferred."
                                   (line-beginning-position) t)
           (ari/mention-action-menu (match-string 1)))))))
 
-(defun ari/enable-mention-fontification ()
-  "Enable @mention fontification in current buffer."
-  (font-lock-add-keywords
-   nil
-   '((ari/fontify-mentions))
-   'append)
-  (font-lock-flush))
+(defun ari/clear-mention-overlays (&optional beg end)
+  "Remove @mention overlays in region BEG to END, or entire buffer."
+  (let ((beg (or beg (point-min)))
+        (end (or end (point-max))))
+    (dolist (ov (overlays-in beg end))
+      (when (overlay-get ov 'ari-mention)
+        (delete-overlay ov)))))
 
-;; Enable in org-mode
-(add-hook 'org-mode-hook #'ari/enable-mention-fontification)
+(defun ari/create-mention-overlays (&optional beg end)
+  "Create overlays for @mentions in region BEG to END."
+  (let ((beg (or beg (point-min)))
+        (end (or end (point-max))))
+    (save-excursion
+      (goto-char beg)
+      (while (re-search-forward "@\\([a-zA-Z]+\\.[a-zA-Z]+\\)" end t)
+        (let* ((start (match-beginning 0))
+               (mention-end (match-end 0))
+               (name (match-string-no-properties 1))
+               (ov (make-overlay start mention-end)))
+          (overlay-put ov 'ari-mention t)
+          (overlay-put ov 'ari-person-name name)
+          (overlay-put ov 'face 'ari/mention-face)
+          (overlay-put ov 'mouse-face 'highlight)
+          (overlay-put ov 'help-echo (format "Click for actions on @%s" name))
+          (overlay-put ov 'keymap ari/mention-keymap))))))
+
+(defun ari/refresh-mention-overlays ()
+  "Refresh all @mention overlays in current buffer."
+  (interactive)
+  (ari/clear-mention-overlays)
+  (ari/create-mention-overlays)
+  (message "Refreshed @mention overlays"))
+
+(defun ari/mention-after-change (beg end _len)
+  "Update @mention overlays after buffer change."
+  ;; Expand region to cover full lines for safety
+  (let ((beg (save-excursion (goto-char beg) (line-beginning-position)))
+        (end (save-excursion (goto-char end) (line-end-position))))
+    (ari/clear-mention-overlays beg end)
+    (ari/create-mention-overlays beg end)))
+
+(defun ari/enable-mention-overlays ()
+  "Enable @mention overlays in current buffer."
+  (ari/create-mention-overlays)
+  (add-hook 'after-change-functions #'ari/mention-after-change nil t))
+
+(defun ari/disable-mention-overlays ()
+  "Disable @mention overlays in current buffer."
+  (ari/clear-mention-overlays)
+  (remove-hook 'after-change-functions #'ari/mention-after-change t))
+
+;; Enable in org-mode (using overlays, not font-lock)
+(add-hook 'org-mode-hook #'ari/enable-mention-overlays)
 
 ;; Load people directory on startup
 (add-hook 'emacs-startup-hook #'ari/load-people-directory)

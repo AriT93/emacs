@@ -780,9 +780,8 @@
   (org-roam-directory "~/Documents/org-roam" )
   :config
   (org-roam-db-autosync-enable)
-  (setq org-roam-database-connector 'sqlite-builtin))
-
-(setq org-roam-capture-templates
+  (setq org-roam-database-connector 'sqlite-builtin)
+  (setq org-roam-capture-templates
         '(("d" "default" plain "%?" :if-new
            (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
            :unnarrowed t)
@@ -857,9 +856,9 @@
            "* %<%H:%M> [[%^{URL}][%^{Title}]]\n  %?"
            :target (file+head "%<%Y-%m-%d>.org"
                               "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
-          ;; Meeting in daily
+          ;; Meeting in daily - ID on meeting headline for org-roam indexing
           ("m" "meeting" entry
-           "* %<%H:%M> Meeting: %^{Meeting Title}\n:PROPERTIES:\n:MEETING_WITH: %^{With}\n:END:\n** Discussed\n%?\n** Action Items\n- [ ] "
+           "* %<%H:%M> Meeting: %^{Meeting Title}\n:PROPERTIES:\n:ID:        %(org-id-new)\n:MEETING_WITH: %^{With}\n:END:\n** Discussed\n%?\n** Action Items\n- [ ] "
            :target (file+head "%<%Y-%m-%d>.org"
                               "#+title: %<%Y-%m-%d>\n#+filetags: :daily:\n#+OPTIONS: ^:nil num:nil whn:nil toc:nil H:0 date:nil author:nil title:nil\n\n"))
           ;; TODO/Task
@@ -897,10 +896,10 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
         (setq id (org-id-get-create))
         (write-file filename)
         (org-roam-db-update-file filename))
-      filename))
+      filename)))
 
-  (use-package org-ql
-    :ensure t)
+(use-package org-ql
+  :ensure t)
 
 (defun ek/babel-ansi ()
   (when-let* ((beg (org-babel-where-is-src-block-result nil nil)))
