@@ -281,15 +281,14 @@
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
    :preview-key '(:debounce 0.4 any))
+   ;; Note: Removed consult--source-* references (internal API, causes warnings)
 
-  ;; Configure buffer preview
-  (setq consult-buffer-sources
-        '(consult--source-buffer
-          consult--source-recent-file
-          consult--source-project-recent-file)))
+  ;; Note: consult-buffer-sources customization removed - the defaults
+  ;; (buffer, recent-file, project-recent-file) are exactly what we want,
+  ;; and referencing the internal consult--source-* variables causes errors
+  ;; with newer consult versions where they're not defined until first use
+  )
 
 ;; Flexible text matching - replacement for ivy-prescient
 (use-package orderless
@@ -594,10 +593,10 @@
   (setq flycheck-emacs-lisp-load-path 'inherit)
   (global-flycheck-mode)
   :config
+  ;; Add eslint support for modern JS modes
   (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  (flycheck-add-mode 'javascript-jshint 'rjsx-mode)
   (flycheck-add-mode 'javascript-eslint 'jtsx-jsx-mode)
-  (flycheck-add-mode 'javascript-jshint 'jrsx-jsx-mode)
+  ;; Note: Removed javascript-jshint (obsolete, use eslint instead)
   (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
   :custom 
   (flycheck-disabled-checkers '(ruby-reek)))
@@ -1523,10 +1522,8 @@ Prints warnings for any missing files but does not halt startup."
 (use-package rjsx-mode
     :defer 2
     :ensure t)
-  (add-hook 'js2-mode-hook 'eglot-ensure)
-  (add-hook 'js-mode-hook 'eglot-ensure)
-  (add-hook 'rjsx-mode-hook 'eglot-ensure)
-  (add-hook 'jtsx-jsx-mode-hook 'eglot-ensure)
+  ;; NOTE: eglot-ensure hooks moved to main eglot configuration (line ~2189)
+  ;; to avoid duplicate hook registration which can cause font-locking issues
 
   (use-package jtsx
     :ensure t
@@ -1961,8 +1958,10 @@ Prints warnings for any missing files but does not halt startup."
          (js2-mode . eglot-ensure)
          (js-mode . eglot-ensure)
          (rjsx-mode . eglot-ensure)
-         (jtsx-jsx-mode . eglot-ensure)
-         (text-mode . eglot-ensure))
+         (jtsx-jsx-mode . eglot-ensure))
+         ;; NOTE: Removed (text-mode . eglot-ensure) - this was causing
+         ;; eglot to start on ALL text files (org, markdown, etc.), which
+         ;; would fail and interfere with font-locking
   :config
   ;; Performance settings
   (setq eglot-events-buffer-size 0) ;; Don't keep events buffer

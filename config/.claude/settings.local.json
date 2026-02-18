@@ -3,7 +3,8 @@
     "allow": [
       "Bash(/Applications/Emacs.app/Contents/MacOS/Emacs --batch -l org --eval '\\(org-babel-tangle-file \"\"/Users/ari.turetzky/emacs/config/ari-custom.org\"\"\\)')",
       "WebSearch",
-      "WebFetch(domain:zacromero.com)"
+      "WebFetch(domain:zacromero.com)",
+      "Bash(/Applications/Emacs.app/Contents/MacOS/Emacs:*)"
     ]
   }
 }
