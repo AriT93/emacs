@@ -1814,7 +1814,8 @@ Prints warnings for any missing files but does not halt startup."
     :defer t
     :custom
     (copilot-chat-frontend  'org)
-    (copilot-chat-default-model "claude-3.7-sonnet-thought"))
+    (copilot-chat-default-model "claude-3.7-sonnet-thought")
+    (copilot-chat-model-ignore-picker t))
 
 
      (let ((model-config '((:version . "gpt-4o-mini") (:short-version)

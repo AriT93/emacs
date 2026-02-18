@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2025-12-05 13:39:22 ari.turetzky>
+#+Time-stamp: <2026-02-17 16:21:46 ari.turetzky>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -2022,7 +2022,8 @@ Da General give command-t like ease to emacs
         :defer t
         :custom
         (copilot-chat-frontend  'org)
-        (copilot-chat-default-model "claude-3.7-sonnet-thought"))
+        (copilot-chat-default-model "claude-3.7-sonnet-thought")
+        (copilot-chat-model-ignore-picker t))
 
 
          (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
