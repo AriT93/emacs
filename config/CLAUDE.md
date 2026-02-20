@@ -153,3 +153,13 @@ The following safety and architectural improvements have been implemented:
   - Added proper deferral for copilot-chat
 - **Location**: AI tools configuration in `emacs-config.org:1880-1900`
 - **Location**: Package initialization in `emacs-config.org:93-134`
+
+### Configuration Audit & Improvements (February 2026)
+- **Fixed retired model name**: `copilot-chat-default-model` updated from `"claude-3.7-sonnet-thought"` (retired Oct 2025) to `"claude-sonnet-4-6"`
+- **Removed dead ivy references**: Deleted `(diminish 'ivy-mode)` (ivy not loaded) and changed `org-ref-completion-library` from `'org-ref-ivy-cite` to `'org-ref-capf`
+- **Raised post-startup GC threshold**: 2MB → 50MB in both `early-init.el` and `emacs-config.org` to reduce GC pressure during normal editing
+- **Enabled eglot semantic tokens**: Added `eglot-semantic-tokens-mode` hook on `eglot-managed-mode-hook` (guarded with `fboundp`) for semantic highlighting from LSP servers
+- **Added gptel presets**: Three named presets accessible via `@preset-name` in prompts or the transient menu:
+  - `coding` — low temperature (0.2), concise code-focused system prompt
+  - `writing` — higher temperature (0.7), org/note-friendly system prompt
+- **Switched corfu icons**: Replaced `kind-icon` (SVG, GUI-only) with `nerd-icons-corfu` (nerd font glyphs) for visual consistency with doom-modeline and nerd-icons-completion

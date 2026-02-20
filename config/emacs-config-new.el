@@ -615,7 +615,6 @@
   (diminish 'eldoc-mode)
   (diminish 'org-src-mode)
   (diminish 'abbrev-mode)
-  (diminish 'ivy-mode)
   (diminish 'global-highline-mode)
   (diminish 'ruby-block-mode)
   (diminish 'ruby-electric-mode)
@@ -728,7 +727,7 @@
         org-ref-default-bibliography '("~/Documents/references.bib")
         org-ref-pdf-directory "~/Documents/pdf/"
         reftex-default-bibliography '("~/Documents/references.bib")
-        org-ref-completion-library 'org-ref-ivy-cite
+        org-ref-completion-library 'org-ref-capf
         org-cite-csl-styles-dir "~/Zotero/styles")
 )
 
@@ -1034,7 +1033,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
             (setq package-check-signature 'allow-unsigned)
             
             ;; Reset GC settings
-            (setq gc-cons-threshold (* 2 1000 1000))  ; 2MB after startup
+            (setq gc-cons-threshold (* 50 1024 1024))  ; 50MB after startup
             (setq gc-cons-percentage 0.1)              ; Less aggressive GC
             
             ;; Restore some verbose settings for runtime (optional)
@@ -1268,14 +1267,13 @@ Prints warnings for any missing files but does not halt startup."
               ("M-n" . corfu-popupinfo-scroll-up)
               ("M-d" . corfu-popupinfo-toggle)))
 
-;; Icons for corfu
-(use-package kind-icon
+;; Icons for corfu - nerd-icons-corfu uses nerd font glyphs consistent with
+;; doom-modeline and nerd-icons-completion (replaces kind-icon/SVG approach)
+(use-package nerd-icons-corfu
   :ensure t
   :after corfu
-  :custom
-  (kind-icon-default-face 'corfu-default)
   :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 ;; Integration with orderless
 (use-package orderless
@@ -1814,7 +1812,7 @@ Prints warnings for any missing files but does not halt startup."
     :defer t
     :custom
     (copilot-chat-frontend  'org)
-    (copilot-chat-default-model "claude-3.7-sonnet-thought")
+    (copilot-chat-default-model "claude-sonnet-4-6")
     (copilot-chat-model-ignore-picker t))
 
 
@@ -1841,6 +1839,18 @@ Prints warnings for any missing files but does not halt startup."
   (gptel-make-gemini "Gemini"
     :key (gptel-api-key-from-auth-source "generativelanguage.googleapis.com")
     :stream t)
+
+  ;; gptel presets - named bundles of model + system prompt + settings
+  ;; Apply with @preset-name in a prompt, or via the transient menu
+  (with-eval-after-load 'gptel
+    (gptel-make-preset 'coding
+      :description "Code generation and review"
+      :system "You are an expert programmer. Provide concise, correct code with brief explanations. Prefer idiomatic solutions. No unnecessary prose."
+      :temperature 0.2)
+    (gptel-make-preset 'writing
+      :description "Writing and documentation"
+      :system "You are a helpful writing assistant. Be clear and concise, maintaining the author's voice."
+      :temperature 0.7))
 
     (use-package ob-chatgpt-shell
       :straight t
@@ -1983,7 +1993,11 @@ Prints warnings for any missing files but does not halt startup."
   
   ;; Completion improvements
   (setq eglot-completion-at-point-function #'eglot-completion-at-point)
-  
+
+  ;; Semantic token highlighting (built-in in recent eglot, enable explicitly)
+  (when (fboundp 'eglot-semantic-tokens-mode)
+    (add-hook 'eglot-managed-mode-hook #'eglot-semantic-tokens-mode))
+
   ;; Key bindings
   :bind (:map eglot-mode-map
               ("C-c l f" . eglot-format)

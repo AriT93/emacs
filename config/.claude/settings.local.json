@@ -4,7 +4,13 @@
       "Bash(/Applications/Emacs.app/Contents/MacOS/Emacs --batch -l org --eval '\\(org-babel-tangle-file \"\"/Users/ari.turetzky/emacs/config/ari-custom.org\"\"\\)')",
       "WebSearch",
       "WebFetch(domain:zacromero.com)",
-      "Bash(/Applications/Emacs.app/Contents/MacOS/Emacs:*)"
+      "Bash(/Applications/Emacs.app/Contents/MacOS/Emacs:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:codeberg.org)",
+      "WebFetch(domain:archive.casouri.cc)",
+      "WebFetch(domain:docs.github.com)",
+      "WebFetch(domain:emacsredux.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }
