@@ -1809,9 +1809,10 @@ Prints warnings for any missing files but does not halt startup."
 
   (use-package copilot-chat
     :ensure t
-    :defer t
+    :demand t
     :custom
-    (copilot-chat-frontend  'org)
+    (copilot-chat-backend 'curl)
+    (copilot-chat-frontend 'org)
     (copilot-chat-default-model "claude-sonnet-4-6")
     (copilot-chat-model-ignore-picker t))
 

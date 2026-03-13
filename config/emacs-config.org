@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-02-17 16:21:46 ari.turetzky>
+#+Time-stamp: <2026-03-13 10:38:37 ari.turetzky>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -1972,106 +1972,107 @@ Da General give command-t like ease to emacs
 #+end_src
 ** Copilot and other AI tools
 #+begin_src elisp
-        (use-package copilot
-          :straight (:host github :repo "copilot-emacs/copilot.el"
-                     :branch "main"
-                     :files ("*.el"))
-          :defer 10  ; Defer copilot loading
-          :config
-          ;; you can utilize :map :hook and :config to customize copilot
-          (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion))
-
-      (use-package gptel-aibo
-        :straight (:host github :repo "dolmens/gptel-aibo"
-                   :branch "main")
-        :after(gptel flycheck)
-        :defer 15)  ; Defer gptel-aibo loading
-
-      (use-package shell-maker
-        :straight (:host github :repo "xenodium/shell-maker" :files ("*.el"))
-        :ensure t)
-        
-      (use-package chatgpt-shell
-        :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
-        :ensure t
-        :custom
-        (chatgpt-shell-openai-key
-            (auth-source-pick-first-password :host  "api.openai.com" :user "apikey"))
-        (chatgpt-shell-anthropic-key
-         (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey"))
-        (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey"))
+      (use-package copilot
+        :straight (:host github :repo "copilot-emacs/copilot.el"
+                   :branch "main"
+                   :files ("*.el"))
+        :defer 10  ; Defer copilot loading
         :config
-        (require 'chatgpt-shell))
-    (use-package acp
-      :vc (:url "https://github.com/xenodium/acp.el")
+        ;; you can utilize :map :hook and :config to customize copilot
+        (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion))
+
+    (use-package gptel-aibo
+      :straight (:host github :repo "dolmens/gptel-aibo"
+                 :branch "main")
+      :after(gptel flycheck)
+      :defer 15)  ; Defer gptel-aibo loading
+
+    (use-package shell-maker
+      :straight (:host github :repo "xenodium/shell-maker" :files ("*.el"))
+      :ensure t)
+      
+    (use-package chatgpt-shell
+      :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
       :ensure t
-      :demand t)  ; Load immediately - used for AI code completion
-    (use-package agent-shell
-      :vc (:url "https://github.com/xenodium/agent-shell")
-      :ensure t
-      :demand t)  ; Load immediately - used for AI shell commands
-      (use-package gptel
-        :ensure t
-        :config
-        (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
-
-      (use-package copilot-chat
-        :ensure t
-        :defer t
-        :custom
-        (copilot-chat-frontend  'org)
-        (copilot-chat-default-model "claude-sonnet-4-6")
-        (copilot-chat-model-ignore-picker t))
-
-
-         (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
-                                (:label . "ChatGPT") (:provider . "OpenAI")
-                                (:path . "/v1/chat/completions") (:token-width . 3)
-                                (:context-window . 128000)
-                                (:handler . chatgpt-shell-openai--handle-chatgpt-command)
-                                (:filter . chatgpt-shell-openai--filter-output)
-                                (:payload . chatgpt-shell-openai--make-payload) 
-                                (:headers . chatgpt-shell-openai--make-headers)
-                                (:url . chatgpt-shell-openai--make-url)
-                                (:key . chatgpt-shell-openai-key)
-                                (:url-base . chatgpt-shell-api-url-base)
-                                (:validate-command . chatgpt-shell-openai--validate-command))))
-           (add-to-list 'chatgpt-shell-models model-config))
-
-        (gptel-make-ollama "Ollama"             ;Any name of your choosing
-        :host "localhost:11434"               ;Where it's running
-        :stream t                             ;Stream responses
-        :models '(mistral:latest))             ;List of models
-
-        ;; :key can be a function that returns the API key.
-      (gptel-make-gemini "Gemini"
-        :key (gptel-api-key-from-auth-source "generativelanguage.googleapis.com")
-        :stream t)
-
-      ;; gptel presets - named bundles of model + system prompt + settings
-      ;; Apply with @preset-name in a prompt, or via the transient menu
-      (with-eval-after-load 'gptel
-        (gptel-make-preset 'coding
-          :description "Code generation and review"
-          :system "You are an expert programmer. Provide concise, correct code with brief explanations. Prefer idiomatic solutions. No unnecessary prose."
-          :temperature 0.2)
-        (gptel-make-preset 'writing
-          :description "Writing and documentation"
-          :system "You are a helpful writing assistant. Be clear and concise, maintaining the author's voice."
-          :temperature 0.7))
-
-        (use-package ob-chatgpt-shell
-          :straight t
-          :ensure t)
-        (require 'ob-chatgpt-shell)
-        (ob-chatgpt-shell-setup)
-      (use-package aidermacs
-      :bind (("C-c a" . aidermacs-transient-menu))
       :custom
-      (aidermacs-use-architect-mode t)
-      (aidermacs-default-model "gemini/gemini-2.0-flash"))
+      (chatgpt-shell-openai-key
+          (auth-source-pick-first-password :host  "api.openai.com" :user "apikey"))
+      (chatgpt-shell-anthropic-key
+       (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey"))
+      (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey"))
+      :config
+      (require 'chatgpt-shell))
+  (use-package acp
+    :vc (:url "https://github.com/xenodium/acp.el")
+    :ensure t
+    :demand t)  ; Load immediately - used for AI code completion
+  (use-package agent-shell
+    :vc (:url "https://github.com/xenodium/agent-shell")
+    :ensure t
+    :demand t)  ; Load immediately - used for AI shell commands
+    (use-package gptel
+      :ensure t
+      :config
+      (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
 
-      (use-package aider)
+    (use-package copilot-chat
+      :ensure t
+      :demand t
+      :custom
+      (copilot-chat-backend 'curl)
+      (copilot-chat-frontend 'org)
+      (copilot-chat-default-model "claude-sonnet-4-6")
+      (copilot-chat-model-ignore-picker t))
+
+
+       (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
+                              (:label . "ChatGPT") (:provider . "OpenAI")
+                              (:path . "/v1/chat/completions") (:token-width . 3)
+                              (:context-window . 128000)
+                              (:handler . chatgpt-shell-openai--handle-chatgpt-command)
+                              (:filter . chatgpt-shell-openai--filter-output)
+                              (:payload . chatgpt-shell-openai--make-payload) 
+                              (:headers . chatgpt-shell-openai--make-headers)
+                              (:url . chatgpt-shell-openai--make-url)
+                              (:key . chatgpt-shell-openai-key)
+                              (:url-base . chatgpt-shell-api-url-base)
+                              (:validate-command . chatgpt-shell-openai--validate-command))))
+         (add-to-list 'chatgpt-shell-models model-config))
+
+      (gptel-make-ollama "Ollama"             ;Any name of your choosing
+      :host "localhost:11434"               ;Where it's running
+      :stream t                             ;Stream responses
+      :models '(mistral:latest))             ;List of models
+
+      ;; :key can be a function that returns the API key.
+    (gptel-make-gemini "Gemini"
+      :key (gptel-api-key-from-auth-source "generativelanguage.googleapis.com")
+      :stream t)
+
+    ;; gptel presets - named bundles of model + system prompt + settings
+    ;; Apply with @preset-name in a prompt, or via the transient menu
+    (with-eval-after-load 'gptel
+      (gptel-make-preset 'coding
+        :description "Code generation and review"
+        :system "You are an expert programmer. Provide concise, correct code with brief explanations. Prefer idiomatic solutions. No unnecessary prose."
+        :temperature 0.2)
+      (gptel-make-preset 'writing
+        :description "Writing and documentation"
+        :system "You are a helpful writing assistant. Be clear and concise, maintaining the author's voice."
+        :temperature 0.7))
+
+      (use-package ob-chatgpt-shell
+        :straight t
+        :ensure t)
+      (require 'ob-chatgpt-shell)
+      (ob-chatgpt-shell-setup)
+    (use-package aidermacs
+    :bind (("C-c a" . aidermacs-transient-menu))
+    :custom
+    (aidermacs-use-architect-mode t)
+    (aidermacs-default-model "gemini/gemini-2.0-flash"))
+
+    (use-package aider)
 #+end_src
 ** Magit Delta
 delta is better diffs for git
