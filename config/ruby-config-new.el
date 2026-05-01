@@ -77,9 +77,9 @@
               (file-name-directory rbenv-path))))))
   (global-rbenv-mode t))
 
-(use-package autotest
-  :ensure t
-  )
+;; (use-package autotest
+;;   :ensure t
+;;   )
 
 ;; Hideshow setup for Ruby
 (defun setup-ruby-hideshow ()

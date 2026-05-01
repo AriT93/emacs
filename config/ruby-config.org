@@ -113,9 +113,9 @@ is going on while you write code.
 damn this is a mess
 #+BEGIN_SRC elisp
 
-  (use-package autotest
-    :ensure t
-    )
+  ;; (use-package autotest
+  ;;   :ensure t
+  ;;   )
 #+END_SRC
 ** hideshow for folding
 #+BEGIN_SRC elisp

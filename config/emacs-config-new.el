@@ -709,7 +709,7 @@
 (with-eval-after-load 'org
   (require 'org-modern)
   (require 'ox-md)
-  (require 'ox-confluence)
+;;  (require 'ox-confluence)
   (require 'ox-jira))
 (add-hook 'org-modern-mode-hook 'org-variable-pitch-minor-mode)
 (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
@@ -2288,20 +2288,20 @@ Prints warnings for any missing files but does not halt startup."
    :full-and-display-names t
    :default t
    :subscribed-channels nil ; Can change it dynamically
-   )
-  (slack-register-team
-   :name "Development"
-   :default t
-   :enterprise-token (auth-source-pick-first-password
-                      :host "workdaydev.slack.com"
-                      :user "etoken")
-   :token (auth-source-pick-first-password
-           :host "workdaydev.slack.com"
-           :user "arit93")
-   :cookie (auth-source-pick-first-password
-            :host "workdaydev.slack.com"
-            :user "cookie")
-   :subsribed-channels nil ))
+   ))
+  ;; (slack-register-team
+  ;;  :name "Development"
+  ;;  :default t
+  ;;  :enterprise-token (auth-source-pick-first-password
+  ;;                     :host "workdaydev.slack.com"
+  ;;                     :user "etoken")
+  ;;  :token (auth-source-pick-first-password
+  ;;          :host "workdaydev.slack.com"
+  ;;          :user "arit93")
+  ;;  :cookie (auth-source-pick-first-password
+  ;;           :host "workdaydev.slack.com"
+  ;;           :user "cookie")
+  ;;  :subsribed-channels nil ))
 
 ;; Defer flyover - load with flycheck
 (with-eval-after-load 'flycheck (require 'flyover))

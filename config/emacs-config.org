@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-02-17 16:21:46 ari.turetzky>
+#+Time-stamp: <2026-04-18 19:17:56 abturet>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -2521,20 +2521,20 @@ the slackiest way to slack in emacs
      :full-and-display-names t
      :default t
      :subscribed-channels nil ; Can change it dynamically
-     )
-    (slack-register-team
-     :name "Development"
-     :default t
-     :enterprise-token (auth-source-pick-first-password
-                        :host "workdaydev.slack.com"
-                        :user "etoken")
-     :token (auth-source-pick-first-password
-             :host "workdaydev.slack.com"
-             :user "arit93")
-     :cookie (auth-source-pick-first-password
-              :host "workdaydev.slack.com"
-              :user "cookie")
-     :subsribed-channels nil ))
+     ))
+    ;; (slack-register-team
+    ;;  :name "Development"
+    ;;  :default t
+    ;;  :enterprise-token (auth-source-pick-first-password
+    ;;                     :host "workdaydev.slack.com"
+    ;;                     :user "etoken")
+    ;;  :token (auth-source-pick-first-password
+    ;;          :host "workdaydev.slack.com"
+    ;;          :user "arit93")
+    ;;  :cookie (auth-source-pick-first-password
+    ;;           :host "workdaydev.slack.com"
+    ;;           :user "cookie")
+    ;;  :subsribed-channels nil ))
   #+end_src
   #+begin_src elisp
     ;; Defer flyover - load with flycheck

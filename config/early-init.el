@@ -4,11 +4,12 @@
 (setq package-enable-at-startup nil)
 
 (setq load-prefer-newer t)
-(setq native-comp-jit-compilation t)
+(setq native-comp-jit-compilation nil)  ; Disabled - was spawning too many processes
 ;; Improve performance during startup
 (setq read-process-output-max (* 4 1024 1024))  ; 4MB for better LSP performance
 (setq native-comp-speed 3)  ; Maximum optimization level
 (setq native-comp-async-report-warnings-errors 'silent)
+(setq native-comp-async-jobs-number 2)  ; Limit parallel compilations to prevent system overload
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
