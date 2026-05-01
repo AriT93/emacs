@@ -2,7 +2,13 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
+<<<<<<< Updated upstream
 #+Time-stamp: <2026-05-01 16:29:43 abturet>
+||||||| Stash base
+#+Time-stamp: <2026-03-13 10:38:37 ari.turetzky>
+=======
+#+Time-stamp: <2026-03-27 08:19:48 abturet>
+>>>>>>> Stashed changes
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -1954,7 +1960,13 @@ Da General give command-t like ease to emacs
       (use-package copilot
         :straight (:host github :repo "copilot-emacs/copilot.el"
                    :branch "main"
+<<<<<<< Updated upstream
                    :files ("*.el" (:exclude "copilot-chat.el")))
+||||||| Stash base
+                   :files ("*.el"))
+=======
+                   :files (:defaults (:exclude "copilot-chat.el")))
+>>>>>>> Stashed changes
         :defer 10  ; Defer copilot loading
         :config
         ;; you can utilize :map :hook and :config to customize copilot
@@ -1969,7 +1981,7 @@ Da General give command-t like ease to emacs
     (use-package shell-maker
       :straight (:host github :repo "xenodium/shell-maker" :files ("*.el"))
       :ensure t)
-      
+
     (use-package chatgpt-shell
       :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
       :ensure t
@@ -2007,8 +2019,11 @@ Da General give command-t like ease to emacs
       (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
 
     (use-package copilot-chat
-      :ensure t
-      :demand t
+      :straight (:host github :repo "chep/copilot-chat.el"
+                 :branch "master"
+                 :files ("*.el"))
+      :after copilot
+      :defer 15
       :custom
       (copilot-chat-backend 'curl)
       (copilot-chat-frontend 'org)
@@ -2512,6 +2527,7 @@ the slackiest way to slack in emacs
      :full-and-display-names t
      :default t
      :subscribed-channels nil ; Can change it dynamically
+<<<<<<< Updated upstream
      ))
     ;; (slack-register-team
     ;;  :name "Development"
@@ -2526,6 +2542,24 @@ the slackiest way to slack in emacs
     ;;           :host "workdaydev.slack.com"
     ;;           :user "cookie")
     ;;  :subsribed-channels nil ))
+||||||| Stash base
+     )
+    (slack-register-team
+     :name "Development"
+     :default t
+     :enterprise-token (auth-source-pick-first-password
+                        :host "workdaydev.slack.com"
+                        :user "etoken")
+     :token (auth-source-pick-first-password
+             :host "workdaydev.slack.com"
+             :user "arit93")
+     :cookie (auth-source-pick-first-password
+              :host "workdaydev.slack.com"
+              :user "cookie")
+     :subsribed-channels nil ))
+=======
+     ))
+>>>>>>> Stashed changes
   #+end_src
   #+begin_src elisp
     ;; Defer flyover - load with flycheck

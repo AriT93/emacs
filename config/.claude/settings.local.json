@@ -10,7 +10,8 @@
       "WebFetch(domain:archive.casouri.cc)",
       "WebFetch(domain:docs.github.com)",
       "WebFetch(domain:emacsredux.com)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git fetch *)"
     ]
   }
 }

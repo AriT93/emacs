@@ -1761,7 +1761,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (use-package shell-maker
     :straight (:host github :repo "xenodium/shell-maker" :files ("*.el"))
     :ensure t)
-    
+
   (use-package chatgpt-shell
     :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
     :ensure t
@@ -1799,8 +1799,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
 
   (use-package copilot-chat
-    :ensure t
-    :demand t
+    :straight (:host github :repo "chep/copilot-chat.el"
+               :branch "master"
+               :files ("*.el"))
+    :after copilot
+    :defer 15
     :custom
     (copilot-chat-backend 'curl)
     (copilot-chat-frontend 'org)
@@ -2291,7 +2294,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   ;;          :user "arit93")
   ;;  :cookie (auth-source-pick-first-password
   ;;           :host "workdaydev.slack.com"
-  ;;           :user "cookie")
+;;           :user "cookie")
   ;;  :subsribed-channels nil ))
 
 ;; Defer flyover - load with flycheck
