@@ -7,7 +7,6 @@
 (setq native-comp-jit-compilation t)
 ;; Improve performance during startup
 (setq read-process-output-max (* 4 1024 1024))  ; 4MB for better LSP performance
-(setq native-comp-speed 3)  ; Maximum optimization level
 (setq native-comp-async-report-warnings-errors 'silent)
 
 (menu-bar-mode -1)

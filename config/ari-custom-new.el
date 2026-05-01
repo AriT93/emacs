@@ -1228,5 +1228,167 @@ Creates a full org-roam reference note from the current elfeed entry."
                            "#+title: ${title}\n#+date: %%%%t\n")
         :unnarrowed t)))))
 
+(defun ari/display-startup-timing ()
+  "Print a summary of startup checkpoints logged via ari/startup-timer."
+  (message "=== Startup Timing Summary ===")
+  (let ((times (sort (hash-table-keys ari/startup-times)
+                     (lambda (a b)
+                       (< (gethash a ari/startup-times)
+                          (gethash b ari/startup-times))))))
+    (dolist (time times)
+      (let ((elapsed (- (gethash time ari/startup-times)
+                        (gethash (car times) ari/startup-times))))
+        (message "  %s: +%.2fs" time elapsed)))))
+
+(add-hook 'emacs-startup-hook #'ari/display-startup-timing)
+
+(defun ari/validate-config-files ()
+  "Warn about any expected config modules that cannot be located."
+  (let ((required-files '("ruby-config-new" "keys-config-new"
+                          "ari-custom-new" "erc-config" "gnus-config"))
+        (missing-files '()))
+    (dolist (file required-files)
+      (unless (locate-library file)
+        (push file missing-files)
+        (warn "Configuration file not found: %s" file)))
+    (if missing-files
+        (message "Missing %d config file(s): %s"
+                 (length missing-files)
+                 (string-join missing-files ", "))
+      (message "All configuration files validated successfully"))
+    (null missing-files)))
+
+(add-hook 'after-init-hook #'ari/validate-config-files)
+
+;; --- nano face stubs (hc-zenburn values) --------------------------------
+;; Required by book-mode and nano-agenda which reference nano-* faces.
+(defun ari/define-nano-zenburn-faces ()
+  (face-spec-set 'nano-default    '((t :inherit default)))
+  (face-spec-set 'nano-strong     '((t :inherit bold :foreground "#FDECBC")))
+  (face-spec-set 'nano-subtle     '((t :background "#3E3E3E" :foreground "#DCDCCC")))
+  (face-spec-set 'nano-faded      '((t :foreground "#70705E")))
+  (face-spec-set 'nano-popout     '((t :foreground "#ECBC9C")))
+  (face-spec-set 'nano-popout-i   '((t :background "#ECBC9C" :foreground "#313131")))
+  (face-spec-set 'nano-salient    '((t :foreground "#8CAC8C")))
+  (face-spec-set 'nano-critical   '((t :foreground "#D9A0A0" :weight bold)))
+  (face-spec-set 'nano-critical-i '((t :background "#D9A0A0" :foreground "#313131" :weight bold))))
+
+(defun ari/set-nano-zenburn-colors ()
+  (setq nano-color-foreground "#DCDCCC"
+        nano-color-background "#313131"
+        nano-color-highlight  "#4E4E4E"
+        nano-color-critical   "#D9A0A0"
+        nano-color-salient    "#8CAC8C"
+        nano-color-strong     "#FDECBC"
+        nano-color-popout     "#ECBC9C"
+        nano-color-subtle     "#3E3E3E"
+        nano-color-faded      "#70705E"
+        nano-light-foreground "#DCDCCC"
+        nano-light-background "#313131"
+        nano-light-popout     "#ECBC9C"
+        nano-light-faded      "#70705E"))
+
+;; hc-zenburn is already loaded by the time ari-custom.el is required
+(ari/define-nano-zenburn-faces)
+(ari/set-nano-zenburn-colors)
+
+;; --- nano-modeline segments ---------------------------------------------
+
+(defun ari/nano-modeline-flymake-info ()
+  "Flymake diagnostic counts for nano-modeline right side.
+Shows E/W/N counts when diagnostics exist, checkmark when clean."
+  (when (bound-and-true-p flymake-mode)
+    (let* ((diags    (flymake-diagnostics))
+           (errors   (cl-count-if
+                      (lambda (d) (eq :error (flymake-diagnostic-type d))) diags))
+           (warnings (cl-count-if
+                      (lambda (d) (eq :warning (flymake-diagnostic-type d))) diags))
+           (notes    (cl-count-if
+                      (lambda (d) (eq :note (flymake-diagnostic-type d))) diags)))
+      (cond
+       ((> errors 0)
+        (propertize (format "E%d%s " errors
+                            (if (> warnings 0) (format "/W%d" warnings) ""))
+                    'face '(:inherit nano-critical)))
+       ((> warnings 0)
+        (propertize (format "W%d " warnings) 'face '(:inherit nano-popout)))
+       ((> notes 0)
+        (propertize (format "N%d " notes) 'face '(:inherit nano-faded)))
+       (t (propertize "✓ " 'face '(:inherit nano-salient)))))))
+
+(defun ari/nano-modeline-eglot-info ()
+  "Eglot server name for nano-modeline right side."
+  (when (bound-and-true-p eglot--managed-mode)
+    (when-let ((server (eglot-current-server)))
+      (let ((name (or (ignore-errors (eglot-project-nickname server))
+                      (ignore-errors (plist-get (eglot--server-info server) :name))
+                      "eglot")))
+        (propertize (format "[%s] " name)
+                    'face (nano-modeline-face 'secondary))))))
+
+(defun ari/nano-modeline-prog-mode (&optional default)
+  "nano-modeline for prog-mode with eglot and flymake segments."
+  (funcall nano-modeline-position
+           '((nano-modeline-buffer-status) " "
+             (nano-modeline-buffer-name) " "
+             (nano-modeline-git-info))
+           '((ari/nano-modeline-eglot-info)
+             (ari/nano-modeline-flymake-info)
+             (nano-modeline-cursor-position)
+             (nano-modeline-window-dedicated))
+           default))
+
+;; --- nano UI toggle -----------------------------------------------------
+
+(defvar ari/nano-mode-active nil
+  "Whether nano UI mode (nano-modeline + book-mode) is active.")
+
+(defun ari/nano-mode-enable ()
+  "Switch from doom-modeline to nano-modeline and enable book-mode for org."
+  (interactive)
+  (setq ari/nano-mode-active t)
+  (doom-modeline-mode -1)
+  (require 'nano-modeline)
+  (add-hook 'prog-mode-hook #'ari/nano-modeline-prog-mode)
+  (add-hook 'text-mode-hook #'nano-modeline-text-mode)
+  (add-hook 'org-mode-hook  #'nano-modeline-org-mode)
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (when (derived-mode-p 'prog-mode) (ari/nano-modeline-prog-mode))
+      (when (derived-mode-p 'text-mode) (nano-modeline-text-mode))
+      (when (derived-mode-p 'org-mode)  (nano-modeline-org-mode))))
+  (require 'book-mode)
+  (add-hook 'org-mode-hook #'book-mode)
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (when (derived-mode-p 'org-mode) (book-mode))))
+  (message "Nano UI mode enabled"))
+
+(defun ari/nano-mode-disable ()
+  "Restore doom-modeline and disable nano UI enhancements."
+  (interactive)
+  (setq ari/nano-mode-active nil)
+  (remove-hook 'prog-mode-hook #'ari/nano-modeline-prog-mode)
+  (remove-hook 'text-mode-hook #'nano-modeline-text-mode)
+  (remove-hook 'org-mode-hook  #'nano-modeline-org-mode)
+  (remove-hook 'org-mode-hook  #'book-mode)
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (kill-local-variable 'mode-line-format)
+      (kill-local-variable 'header-line-format)
+      (when (and (fboundp 'book-mode) (bound-and-true-p book-mode))
+        (book-mode -1))))
+  (doom-modeline-mode 1)
+  (message "Doom modeline restored"))
+
+(defun ari/nano-mode-toggle ()
+  "Toggle nano UI mode (nano-modeline + book-mode) vs doom-modeline."
+  (interactive)
+  (if ari/nano-mode-active
+      (ari/nano-mode-disable)
+    (ari/nano-mode-enable)))
+
+(global-set-key (kbd "C-c n") #'ari/nano-mode-toggle)
+
 (provide 'ari-custom-new)
 ;;; ari-custom-new.el ends here
