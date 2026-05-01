@@ -15,7 +15,6 @@
   (setq   smtpmail-smtp-server "smtp.gmail.com")
   (setq   smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
   (setq   starttls-use-gnutls t)
-  (setq   smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
   (setq   smtpmail-smtp-service 587)
 
 
@@ -24,7 +23,7 @@
 
 
   (setq mu4e-maildir (expand-file-name "~/.mail"))
-  (setq mu4e-completing-read-function #'ivy-completing-read)
+  (setq mu4e-completing-read-function #'completing-read)
   ;;mu4e-html2text-command "w3m -T text/html"
   ;;(setq   mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
   (setq mu4e-update-interval 600)
@@ -65,7 +64,6 @@
                    (smtpmail-default-smtp-server . "smtp.gmail.com")
                    (smtpmail-smtp-server .  "smtp.gmail.com")
                    (smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
-                   (smtpmail-auth-credentials '(("smtp.gmail.com" 587 "arit93@gmail.com" nil)))
                    (smtpmail-smtp-service .  587)
                    (mu4e-compose-reply-to-address . "arit93@gmail.com")
                    )
@@ -85,7 +83,6 @@
                   (smtpmail-default-smtp-server . "smtp.mail.yahoo.com")
                   (smtpmail-smtp-server .  "smtp.mail.yahoo.com")
                   (smtpmail-starttls-credentials '(("smtp.mail.yahoo.com" 587 nil nil)))
-                  (smtpmail-auth-credentials '(("smtp.mail.yahoo.com" 587 "arit93@yahoo.com" nil)))
                   (smtpmail-smtp-service .  587)
                   (mu4e-compose-reply-to-address . "arit93@yahoo.com")
                   ))
@@ -104,7 +101,6 @@
                    (smtpmail-default-smtp-server . "smtp.gmail.com")
                    (smtpmail-smtp-server .  "smtp.gmail.com")
                    (smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
-                   (smtpmail-auth-credentials '(("smtp.gmail.com" 587 "ari@turetzky.org" nil)))
                    (smtpmail-smtp-service .  587)
                    (mu4e-compose-reply-to-address . "ari@turetzky.org")
                    )

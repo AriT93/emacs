@@ -24,7 +24,7 @@
 (setq org-agenda-start-with-log-mode nil) ; Disable org agenda log messages
 
 ;; Suppress general verbose messages
-(setq message-log-max nil)             ; Disable message log during startup
+(setq message-log-max 50)              ; Reduce (not eliminate) message log during startup
 (setq inhibit-startup-echo-area-message t) ; Already set, but ensure it's on
 
 ;; Suppress byte-compilation warnings during startup
@@ -110,26 +110,20 @@
 (require 'load-path-config-new)
 (ari/startup-timer "load-path-loaded")
 
+;; gpg-agent auto-starts via its socket; no need to launch it manually.
+;; allow-loopback-pinentry in gpg-agent.conf + epa-pinentry-mode 'loopback
+;; is sufficient — the separate pinentry package conflicts with pinentry-mac.
 (defun ensure-gpg-agent-running ()
-  "Ensure that gpg-agent is running."
-  (unless (get-process "gpg-agent")
-    (start-process "gpg-agent" nil "gpg-agent" "--daemon")))
+  "Ping gpg-agent to ensure it is ready."
+  (call-process "gpg-connect-agent" nil nil nil "updatestartuptty" "/bye"))
 
 (add-hook 'emacs-startup-hook 'ensure-gpg-agent-running)
 
-;; Enhanced GPG and auth-source configuration
 (setq epg-gpg-program "gpg2")
 (setq auth-sources '("~/.authinfo.gpg"))
-(setq auth-source-cache-expiry 3600)  ; 1 hour cache
-(setq epa-pinentry-mode 'loopback)     ; More secure pinentry mode
-(setq auth-source-debug nil)           ; Disable debug logging for security
-(setq auth-source-do-cache t)          ; Enable caching
-
-;; Use Emacs' built-in pinentry for better macOS integration
-(use-package pinentry
-  :ensure t
-  :config
-  (pinentry-start))
+(setq auth-source-cache-expiry 3600)
+(setq auth-source-debug nil)
+(setq auth-source-do-cache t)
 
 ;; Network security configuration
 (setq gnutls-verify-error t)           ; Fail on TLS verification errors
@@ -520,10 +514,15 @@
   (setq doom-themes-enable-bold t)
   (setq doom-themes-enable-italic t)
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+  (add-to-list 'custom-theme-load-path "~/emacs/site")
   :config
+  ;; Disable done-headline fontification: doom-themes-ext-org uses match group 2
+  ;; which is optional in current org's heading regexp, causing "No match 2" errors.
+  (setq org-fontify-done-headline nil)
   (doom-themes-org-config)
   (require 'doom-themes-ext-org))
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(add-to-list 'custom-theme-load-path "~/emacs/site")
 (use-package hc-zenburn-theme
   :ensure t
   :custom-face
@@ -533,6 +532,8 @@
   (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
   (lazy-highlight ((t (:background "DarkSeaGreen4")))))
 (load-theme 'hc-zenburn t)
+
+;; nano face stubs and color vars defined in ari-custom.el (loaded below)
 
 (use-package nerd-icons
   :ensure t
@@ -546,6 +547,24 @@
   (setq doom-modeline-vcs-max-length 40)
   (setq doom-modeline-battery nil)
   (doom-modeline-mode 1))
+
+;; nano-modeline: standalone GNU ELPA package, no nano-theme dependency
+(use-package nano-modeline
+  :ensure t
+  :defer t
+  :commands (nano-modeline-prog-mode
+             nano-modeline-text-mode
+             nano-modeline-org-mode)
+  :custom
+  (nano-modeline-position #'nano-modeline-footer)
+  :custom-face
+  (nano-modeline-active
+   ((t (:background "#4f4f4f" :foreground "#dcdccc" :box nil))))
+  (nano-modeline-inactive
+   ((t (:background "#3f3f3f" :foreground "#6f6f6f" :box nil))))
+  (nano-modeline-status
+   ((t (:background "#5f7f5f" :foreground "#dcdccc" :weight bold)))))
+
 ;; gnutls loads automatically when needed
 (setq starttls-use-gnutls t)
 (setq auto-revert-check-vc-info t)
@@ -709,7 +728,7 @@
 (with-eval-after-load 'org
   (require 'org-modern)
   (require 'ox-md)
-;;  (require 'ox-confluence)
+  (require 'ox-confluence)
   (require 'ox-jira))
 (add-hook 'org-modern-mode-hook 'org-variable-pitch-minor-mode)
 (add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
@@ -1006,19 +1025,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;; Final startup timing
 (ari/startup-timer "config-complete")
 
-;; Display startup timing summary
-(defun ari/display-startup-timing ()
-  (message "=== Startup Timing Summary ===")
-  (let ((times (sort (hash-table-keys ari/startup-times) 
-                     (lambda (a b) 
-                       (< (gethash a ari/startup-times) 
-                          (gethash b ari/startup-times))))))
-    (dolist (time times)
-      (let ((elapsed (- (gethash time ari/startup-times) 
-                        (gethash (car times) ari/startup-times))))
-        (message "  %s: +%.2fs" time elapsed)))))
-
-(add-hook 'emacs-startup-hook #'ari/display-startup-timing)
+;; ari/display-startup-timing defined in ari-custom.el
 
 ;; Reset settings after startup for better runtime performance
 (add-hook 'emacs-startup-hook
@@ -1105,89 +1112,66 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
 (use-package inf-ruby
-    :defer 2
-    :ensure t)
-  (require 'ruby-mode)
-  (use-package  ruby-electric
-    :ensure t)
-  (use-package feature-mode
-    :defer 2
-    :ensure t
-    :config
-    (setq feature-use-docker-compose nil)
-    (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
+  :defer 2
+  :ensure t)
+(require 'ruby-mode)
+(use-package  ruby-electric
+  :ensure t)
+(use-package feature-mode
+  :defer 2
+  :ensure t
+  :config
+  (setq feature-use-docker-compose nil)
+  (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
 
-  (use-package yasnippet
-    :defer 2
-    :ensure t
-    :config
-    (yas-global-mode t))
-  (use-package yasnippet-snippets
-    :defer 2
-    :ensure t)
-  (use-package rake
-    :defer 2
-    :ensure t)
-  (use-package inflections
-    :defer 2
-    :ensure t)
-  (use-package graphql
-    :defer 2
-    :ensure t)
-  ;; Defer org-protocol and org-roam-protocol
-  (with-eval-after-load 'org (require 'org-protocol))
-  (with-eval-after-load 'org-roam (require 'org-roam-protocol))
-  (use-package haml-mode
-    :defer 2
-    :ensure t)
-  (use-package beacon
-    :defer 2
-    :ensure t
-    :init
-    (beacon-mode))
-  (use-package rainbow-mode
-    :defer 2
-    :ensure t)
-  (use-package rainbow-delimiters
-    :ensure t
-    :hook (prog-mode . rainbow-delimiters-mode))
+(use-package yasnippet
+  :defer 2
+  :ensure t
+  :config
+  (yas-global-mode t))
+(use-package yasnippet-snippets
+  :defer 2
+  :ensure t)
+(use-package rake
+  :defer 2
+  :ensure t)
+(use-package inflections
+  :defer 2
+  :ensure t)
+(use-package graphql
+  :defer 2
+  :ensure t)
+;; Defer org-protocol and org-roam-protocol
+(with-eval-after-load 'org (require 'org-protocol))
+(with-eval-after-load 'org-roam (require 'org-roam-protocol))
+(use-package haml-mode
+  :defer 2
+  :ensure t)
+(use-package beacon
+  :defer 2
+  :ensure t
+  :init
+  (beacon-mode))
+(use-package rainbow-mode
+  :defer 2
+  :ensure t)
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
 
-  ;; Configuration validation - check that all required modules exist
-  (defun ari/validate-config-files ()
-    "Validate that all referenced config files can be loaded.
-Checks that required configuration modules exist and are loadable.
-Prints warnings for any missing files but does not halt startup."
-    (let ((required-files '("ruby-config-new"
-                           "keys-config-new"
-                           "ari-custom-new"
-                           "erc-config"
-                           "gnus-config"))
-          (missing-files '()))
-      (dolist (file required-files)
-        (unless (locate-library file)
-          (push file missing-files)
-          (warn "Configuration file not found: %s" file)))
-      (if missing-files
-          (message "⚠️  Missing %d config file(s): %s"
-                   (length missing-files)
-                   (string-join missing-files ", "))
-        (message "✓ All configuration files validated successfully"))
-      (null missing-files)))
+;; ari/validate-config-files defined in ari-custom.el
 
-  ;; Run validation after init
-  (add-hook 'after-init-hook #'ari/validate-config-files)
+;; Load essential configs immediately
+(require 'keys-config-new)
+(require 'ari-custom-new)
 
-  ;; Load essential configs immediately
-  (require 'keys-config-new)
-  (require 'ari-custom-new)
-
-  ;; Defer non-essential configs to after startup
-  (run-with-idle-timer 2 nil (lambda ()
-    (require 'ruby-config-new)
-    (require 'erc-config)
-    (require 'gnus-config)
-    (require 'mail-config-new)
-    (require 'blog)))
+;; Defer non-essential configs to after startup
+(run-with-idle-timer 2 nil (lambda ()
+  (require 'ruby-config-new)
+  (require 'erc-config)
+  (require 'gnus-config)
+  (require 'mail-config-new)
+  (require 'blog)))
 
 (use-package highline
   :ensure t
@@ -1275,12 +1259,7 @@ Prints warnings for any missing files but does not halt startup."
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
-;; Integration with orderless
-(use-package orderless
-  :ensure t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion)))))
+;; orderless configured in the vertico/consult section above
 
 ;; Enhance completion at point via cape
 (use-package cape
@@ -1767,7 +1746,7 @@ Prints warnings for any missing files but does not halt startup."
 (use-package copilot
       :straight (:host github :repo "copilot-emacs/copilot.el"
                  :branch "main"
-                 :files ("*.el"))
+                 :files ("*.el" (:exclude "copilot-chat.el")))
       :defer 10  ; Defer copilot loading
       :config
       ;; you can utilize :map :hook and :config to customize copilot
@@ -1794,6 +1773,18 @@ Prints warnings for any missing files but does not halt startup."
     (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey"))
     :config
     (require 'chatgpt-shell))
+;; book-mode via straight.el (not on MELPA/ELPA)
+;; Requires nano-zenburn stub faces defined above in the theme section
+(use-package book-mode
+  :straight (:host github :repo "rougier/book-mode" :files ("*.el"))
+  :defer t
+  :commands (book-mode))
+
+;; nano-agenda needs ts package
+(use-package ts :ensure t :defer t)
+
+;; nano-modeline segments and toggle defined in ari-custom.el
+
 (use-package acp
   :vc (:url "https://github.com/xenodium/acp.el")
   :ensure t
@@ -1809,9 +1800,10 @@ Prints warnings for any missing files but does not halt startup."
 
   (use-package copilot-chat
     :ensure t
-    :defer t
+    :demand t
     :custom
-    (copilot-chat-frontend  'org)
+    (copilot-chat-backend 'curl)
+    (copilot-chat-frontend 'org)
     (copilot-chat-default-model "claude-sonnet-4-6")
     (copilot-chat-model-ignore-picker t))
 
@@ -1863,7 +1855,7 @@ Prints warnings for any missing files but does not halt startup."
   (aidermacs-use-architect-mode t)
   (aidermacs-default-model "gemini/gemini-2.0-flash"))
 
-  (use-package aider)
+  ;; aider removed - aidermacs above is the active aider integration
 
 (use-package magit-delta
   :ensure t
@@ -1903,7 +1895,7 @@ Prints warnings for any missing files but does not halt startup."
                    :italic t
                    :family "Helvetica"
                    :background "gray40"))))
-(global-blamer-mode)
+(add-hook 'prog-mode-hook #'blamer-mode)
 
 (use-package svg-tag-mode
   :straight t
@@ -2214,7 +2206,6 @@ Prints warnings for any missing files but does not halt startup."
 (setq tsx-ts-mode-indent-offset 2)
 (setq python-ts-mode-indent-offset 4)
 (setq java-ts-mode-indent-offset 4)
-(setq go-ts-mode-indent-offset 4)
 (setq go-ts-mode-indent-offset 4)
 (setq rust-ts-mode-indent-offset 4)
 (setq c-ts-mode-indent-offset 4)
