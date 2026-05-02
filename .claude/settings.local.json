@@ -10,7 +10,9 @@
       "WebFetch(domain:www.gnu.org)",
       "Bash(curl:*)",
       "WebFetch(domain:reddit.com)",
-      "WebFetch(domain:protesilaos.com)"
+      "WebFetch(domain:protesilaos.com)",
+      "Bash(sqlite3 *)",
+      "Bash(xargs rm *)"
     ]
   }
 }

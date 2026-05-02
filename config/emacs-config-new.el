@@ -114,6 +114,7 @@
 (unless (package-installed-p 'transient '(0 13))
   (package-refresh-contents)
   (package-install 'transient)
+  (package-quickstart-refresh)
   (when (featurep 'transient) (unload-feature 'transient t))
   (require 'transient))
 
@@ -808,7 +809,8 @@
   :init
   (setq org-roam-v2-ack t)
   :custom
-  (org-roam-directory "~/Documents/org-roam" )
+  (org-roam-directory "~/Documents/org-roam")
+  (org-roam-file-exclude-regexp "#[^#]*#\\|\\.#")
   :config
   ;; Defer initial DB sync until Emacs is idle — avoids blocking startup
   (add-hook 'emacs-startup-hook
@@ -1864,7 +1866,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 (use-package popper
   :ensure t ; or :straight t
-  :bind (("C-`"   . popper-toggle-latest)
+  :bind (("C-`"   . popper-toggle)
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle))
   :init
