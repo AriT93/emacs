@@ -12,7 +12,11 @@
       "WebFetch(domain:reddit.com)",
       "WebFetch(domain:protesilaos.com)",
       "Bash(sqlite3 *)",
-      "Bash(xargs rm *)"
+      "Bash(xargs rm *)",
+      "WebFetch(domain:org-roam.discourse.group)",
+      "WebFetch(domain:phiresky.github.io)",
+      "WebFetch(domain:metaredux.com)",
+      "WebFetch(domain:www.flycheck.org)"
     ]
   }
 }

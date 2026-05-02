@@ -8,15 +8,7 @@
 (setq warning-suppress-log-types '((files) (package reinitialization)))
 
 ;; Suppress verbose messages during startup
-(setq flycheck-verbose nil)           ; Disable flycheck verbose messages
 (setq flyover-debug nil)              ; Disable flyover debug messages
-(setq flycheck-mode-line nil)         ; Disable flycheck mode line messages
-(setq flycheck-display-errors-function nil)  ; Disable flycheck error display during startup
-
-;; Additional message suppressions
-(setq flycheck-checker-error-threshold nil)  ; Disable flycheck error threshold messages
-(setq flycheck-checker-warning-threshold nil) ; Disable flycheck warning threshold messages
-(setq flycheck-indication-mode nil)           ; Disable flycheck indication messages
 
 ;; Suppress org-mode verbose messages
 (setq org-element-cache-persistent nil)  ; Disable org cache messages
@@ -165,6 +157,8 @@
 (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
+
+
 (show-paren-mode 1)
 (recentf-mode 1)
 (fringe-mode 10)
@@ -307,7 +301,8 @@
   :ensure t
   :custom
   (completion-styles '(orderless basic partial-completion flex))
-  (completion-category-overrides '((file (styles partial-completion))))
+  (completion-category-overrides '((file (styles partial-completion))
+                                    (org-roam-node (styles basic orderless))))
   (tab-always-indent 'complete)  ;; TAB indents first, then completes
   (completion-cycle-threshold 3))  ;; Cycle through 3 or fewer candidates
 
@@ -421,6 +416,7 @@
   :defer 2
   :ensure t)
 
+
 (use-package nvm
   :defer 2
   :ensure t)
@@ -498,6 +494,7 @@
   :init
   (with-eval-after-load 'git-gutter (require 'git-gutter-fringe))
   )
+
 
 (use-package persistent-scratch
   :ensure t
@@ -615,28 +612,30 @@
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
 
-(use-package flycheck-pos-tip
-  :defer 2
-  :after flycheck
+
+(use-package flymake
+  :hook ((prog-mode . flymake-mode)
+         (text-mode . flymake-mode))
+  :bind (:map flymake-mode-map
+         ("M-n" . flymake-goto-next-error)
+         ("M-p" . flymake-goto-prev-error)
+         ("C-c ! l" . flymake-show-buffer-diagnostics)
+         ("C-c ! n" . flymake-goto-next-error)
+         ("C-c ! p" . flymake-goto-prev-error))
+  :custom
+  (flymake-no-changes-timeout 0.5)
+  (flymake-start-on-save-buffer t)
   :config
-  (flycheck-pos-tip-mode)
-  )
-(use-package flycheck
-  :defer 2
-  :diminish flycheck-mode
+  ;; Disable flymake in org-mode (no need for org-lint overhead)
+  (add-hook 'org-mode-hook (lambda () (flymake-mode -1))))
+
+;; ESLint support for JS/TS modes
+(use-package flymake-eslint
   :ensure t
-  :init
-  (setq flycheck-emacs-lisp-initialize-packages 1)
-  (setq flycheck-emacs-lisp-load-path 'inherit)
-  (global-flycheck-mode)
-  :config
-  ;; Add eslint support for modern JS modes
-  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  (flycheck-add-mode 'javascript-eslint 'jtsx-jsx-mode)
-  ;; Note: Removed javascript-jshint (obsolete, use eslint instead)
-  (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
-  :custom 
-  (flycheck-disabled-checkers '(ruby-reek)))
+  :hook ((js-mode js-ts-mode typescript-ts-mode jtsx-jsx-mode rjsx-mode)
+         . flymake-eslint-enable))
+
+;; Ruby: rubocop backend is built-in to Emacs 29+, eglot provides LSP diagnostics
 
 (server-start)
 
@@ -729,7 +728,7 @@
          :immediate-finish t
          :empty-lines-after 1)))
 
-(use-package ox-jira
+  (use-package ox-jira
     :ensure t)
   ;; Defer org-habit loading
   (with-eval-after-load 'org (require 'org-habit))
@@ -767,6 +766,7 @@
         org-cite-csl-styles-dir "~/Zotero/styles")
 )
 
+
 (setq org-latex-listings 'minted)
 (add-to-list 'org-latex-packages-alist '("" "minted" t))
 
@@ -788,6 +788,7 @@
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
 
 (use-package jiralib2
   :ensure t
@@ -816,6 +817,37 @@
   (add-hook 'emacs-startup-hook
             (lambda () (run-with-idle-timer 4 nil #'org-roam-db-autosync-mode +1)))
   (setq org-roam-database-connector 'sqlite-builtin)
+
+  ;; SQLite performance tuning for org-roam
+  (defun my/org-roam-db-apply-pragmas ()
+    "Apply performance pragmas to org-roam SQLite connection."
+    (when (and (fboundp 'org-roam-db) (org-roam-db))
+      (emacsql (org-roam-db) "PRAGMA journal_mode=WAL")
+      (emacsql (org-roam-db) "PRAGMA synchronous=normal")
+      (emacsql (org-roam-db) "PRAGMA cache_size=-32000")
+      (emacsql (org-roam-db) "PRAGMA temp_store=memory")))
+
+  (add-hook 'org-roam-db-autosync-mode-hook #'my/org-roam-db-apply-pragmas)
+
+  ;; Batch DB updates instead of per-save
+  (setq org-roam-db-update-on-save nil)
+
+  (defvar my/org-roam-pending-files nil)
+
+  (defun my/org-roam-queue-update ()
+    (when (and (fboundp 'org-roam-file-p) (org-roam-file-p))
+      (cl-pushnew (buffer-file-name) my/org-roam-pending-files :test #'equal)))
+
+  (defun my/org-roam-flush-pending ()
+    (when my/org-roam-pending-files
+      (dolist (f my/org-roam-pending-files)
+        (when (file-exists-p f)
+          (org-roam-db-update-file f)))
+      (setq my/org-roam-pending-files nil)))
+
+  (add-hook 'after-save-hook #'my/org-roam-queue-update)
+  (run-with-idle-timer 10 t #'my/org-roam-flush-pending)
+
   (setq org-roam-capture-templates
         '(("d" "default" plain "%?" :if-new
            (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
@@ -936,6 +968,17 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package org-ql
   :ensure t)
 
+;; Move org-roam CAPF to end so cheaper completions run first
+(defun my/org-roam-capf-to-back ()
+  "Reorder so org-roam-complete-everywhere runs last."
+  (when (memq 'org-roam-complete-everywhere completion-at-point-functions)
+    (setq-local completion-at-point-functions
+                (append (remq 'org-roam-complete-everywhere
+                              completion-at-point-functions)
+                        '(org-roam-complete-everywhere)))))
+
+(add-hook 'org-mode-hook #'my/org-roam-capf-to-back)
+
 (defun ek/babel-ansi ()
   (when-let* ((beg (org-babel-where-is-src-block-result nil nil)))
     (save-excursion
@@ -949,6 +992,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :ensure t)
 (use-package ox-gfm
   :ensure t)
+
 
 (use-package org-mime
   :ensure t)
@@ -1063,7 +1107,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
             
             ;; Restore some verbose settings for runtime (optional)
             (setq message-log-max 1000)                ; Re-enable message log for runtime
-            (setq flycheck-mode-line t)                ; Re-enable flycheck mode line
+            ;; flycheck removed - using flymake now
             (message "Package and GC settings restored for runtime performance")))
 
 (setq org-mime-export-options '(:section-numbers nil
@@ -1091,6 +1135,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
  ;;   :ensure t
  ;;   :config
  ;;   (load-theme 'vscode-dark-plus t))
+
 
 (use-package exec-path-from-shell
   :ensure t
@@ -1122,11 +1167,13 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
          (key (substring (shell-command-to-string full-command) 0 -1)))
     (setq org-crypt-key key)))
 
-;; yaml
+  ;; yaml
 ;; Defer yaml-mode - only load when opening yaml files
 (autoload 'yaml-mode "yaml-mode" "Major mode for editing YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
+
+
 
 (use-package inf-ruby
   :defer 2
@@ -1282,7 +1329,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq dabbrev-check-all-buffers nil)
 (setq dabbrev-check-other-buffers nil)
 
-;;   (use-package lsp-mode
+  ;;   (use-package lsp-mode
   ;;     :ensure t
   ;;     :pin melpa
   ;;     :commands (lsp lsp-deferred)
@@ -1450,6 +1497,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 :hook
 (markdown-mode . abbrev-mode))
 
+
 (require 'dired-x)
 (setq dired-omit-files
       (rx(or(seq bol(? ".") "#")
@@ -1484,6 +1532,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;;     ad-do-it))
 ;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
 
+
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook()
   (message "SQL mode hook executed")
@@ -1500,7 +1549,8 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (setq sql-product (quote ms))
   (setq sql-mysql-login-params (append sql-mysql-login-params '(port))))
 
-(use-package rjsx-mode
+
+  (use-package rjsx-mode
     :defer 2
     :ensure t)
   ;; NOTE: eglot-ensure hooks moved to main eglot configuration (line ~2189)
@@ -1567,6 +1617,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1))
+
 
 (use-package helpful
   :ensure t
@@ -1747,7 +1798,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "sr" '(consult-ripgrep :which-key "ripgrep")
     "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
 
-(use-package copilot
+    (use-package copilot
       :straight (:host github :repo "copilot-emacs/copilot.el"
                  :branch "main"
                 :files ("*.el" (:exclude "copilot-chat.el")))
@@ -1759,7 +1810,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (use-package gptel-aibo
     :straight (:host github :repo "dolmens/gptel-aibo"
                :branch "main")
-    :after(gptel flycheck)
+    :after gptel
     :defer 15)  ; Defer gptel-aibo loading
 
   (use-package shell-maker
@@ -2012,10 +2063,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (unless (fboundp 'ruby-ts-mode)
   (add-hook 'ruby-mode-hook #'eglot-ensure))
 
-;; Using built-in flymake instead of flycheck for diagnostics
-(use-package flymake
-  :ensure t
-  :hook (eglot-managed-mode . flymake-mode))
+;; flymake configured in main section; eglot hooks it automatically
 
 ;; Enhanced eldoc configuration
 (setq eldoc-echo-area-use-multiline-p t)
@@ -2045,8 +2093,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
       (eglot-ensure)
     (error
      (message "EGLOT failed to start: %s" (error-message-string err))
-     (when (and (boundp 'flycheck-mode) flycheck-mode)
-       (message "Falling back to flycheck for diagnostics")))))
+     (message "Flymake will provide diagnostics instead"))))
 
 ;; Custom EGLOT hooks for better integration
 (defun eglot-setup-completion ()
@@ -2296,9 +2343,8 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   ;;           :user "cookie")
   ;;  :subsribed-channels nil ))
 
-;; Defer flyover - load with flycheck
-(with-eval-after-load 'flycheck (require 'flyover))
-(add-hook 'flycheck-mode-hook #'flyover-mode)
+;; Defer flyover - load with flymake
+(with-eval-after-load 'flymake (require 'flyover))
 (add-hook 'flymake-mode-hook #'flyover-mode)
 
 ;; Use theme colors for error/warning/info faces
@@ -2321,7 +2367,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq flyover-text-tint-percent 50)
 (setq flyover-levels '(error warning info))
 
-(setq flyover-checkers '(flycheck flymake))
+(setq flyover-checkers '(flymake))
 (setq flyover-debug nil)  ; Disable flyover debug messages
 
 ;;; Hide checker name for a cleaner UI
@@ -2345,6 +2391,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;;; You might want to adjust this setting if you icons are not centererd or if you more or less space.fs
 (setq flyover-icon-left-padding 0.9)
 (setq flyover-icon-right-padding 0.9)
+
 
 (set-face-attribute 'default nil
                     :inherit nil

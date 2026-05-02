@@ -1,3 +1,4 @@
+
 ;;; ari-custom.el --- holds all my own private stuff -*- lexical-binding: t; -*-
 ;;add a comment
 ;;; Commentary:
@@ -34,7 +35,7 @@
       (occur (if isearch-regexp isearch-string
                (regexp-quote isearch-string))))))
 
-(defun djcb-opacity-modify (&optional dec)
+     (defun djcb-opacity-modify (&optional dec)
        "Modify the transparency of the Emacs frame in 10% steps.
 If DEC is non-nil, decrease transparency by 10%, otherwise increase it.
 Transparency is constrained between `frame-alpha-lower-limit' and 100.
@@ -56,7 +57,7 @@ Returns the new alpha value, or nil if no change was made."
           (message "Error modifying frame opacity: %s" (error-message-string err))
           nil)))
 
-(defun fg/jira-update-heading ()
+  (defun fg/jira-update-heading ()
     "Update current org heading with data from Jira.
 Fetches issue details from Jira using the JIRAISSUEKEY property and updates
 the heading text and properties with current issue data. Requires jiralib2 to
@@ -92,6 +93,7 @@ the heading and properties."
       (error
        (message "Error updating Jira heading: %s" (error-message-string err))
        nil)))
+
 
 (defun ari/migrate-discussed-ids-to-meetings ()
   "Migrate IDs from '** Discussed' headings to parent '* Meeting:' headings.
@@ -1063,6 +1065,77 @@ NAME should be in first.last format (with or without @ prefix)."
   (interactive "*r")
   (let ((fill-column (point-max)))
     (fill-region beg end)))
+
+(defvar my/org-roam-node-cache nil "Cached completion candidates.")
+(defvar my/org-roam-node-cache-mtime nil "DB mtime when cache was built.")
+
+(defun my/org-roam-node-cache-advice (orig-fn &rest args)
+  "Return cached completions if DB unchanged."
+  (let ((db-mtime (and (boundp 'org-roam-db-location)
+                       (file-exists-p org-roam-db-location)
+                       (file-attribute-modification-time
+                        (file-attributes org-roam-db-location)))))
+    (when (or (null my/org-roam-node-cache)
+              (null my/org-roam-node-cache-mtime)
+              (not (equal my/org-roam-node-cache-mtime db-mtime)))
+      (setq my/org-roam-node-cache (apply orig-fn args)
+            my/org-roam-node-cache-mtime db-mtime)))
+  my/org-roam-node-cache)
+
+(with-eval-after-load 'org-roam
+  (advice-add #'org-roam-node-read--completions
+              :around #'my/org-roam-node-cache-advice))
+
+(defun my/org-roam-clear-node-cache ()
+  "Force rebuild on next completion."
+  (interactive)
+  (setq my/org-roam-node-cache nil))
+
+(defvar my/org-lint-fast-checkers
+  '(duplicate-custom-id
+    duplicate-name
+    duplicate-target
+    empty-header-argument
+    invalid-babel-call-block
+    invalid-footnote-definition
+    invalid-footnote-reference
+    missing-language-in-src-block
+    missing-backend-in-export-block
+    obsolete-include-keyword
+    special-property-in-properties-drawer
+    suspicious-language-in-src-block
+    undefined-footnote-reference
+    unknown-options-item
+    wrong-header-value)
+  "Fast org-lint checkers that don't trigger expensive operations.
+Excludes: wrong-header-argument (triggers org-id-update-id-locations).")
+
+(defun my/org-lint-buffer-fast ()
+  "Run fast subset of org-lint checkers on current buffer.
+Skips checkers that trigger expensive operations like org-id-update-id-locations."
+  (interactive)
+  (when (derived-mode-p 'org-mode)
+    (require 'org-lint)
+    (let* ((all-checkers (org-lint--collect-checkers org-lint--checkers))
+           (fast-checkers (seq-filter
+                           (lambda (c) (memq (org-lint-checker-name c) my/org-lint-fast-checkers))
+                           all-checkers))
+           (reports (org-lint--generate-reports (current-buffer) fast-checkers)))
+      (if (null reports)
+          (when (called-interactively-p 'any)
+            (message "Org-lint: no issues found"))
+        (message "Org-lint: %d issue(s) found" (length reports))
+        (dolist (report reports)
+          (let ((line (car report))
+                (msg (nth 2 report)))
+            (message "  Line %d: %s" line msg)))))))
+
+(defun my/org-lint-on-save ()
+  "Run fast org-lint after saving an org file."
+  (when (derived-mode-p 'org-mode)
+    (run-with-idle-timer 0.5 nil #'my/org-lint-buffer-fast)))
+
+(add-hook 'after-save-hook #'my/org-lint-on-save)
 
 (defun ari/promote-reference-to-permanent ()
   "Create a permanent note from the current reference note.

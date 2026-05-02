@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-05-01 19:24:53 abturet>
+#+Time-stamp: <2026-05-02 08:20:34 abturet>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -29,15 +29,7 @@ gets installed from a repository we defined above
   (setq warning-suppress-log-types '((files) (package reinitialization)))
   
   ;; Suppress verbose messages during startup
-  (setq flycheck-verbose nil)           ; Disable flycheck verbose messages
   (setq flyover-debug nil)              ; Disable flyover debug messages
-  (setq flycheck-mode-line nil)         ; Disable flycheck mode line messages
-  (setq flycheck-display-errors-function nil)  ; Disable flycheck error display during startup
-
-  ;; Additional message suppressions
-  (setq flycheck-checker-error-threshold nil)  ; Disable flycheck error threshold messages
-  (setq flycheck-checker-warning-threshold nil) ; Disable flycheck warning threshold messages
-  (setq flycheck-indication-mode nil)           ; Disable flycheck indication messages
 
   ;; Suppress org-mode verbose messages
   (setq org-element-cache-persistent nil)  ; Disable org cache messages
@@ -362,7 +354,8 @@ Use the modern completion stack (vertico, consult, embark, orderless) for enhanc
     :ensure t
     :custom
     (completion-styles '(orderless basic partial-completion flex))
-    (completion-category-overrides '((file (styles partial-completion))))
+    (completion-category-overrides '((file (styles partial-completion))
+                                      (org-roam-node (styles basic orderless))))
     (tab-always-indent 'complete)  ;; TAB indents first, then completes
     (completion-cycle-threshold 3))  ;; Cycle through 3 or fewer candidates
 
@@ -699,30 +692,33 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
 
 #+END_SRC
 
-** Flycheck is fly as hell
+** Flymake for on-the-fly syntax checking
+Migrated from flycheck (May 2026). Flymake is built-in, lighter weight,
+and integrates natively with eglot. No org-lint overhead.
 #+BEGIN_SRC elisp
-  (use-package flycheck-pos-tip
-    :defer 2
-    :after flycheck
+  (use-package flymake
+    :hook ((prog-mode . flymake-mode)
+           (text-mode . flymake-mode))
+    :bind (:map flymake-mode-map
+           ("M-n" . flymake-goto-next-error)
+           ("M-p" . flymake-goto-prev-error)
+           ("C-c ! l" . flymake-show-buffer-diagnostics)
+           ("C-c ! n" . flymake-goto-next-error)
+           ("C-c ! p" . flymake-goto-prev-error))
+    :custom
+    (flymake-no-changes-timeout 0.5)
+    (flymake-start-on-save-buffer t)
     :config
-    (flycheck-pos-tip-mode)
-    )
-  (use-package flycheck
-    :defer 2
-    :diminish flycheck-mode
+    ;; Disable flymake in org-mode (no need for org-lint overhead)
+    (add-hook 'org-mode-hook (lambda () (flymake-mode -1))))
+
+  ;; ESLint support for JS/TS modes
+  (use-package flymake-eslint
     :ensure t
-    :init
-    (setq flycheck-emacs-lisp-initialize-packages 1)
-    (setq flycheck-emacs-lisp-load-path 'inherit)
-    (global-flycheck-mode)
-    :config
-    ;; Add eslint support for modern JS modes
-    (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-    (flycheck-add-mode 'javascript-eslint 'jtsx-jsx-mode)
-    ;; Note: Removed javascript-jshint (obsolete, use eslint instead)
-    (flycheck-add-mode 'ruby-rubocop 'ruby-mode)
-    :custom 
-    (flycheck-disabled-checkers '(ruby-reek)))
+    :hook ((js-mode js-ts-mode typescript-ts-mode jtsx-jsx-mode rjsx-mode)
+           . flymake-eslint-enable))
+
+  ;; Ruby: rubocop backend is built-in to Emacs 29+, eglot provides LSP diagnostics
 #+END_SRC
 
 ** Start up the emacs server
@@ -929,6 +925,37 @@ eventually to make it more manageable
     (add-hook 'emacs-startup-hook
               (lambda () (run-with-idle-timer 4 nil #'org-roam-db-autosync-mode +1)))
     (setq org-roam-database-connector 'sqlite-builtin)
+
+    ;; SQLite performance tuning for org-roam
+    (defun my/org-roam-db-apply-pragmas ()
+      "Apply performance pragmas to org-roam SQLite connection."
+      (when (and (fboundp 'org-roam-db) (org-roam-db))
+        (emacsql (org-roam-db) "PRAGMA journal_mode=WAL")
+        (emacsql (org-roam-db) "PRAGMA synchronous=normal")
+        (emacsql (org-roam-db) "PRAGMA cache_size=-32000")
+        (emacsql (org-roam-db) "PRAGMA temp_store=memory")))
+
+    (add-hook 'org-roam-db-autosync-mode-hook #'my/org-roam-db-apply-pragmas)
+
+    ;; Batch DB updates instead of per-save
+    (setq org-roam-db-update-on-save nil)
+
+    (defvar my/org-roam-pending-files nil)
+
+    (defun my/org-roam-queue-update ()
+      (when (and (fboundp 'org-roam-file-p) (org-roam-file-p))
+        (cl-pushnew (buffer-file-name) my/org-roam-pending-files :test #'equal)))
+
+    (defun my/org-roam-flush-pending ()
+      (when my/org-roam-pending-files
+        (dolist (f my/org-roam-pending-files)
+          (when (file-exists-p f)
+            (org-roam-db-update-file f)))
+        (setq my/org-roam-pending-files nil)))
+
+    (add-hook 'after-save-hook #'my/org-roam-queue-update)
+    (run-with-idle-timer 10 t #'my/org-roam-flush-pending)
+
     (setq org-roam-capture-templates
           '(("d" "default" plain "%?" :if-new
              (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
@@ -1048,6 +1075,17 @@ eventually to make it more manageable
 
   (use-package org-ql
     :ensure t)
+
+  ;; Move org-roam CAPF to end so cheaper completions run first
+  (defun my/org-roam-capf-to-back ()
+    "Reorder so org-roam-complete-everywhere runs last."
+    (when (memq 'org-roam-complete-everywhere completion-at-point-functions)
+      (setq-local completion-at-point-functions
+                  (append (remq 'org-roam-complete-everywhere
+                                completion-at-point-functions)
+                          '(org-roam-complete-everywhere)))))
+
+  (add-hook 'org-mode-hook #'my/org-roam-capf-to-back)
 #+END_SRC
 
 #+BEGIN_SRC elisp
@@ -1188,7 +1226,7 @@ eventually to make it more manageable
               
               ;; Restore some verbose settings for runtime (optional)
               (setq message-log-max 1000)                ; Re-enable message log for runtime
-              (setq flycheck-mode-line t)                ; Re-enable flycheck mode line
+              ;; flycheck removed - using flymake now
               (message "Package and GC settings restored for runtime performance")))
 #+END_SRC
 
@@ -1967,7 +2005,7 @@ Da General give command-t like ease to emacs
     (use-package gptel-aibo
       :straight (:host github :repo "dolmens/gptel-aibo"
                  :branch "main")
-      :after(gptel flycheck)
+      :after gptel
       :defer 15)  ; Defer gptel-aibo loading
 
     (use-package shell-maker
@@ -2240,10 +2278,7 @@ who knows it might catch on
   (unless (fboundp 'ruby-ts-mode)
     (add-hook 'ruby-mode-hook #'eglot-ensure))
 
-  ;; Using built-in flymake instead of flycheck for diagnostics
-  (use-package flymake
-    :ensure t
-    :hook (eglot-managed-mode . flymake-mode))
+  ;; flymake configured in main section; eglot hooks it automatically
 
   ;; Enhanced eldoc configuration
   (setq eldoc-echo-area-use-multiline-p t)
@@ -2273,8 +2308,7 @@ who knows it might catch on
         (eglot-ensure)
       (error
        (message "EGLOT failed to start: %s" (error-message-string err))
-       (when (and (boundp 'flycheck-mode) flycheck-mode)
-         (message "Falling back to flycheck for diagnostics")))))
+       (message "Flymake will provide diagnostics instead"))))
 
   ;; Custom EGLOT hooks for better integration
   (defun eglot-setup-completion ()
@@ -2530,9 +2564,8 @@ the slackiest way to slack in emacs
     ;;  :subsribed-channels nil ))
   #+end_src
   #+begin_src elisp
-    ;; Defer flyover - load with flycheck
-    (with-eval-after-load 'flycheck (require 'flyover))
-    (add-hook 'flycheck-mode-hook #'flyover-mode)
+    ;; Defer flyover - load with flymake
+    (with-eval-after-load 'flymake (require 'flyover))
     (add-hook 'flymake-mode-hook #'flyover-mode)
 
     ;; Use theme colors for error/warning/info faces
@@ -2555,7 +2588,7 @@ the slackiest way to slack in emacs
     (setq flyover-text-tint-percent 50)
     (setq flyover-levels '(error warning info))
 
-    (setq flyover-checkers '(flycheck flymake))
+    (setq flyover-checkers '(flymake))
     (setq flyover-debug nil)  ; Disable flyover debug messages
 
     ;;; Hide checker name for a cleaner UI
@@ -2612,6 +2645,6 @@ DESCRIPTION: Literate source for my Emacs configuration
 #+PROPERTY: header-args:ruby :tangle no
 #+PROPERTY: header-args:shell :tangle no
 #+OPTIONS:     num:t whn:nil toc:t todo:nil tasks:nil tags:nil
-#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+#+OPTIONS:     author:nil email:nil creator:nil timestamp:nil
 #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
 
