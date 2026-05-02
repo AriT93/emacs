@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-05-01 18:35:42 ari.turetzky>
+#+Time-stamp: <2026-05-01 19:24:53 abturet>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -136,6 +136,7 @@ Load straight.el FIRST, then initialize package.el
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ))
 (setq package-check-signature 'allow-unsigned)  ; Allow unsigned packages but prefer signed ones
+(setq package-install-upgrade-built-in t)       ; Allow upgrading built-in packages (e.g. transient for magit)
 (package-initialize)
 
 ;; Install and load use-package (needs package.el to be initialized)
@@ -843,7 +844,7 @@ eventually to make it more manageable
   (with-eval-after-load 'org
     (require 'org-modern)
     (require 'ox-md)
-    (require 'ox-confluence)
+;;    (require 'ox-confluence)
     (require 'ox-jira))
   ;; org-variable-pitch removed — it fires face-checks on every fontification
   ;; and errors 300+ times per session when org-indent-mode is not active
@@ -1323,33 +1324,33 @@ This is kinda like that part in the bible with all the begats...
 
 ** Set up HighLine mode
 #+BEGIN_SRC elisp
-      (use-package highline
-        :ensure t
-        :defer 2
-        :config
-        (global-highline-mode t)
-        (setq highline-face '((:background "gray40")))
-        (setq highline-vertical-face '(( :background "lemonChiffon2"))))
+  ;; (use-package highline
+  ;;   :ensure t
+  ;;   :defer 2
+  ;;   :config
+  ;;   (global-highline-mode t)
+  ;;   (setq highline-face '((:background "gray40")))
+  ;;   (setq highline-vertical-face '(( :background "lemonChiffon2"))))
 
 
-      (column-number-mode)
-      (global-display-line-numbers-mode t)
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
 
-      ;; Disable line numbers for some modes
-      (dolist (mode '(org-mode-hook
-                      org-modern-mode
-                      erc-mode-hook
-                      term-mode-hook
-                      eshell-mode-hook
-                      vterm-mode-hook
-                      treemacs-mode-hook
-                      gnus-mode-hook
-                      mu4e-view-mode-hook
-                      gnus-article-mode-hook
-                      dashboard-mode-hook
-                      slack-mode-hook
-                      slack-message-buffer-mode-hook))
-        (add-hook mode (lambda () (display-line-numbers-mode 0))))
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+                  org-modern-mode
+                  erc-mode-hook
+                  term-mode-hook
+                  eshell-mode-hook
+                  vterm-mode-hook
+                  treemacs-mode-hook
+                  gnus-mode-hook
+                  mu4e-view-mode-hook
+                  gnus-article-mode-hook
+                  dashboard-mode-hook
+                  slack-mode-hook
+                  slack-message-buffer-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
 #+END_SRC
 
 ** Company

@@ -107,6 +107,7 @@
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ))
 (setq package-check-signature 'allow-unsigned)  ; Allow unsigned packages but prefer signed ones
+(setq package-install-upgrade-built-in t)       ; Allow upgrading built-in packages (e.g. transient for magit)
 (package-initialize)
 
 ;; Install and load use-package (needs package.el to be initialized)
@@ -722,27 +723,27 @@
          :empty-lines-after 1)))
 
 (use-package ox-jira
-  :ensure t)
-;; Defer org-habit loading
-(with-eval-after-load 'org (require 'org-habit))
-(setq org-habit-show-all-today t)
-(setq org-habit-show-habits t)
-(setq org-startup-indented nil)
-(visual-line-mode 1)
-;; Defer org export backends - only needed when exporting
-(with-eval-after-load 'org (require 'ox-gfm))
-(use-package org-modern
-  :ensure t
-  :init
-  (with-eval-after-load 'org (global-org-modern-mode)))
-(with-eval-after-load 'org
-  (require 'org-modern)
-  (require 'ox-md)
-  (require 'ox-confluence)
-  (require 'ox-jira))
-;; org-variable-pitch removed — it fires face-checks on every fontification
-;; and errors 300+ times per session when org-indent-mode is not active
-(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+    :ensure t)
+  ;; Defer org-habit loading
+  (with-eval-after-load 'org (require 'org-habit))
+  (setq org-habit-show-all-today t)
+  (setq org-habit-show-habits t)
+  (setq org-startup-indented nil)
+  (visual-line-mode 1)
+  ;; Defer org export backends - only needed when exporting
+  (with-eval-after-load 'org (require 'ox-gfm))
+  (use-package org-modern
+    :ensure t
+    :init
+    (with-eval-after-load 'org (global-org-modern-mode)))
+  (with-eval-after-load 'org
+    (require 'org-modern)
+    (require 'ox-md)
+;;    (require 'ox-confluence)
+    (require 'ox-jira))
+  ;; org-variable-pitch removed — it fires face-checks on every fontification
+  ;; and errors 300+ times per session when org-indent-mode is not active
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 
 (use-package biblio
   :ensure t)
@@ -1181,13 +1182,13 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (require 'mail-config-new)
   (require 'blog)))
 
-(use-package highline
-  :ensure t
-  :defer 2
-  :config
-  (global-highline-mode t)
-  (setq highline-face '((:background "gray40")))
-  (setq highline-vertical-face '(( :background "lemonChiffon2"))))
+;; (use-package highline
+;;   :ensure t
+;;   :defer 2
+;;   :config
+;;   (global-highline-mode t)
+;;   (setq highline-face '((:background "gray40")))
+;;   (setq highline-vertical-face '(( :background "lemonChiffon2"))))
 
 
 (column-number-mode)
