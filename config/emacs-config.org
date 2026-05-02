@@ -665,7 +665,7 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
 
   ;; gnutls loads automatically when needed
   (setq starttls-use-gnutls t)
-  (setq auto-revert-check-vc-info t)
+  (setq auto-revert-check-vc-info nil)
 #+END_SRC
 ** Font Ligatures
 #+BEGIN_SRC elisp
@@ -1421,6 +1421,11 @@ This is kinda like that part in the bible with all the begats...
             (lambda ()
               (add-to-list 'completion-at-point-functions #'cape-dabbrev)
               (add-to-list 'completion-at-point-functions #'cape-keyword))))
+
+;; dabbrev scans only current buffer — with 250+ org-roam buffers open,
+;; scanning all buffers on every completion trigger causes multi-second lag
+(setq dabbrev-check-all-buffers nil)
+(setq dabbrev-check-other-buffers nil)
 #+END_SRC
 
 ** LSP-Mode

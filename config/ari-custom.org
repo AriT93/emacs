@@ -1425,6 +1425,16 @@ Shows E/W/N counts when diagnostics exist, checkmark when clean."
              (nano-modeline-window-dedicated))
            default))
 
+(defun ari/ari/nano-modeline-org-mode (&optional default)
+  "nano-modeline for org-mode using cached git branch (no vc-state call)."
+  (funcall nano-modeline-position
+           '((nano-modeline-buffer-status) " "
+             (nano-modeline-org-buffer-name) " "
+             (ari/nano-modeline-git-branch))
+           '((nano-modeline-cursor-position)
+             (nano-modeline-window-dedicated))
+           default))
+
 ;; --- nano UI toggle -----------------------------------------------------
 
 (defvar ari/nano-mode-active nil
@@ -1438,13 +1448,13 @@ Shows E/W/N counts when diagnostics exist, checkmark when clean."
   (require 'nano-modeline)
   (add-hook 'prog-mode-hook #'ari/nano-modeline-prog-mode)
   (add-hook 'text-mode-hook #'nano-modeline-text-mode)
-  (add-hook 'org-mode-hook  #'nano-modeline-org-mode)
+  (add-hook 'org-mode-hook  #'ari/nano-modeline-org-mode)
   ;; Only update visible windows — iterating all buffers is too slow
   (dolist (win (window-list))
     (with-current-buffer (window-buffer win)
       (when (derived-mode-p 'prog-mode) (ari/nano-modeline-prog-mode))
       (when (derived-mode-p 'text-mode) (nano-modeline-text-mode))
-      (when (derived-mode-p 'org-mode)  (nano-modeline-org-mode))))
+      (when (derived-mode-p 'org-mode)  (ari/nano-modeline-org-mode))))
   (require 'book-mode)
   (add-hook 'org-mode-hook #'book-mode)
   (dolist (win (window-list))
@@ -1458,7 +1468,7 @@ Shows E/W/N counts when diagnostics exist, checkmark when clean."
   (setq ari/nano-mode-active nil)
   (remove-hook 'prog-mode-hook #'ari/nano-modeline-prog-mode)
   (remove-hook 'text-mode-hook #'nano-modeline-text-mode)
-  (remove-hook 'org-mode-hook  #'nano-modeline-org-mode)
+  (remove-hook 'org-mode-hook  #'ari/nano-modeline-org-mode)
   (remove-hook 'org-mode-hook  #'book-mode)
   (dolist (win (window-list))
     (with-current-buffer (window-buffer win)

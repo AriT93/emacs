@@ -585,7 +585,7 @@
 
 ;; gnutls loads automatically when needed
 (setq starttls-use-gnutls t)
-(setq auto-revert-check-vc-info t)
+(setq auto-revert-check-vc-info nil)
 
 (use-package ligature
   :if (file-exists-p (expand-file-name "~/dev/git/ligature.el"))
@@ -1276,6 +1276,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
             (lambda ()
               (add-to-list 'completion-at-point-functions #'cape-dabbrev)
               (add-to-list 'completion-at-point-functions #'cape-keyword))))
+
+;; dabbrev scans only current buffer — with 250+ org-roam buffers open,
+;; scanning all buffers on every completion trigger causes multi-second lag
+(setq dabbrev-check-all-buffers nil)
+(setq dabbrev-check-other-buffers nil)
 
 ;;   (use-package lsp-mode
   ;;     :ensure t
