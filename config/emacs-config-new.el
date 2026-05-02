@@ -110,6 +110,13 @@
 (setq package-install-upgrade-built-in t)       ; Allow upgrading built-in packages (e.g. transient for magit)
 (package-initialize)
 
+;; Ensure transient >= 0.13 is installed for magit (built-in version is too old)
+(unless (package-installed-p 'transient '(0 13))
+  (package-refresh-contents)
+  (package-install 'transient)
+  (when (featurep 'transient) (unload-feature 'transient t))
+  (require 'transient))
+
 ;; Install and load use-package (needs package.el to be initialized)
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -644,7 +651,6 @@
   (diminish 'eldoc-mode)
   (diminish 'org-src-mode)
   (diminish 'abbrev-mode)
-  (diminish 'global-highline-mode)
   (diminish 'ruby-block-mode)
   (diminish 'ruby-electric-mode)
   (diminish 'buffer-face-mode)

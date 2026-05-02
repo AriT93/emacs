@@ -1294,6 +1294,12 @@ Creates a full org-roam reference note from the current elfeed entry."
 
 ;; --- nano-modeline segments ---------------------------------------------
 
+(defun ari/nano-modeline-git-branch ()
+  "Show git branch from cached vc-mode — no vc-state call, never blocks."
+  (when vc-mode
+    (propertize (format "(%s)" (substring-no-properties vc-mode 5))
+                'face (nano-modeline-face 'primary))))
+
 (defun ari/nano-modeline-flymake-info ()
   "Flymake diagnostic counts for nano-modeline right side.
 Shows E/W/N counts when diagnostics exist, checkmark when clean."
@@ -1331,7 +1337,7 @@ Shows E/W/N counts when diagnostics exist, checkmark when clean."
   (funcall nano-modeline-position
            '((nano-modeline-buffer-status) " "
              (nano-modeline-buffer-name) " "
-             (nano-modeline-git-info))
+             (ari/nano-modeline-git-branch))
            '((ari/nano-modeline-eglot-info)
              (ari/nano-modeline-flymake-info)
              (nano-modeline-cursor-position)
