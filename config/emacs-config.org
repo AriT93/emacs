@@ -3,7 +3,13 @@
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 #+Time-stamp: <2026-05-01 16:29:43 abturet>
+||||||| Stash base
+#+Time-stamp: <2026-03-13 10:38:37 ari.turetzky>
+=======
+#+Time-stamp: <2026-03-27 08:19:48 abturet>
+>>>>>>> Stashed changes
 ||||||| Stash base
 #+Time-stamp: <2026-03-13 10:38:37 ari.turetzky>
 =======
@@ -1961,7 +1967,13 @@ Da General give command-t like ease to emacs
         :straight (:host github :repo "copilot-emacs/copilot.el"
                    :branch "main"
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                    :files ("*.el" (:exclude "copilot-chat.el")))
+||||||| Stash base
+                   :files ("*.el"))
+=======
+                   :files (:defaults (:exclude "copilot-chat.el")))
+>>>>>>> Stashed changes
 ||||||| Stash base
                    :files ("*.el"))
 =======
@@ -2528,6 +2540,7 @@ the slackiest way to slack in emacs
      :default t
      :subscribed-channels nil ; Can change it dynamically
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
      ))
     ;; (slack-register-team
     ;;  :name "Development"
@@ -2542,6 +2555,24 @@ the slackiest way to slack in emacs
     ;;           :host "workdaydev.slack.com"
     ;;           :user "cookie")
     ;;  :subsribed-channels nil ))
+||||||| Stash base
+     )
+    (slack-register-team
+     :name "Development"
+     :default t
+     :enterprise-token (auth-source-pick-first-password
+                        :host "workdaydev.slack.com"
+                        :user "etoken")
+     :token (auth-source-pick-first-password
+             :host "workdaydev.slack.com"
+             :user "arit93")
+     :cookie (auth-source-pick-first-password
+              :host "workdaydev.slack.com"
+              :user "cookie")
+     :subsribed-channels nil ))
+=======
+     ))
+>>>>>>> Stashed changes
 ||||||| Stash base
      )
     (slack-register-team
