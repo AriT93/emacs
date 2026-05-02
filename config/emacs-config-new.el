@@ -50,6 +50,11 @@
 (setq inhibit-startup-message t)
 (setq inhibit-startup-echo-area-message t)
 
+;; Set early to avoid race with doom-themes-ext-org loading after first org file opens.
+;; org-heading-keyword-regexp-format has an optional group 2; the done-headline
+;; fontification keyword references it unconditionally, causing font-lock errors.
+(setq org-fontify-done-headline nil)
+
 ;; Optimize garbage collection during startup
 (setq gc-cons-threshold (* 100 1000 1000))  ; 100MB during startup
 (setq gc-cons-percentage 0.6)               ; More aggressive GC
@@ -87,6 +92,10 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+
+;; Claim org via straight IMMEDIATELY after bootstrap, before any other package
+;; can trigger the built-in org and cause a version mismatch warning.
+(straight-use-package 'org)
 
 ;; NOW configure and initialize package.el AFTER straight.el is loaded
 ;; This order prevents the "package.el already loaded" or "straight.el already loaded" warnings
@@ -648,6 +657,7 @@
   :straight
   :pin nongnu
   :ensure t
+  :demand t
   :custom-face
   (org-block ((t :inherit default
                  :extend t
@@ -657,7 +667,7 @@
   (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
   :config
   (setq org-agenda-files  '("~/Documents/notes/todo.org" "~/Documents/org-roam/daily"))
-  (setq org-startup-indented t)
+  (setq org-startup-indented nil)
   (setq org-default-notes-file "~/Documents/notes/notes.org")
   ;; Tag vocabulary for org-roam Zettelkasten workflow
   (setq org-tag-alist
@@ -730,9 +740,8 @@
   (require 'ox-md)
   (require 'ox-confluence)
   (require 'ox-jira))
-(add-hook 'org-modern-mode-hook 'org-variable-pitch-minor-mode)
-(add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
-(add-hook 'org-mode-hook 'org-indent-mode)
+;; org-variable-pitch removed — it fires face-checks on every fontification
+;; and errors 300+ times per session when org-indent-mode is not active
 (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 
 (use-package biblio
@@ -788,15 +797,15 @@
 (use-package org-roam
   :after org
   :ensure t
-  :defer t  ; Lazy-load org-roam - only load when needed
-  :commands (org-roam-node-find org-roam-node-insert org-roam-buffer-toggle
-             org-roam-dailies-goto-today org-roam-dailies-capture-today)
+  :demand t
   :init
   (setq org-roam-v2-ack t)
   :custom
   (org-roam-directory "~/Documents/org-roam" )
   :config
-  (org-roam-db-autosync-enable)
+  ;; Defer initial DB sync until Emacs is idle — avoids blocking startup
+  (add-hook 'emacs-startup-hook
+            (lambda () (run-with-idle-timer 4 nil #'org-roam-db-autosync-mode +1)))
   (setq org-roam-database-connector 'sqlite-builtin)
   (setq org-roam-capture-templates
         '(("d" "default" plain "%?" :if-new
@@ -1077,9 +1086,9 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package exec-path-from-shell
   :ensure t
   :config
-  (setq exec-path-from-shell-check-startup-files t)
-  (setq exec-path-from-shell-variables `("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
-  (setq exec-path-from-shell-arguments '("-l" "-i"))
+  (setq exec-path-from-shell-check-startup-files nil)
+  (setq exec-path-from-shell-variables '("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
+  (setq exec-path-from-shell-arguments '("-l"))  ; drop -i: interactive shell loads full .zshrc (~5s)
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
@@ -1108,7 +1117,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;; Defer yaml-mode - only load when opening yaml files
 (autoload 'yaml-mode "yaml-mode" "Major mode for editing YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
 (use-package inf-ruby
@@ -1204,23 +1212,14 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package corfu
   :ensure t
   :custom
-  ;; Enable auto completion
   (corfu-auto t)
-  ;; Start completion immediately (not after company-idle-delay)
-  (corfu-auto-delay 0.0)
-  ;; Show documentation in a separate popup
-  (corfu-popupinfo-delay 0.2)
-  ;; Matches company settings
+  (corfu-auto-delay 0.3)
+  (corfu-auto-prefix 2)
   (corfu-min-width 80)
   (corfu-max-width corfu-min-width)
   (corfu-count 10)
   (corfu-scroll-margin 5)
   (corfu-cycle t)
-  ;; Enable Corfu only for certain modes
-  :hook ((prog-mode . corfu-mode)
-         (shell-mode . corfu-mode)
-         (eshell-mode . corfu-mode)
-         (org-mode . corfu-mode))
   :bind
   (:map corfu-map
         ("C-n" . corfu-next)
@@ -1229,23 +1228,19 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
         ("TAB" . corfu-insert))
   :init
   (global-corfu-mode)
-  ;; Enable corfu in minibuffer too
   (defun corfu-enable-in-minibuffer ()
     "Enable Corfu in the minibuffer if `completion-at-point' is bound."
     (when (where-is-internal #'completion-at-point (list (current-local-map)))
       (corfu-mode 1)))
   (add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer)
-  :config
-  ;; Show documentation popup with M-h
-  (corfu-popupinfo-mode))
+  )
 
-;; Additional enhancements for corfu
 (use-package corfu-popupinfo
   :after corfu
-  :ensure nil  ;; Part of corfu
+  :ensure nil
   :hook (corfu-mode . corfu-popupinfo-mode)
   :custom
-  (corfu-popupinfo-delay '(0.2 . 0.1))
+  (corfu-popupinfo-delay '(0.5 . 0.2))
   :bind (:map corfu-map
               ("M-p" . corfu-popupinfo-scroll-down)
               ("M-n" . corfu-popupinfo-scroll-up)
@@ -1265,17 +1260,12 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package cape
   :ensure t
   :init
-  ;; Add useful completion sources
+  ;; cape-file globally (fast, path-based, no buffer scanning)
   (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  
-  ;; Programming language specific
-  (add-hook 'python-mode-hook
+  ;; cape-dabbrev and cape-keyword scoped to prog-mode only
+  (add-hook 'prog-mode-hook
             (lambda ()
-              (add-to-list 'completion-at-point-functions #'cape-keyword)))
-  (add-hook 'ruby-mode-hook
-            (lambda ()
+              (add-to-list 'completion-at-point-functions #'cape-dabbrev)
               (add-to-list 'completion-at-point-functions #'cape-keyword))))
 
 ;;   (use-package lsp-mode
@@ -1746,7 +1736,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package copilot
       :straight (:host github :repo "copilot-emacs/copilot.el"
                  :branch "main"
-                 :files ("*.el" (:exclude "copilot-chat.el")))
+                :files ("*.el" (:exclude "copilot-chat.el")))
       :defer 10  ; Defer copilot loading
       :config
       ;; you can utilize :map :hook and :config to customize copilot
@@ -2029,12 +2019,8 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   ;; Better xref integration
   (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
 
-;; EGLOT code actions with embark
-(use-package embark
-  :ensure t
-  :after eglot
-  :config
-  ;; Add EGLOT actions to embark
+;; EGLOT code actions with embark (main embark block is in the completion section)
+(with-eval-after-load 'embark
   (add-to-list 'embark-keymap-alist '(eglot-mode . embark-eglot-map)))
 
 ;; Better language server fallbacks and error handling
@@ -2257,7 +2243,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (slack-block-highlight-source t)
   (slack-enable-wysiwyg t)
   (slack-buffer-emojify t)
-  (slack-buffer-emojify t)
   (slack-thread-also-send-to-room nil)
   :config
   (slack-register-team
@@ -2294,7 +2279,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   ;;          :user "arit93")
   ;;  :cookie (auth-source-pick-first-password
   ;;           :host "workdaydev.slack.com"
-;;           :user "cookie")
+  ;;           :user "cookie")
   ;;  :subsribed-channels nil ))
 
 ;; Defer flyover - load with flycheck
@@ -2343,13 +2328,9 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq flyover-error-icon "✘")
 
 ;;; Icon padding
-
 ;;; You might want to adjust this setting if you icons are not centererd or if you more or less space.fs
 (setq flyover-icon-left-padding 0.9)
-(setq flyover-icon-right-padding 0.9);;; Icons
-(setq flyover-info-icon "🛈")
-(setq flyover-warning-icon "⚠")
-(setq flyover-error-icon "✘")
+(setq flyover-icon-right-padding 0.9)
 
 (set-face-attribute 'default nil
                     :inherit nil
