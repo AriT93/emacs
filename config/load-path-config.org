@@ -17,6 +17,8 @@
 
   ;; Local site packages - check each one exists
   (dolist (site-path '("~/emacs/site/lisp"
+                       "~/emacs/site/nano-elfeed"
+                       "~/emacs/site/relative-date"
                        "~/emacs/site/ruby-block"
                        "~/emacs/site/blog"))
     (let ((expanded-path (expand-file-name site-path)))

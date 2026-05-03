@@ -16,7 +16,8 @@
       "WebFetch(domain:org-roam.discourse.group)",
       "WebFetch(domain:phiresky.github.io)",
       "WebFetch(domain:metaredux.com)",
-      "WebFetch(domain:www.flycheck.org)"
+      "WebFetch(domain:www.flycheck.org)",
+      "Bash(/home/abturet/dev/emacs/src/emacs *)"
     ]
   }
 }

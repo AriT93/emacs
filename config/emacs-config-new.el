@@ -157,8 +157,6 @@
 (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
-
-
 (show-paren-mode 1)
 (recentf-mode 1)
 (fringe-mode 10)
@@ -416,7 +414,6 @@
   :defer 2
   :ensure t)
 
-
 (use-package nvm
   :defer 2
   :ensure t)
@@ -494,7 +491,6 @@
   :init
   (with-eval-after-load 'git-gutter (require 'git-gutter-fringe))
   )
-
 
 (use-package persistent-scratch
   :ensure t
@@ -612,7 +608,6 @@
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
 
-
 (use-package flymake
   :hook ((prog-mode . flymake-mode)
          (text-mode . flymake-mode))
@@ -728,7 +723,7 @@
          :immediate-finish t
          :empty-lines-after 1)))
 
-  (use-package ox-jira
+(use-package ox-jira
     :ensure t)
   ;; Defer org-habit loading
   (with-eval-after-load 'org (require 'org-habit))
@@ -766,7 +761,6 @@
         org-cite-csl-styles-dir "~/Zotero/styles")
 )
 
-
 (setq org-latex-listings 'minted)
 (add-to-list 'org-latex-packages-alist '("" "minted" t))
 
@@ -788,7 +782,6 @@
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-
 
 (use-package jiralib2
   :ensure t
@@ -993,7 +986,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package ox-gfm
   :ensure t)
 
-
 (use-package org-mime
   :ensure t)
 (setq org-src-fontify-natively t)
@@ -1136,7 +1128,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
  ;;   :config
  ;;   (load-theme 'vscode-dark-plus t))
 
-
 (use-package exec-path-from-shell
   :ensure t
   :config
@@ -1167,13 +1158,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
          (key (substring (shell-command-to-string full-command) 0 -1)))
     (setq org-crypt-key key)))
 
-  ;; yaml
+;; yaml
 ;; Defer yaml-mode - only load when opening yaml files
 (autoload 'yaml-mode "yaml-mode" "Major mode for editing YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
-
-
 
 (use-package inf-ruby
   :defer 2
@@ -1329,7 +1318,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq dabbrev-check-all-buffers nil)
 (setq dabbrev-check-other-buffers nil)
 
-  ;;   (use-package lsp-mode
+;;   (use-package lsp-mode
   ;;     :ensure t
   ;;     :pin melpa
   ;;     :commands (lsp lsp-deferred)
@@ -1497,7 +1486,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 :hook
 (markdown-mode . abbrev-mode))
 
-
 (require 'dired-x)
 (setq dired-omit-files
       (rx(or(seq bol(? ".") "#")
@@ -1532,7 +1520,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;;     ad-do-it))
 ;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
 
-
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook()
   (message "SQL mode hook executed")
@@ -1549,8 +1536,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (setq sql-product (quote ms))
   (setq sql-mysql-login-params (append sql-mysql-login-params '(port))))
 
-
-  (use-package rjsx-mode
+(use-package rjsx-mode
     :defer 2
     :ensure t)
   ;; NOTE: eglot-ensure hooks moved to main eglot configuration (line ~2189)
@@ -1618,7 +1604,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :config
   (setq which-key-idle-delay 1))
 
-
 (use-package helpful
   :ensure t
   :defer t  ; Lazy-load helpful - only load when help commands are used
@@ -1630,9 +1615,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package elfeed
   :ensure t
   :config
-  ;;
-  ;; linking and capturing
-  ;;
+  ;; Org-link functions (keep for org-roam integration)
   (defun elfeed-link-title (entry)
     "Copy the entry title and URL as org link to the clipboard."
     (interactive)
@@ -1643,23 +1626,19 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
         (kill-new titlelink)
         (x-set-selection 'PRIMARY titlelink)
         (message "Yanked: %s" titlelink))))
-  ;; show mode
+
   (defun elfeed-show-link-title ()
     "Copy the current entry title and URL as org link to the clipboard."
     (interactive)
     (elfeed-link-title elfeed-show-entry))
+
   (defun elfeed-show-quick-url-note ()
-    "Fastest way to capture entry link to org agenda from elfeed show mode"
+    "Capture entry link to org-roam daily."
     (interactive)
     (elfeed-link-title elfeed-show-entry)
     (org-roam-dailies-capture-today nil "l")
     (yank)
-    (org-capture-finalize))
-  (bind-keys :map elfeed-show-mode-map
-             ("l" . elfeed-show-link-title)
-             ("v" . elfeed-show-quick-url-note)
-             ("r" . ari/elfeed-capture-to-roam))
-  )
+    (org-capture-finalize)))
 
 (use-package elfeed-org
   :ensure t
@@ -1668,30 +1647,39 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
   (elfeed-org))
 
-;; (use-package visual-fill
-;;   :ensure t)
+;; nano-elfeed dependencies
+(use-package stripes
+  :ensure t
+  :defer t)
 
- (defun elfeed-olivetti (buff)
-  (with-current-buffer buff
-    (setq fill-column 100)
-    (setq buffer-read-only nil)
-    (goto-char (point-min))
-    (re-search-forward "\n\n")
-    (fill-individual-paragraphs (point-min) (point-max))
-    (setq buffer-read-only t))
-  (switch-to-buffer buff)
-  ;;       (olivetti-mode)
-  (visual-fill-column-mode)
-  (elfeed-show-refresh)
-  )
+;; Shim faces for nano-elfeed (avoids loading full nano-theme)
+(defface nano-faded-i
+  '((t :inherit shadow :inverse-video t))
+  "Faded inverse face for nano-elfeed.")
+(defface nano-subtle
+  '((t :inherit highlight))
+  "Subtle background face for nano-elfeed.")
+(defface nano-strong
+  '((t :inherit bold))
+  "Strong face for nano-elfeed.")
+(provide 'nano-theme)
 
-(add-hook 'elfeed-show-mode-hook (lambda()
-                                   (setq fill-column 100)
-                                   ;;(visual-fill-mode t)
-                                   (adaptive-wrap-prefix-mode t)
-                                   (toggle-word-wrap)
-                                   (setq elfeed-show-entry-switch 'elfeed-olivetti)
-                                   ))
+;; nano-elfeed for cleaner feed display
+(setq nano-elfeed-icon-path (expand-file-name "~/emacs/site/nano-elfeed/icons"))
+(require 'nano-elfeed)
+
+;; Cleaner article view: no line numbers, sans font
+(add-hook 'elfeed-show-mode-hook
+          (lambda ()
+            (display-line-numbers-mode -1)
+            (face-remap-add-relative 'default '(:family "Sans Serif"))))
+
+;; Restore keybindings after nano-elfeed sets its own
+(with-eval-after-load 'elfeed
+  (bind-keys :map elfeed-show-mode-map
+             ("l" . elfeed-show-link-title)
+             ("v" . elfeed-show-quick-url-note)
+             ("r" . ari/elfeed-capture-to-roam)))
 
 (use-package prescient
   :ensure t
@@ -1798,7 +1786,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "sr" '(consult-ripgrep :which-key "ripgrep")
     "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
 
-    (use-package copilot
+(use-package copilot
       :straight (:host github :repo "copilot-emacs/copilot.el"
                  :branch "main"
                 :files ("*.el" (:exclude "copilot-chat.el")))
@@ -2391,7 +2379,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;;; You might want to adjust this setting if you icons are not centererd or if you more or less space.fs
 (setq flyover-icon-left-padding 0.9)
 (setq flyover-icon-right-padding 0.9)
-
 
 (set-face-attribute 'default nil
                     :inherit nil

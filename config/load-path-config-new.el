@@ -10,6 +10,8 @@
 
 ;; Local site packages - check each one exists
 (dolist (site-path '("~/emacs/site/lisp"
+                     "~/emacs/site/nano-elfeed"
+                     "~/emacs/site/relative-date"
                      "~/emacs/site/ruby-block"
                      "~/emacs/site/blog"))
   (let ((expanded-path (expand-file-name site-path)))
@@ -34,3 +36,4 @@
 (autoload 'python-mode "python-mode" "Python editing mode." t)
 
 (provide 'load-path-config-new)
+

@@ -1,0 +1,137 @@
+
+* Relative date computation and formatting
+
+This package allows to format the difference between two dates according to
+the value of their difference (expressed in seconds) or a symbolic
+relationship between the two dates (e.g. 'today). The main entry points for
+the library are the =relative-date= function and the =relative-date-formats= variable.
+
+** Usage
+
+You need first to define the =relative-date-formats= variable and specify how to format a date difference according to the amount of seconds separating the two dates. 
+
+#+begin_src emacs-lisp
+
+(defcustom relative-date-formats
+  `( (,(*       3 60) . "now")              ;; Less than 3 minutes (past)
+     (,(- (*   3 60)) . "soon")             ;; Less than 3 minutes (future)
+     (,(*      60 60) . "%(M) mins. ago")   ;; Less than 1 hour
+     (,(*    3 60 60) . "%(H) hours ago")   ;; Less than 3 hours
+     (today           . "Today %H:%M")      ;; Today
+     (yesterday       . "Yest. %H:%M")      ;; Yesterday
+     (this-week       . "%a. %H:%M")        ;; This week
+     (this-year       . "%B %d")            ;; This year
+     (t               . "%Y-%m-%d")))       ;; Default
+
+#+end_src
+
+You can then use the =relative-date= to get the formatted difference as a string.
+(we use an explicit =now= date in the example below but it is optional. When not given, current time is used).
+
+#+begin_src emacs-lisp
+
+(let ((now  (encode-time (parse-time-string "2022-07-14 8:00")))
+      (date (encode-time (parse-time-string "2022-07-14 7:59"))))
+  (relative-date date now))
+;; -> "now"
+
+(let ((now  (encode-time (parse-time-string "2022-07-14 8:00")))
+      (date (encode-time (parse-time-string "2022-07-14 8:02"))))
+  (relative-date date now))
+;; -> "soon"
+
+(let ((now  (encode-time (parse-time-string "2022-07-14 8:00")))
+      (date (encode-time (parse-time-string "2022-07-14 7:45"))))
+  (relative-date date now))
+;; -> "15 mins. ago"
+
+(let ((now  (encode-time (parse-time-string "2022-07-14 8:00")))
+      (date (encode-time (parse-time-string "2022-07-14 6:05"))))
+  (relative-date date now))
+;; -> "2 hours ago"
+
+(let ((now  (encode-time (parse-time-string "2022-07-14 8:00")))
+      (date (encode-time (parse-time-string "2022-07-14 4:45"))))
+  (relative-date date now))
+;; -> "Today 04:45"
+
+(let ((now  (encode-time (parse-time-string "2022-07-14 8:00")))
+      (date (encode-time (parse-time-string "2022-07-15 4:45"))))
+  (relative-date date now))
+;; -> "Tomorrow"
+
+#+end_src
+
+Symbolic criteria are: =yesterday,= =today=, =tomorrow=, =last-week=, =this-week=, =next-week=, =last-month=, =this-month=, =next-month=, =last-year, =this-year= & =next-year=.
+
+** Integrations
+*** Mu4e integration
+
+Integration with [[https://github.com/djcb/mu][mu4e]] is straightforward
+
+#+begin_src emacs-lisp
+
+(require 'relative-date)
+
+(defun mu4e-headers-relative-date (msg)
+  (format "%12s" (relative-date (mu4e-message-field msg :date))))
+
+(add-to-list 'mu4e-header-info-custom
+             '(:relative-date . (:name "relative-date"
+                                 :shortname "D"
+                                 :function mu4e-headers-relative-date)))
+
+(setq mu4e-headers-fields
+'((:relative-date . 12)
+  (:flags . 6)
+  (:mailing-list . 10)
+  (:from . 22)
+  (:subject)))
+
+#+end_src
+
+*** Elfeed integration
+
+Showing relative dates in [[https://github.com/skeeto/elfeed][elfeed]] is a bit more involved, you have to reimplement the function =elfeed-search-format-date= such that it calls the relative-date library. An implementation is shown below, overriding the original with an advice. It comes with a search date format with a dummy format (and specifies width and alignment).
+
+#+begin_src elisp
+  (setq elfeed-search-date-format '("rel" 4 :right))
+
+  (defun my/elfeed-search-format-date (date)
+    "Format a date for printing in `elfeed-search-mode' using relative dates."
+    (cl-destructuring-bind (format target alignment) elfeed-search-date-format
+      (let* ((string (relative-date (seconds-to-time date)))
+             (width (string-width string)))
+        (cond
+         ((> width target)
+          (if (eq alignment :left)
+              (substring string 0 target)
+            (substring string (- width target) width)))
+         ((< width target)
+          (let ((pad (make-string (- target width) ?\s)))
+            (if (eq alignment :left)
+                (concat string pad)
+              (concat pad string))))
+         (string)))))
+
+  (advice-add 'elfeed-search-format-date :override #'my/elfeed-search-format-date)
+#+end_src
+
+Moreover, it's suggested to reconfigure =relative-date-formats= to show strings up to 4 characters:
+
+#+begin_src elisp
+  (setq relative-date-formats
+          `( (,(*       3 60)       . "now")     ; Less than 3 minutes (past)
+             (,(- (*   3 60))       . "soon")    ; Less than 3 minutes (future)
+             (,(*      60 60)       . "%(M)m")   ; Less than 1 hour
+             (,(- (*   60 60))      . "+%(M)m")  ; Less than 1 hour in the future
+             (,(*   24 60 60)       . "%(H)h")   ; Less than 24 hours
+             (,(- (*   24 60 60))   . "+%(H)h")  ; Less than 24 hours in the future
+             (,(* 7 24 60 60)       . "%(d)d")   ; Less than 7 days
+             (,(- (* 7 24 60 60))   . "+%(d)d")  ; Less than 7 days in the future
+             (,(* 30 24 60 60)      . "%(w)w")   ; Less than 30 days
+             (,(- (* 30 24 60 60))  . "+%(w)w")  ; Less than 30 days in the future
+             (,(* 365 24 60 60)     . "%(m)mo")  ; Less than a year
+             (,(- (* 365 24 60 60)) . "+%(m)mo") ; Less than a year in the future
+             (t                     . "%(y)y"))) ; Default
+#+end_src

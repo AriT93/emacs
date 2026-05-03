@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-05-02 08:20:34 abturet>
+#+Time-stamp: <2026-05-03 08:25:43 abturet>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -1818,9 +1818,7 @@ setting this up for roam and keeping deft for notes
   (use-package elfeed
     :ensure t
     :config
-    ;;
-    ;; linking and capturing
-    ;;
+    ;; Org-link functions (keep for org-roam integration)
     (defun elfeed-link-title (entry)
       "Copy the entry title and URL as org link to the clipboard."
       (interactive)
@@ -1831,23 +1829,19 @@ setting this up for roam and keeping deft for notes
           (kill-new titlelink)
           (x-set-selection 'PRIMARY titlelink)
           (message "Yanked: %s" titlelink))))
-    ;; show mode
+
     (defun elfeed-show-link-title ()
       "Copy the current entry title and URL as org link to the clipboard."
       (interactive)
       (elfeed-link-title elfeed-show-entry))
+
     (defun elfeed-show-quick-url-note ()
-      "Fastest way to capture entry link to org agenda from elfeed show mode"
+      "Capture entry link to org-roam daily."
       (interactive)
       (elfeed-link-title elfeed-show-entry)
       (org-roam-dailies-capture-today nil "l")
       (yank)
-      (org-capture-finalize))
-    (bind-keys :map elfeed-show-mode-map
-               ("l" . elfeed-show-link-title)
-               ("v" . elfeed-show-quick-url-note)
-               ("r" . ari/elfeed-capture-to-roam))
-    )
+      (org-capture-finalize)))
 
   (use-package elfeed-org
     :ensure t
@@ -1856,30 +1850,39 @@ setting this up for roam and keeping deft for notes
     (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
     (elfeed-org))
 
-  ;; (use-package visual-fill
-  ;;   :ensure t)
+  ;; nano-elfeed dependencies
+  (use-package stripes
+    :ensure t
+    :defer t)
 
-   (defun elfeed-olivetti (buff)
-    (with-current-buffer buff
-      (setq fill-column 100)
-      (setq buffer-read-only nil)
-      (goto-char (point-min))
-      (re-search-forward "\n\n")
-      (fill-individual-paragraphs (point-min) (point-max))
-      (setq buffer-read-only t))
-    (switch-to-buffer buff)
-    ;;       (olivetti-mode)
-    (visual-fill-column-mode)
-    (elfeed-show-refresh)
-    )
+  ;; Shim faces for nano-elfeed (avoids loading full nano-theme)
+  (defface nano-faded-i
+    '((t :inherit shadow :inverse-video t))
+    "Faded inverse face for nano-elfeed.")
+  (defface nano-subtle
+    '((t :inherit highlight))
+    "Subtle background face for nano-elfeed.")
+  (defface nano-strong
+    '((t :inherit bold))
+    "Strong face for nano-elfeed.")
+  (provide 'nano-theme)
 
-  (add-hook 'elfeed-show-mode-hook (lambda()
-                                     (setq fill-column 100)
-                                     ;;(visual-fill-mode t)
-                                     (adaptive-wrap-prefix-mode t)
-                                     (toggle-word-wrap)
-                                     (setq elfeed-show-entry-switch 'elfeed-olivetti)
-                                     ))
+  ;; nano-elfeed for cleaner feed display
+  (setq nano-elfeed-icon-path (expand-file-name "~/emacs/site/nano-elfeed/icons"))
+  (require 'nano-elfeed)
+
+  ;; Cleaner article view: no line numbers, sans font
+  (add-hook 'elfeed-show-mode-hook
+            (lambda ()
+              (display-line-numbers-mode -1)
+              (face-remap-add-relative 'default '(:family "Sans Serif"))))
+
+  ;; Restore keybindings after nano-elfeed sets its own
+  (with-eval-after-load 'elfeed
+    (bind-keys :map elfeed-show-mode-map
+               ("l" . elfeed-show-link-title)
+               ("v" . elfeed-show-quick-url-note)
+               ("r" . ari/elfeed-capture-to-roam)))
 #+end_src
 ** Prescient
 #+begin_src elisp
