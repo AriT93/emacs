@@ -1,4 +1,3 @@
-
 ;;; ari-custom.el --- holds all my own private stuff -*- lexical-binding: t; -*-
 ;;add a comment
 ;;; Commentary:
@@ -35,7 +34,7 @@
       (occur (if isearch-regexp isearch-string
                (regexp-quote isearch-string))))))
 
-     (defun djcb-opacity-modify (&optional dec)
+(defun djcb-opacity-modify (&optional dec)
        "Modify the transparency of the Emacs frame in 10% steps.
 If DEC is non-nil, decrease transparency by 10%, otherwise increase it.
 Transparency is constrained between `frame-alpha-lower-limit' and 100.
@@ -57,7 +56,7 @@ Returns the new alpha value, or nil if no change was made."
           (message "Error modifying frame opacity: %s" (error-message-string err))
           nil)))
 
-  (defun fg/jira-update-heading ()
+(defun fg/jira-update-heading ()
     "Update current org heading with data from Jira.
 Fetches issue details from Jira using the JIRAISSUEKEY property and updates
 the heading text and properties with current issue data. Requires jiralib2 to
@@ -93,7 +92,6 @@ the heading and properties."
       (error
        (message "Error updating Jira heading: %s" (error-message-string err))
        nil)))
-
 
 (defun ari/migrate-discussed-ids-to-meetings ()
   "Migrate IDs from '** Discussed' headings to parent '* Meeting:' headings.
@@ -1116,10 +1114,9 @@ Skips checkers that trigger expensive operations like org-id-update-id-locations
   (interactive)
   (when (derived-mode-p 'org-mode)
     (require 'org-lint)
-    (let* ((all-checkers (org-lint--collect-checkers org-lint--checkers))
-           (fast-checkers (seq-filter
+    (let* ((fast-checkers (seq-filter
                            (lambda (c) (memq (org-lint-checker-name c) my/org-lint-fast-checkers))
-                           all-checkers))
+                           org-lint--checkers))
            (reports (org-lint--generate-reports (current-buffer) fast-checkers)))
       (if (null reports)
           (when (called-interactively-p 'any)

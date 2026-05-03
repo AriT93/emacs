@@ -1179,10 +1179,9 @@ Skips checkers that trigger expensive operations like org-id-update-id-locations
   (interactive)
   (when (derived-mode-p 'org-mode)
     (require 'org-lint)
-    (let* ((all-checkers (org-lint--collect-checkers org-lint--checkers))
-           (fast-checkers (seq-filter
+    (let* ((fast-checkers (seq-filter
                            (lambda (c) (memq (org-lint-checker-name c) my/org-lint-fast-checkers))
-                           all-checkers))
+                           org-lint--checkers))
            (reports (org-lint--generate-reports (current-buffer) fast-checkers)))
       (if (null reports)
           (when (called-interactively-p 'any)

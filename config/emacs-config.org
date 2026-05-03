@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-05-03 08:25:43 abturet>
+#+Time-stamp: <2026-05-03 09:11:11 abturet>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -13,8 +13,8 @@ configuration  *This is a Work in Progress*
 ** Get some package goodness
 #+BEGIN_SRC elisp
 ;; -*- lexical-binding: t; -*-
-  ;; Don't configure package.el yet - it will be set up AFTER straight.el loads
-  ;; to avoid triggering package.el autoload before straight.el
+;; Don't configure package.el yet - it will be set up AFTER straight.el loads
+;; to avoid triggering package.el autoload before straight.el
 #+END_SRC
 
 ** Use Package
@@ -1855,19 +1855,7 @@ setting this up for roam and keeping deft for notes
     :ensure t
     :defer t)
 
-  ;; Shim faces for nano-elfeed (avoids loading full nano-theme)
-  (defface nano-faded-i
-    '((t :inherit shadow :inverse-video t))
-    "Faded inverse face for nano-elfeed.")
-  (defface nano-subtle
-    '((t :inherit highlight))
-    "Subtle background face for nano-elfeed.")
-  (defface nano-strong
-    '((t :inherit bold))
-    "Strong face for nano-elfeed.")
-  (provide 'nano-theme)
-
-  ;; nano-elfeed for cleaner feed display
+  ;; nano-elfeed for cleaner feed display (uses nano-theme faces)
   (setq nano-elfeed-icon-path (expand-file-name "~/emacs/site/nano-elfeed/icons"))
   (require 'nano-elfeed)
 
