@@ -2384,6 +2384,27 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq flyover-icon-right-padding 0.9)
 
 
+;; eros - Evaluation Result OverlayS for Emacs Lisp
+;; Shows eval results (C-x C-e, etc.) as inline overlays at cursor
+(use-package eros
+  :ensure t
+  :hook (emacs-lisp-mode . eros-mode)
+  :custom
+  (eros-eval-result-prefix "=> ")
+  (eros-eval-result-duration 'command))  ; Overlay disappears on next keypress
+
+;; quickrun - Run code snippets in various languages
+;; Results can display as overlays or in a popup buffer
+(use-package quickrun
+  :ensure t
+  :defer t
+  :bind (("C-c q q" . quickrun)
+         ("C-c q r" . quickrun-region)
+         ("C-c q s" . quickrun-shell))
+  :custom
+  (quickrun-timeout-seconds 30)          ; Allow longer running code
+  (quickrun-focus-p nil))                ; Don't steal focus to output buffer
+
 (set-face-attribute 'default nil
                     :inherit nil
                     :height 160
