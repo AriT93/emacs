@@ -17,7 +17,16 @@
       "WebFetch(domain:phiresky.github.io)",
       "WebFetch(domain:metaredux.com)",
       "WebFetch(domain:www.flycheck.org)",
-      "Bash(/home/abturet/dev/emacs/src/emacs *)"
+      "Bash(/home/abturet/dev/emacs/src/emacs *)",
+      "WebFetch(domain:xenodium.com)",
+      "Read(//home/abturet/.emacs.d/**)",
+      "Read(//home/abturet/.config/emacs/**)",
+      "Read(//home/abturet/.emacs.d/elpa/**)",
+      "Bash(timeout 10 /home/abturet/n/bin/claude-agent-acp)",
+      "Bash(echo \"exit: $?\")",
+      "Read(//tmp/**)",
+      "Read(//home/abturet/n/lib/node_modules/@agentclientprotocol/claude-agent-acp/node_modules/@anthropic-ai/**)",
+      "Read(//home/abturet/n/lib/node_modules/@agentclientprotocol/**)"
     ]
   }
 }

@@ -157,8 +157,6 @@
 (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
-
-
 (show-paren-mode 1)
 (recentf-mode 1)
 (fringe-mode 10)
@@ -416,7 +414,6 @@
   :defer 2
   :ensure t)
 
-
 (use-package nvm
   :defer 2
   :ensure t)
@@ -494,7 +491,6 @@
   :init
   (with-eval-after-load 'git-gutter (require 'git-gutter-fringe))
   )
-
 
 (use-package persistent-scratch
   :ensure t
@@ -612,7 +608,6 @@
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
 
-
 (use-package flymake
   :hook ((prog-mode . flymake-mode)
          (text-mode . flymake-mode))
@@ -728,7 +723,7 @@
          :immediate-finish t
          :empty-lines-after 1)))
 
-  (use-package ox-jira
+(use-package ox-jira
     :ensure t)
   ;; Defer org-habit loading
   (with-eval-after-load 'org (require 'org-habit))
@@ -766,7 +761,6 @@
         org-cite-csl-styles-dir "~/Zotero/styles")
 )
 
-
 (setq org-latex-listings 'minted)
 (add-to-list 'org-latex-packages-alist '("" "minted" t))
 
@@ -788,7 +782,6 @@
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-
 
 (use-package jiralib2
   :ensure t
@@ -993,7 +986,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package ox-gfm
   :ensure t)
 
-
 (use-package org-mime
   :ensure t)
 (setq org-src-fontify-natively t)
@@ -1136,12 +1128,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
  ;;   :config
  ;;   (load-theme 'vscode-dark-plus t))
 
-
 (use-package exec-path-from-shell
   :ensure t
   :config
   (setq exec-path-from-shell-check-startup-files nil)
-  (setq exec-path-from-shell-variables '("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
+  (setq exec-path-from-shell-variables '("PATH" "ANTHROPIC_API_KEY" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
   (setq exec-path-from-shell-arguments '("-l"))  ; drop -i: interactive shell loads full .zshrc (~5s)
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
@@ -1167,13 +1158,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
          (key (substring (shell-command-to-string full-command) 0 -1)))
     (setq org-crypt-key key)))
 
-  ;; yaml
+;; yaml
 ;; Defer yaml-mode - only load when opening yaml files
 (autoload 'yaml-mode "yaml-mode" "Major mode for editing YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
-
-
 
 (use-package inf-ruby
   :defer 2
@@ -1329,7 +1318,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq dabbrev-check-all-buffers nil)
 (setq dabbrev-check-other-buffers nil)
 
-  ;;   (use-package lsp-mode
+;;   (use-package lsp-mode
   ;;     :ensure t
   ;;     :pin melpa
   ;;     :commands (lsp lsp-deferred)
@@ -1497,7 +1486,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 :hook
 (markdown-mode . abbrev-mode))
 
-
 (require 'dired-x)
 (setq dired-omit-files
       (rx(or(seq bol(? ".") "#")
@@ -1532,7 +1520,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;;     ad-do-it))
 ;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
 
-
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook()
   (message "SQL mode hook executed")
@@ -1549,8 +1536,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (setq sql-product (quote ms))
   (setq sql-mysql-login-params (append sql-mysql-login-params '(port))))
 
-
-  (use-package rjsx-mode
+(use-package rjsx-mode
     :defer 2
     :ensure t)
   ;; NOTE: eglot-ensure hooks moved to main eglot configuration (line ~2189)
@@ -1617,7 +1603,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1))
-
 
 (use-package helpful
   :ensure t
@@ -1789,7 +1774,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "sr" '(consult-ripgrep :which-key "ripgrep")
     "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
 
-    (use-package copilot
+(use-package copilot
       :straight (:host github :repo "copilot-emacs/copilot.el"
                  :branch "main"
                 :files ("*.el" (:exclude "copilot-chat.el")))
@@ -1836,9 +1821,24 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :ensure t
   :demand t)  ; Load immediately - used for AI code completion
 (use-package agent-shell
-  :vc (:url "https://github.com/xenodium/agent-shell")
+  :vc t
+  :load-path "~/dev/git/agent-shell"
   :ensure t
-  :demand t)  ; Load immediately - used for AI shell commands
+  :demand t
+  :config
+  (setq agent-shell-anthropic-authentication
+        (agent-shell-anthropic-make-authentication :login t))
+  (setq agent-shell-anthropic-claude-acp-command
+        (list (expand-file-name "~/n/bin/claude-agent-acp")))
+  (setq agent-shell-session-strategy 'new)
+  ;; n (node version manager) puts node in ~/n/bin, but Emacs's subprocess
+  ;; PATH comes from a login shell that sources .zprofile, not .zshrc.
+  ;; Inject n/bin so the claude-agent-acp shebang (#!/usr/bin/env node) resolves.
+  (setq agent-shell-anthropic-claude-environment
+        (list (format "PATH=%s:%s"
+                      (expand-file-name "~/n/bin")
+                      (getenv "PATH")))))
+
   (use-package gptel
     :ensure t
     :config
@@ -2382,7 +2382,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;;; You might want to adjust this setting if you icons are not centererd or if you more or less space.fs
 (setq flyover-icon-left-padding 0.9)
 (setq flyover-icon-right-padding 0.9)
-
 
 ;; eros - Evaluation Result OverlayS for Emacs Lisp
 ;; Shows eval results (C-x C-e, etc.) as inline overlays at cursor

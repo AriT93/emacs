@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-05-03 09:11:11 abturet>
+#+Time-stamp: <2026-05-22 10:42:45 abturet>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -1265,7 +1265,7 @@ encrypt the stoff that needs encrypting
     :ensure t
     :config
     (setq exec-path-from-shell-check-startup-files nil)
-    (setq exec-path-from-shell-variables '("PATH" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
+    (setq exec-path-from-shell-variables '("PATH" "ANTHROPIC_API_KEY" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
     (setq exec-path-from-shell-arguments '("-l"))  ; drop -i: interactive shell loads full .zshrc (~5s)
     (when (memq window-system '(mac ns x))
       (exec-path-from-shell-initialize)))
@@ -2031,9 +2031,24 @@ Da General give command-t like ease to emacs
     :ensure t
     :demand t)  ; Load immediately - used for AI code completion
   (use-package agent-shell
-    :vc (:url "https://github.com/xenodium/agent-shell")
+    :vc t
+    :load-path "~/dev/git/agent-shell"
     :ensure t
-    :demand t)  ; Load immediately - used for AI shell commands
+    :demand t
+    :config
+    (setq agent-shell-anthropic-authentication
+          (agent-shell-anthropic-make-authentication :login t))
+    (setq agent-shell-anthropic-claude-acp-command
+          (list (expand-file-name "~/n/bin/claude-agent-acp")))
+    (setq agent-shell-session-strategy 'new)
+    ;; n (node version manager) puts node in ~/n/bin, but Emacs's subprocess
+    ;; PATH comes from a login shell that sources .zprofile, not .zshrc.
+    ;; Inject n/bin so the claude-agent-acp shebang (#!/usr/bin/env node) resolves.
+    (setq agent-shell-anthropic-claude-environment
+          (list (format "PATH=%s:%s"
+                        (expand-file-name "~/n/bin")
+                        (getenv "PATH")))))
+
     (use-package gptel
       :ensure t
       :config
@@ -2101,6 +2116,10 @@ Da General give command-t like ease to emacs
 
     ;; aider removed - aidermacs above is the active aider integration
 #+end_src
+
+#+RESULTS:
+: aidermacs-transient-menu
+
 ** Magit Delta
 delta is better diffs for git
 #+BEGIN_SRC elisp
