@@ -26,7 +26,9 @@
       "Bash(echo \"exit: $?\")",
       "Read(//tmp/**)",
       "Read(//home/abturet/n/lib/node_modules/@agentclientprotocol/claude-agent-acp/node_modules/@anthropic-ai/**)",
-      "Read(//home/abturet/n/lib/node_modules/@agentclientprotocol/**)"
+      "Read(//home/abturet/n/lib/node_modules/@agentclientprotocol/**)",
+      "WebFetch(domain:www.rahuljuliato.com)",
+      "WebFetch(domain:karthinks.com)"
     ]
   }
 }

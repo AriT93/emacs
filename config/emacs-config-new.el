@@ -161,6 +161,47 @@
 (recentf-mode 1)
 (fringe-mode 10)
 (tool-bar-mode -1)
+
+;; Emacs 31 / modern built-in features
+(pixel-scroll-precision-mode 1)      ; Smooth scrolling
+(save-place-mode 1)                  ; Remember cursor position in files
+(winner-mode 1)                      ; Undo window config with C-c <left>/<right>
+(repeat-mode 1)                      ; Repeat commands without re-pressing prefix
+(context-menu-mode 1)                ; Right-click context menus
+(setq ielm-history-file (locate-user-emacs-file "ielm-history"))  ; IELM history persistence
+
+;; Emacs 31 window layout commands
+(global-set-key (kbd "C-x w t") 'window-layout-transpose)
+(global-set-key (kbd "C-x w r") 'window-layout-rotate-clockwise)
+(global-set-key (kbd "C-x w f") 'window-layout-flip-leftright)
+
+;; Built-in "batteries included" features (from karthinks.com)
+(add-hook 'text-mode-hook #'dictionary-tooltip-mode)  ; Hover for definitions
+(add-hook 'prog-mode-hook #'subword-mode)             ; CamelCase navigation
+(add-hook 'prog-mode-hook #'highlight-changes-mode)   ; Highlight changes since save
+(undelete-frame-mode 1)                               ; Recover deleted frames
+(global-set-key (kbd "C-c d") 'duplicate-dwim)        ; Duplicate line/region
+(global-set-key (kbd "C-c w") 'compare-windows)       ; Quick diff two windows
+(global-set-key (kbd "C-c u") 'ffap-menu)             ; List all URLs in buffer
+(global-set-key (kbd "C-c h c") 'highlight-changes-visible-mode) ; Toggle change visibility
+
+;; Speedbar docked in side window (Emacs 31 feature)
+(setq speedbar-use-images t)
+(defun speedbar-toggle-side-window ()
+  "Toggle speedbar in a side window instead of separate frame."
+  (interactive)
+  (let ((sb-buf (get-buffer " SPEEDBAR")))
+    (if (and sb-buf (get-buffer-window sb-buf))
+        (delete-window (get-buffer-window sb-buf))
+      (progn
+        (unless sb-buf
+          (speedbar-frame-mode 1)
+          (speedbar-frame-mode -1)
+          (setq sb-buf (get-buffer " SPEEDBAR")))
+        (when sb-buf
+          (display-buffer-in-side-window sb-buf
+            '((side . left) (window-width . 35))))))))
+(global-set-key (kbd "C-c s b") 'speedbar-toggle-side-window)
 ;; (menu-bar-mode t) ; Removed - conflicts with early-init.el which disables for performance
 (setq recentf-max-menu-items 25)
 (setq recentf-max-saved-items 25)
@@ -1200,11 +1241,18 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package haml-mode
   :defer 2
   :ensure t)
-(use-package beacon
-  :defer 2
-  :ensure t
-  :init
-  (beacon-mode))
+;; pulse.el (built-in) replaces beacon - flash line on jumps
+(require 'pulse)
+(setq pulse-iterations 10)
+(setq pulse-delay 0.04)
+(defun pulse-line (&rest _)
+  "Pulse the current line."
+  (pulse-momentary-highlight-one-line (point)))
+(dolist (cmd '(scroll-up-command scroll-down-command
+               recenter-top-bottom other-window
+               ace-window windmove-up windmove-down
+               windmove-left windmove-right))
+  (advice-add cmd :after #'pulse-line))
 (use-package rainbow-mode
   :defer 2
   :ensure t)
@@ -1673,6 +1721,12 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :ensure t
   :config
   (prescient-persist-mode 1))
+
+(use-package vertico-prescient
+  :ensure t
+  :after vertico
+  :config
+  (vertico-prescient-mode 1))
 
 ;; (use-package ivy-prescient
 ;;   :ensure t
