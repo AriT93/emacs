@@ -1631,7 +1631,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq notdeft-directories '("~/Documents/org-roam/"))
 (setq notdeft-xapian-program (expand-file-name"~/dev/git/notdeft/xapian/notdeft-xapian"))
 ;; Defer notdeft - only load when invoked
-(autoload 'notdeft "notdeft" "NotDeft note-taking" t)
+(autoload 'notdeft "notdeft-mode" "NotDeft note-taking" t)
 (global-set-key (kbd "<f9>") 'notdeft)
 
 (use-package cypher-mode
@@ -2457,6 +2457,52 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :custom
   (quickrun-timeout-seconds 30)          ; Allow longer running code
   (quickrun-focus-p nil))                ; Don't steal focus to output buffer
+
+;; LanguageTool server jar path - find the installed version dynamically
+(defvar ari/languagetool-server-jar
+  (car (file-expand-wildcards
+        (expand-file-name "~/emacs/site/languagetool/LanguageTool-*/languagetool-server.jar")))
+  "Path to LanguageTool server jar.")
+
+;; LanguageTool via flymake. The config standardized on flymake in May 2026
+;; (eglot is flymake-native), so LanguageTool now rides the same pipeline as
+;; everything else. Auto-enabled in plain text / markdown through the text-mode
+;; flymake-mode hook. Org is intentionally ON-DEMAND via `ari/languagetool-check'
+;; (C-c L) so org-roam buffers stay fast — flymake-mode is left off in org-mode
+;; (see the Flymake block above).
+(use-package flymake-languagetool
+  :ensure t
+  :commands (flymake-languagetool-load flymake-languagetool-maybe-load)
+  :hook (text-mode . flymake-languagetool-load)
+  :init
+  (setq flymake-languagetool-server-jar ari/languagetool-server-jar)
+  (setq flymake-languagetool-server-port "8081")   ; must be a string, not an integer
+  (setq flymake-languagetool-language "en-US")
+  ;; "picky" level unlocks many stricter style/grammar rules — free, local, no
+  ;; subscription. If any are too noisy for fiction, silence individual ones via
+  ;; `flymake-languagetool-disabled-rules'.
+  (setq flymake-languagetool-check-params '(("level" . "picky")))
+  ;; n-gram language model: context-aware confusion-pair detection (their/there,
+  ;; its/it's, …). Points at the PARENT dir that contains the per-language subdir
+  ;; (here, an `en/'). Only passed if the data is actually present, so the server
+  ;; still starts on machines without the ~13GB dataset downloaded.
+  (let ((ngram-dir (expand-file-name "~/emacs/site/languagetool/ngrams")))
+    (when (file-directory-p (expand-file-name "en" ngram-dir))
+      (setq flymake-languagetool-server-args (list "--languageModel" ngram-dir))))
+  :config
+  ;; Skip org directive lines (#+TITLE:, #+OPTIONS:, #+LATEX_HEADER:, #+LATEX: …),
+  ;; which all carry the `org-meta-line' face — otherwise LaTeX headers and
+  ;; directives raise grammar false positives. Export-block bodies are already
+  ;; covered by the default `org-block' entry in the ignore alist.
+  (let ((cell (assq 'org-mode flymake-languagetool-ignore-faces-alist)))
+    (when (and cell (not (memq 'org-meta-line (cdr cell))))
+      (setcdr cell (cons 'org-meta-line (cdr cell))))))
+
+;; writegood-mode for passive voice and weasel words (lightweight complement)
+(use-package writegood-mode
+  :ensure t
+  :defer t
+  :bind ("C-c W" . writegood-mode))
 
 (set-face-attribute 'default nil
                     :inherit nil

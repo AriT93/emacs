@@ -1477,5 +1477,45 @@ Shows E/W/N counts when diagnostics exist, checkmark when clean."
 
 (global-set-key (kbd "C-c n") #'ari/nano-mode-toggle)
 
+(defun ari/manuscript-wc ()
+  "Count the story body of a manuscript org buffer and update \"About N words\".
+The body is the region between the front-matter `#+END_EXPORT' block and the
+`\\theend' marker.  The result is rounded to the nearest 100 and written into
+the \"About N words\" line of the upper-right word-count slot.  Returns the
+raw (unrounded) count."
+  (interactive)
+  (save-excursion
+    (let* ((beg (progn (goto-char (point-min))
+                       (if (re-search-forward "^#\\+END_EXPORT" nil t)
+                           (point) (point-min))))
+           (end (progn (goto-char (point-max))
+                       (if (re-search-backward "\\\\theend" nil t)
+                           (point) (point-max))))
+           (raw (count-words beg end))
+           (n   (* 100 (max 1 (round raw 100))))
+           (s   (number-to-string n)))
+      (while (string-match "\\([0-9]\\)\\([0-9]\\{3\\}\\)\\(,\\|$\\)" s)
+        (setq s (replace-match "\\1,\\2\\3" nil nil s)))
+      (goto-char (point-min))
+      (when (re-search-forward "About [0-9,]+ words" nil t)
+        (replace-match (format "About %s words" s)))
+      (message "Story body: %d words (rounded to %s)" raw s)
+      raw)))
+
+(defun ari/languagetool-check ()
+  "Toggle LanguageTool (flymake) prose checking in the current buffer.
+Flymake is left off in `org-mode' by default to keep org-roam responsive, so use
+this to switch grammar checking on (and off again) for the buffer you're in."
+  (interactive)
+  (require 'flymake-languagetool)
+  (if (bound-and-true-p flymake-mode)
+      (progn (flymake-mode -1)
+             (message "LanguageTool: off in this buffer"))
+    (flymake-languagetool-load)
+    (flymake-mode 1)
+    (message "LanguageTool: checking this buffer")))
+
+(global-set-key (kbd "C-c L") #'ari/languagetool-check)
+
 (provide 'ari-custom-new)
 ;;; ari-custom-new.el ends here

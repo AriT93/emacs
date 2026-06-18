@@ -28,7 +28,30 @@
       "Read(//home/abturet/n/lib/node_modules/@agentclientprotocol/claude-agent-acp/node_modules/@anthropic-ai/**)",
       "Read(//home/abturet/n/lib/node_modules/@agentclientprotocol/**)",
       "WebFetch(domain:www.rahuljuliato.com)",
-      "WebFetch(domain:karthinks.com)"
+      "WebFetch(domain:karthinks.com)",
+      "Bash(locate epdfinfo *)",
+      "Bash(dpkg -l)",
+      "Bash(command -v emacs)",
+      "Bash(/usr/bin/emacs --version)",
+      "Read(//usr/local/bin/**)",
+      "Read(//snap/**)",
+      "Bash(/usr/local/bin/emacs *)",
+      "Bash(systemctl is-active *)",
+      "Bash(ipptool -tv ipp://tyrion.turetzky.org/printers/ get-printers.test)",
+      "Bash(lpstat -h tyrion.turetzky.org:631 -a)",
+      "Bash(lpinfo -m)",
+      "Bash(nmcli device *)",
+      "Read(//etc/NetworkManager/**)",
+      "Read(//etc/NetworkManager/conf.d/**)",
+      "Bash(wpa_cli status *)",
+      "Bash(ip link *)",
+      "Bash(iwconfig wlp2s0 *)",
+      "Read(//etc/systemd/network/**)",
+      "Read(//etc/wpa_supplicant/**)",
+      "Bash(iw dev *)",
+      "Bash(rfkill list *)",
+      "Bash(sudo ip link set wlp2s0 up)",
+      "Bash(dmesg)"
     ]
   }
 }

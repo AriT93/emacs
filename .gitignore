@@ -3,3 +3,7 @@
 xmptmp-*
 .aider*
 /.agent-shell/
+# LanguageTool binaries (200MB+) - run site/languagetool/setup.sh on new machines
+site/languagetool/LanguageTool-*/
+# LanguageTool n-gram data (~15GB) - optional, see setup.sh for download instructions
+site/languagetool/ngrams/
