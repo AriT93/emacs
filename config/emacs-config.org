@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-05-22 10:42:45 abturet>
+#+Time-stamp: <2026-05-25 07:56:40 abturet>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -1850,14 +1850,15 @@ setting this up for roam and keeping deft for notes
     (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
     (elfeed-org))
 
-  ;; nano-elfeed dependencies
-  (use-package stripes
+;;  ;; nnano-elfeed dependencies
+;;  (use-package stripes
     :ensure t
     :defer t)
 
   ;; nano-elfeed for cleaner feed display (uses nano-theme faces)
-  (setq nano-elfeed-icon-path (expand-file-name "~/emacs/site/nano-elfeed/icons"))
-  (require 'nano-elfeed)
+;ema
+
+;;  (require 'nano-elfeed)
 
   ;; Cleaner article view: no line numbers, sans font
   (add-hook 'elfeed-show-mode-hook

@@ -1653,8 +1653,8 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :defer t)
 
 ;; nano-elfeed for cleaner feed display (uses nano-theme faces)
-(setq nano-elfeed-icon-path (expand-file-name "~/emacs/site/nano-elfeed/icons"))
-(require 'nano-elfeed)
+;;(setq nano-elfeed-icon-path (expand-file-name "~/emacs/site/nano-elfeed/icons"))
+;;(require 'nano-elfeed)
 
 ;; Cleaner article view: no line numbers, sans font
 (add-hook 'elfeed-show-mode-hook
