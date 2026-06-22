@@ -176,6 +176,7 @@
 (global-set-key (kbd "C-x w f") 'window-layout-flip-leftright)
 
 ;; Built-in "batteries included" features (from karthinks.com)
+(setq dictionary-server "dict.org")                   ; Use dict.org, skip localhost prompt
 (add-hook 'text-mode-hook #'dictionary-tooltip-mode)  ; Hover for definitions
 (add-hook 'prog-mode-hook #'subword-mode)             ; CamelCase navigation
 (add-hook 'prog-mode-hook #'highlight-changes-mode)   ; Highlight changes since save
