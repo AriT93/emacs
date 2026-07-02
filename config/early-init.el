@@ -28,6 +28,5 @@
           (lambda () (setq gc-cons-threshold (* 50 1024 1024))))
 
 (add-to-list 'load-path (expand-file-name "~/emacs/config/"))
-(setq native-comp-deferred-compilation t)
 (provide 'early-init)
 ;;;early-init ends here

@@ -16,8 +16,8 @@
 (use-package ruby-tools
    :ensure t
    :init
-   (add-hook 'ruby-mode #'ruby-tools-mode)
-   (add-hook 'ruby-ts-mode #'ruby-tools-mode)
+   (add-hook 'ruby-mode-hook #'ruby-tools-mode)
+   (add-hook 'ruby-ts-mode-hook #'ruby-tools-mode)
    :diminish ruby-tools-mode)
 (use-package rubocopfmt
   :ensure t

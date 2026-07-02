@@ -36,4 +36,3 @@
 (autoload 'python-mode "python-mode" "Python editing mode." t)
 
 (provide 'load-path-config-new)
-

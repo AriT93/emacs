@@ -210,6 +210,57 @@ want from faces
     (recentf-mode 1)
     (fringe-mode 10)
     (tool-bar-mode -1)
+
+    ;; Emacs 31 / modern built-in features
+    (pixel-scroll-precision-mode 1)      ; Smooth scrolling
+    (save-place-mode 1)                  ; Remember cursor position in files
+    (winner-mode 1)                      ; Undo window config with C-c <left>/<right>
+    (repeat-mode 1)                      ; Repeat commands without re-pressing prefix
+    (context-menu-mode 1)                ; Right-click context menus
+    (setq ielm-history-file (locate-user-emacs-file "ielm-history"))  ; IELM history persistence
+
+    ;; Emacs 31 window layout commands
+    (global-set-key (kbd "C-x w t") 'window-layout-transpose)
+    (global-set-key (kbd "C-x w r") 'window-layout-rotate-clockwise)
+    (global-set-key (kbd "C-x w f") 'window-layout-flip-leftright)
+
+    ;; Built-in "batteries included" features (from karthinks.com)
+    (setq dictionary-server "dict.org")                   ; Use dict.org, skip localhost prompt
+    (add-hook 'text-mode-hook #'dictionary-tooltip-mode)  ; Hover for definitions
+    (add-hook 'prog-mode-hook #'subword-mode)             ; CamelCase navigation
+    (add-hook 'prog-mode-hook #'highlight-changes-mode)   ; Highlight changes since save
+    ;; Subtle styling for highlight-changes (neutral underline, no red)
+    (set-face-attribute 'highlight-changes nil
+                        :foreground nil :background nil
+                        :underline '(:color "gray60" :style wave))
+    (set-face-attribute 'highlight-changes-delete nil
+                        :foreground nil :background nil
+                        :underline '(:color "gray50" :style wave) :strike-through nil)
+    (undelete-frame-mode 1)                               ; Recover deleted frames
+    ;; C-c d is dash-at-point (keys-config); use C-c D for duplicate
+    (global-set-key (kbd "C-c D") 'duplicate-dwim)        ; Duplicate line/region
+    (global-set-key (kbd "C-c w") 'compare-windows)       ; Quick diff two windows
+    (global-set-key (kbd "C-c u") 'ffap-menu)             ; List all URLs in buffer
+    ;; C-c h is consult-history, so the toggle lives on C-c H
+    (global-set-key (kbd "C-c H") 'highlight-changes-visible-mode) ; Toggle change visibility
+
+    ;; Speedbar docked in side window (Emacs 31 feature)
+    (setq speedbar-use-images t)
+    (defun speedbar-toggle-side-window ()
+      "Toggle speedbar in a side window instead of separate frame."
+      (interactive)
+      (let ((sb-buf (get-buffer " SPEEDBAR")))
+        (if (and sb-buf (get-buffer-window sb-buf))
+            (delete-window (get-buffer-window sb-buf))
+          (progn
+            (unless sb-buf
+              (speedbar-frame-mode 1)
+              (speedbar-frame-mode -1)
+              (setq sb-buf (get-buffer " SPEEDBAR")))
+            (when sb-buf
+              (display-buffer-in-side-window sb-buf
+                '((side . left) (window-width . 35))))))))
+    (global-set-key (kbd "C-c s b") 'speedbar-toggle-side-window)
     ;; (menu-bar-mode t) ; Removed - conflicts with early-init.el which disables for performance
     (setq recentf-max-menu-items 25)
     (setq recentf-max-saved-items 25)
@@ -1341,11 +1392,18 @@ This is kinda like that part in the bible with all the begats...
   (use-package haml-mode
     :defer 2
     :ensure t)
-  (use-package beacon
-    :defer 2
-    :ensure t
-    :init
-    (beacon-mode))
+  ;; pulse.el (built-in) replaces beacon - flash line on jumps
+  (require 'pulse)
+  (setq pulse-iterations 10)
+  (setq pulse-delay 0.04)
+  (defun pulse-line (&rest _)
+    "Pulse the current line."
+    (pulse-momentary-highlight-one-line (point)))
+  (dolist (cmd '(scroll-up-command scroll-down-command
+                 recenter-top-bottom other-window
+                 ace-window windmove-up windmove-down
+                 windmove-left windmove-right))
+    (advice-add cmd :after #'pulse-line))
   (use-package rainbow-mode
     :defer 2
     :ensure t)
@@ -1850,10 +1908,10 @@ setting this up for roam and keeping deft for notes
     (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
     (elfeed-org))
 
-;;  ;; nnano-elfeed dependencies
-;;  (use-package stripes
-    :ensure t
-    :defer t)
+  ;; nano-elfeed dependencies
+  ;; (use-package stripes
+  ;;   :ensure t
+  ;;   :defer t)
 
   ;; nano-elfeed for cleaner feed display (uses nano-theme faces)
   ;;(setq nano-elfeed-icon-path (expand-file-name "~/emacs/site/nano-elfeed/icons"))
@@ -1878,6 +1936,12 @@ setting this up for roam and keeping deft for notes
     :ensure t
     :config
     (prescient-persist-mode 1))
+
+  (use-package vertico-prescient
+    :ensure t
+    :after vertico
+    :config
+    (vertico-prescient-mode 1))
 
   ;; (use-package ivy-prescient
   ;;   :ensure t
@@ -1947,7 +2011,7 @@ Da General give command-t like ease to emacs
       "zo" '(org-roam-node-open :which-key "org-roam-node-open")
       "zt" '(:ignore t :which-key "roam-tag")
       "zta" '(org-roam-tag-add :which-key "roam-tag-add")
-      "ztr" '(org-roam-tag-add :which-key "roam-tag-remove")
+      "ztr" '(org-roam-tag-remove :which-key "roam-tag-remove")
       "zr"  '(:ignore t :which-key "roam-ref")
       "zra" '(org-roam-ref-add :which-key "roam-ref-add")
       "zrr" '(org-roam-ref-remove :which-key "roam-ref-remove")
@@ -1956,7 +2020,7 @@ Da General give command-t like ease to emacs
       "zp"  '(ari/promote-reference-to-permanent :which-key "promote to permanent")
       "zu"  '(org-roam-ui-mode :which-key "roam-ui")
       "zw"  '(ari/find-unprocessed-insights :which-key "weekly review")
-      "zo"  '(ari/find-orphan-references :which-key "orphan refs")
+      "zO"  '(ari/find-orphan-references :which-key "orphan refs")
       "zc"  '(ari/find-connected-references :which-key "connected refs")
       "q" '(:ignore t :which-key "copilot")
       "qa" '(copilot-accept-completion :which-key "copilot-accept-completion")

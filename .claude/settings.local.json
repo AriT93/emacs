@@ -51,7 +51,9 @@
       "Bash(iw dev *)",
       "Bash(rfkill list *)",
       "Bash(sudo ip link set wlp2s0 up)",
-      "Bash(dmesg)"
+      "Bash(dmesg)",
+      "Bash(git check-ignore *)",
+      "Bash(awk '{print $6, $7, $8}')"
     ]
   }
 }

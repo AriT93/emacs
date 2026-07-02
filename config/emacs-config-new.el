@@ -180,11 +180,20 @@
 (add-hook 'text-mode-hook #'dictionary-tooltip-mode)  ; Hover for definitions
 (add-hook 'prog-mode-hook #'subword-mode)             ; CamelCase navigation
 (add-hook 'prog-mode-hook #'highlight-changes-mode)   ; Highlight changes since save
+;; Subtle styling for highlight-changes (neutral underline, no red)
+(set-face-attribute 'highlight-changes nil
+                    :foreground nil :background nil
+                    :underline '(:color "gray60" :style wave))
+(set-face-attribute 'highlight-changes-delete nil
+                    :foreground nil :background nil
+                    :underline '(:color "gray50" :style wave) :strike-through nil)
 (undelete-frame-mode 1)                               ; Recover deleted frames
-(global-set-key (kbd "C-c d") 'duplicate-dwim)        ; Duplicate line/region
+;; C-c d is dash-at-point (keys-config); use C-c D for duplicate
+(global-set-key (kbd "C-c D") 'duplicate-dwim)        ; Duplicate line/region
 (global-set-key (kbd "C-c w") 'compare-windows)       ; Quick diff two windows
 (global-set-key (kbd "C-c u") 'ffap-menu)             ; List all URLs in buffer
-(global-set-key (kbd "C-c h c") 'highlight-changes-visible-mode) ; Toggle change visibility
+;; C-c h is consult-history, so the toggle lives on C-c H
+(global-set-key (kbd "C-c H") 'highlight-changes-visible-mode) ; Toggle change visibility
 
 ;; Speedbar docked in side window (Emacs 31 feature)
 (setq speedbar-use-images t)
@@ -1697,9 +1706,9 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (elfeed-org))
 
 ;; nano-elfeed dependencies
-(use-package stripes
-  :ensure t
-  :defer t)
+;; (use-package stripes
+;;   :ensure t
+;;   :defer t)
 
 ;; nano-elfeed for cleaner feed display (uses nano-theme faces)
 ;;(setq nano-elfeed-icon-path (expand-file-name "~/emacs/site/nano-elfeed/icons"))
@@ -1794,7 +1803,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "zo" '(org-roam-node-open :which-key "org-roam-node-open")
     "zt" '(:ignore t :which-key "roam-tag")
     "zta" '(org-roam-tag-add :which-key "roam-tag-add")
-    "ztr" '(org-roam-tag-add :which-key "roam-tag-remove")
+    "ztr" '(org-roam-tag-remove :which-key "roam-tag-remove")
     "zr"  '(:ignore t :which-key "roam-ref")
     "zra" '(org-roam-ref-add :which-key "roam-ref-add")
     "zrr" '(org-roam-ref-remove :which-key "roam-ref-remove")
@@ -1803,7 +1812,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "zp"  '(ari/promote-reference-to-permanent :which-key "promote to permanent")
     "zu"  '(org-roam-ui-mode :which-key "roam-ui")
     "zw"  '(ari/find-unprocessed-insights :which-key "weekly review")
-    "zo"  '(ari/find-orphan-references :which-key "orphan refs")
+    "zO"  '(ari/find-orphan-references :which-key "orphan refs")
     "zc"  '(ari/find-connected-references :which-key "connected refs")
     "q" '(:ignore t :which-key "copilot")
     "qa" '(copilot-accept-completion :which-key "copilot-accept-completion")
