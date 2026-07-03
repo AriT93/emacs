@@ -132,8 +132,14 @@
 (setq epg-gpg-program "gpg2")
 (setq auth-sources '("~/.authinfo.gpg"))
 (setq auth-source-cache-expiry 3600)
+(setq epa-pinentry-mode 'loopback)
 (setq auth-source-debug nil)
 (setq auth-source-do-cache t)
+
+(use-package pinentry
+  :ensure t
+  :config
+  (pinentry-start))
 
 ;; Network security configuration
 (setq gnutls-verify-error t)           ; Fail on TLS verification errors
