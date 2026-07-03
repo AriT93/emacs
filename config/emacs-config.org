@@ -230,12 +230,14 @@ want from faces
     (add-hook 'prog-mode-hook #'subword-mode)             ; CamelCase navigation
     (add-hook 'prog-mode-hook #'highlight-changes-mode)   ; Highlight changes since save
     ;; Subtle styling for highlight-changes (neutral underline, no red)
-    (set-face-attribute 'highlight-changes nil
-                        :foreground nil :background nil
-                        :underline '(:color "gray60" :style wave))
-    (set-face-attribute 'highlight-changes-delete nil
-                        :foreground nil :background nil
-                        :underline '(:color "gray50" :style wave) :strike-through nil)
+    ;; hilit-chg must be loaded before these faces exist
+    (with-eval-after-load 'hilit-chg
+      (set-face-attribute 'highlight-changes nil
+                          :foreground nil :background nil
+                          :underline '(:color "gray60" :style wave))
+      (set-face-attribute 'highlight-changes-delete nil
+                          :foreground nil :background nil
+                          :underline '(:color "gray50" :style wave) :strike-through nil))
     (undelete-frame-mode 1)                               ; Recover deleted frames
     ;; C-c d is dash-at-point (keys-config); use C-c D for duplicate
     (global-set-key (kbd "C-c D") 'duplicate-dwim)        ; Duplicate line/region
