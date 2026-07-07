@@ -121,8 +121,6 @@
 (ari/startup-timer "load-path-loaded")
 
 ;; gpg-agent auto-starts via its socket; no need to launch it manually.
-;; allow-loopback-pinentry in gpg-agent.conf + epa-pinentry-mode 'loopback
-;; is sufficient — the separate pinentry package conflicts with pinentry-mac.
 (defun ensure-gpg-agent-running ()
   "Ping gpg-agent to ensure it is ready."
   (call-process "gpg-connect-agent" nil nil nil "updatestartuptty" "/bye"))
@@ -132,14 +130,28 @@
 (setq epg-gpg-program "gpg2")
 (setq auth-sources '("~/.authinfo.gpg"))
 (setq auth-source-cache-expiry 3600)
-(setq epa-pinentry-mode 'loopback)
 (setq auth-source-debug nil)
 (setq auth-source-do-cache t)
 
-(use-package pinentry
-  :ensure t
-  :config
-  (pinentry-start))
+(defun ari/headless-linux-p ()
+  "Non-nil on a Linux machine with no display server.
+This matches the writer-deck (Ubuntu Server + kmscon, no X11/Wayland),
+where gpg-agent has no GNOME Keyring / pinentry-mac integration to
+fall back on and must use Emacs loopback pinentry instead."
+  (and (eq system-type 'gnu/linux)
+       (not (getenv "DISPLAY"))
+       (not (getenv "WAYLAND_DISPLAY"))))
+
+;; On Mac / desktop Linux, gpg-agent uses the system pinentry
+;; (pinentry-mac + login keychain, or pinentry-gnome3 + GNOME Keyring),
+;; so Emacs should stay out of the way. Only the headless writer-deck
+;; needs loopback pinentry so Emacs can prompt in the minibuffer.
+(when (ari/headless-linux-p)
+  (setq epa-pinentry-mode 'loopback)
+  (use-package pinentry
+    :ensure t
+    :config
+    (pinentry-start)))
 
 ;; Network security configuration
 (setq gnutls-verify-error t)           ; Fail on TLS verification errors
