@@ -206,7 +206,16 @@ fall back on and must use Emacs loopback pinentry instead."
                       :underline '(:color "gray60" :style wave))
   (set-face-attribute 'highlight-changes-delete nil
                       :foreground nil :background nil
-                      :underline '(:color "gray50" :style wave) :strike-through nil))
+                      :underline '(:color "gray50" :style wave) :strike-through nil)
+  ;; hilit-chg overlays don't set a priority, so they can paint over the
+  ;; region face when the selection grows onto recently-changed text.
+  ;; Force a low priority (mirrors hl-line's -50 convention) so the
+  ;; region always wins.
+  (advice-add 'hilit-chg-make-ov :after
+              (lambda (_prop start end)
+                (dolist (ov (overlays-in start end))
+                  (when (overlay-get ov 'hilit-chg)
+                    (overlay-put ov 'priority -60))))))
 (undelete-frame-mode 1)                               ; Recover deleted frames
 ;; C-c d is dash-at-point (keys-config); use C-c D for duplicate
 (global-set-key (kbd "C-c D") 'duplicate-dwim)        ; Duplicate line/region
