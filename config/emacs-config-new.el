@@ -292,6 +292,7 @@ fall back on and must use Emacs loopback pinentry instead."
   :straight t
   :init
   (setq vterm-max-scrollback 1000000)
+  (add-to-list 'exec-path "/opt/homebrew/bin")
   )
 
 (use-package vertico
