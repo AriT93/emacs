@@ -546,6 +546,19 @@ fall back on and must use Emacs loopback pinentry instead."
   :defer t  ; Lazy-load magit - only load when git commands are used
   :commands (magit-status magit-dispatch magit-file-dispatch))
 
+;; The console-next repo's prepare-commit-msg hook prefixes every commit
+;; message with "BRANCH-NAME " (JIRA key + trailing space) before the
+;; buffer is opened. git-commit-mode's own setup always lands point at
+;; the very start of the buffer regardless of what's already on line 1,
+;; so without this, point sits before the branch prefix instead of right
+;; after it. Appended (not prepended) so it runs after git-commit-mode's
+;; own setup rather than being immediately overridden by it.
+(with-eval-after-load 'git-commit
+  (add-hook 'git-commit-setup-hook
+            (lambda ()
+              (goto-char (line-end-position 1)))
+            t))
+
 (use-package git-timemachine
   :defer 2
   :ensure t
