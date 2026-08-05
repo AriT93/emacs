@@ -1241,6 +1241,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
+;; Homebrew on Apple Silicon: make sure /opt/homebrew/bin is searched first,
+;; even when the login shell's PATH (imported above) doesn't include it.
+(when (file-directory-p "/opt/homebrew/bin")
+  (add-to-list 'exec-path "/opt/homebrew/bin"))
+
 
 
 (with-eval-after-load 'org (require 'org-crypt))

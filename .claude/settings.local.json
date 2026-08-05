@@ -56,7 +56,11 @@
       "Bash(awk '{print $6, $7, $8}')",
       "Bash(git log *)",
       "Bash(git *)",
-      "Bash(grep -v \".elc$\")"
+      "Bash(grep -v \".elc$\")",
+      "Bash(awk '{print $6, $7, $8}')",
+      "Read(//Users/abturet/.emacs.d/elpa/**)",
+      "Read(//Users/abturet/.emacs.d/**)",
+      "Bash(/Users/abturet/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs *)"
     ]
   }
 }
