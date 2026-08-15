@@ -1217,6 +1217,8 @@ eventually to make it more manageable
   (setq org-agenda-include-diary t)
   (setq org-agenda-include-all-todo t)
 
+  (use-package ob-typescript
+    :ensure t)
   (with-eval-after-load 'org
     (org-babel-do-load-languages
      'org-babel-load-languages
@@ -1232,7 +1234,7 @@ eventually to make it more manageable
        (scheme . t)
        (java . t)
        (dot . t)
-       (typescript . t)))
+       (typescript . t))))
   (setq org-confirm-babel-evaluate nil)
 #+END_SRC
 

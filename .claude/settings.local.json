@@ -60,7 +60,13 @@
       "Bash(awk '{print $6, $7, $8}')",
       "Read(//Users/abturet/.emacs.d/elpa/**)",
       "Read(//Users/abturet/.emacs.d/**)",
-      "Bash(/Users/abturet/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs *)"
+      "Bash(/Users/abturet/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs *)",
+      "Read(//usr/bin/**)",
+      "Bash(command -v emacs-nox)",
+      "Bash(find / -maxdepth 4 -iname \"emacs\" -type f)",
+      "Bash(find / -maxdepth 6 -iname \"emacs-*\" -type f)",
+      "Bash(find / -maxdepth 6 -iname \"emacs\")",
+      "Bash(apt list *)"
     ]
   }
 }
