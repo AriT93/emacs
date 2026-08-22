@@ -87,7 +87,18 @@
 
 ;; Claim org via straight IMMEDIATELY after bootstrap, before any other package
 ;; can trigger the built-in org and cause a version mismatch warning.
-(straight-use-package 'org)
+;; Pinned to release_9.8.9: main tracks a moving HEAD that has repeatedly
+;; carried a regression in org-export-dispatch's PDF-and-open action
+;; (confirmed recurring 2026-08-21 via `straight-pull-all', which moved org
+;; to a "10.0-pre" dev snapshot with the bug back). Do not unpin without
+;; testing `C-c C-e l o' against the target commit first.
+(straight-use-package
+ '(org :type git :host github :repo "emacs-straight/org-mode"
+       :commit "7427df2d96d264734e1ba2a943545faa1c8c763f" ; release_9.8.9
+       :depth full
+       :pre-build (straight-recipes-org-elpa--build)
+       :build (:not autoloads)
+       :files (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))))
 
 ;; NOW configure and initialize package.el AFTER straight.el is loaded
 ;; This order prevents the "package.el already loaded" or "straight.el already loaded" warnings
@@ -755,8 +766,6 @@ fall back on and must use Emacs loopback pinentry instead."
 (with-eval-after-load 'org (require 'ox-latex))
 (use-package org
   :straight
-  :pin nongnu
-  :ensure t
   :demand t
   :custom-face
   (org-block ((t :inherit default
@@ -1119,7 +1128,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
      (scheme . t)
      (java . t)
      (dot . t)
-     (typescript . t)))
+     (typescript . t))))
 (setq org-confirm-babel-evaluate nil)
 
 (use-package ox-pandoc

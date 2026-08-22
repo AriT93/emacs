@@ -1517,5 +1517,15 @@ this to switch grammar checking on (and off again) for the buffer you're in."
 
 (global-set-key (kbd "C-c L") #'ari/languagetool-check)
 
+(with-eval-after-load 'ghostel-module-install
+  (define-advice ghostel-module-compile (:around (orig-fn &rest args) ari/pipe-not-pty)
+    "Run the zig build subprocess over a pipe instead of a pty.
+Prevents zig's build progress renderer from emitting terminal control
+sequences (cursor movement, screen-clear, charset switches) that a
+`compilation-mode' buffer can't render."
+    (let ((process-connection-type nil))
+      (apply orig-fn args)))
+  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
+
 (provide 'ari-custom-new)
 ;;; ari-custom-new.el ends here

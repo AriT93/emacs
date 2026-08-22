@@ -1623,6 +1623,29 @@ this to switch grammar checking on (and off again) for the buffer you're in."
 (global-set-key (kbd "C-c L") #'ari/languagetool-check)
 #+END_SRC
 
+** Fix ghostel-module-compile terminal control characters
+=ghostel-module-compile= (see the =ghostel= package) shells out to =zig
+build=. Emacs subprocesses get a pty by default (=process-connection-type=
+is =t=), so zig's build runner detects a terminal and emits its live-progress
+TUI escape sequences (cursor movement, screen-clear, DEC private modes,
+line-drawing charset switches) straight into the =*compilation*= buffer,
+which can't render them, producing garbled control-character noise instead of
+plain build output. Forcing a pipe for just this command's subprocess makes
+zig fall back to plain sequential text output. =ansi-color-compilation-filter=
+is added too as a defensive fallback for genuine SGR color codes (e.g. from
+compile errors), which compilation-mode doesn't interpret by default.
+#+BEGIN_SRC elisp
+(with-eval-after-load 'ghostel-module-install
+  (define-advice ghostel-module-compile (:around (orig-fn &rest args) ari/pipe-not-pty)
+    "Run the zig build subprocess over a pipe instead of a pty.
+Prevents zig's build progress renderer from emitting terminal control
+sequences (cursor movement, screen-clear, charset switches) that a
+`compilation-mode' buffer can't render."
+    (let ((process-connection-type nil))
+      (apply orig-fn args)))
+  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
+#+END_SRC
+
 ** Aaaand we're out
 #+BEGIN_SRC elisp
      (provide 'ari-custom-new)
