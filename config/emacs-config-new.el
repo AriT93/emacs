@@ -648,8 +648,6 @@ fall back on and must use Emacs loopback pinentry instead."
   (lazy-highlight ((t (:background "DarkSeaGreen4")))))
 (load-theme 'hc-zenburn t)
 
-;; nano face stubs and color vars defined in ari-custom.el (loaded below)
-
 (use-package nerd-icons
   :ensure t
   )
@@ -662,23 +660,6 @@ fall back on and must use Emacs loopback pinentry instead."
   (setq doom-modeline-vcs-max-length 40)
   (setq doom-modeline-battery nil)
   (doom-modeline-mode 1))
-
-;; nano-modeline: standalone GNU ELPA package, no nano-theme dependency
-(use-package nano-modeline
-  :ensure t
-  :defer t
-  :commands (nano-modeline-prog-mode
-             nano-modeline-text-mode
-             nano-modeline-org-mode)
-  :custom
-  (nano-modeline-position #'nano-modeline-footer)
-  :custom-face
-  (nano-modeline-active
-   ((t (:background "#4f4f4f" :foreground "#dcdccc" :box nil))))
-  (nano-modeline-inactive
-   ((t (:background "#3f3f3f" :foreground "#6f6f6f" :box nil))))
-  (nano-modeline-status
-   ((t (:background "#5f7f5f" :foreground "#dcdccc" :weight bold)))))
 
 ;; gnutls loads automatically when needed
 (setq starttls-use-gnutls t)
@@ -1059,6 +1040,23 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
         (write-file filename)
         (org-roam-db-update-file filename))
       filename)))
+
+;; org-remark: in-buffer highlighting/annotation, stored as a companion
+;; "marginalia" org file next to the source. Keybindings follow the
+;; org-remark documentation's suggested "C-c n" prefix (wired below via
+;; the `general' leader in the General section).
+(use-package org-remark
+  :ensure t
+  :init
+  (org-remark-global-tracking-mode +1))
+
+;; org-wc: on-demand word counts as overlays next to headings, summed
+;; over sub-headings. Not live -- re-run org-wc-display to refresh.
+(use-package org-wc
+  :ensure t
+  :defer t
+  :commands (org-wc-display org-wc-remove-overlays
+             org-word-count org-wc-count-subtrees))
 
 (use-package org-ql
   :ensure t)
@@ -1896,7 +1894,26 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "si" '(consult-imenu :which-key "search imenu")
     "sI" '(consult-imenu-multi :which-key "search imenu in buffers")
     "sr" '(consult-ripgrep :which-key "ripgrep")
-    "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")))
+    "sR" '(my/consult-ripgrep-at-point :which-key "ripgrep symbol")
+    ;; org-remark: mirrors the "C-c n ..." bindings suggested in the
+    ;; org-remark documentation (my-leader-def's prefix is already "C-c").
+    "n" '(:ignore t :which-key "org-remark")
+    "nm" '(org-remark-mark :which-key "mark")
+    "no" '(org-remark-open :which-key "open")
+    "n]" '(org-remark-view-next :which-key "view next")
+    "n[" '(org-remark-view-prev :which-key "view prev")
+    "nr" '(org-remark-remove :which-key "remove")
+    "nc" '(org-remark-change :which-key "change")
+    "nt" '(org-remark-toggle :which-key "toggle")
+    "nv" '(org-remark-view :which-key "view")
+    "nE" '(ari/org-remark-export-to-latex-with-margin-notes :which-key "export margin-note PDF")
+    ;; "w" is taken globally by compare-windows (C-c w), so word-count
+    ;; lives under "c" instead.
+    "c" '(:ignore t :which-key "word count")
+    "cd" '(org-wc-display :which-key "display counts")
+    "cr" '(org-wc-remove-overlays :which-key "remove overlays")
+    "cc" '(org-word-count :which-key "count region/buffer")
+    "cs" '(org-wc-count-subtrees :which-key "count subtrees (property)")))
 
 (use-package copilot
       :straight (:host github :repo "copilot-emacs/copilot.el"
@@ -1928,18 +1945,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey"))
     :config
     (require 'chatgpt-shell))
-;; book-mode via straight.el (not on MELPA/ELPA)
-;; Requires nano-zenburn stub faces defined above in the theme section
-(use-package book-mode
-  :straight (:host github :repo "rougier/book-mode" :files ("*.el"))
-  :defer t
-  :commands (book-mode))
-
-;; nano-agenda needs ts package
-(use-package ts :ensure t :defer t)
-
-;; nano-modeline segments and toggle defined in ari-custom.el
-
 (use-package acp
   :vc (:url "https://github.com/xenodium/acp.el")
   :ensure t

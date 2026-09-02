@@ -86,7 +86,7 @@
       "Bash(zig env *)",
       "Bash(/bin/cat -v)",
       "Bash(rm -rf /tmp/zig-global-cache-test2 /tmp/zig-local-cache-test2 /tmp/ghostel-test-build3)",
-      "Bash(/bin/cat -v /tmp/zigout2.txt)"
+      "Bash(/bin/cat -v /tmp/zigout2.txt)",
       "Read(//usr/bin/**)",
       "Bash(command -v emacs-nox)",
       "Bash(find / -maxdepth 4 -iname \"emacs\" -type f)",

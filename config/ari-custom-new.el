@@ -1330,152 +1330,97 @@ Creates a full org-roam reference note from the current elfeed entry."
 
 (add-hook 'after-init-hook #'ari/validate-config-files)
 
-;; --- nano face stubs (hc-zenburn values) --------------------------------
-;; Required by book-mode and nano-agenda which reference nano-* faces.
-(defun ari/define-nano-zenburn-faces ()
-  (face-spec-set 'nano-default    '((t :inherit default)))
-  (face-spec-set 'nano-strong     '((t :inherit bold :foreground "#FDECBC")))
-  (face-spec-set 'nano-subtle     '((t :background "#3E3E3E" :foreground "#DCDCCC")))
-  (face-spec-set 'nano-faded      '((t :foreground "#70705E")))
-  (face-spec-set 'nano-popout     '((t :foreground "#ECBC9C")))
-  (face-spec-set 'nano-popout-i   '((t :background "#ECBC9C" :foreground "#313131")))
-  (face-spec-set 'nano-salient    '((t :foreground "#8CAC8C")))
-  (face-spec-set 'nano-critical   '((t :foreground "#D9A0A0" :weight bold)))
-  (face-spec-set 'nano-critical-i '((t :background "#D9A0A0" :foreground "#313131" :weight bold))))
+(defconst ari/org-remark-latex-margin-preamble
+  "#+LATEX_HEADER: \\usepackage[left=1in,right=2.5in,marginparwidth=1.7in,marginparsep=0.25in]{geometry}
+#+LATEX_HEADER: \\usepackage{soul}
+#+LATEX_HEADER: \\usepackage{xcolor}
+#+LATEX_HEADER: \\sethlcolor{yellow!40}
+#+LATEX_HEADER: \\setlength{\\marginparpush}{2pt}
+#+LATEX_HEADER: \\newcommand{\\orgremarknote}[1]{\\scriptsize\\itshape\\raggedright\\fcolorbox{gray}{gray!8}{\\parbox{0.94\\marginparwidth}{#1}}}
+"
+  "LATEX_HEADER lines for `ari/org-remark-export-to-latex-with-margin-notes'.
+Widens the right margin/marginparwidth so notes don't run off the page
+edge, tightens `marginparpush' so stacked notes don't overlap, and
+defines the yellow highlight color (soul) and the boxed note style.")
 
-(defun ari/set-nano-zenburn-colors ()
-  (setq nano-color-foreground "#DCDCCC"
-        nano-color-background "#313131"
-        nano-color-highlight  "#4E4E4E"
-        nano-color-critical   "#D9A0A0"
-        nano-color-salient    "#8CAC8C"
-        nano-color-strong     "#FDECBC"
-        nano-color-popout     "#ECBC9C"
-        nano-color-subtle     "#3E3E3E"
-        nano-color-faded      "#70705E"
-        nano-light-foreground "#DCDCCC"
-        nano-light-background "#313131"
-        nano-light-popout     "#ECBC9C"
-        nano-light-faded      "#70705E"))
+(defun ari/org-remark--note-text-from-file (ov)
+  "Fallback: look up OV's note body in its marginalia file."
+  (let ((id (overlay-get ov 'org-remark-id)))
+    (when (and id (fboundp 'org-remark-notes-get-file-name))
+      (let ((notes-file (org-remark-notes-get-file-name)))
+        (when (and notes-file (file-exists-p notes-file))
+          (with-current-buffer (find-file-noselect notes-file)
+            (org-with-wide-buffer
+             (goto-char (point-min))
+             (let ((pos (org-find-property "org-remark-id" id)))
+               (when pos
+                 (goto-char pos)
+                 (ignore-errors (org-back-to-heading t))
+                 (when (fboundp 'org-remark-notes-get-body)
+                   (let ((body (org-remark-notes-get-body)))
+                     (and body (not (string-empty-p (string-trim body)))
+                          (string-trim body)))))))))))))
 
-;; hc-zenburn is already loaded by the time ari-custom.el is required
-(ari/define-nano-zenburn-faces)
-(ari/set-nano-zenburn-colors)
+(defun ari/org-remark--note-text (ov)
+  "Return the note body text for org-remark overlay OV, or nil.
+Tries the overlay's own cached note-body property first (set once the note
+has been opened/edited this session) before falling back to the marginalia
+file on disk."
+  (or (let ((cached (overlay-get ov '*org-remark-note-body)))
+        (and cached (stringp cached)
+             (not (string-empty-p (string-trim cached)))
+             (string-trim cached)))
+      (ari/org-remark--note-text-from-file ov)))
 
-;; --- nano-modeline segments ---------------------------------------------
+(defun ari/org-remark--latex-escape (s)
+  "Escape the LaTeX-special characters most likely to appear in a note."
+  (replace-regexp-in-string "[\\{}$&%#_^~]" "\\\\\\&" s))
 
-(defun ari/nano-modeline-git-branch ()
-  "Show git branch from cached vc-mode — no vc-state call, never blocks."
-  (when vc-mode
-    (propertize (format "(%s)" (substring-no-properties vc-mode 5))
-                'face (nano-modeline-face 'primary))))
-
-(defun ari/nano-modeline-flymake-info ()
-  "Flymake diagnostic counts for nano-modeline right side.
-Shows E/W/N counts when diagnostics exist, checkmark when clean."
-  (when (bound-and-true-p flymake-mode)
-    (let* ((diags    (flymake-diagnostics))
-           (errors   (cl-count-if
-                      (lambda (d) (eq :error (flymake-diagnostic-type d))) diags))
-           (warnings (cl-count-if
-                      (lambda (d) (eq :warning (flymake-diagnostic-type d))) diags))
-           (notes    (cl-count-if
-                      (lambda (d) (eq :note (flymake-diagnostic-type d))) diags)))
-      (cond
-       ((> errors 0)
-        (propertize (format "E%d%s " errors
-                            (if (> warnings 0) (format "/W%d" warnings) ""))
-                    'face '(:inherit nano-critical)))
-       ((> warnings 0)
-        (propertize (format "W%d " warnings) 'face '(:inherit nano-popout)))
-       ((> notes 0)
-        (propertize (format "N%d " notes) 'face '(:inherit nano-faded)))
-       (t (propertize "✓ " 'face '(:inherit nano-salient)))))))
-
-(defun ari/nano-modeline-eglot-info ()
-  "Eglot server name for nano-modeline right side."
-  (when (bound-and-true-p eglot--managed-mode)
-    (when-let* ((server (eglot-current-server)))
-      (let ((name (or (ignore-errors (eglot-project-nickname server))
-                      (ignore-errors (plist-get (eglot--server-info server) :name))
-                      "eglot")))
-        (propertize (format "[%s] " name)
-                    'face (nano-modeline-face 'secondary))))))
-
-(defun ari/nano-modeline-prog-mode (&optional default)
-  "nano-modeline for prog-mode with eglot and flymake segments."
-  (funcall nano-modeline-position
-           '((nano-modeline-buffer-status) " "
-             (nano-modeline-buffer-name) " "
-             (ari/nano-modeline-git-branch))
-           '((ari/nano-modeline-eglot-info)
-             (ari/nano-modeline-flymake-info)
-             (nano-modeline-cursor-position)
-             (nano-modeline-window-dedicated))
-           default))
-
-(defun ari/nano-modeline-org-mode (&optional default)
-  "nano-modeline for org-mode using cached git branch (no vc-state call)."
-  (funcall nano-modeline-position
-           '((nano-modeline-buffer-status) " "
-             (nano-modeline-org-buffer-name) " "
-             (ari/nano-modeline-git-branch))
-           '((nano-modeline-cursor-position)
-             (nano-modeline-window-dedicated))
-           default))
-
-;; --- nano UI toggle -----------------------------------------------------
-
-(defvar ari/nano-mode-active nil
-  "Whether nano UI mode (nano-modeline + book-mode) is active.")
-
-(defun ari/nano-mode-enable ()
-  "Switch from doom-modeline to nano-modeline and enable book-mode for org."
+(defun ari/org-remark-export-to-latex-with-margin-notes ()
+  "Export this org-remark-annotated buffer to PDF via LaTeX.
+Each highlighted passage is set off with a yellow highlight (soul's
+`\\hl{}') in the body text, and its note -- boxed, in a smaller italic
+font so it reads as an annotation rather than body text -- appears in the
+margin right next to it. A highlight with no note text still gets
+highlighted, just without a margin box. Runs on a throwaway copy of the
+buffer -- the source file on disk is never modified or saved."
   (interactive)
-  (setq ari/nano-mode-active t)
-  (doom-modeline-mode -1)
-  (require 'nano-modeline)
-  (add-hook 'prog-mode-hook #'ari/nano-modeline-prog-mode)
-  (add-hook 'text-mode-hook #'nano-modeline-text-mode)
-  (add-hook 'org-mode-hook  #'ari/nano-modeline-org-mode)
-  ;; Only update visible windows — iterating all buffers is too slow
-  (dolist (win (window-list))
-    (with-current-buffer (window-buffer win)
-      (when (derived-mode-p 'prog-mode) (ari/nano-modeline-prog-mode))
-      (when (derived-mode-p 'text-mode) (nano-modeline-text-mode))
-      (when (derived-mode-p 'org-mode)  (ari/nano-modeline-org-mode))))
-  (require 'book-mode)
-  (add-hook 'org-mode-hook #'book-mode)
-  (dolist (win (window-list))
-    (with-current-buffer (window-buffer win)
-      (when (derived-mode-p 'org-mode) (book-mode))))
-  (message "Nano UI mode enabled"))
-
-(defun ari/nano-mode-disable ()
-  "Restore doom-modeline and disable nano UI enhancements."
-  (interactive)
-  (setq ari/nano-mode-active nil)
-  (remove-hook 'prog-mode-hook #'ari/nano-modeline-prog-mode)
-  (remove-hook 'text-mode-hook #'nano-modeline-text-mode)
-  (remove-hook 'org-mode-hook  #'ari/nano-modeline-org-mode)
-  (remove-hook 'org-mode-hook  #'book-mode)
-  (dolist (win (window-list))
-    (with-current-buffer (window-buffer win)
-      (kill-local-variable 'mode-line-format)
-      (kill-local-variable 'header-line-format)
-      (when (and (fboundp 'book-mode) (bound-and-true-p book-mode))
-        (book-mode -1))))
-  (doom-modeline-mode 1)
-  (message "Doom modeline restored"))
-
-(defun ari/nano-mode-toggle ()
-  "Toggle nano UI mode (nano-modeline + book-mode) vs doom-modeline."
-  (interactive)
-  (if ari/nano-mode-active
-      (ari/nano-mode-disable)
-    (ari/nano-mode-enable)))
-
-(global-set-key (kbd "C-c n") #'ari/nano-mode-toggle)
+  (unless (bound-and-true-p org-remark-mode)
+    (user-error "org-remark-mode is not active in this buffer"))
+  (let ((src-file (buffer-file-name))
+        (inserts nil))
+    (unless src-file
+      (user-error "Buffer must be visiting a file"))
+    (save-restriction
+      (widen)
+      (dolist (ov org-remark-highlights)
+        (let ((text (ari/org-remark--note-text ov)))
+          (push (cons (overlay-start ov) "@@latex:\\hl{@@") inserts)
+          (push (cons (overlay-end ov)
+                      (if (and text (not (string-empty-p text)))
+                          (format "@@latex:}\\marginpar{\\orgremarknote{%s}}@@"
+                                  (ari/org-remark--latex-escape text))
+                        "@@latex:}@@"))
+                inserts)))
+      (let* ((content (buffer-substring-no-properties (point-min) (point-max)))
+             (work-buf (generate-new-buffer "*org-remark-margin-export*")))
+        (unwind-protect
+            (with-current-buffer work-buf
+              (insert ari/org-remark-latex-margin-preamble)
+              (let ((base (1- (point))))
+                (insert content)
+                (setq buffer-file-name src-file
+                      default-directory (file-name-directory src-file))
+                (org-mode)
+                (dolist (entry (sort inserts (lambda (a b) (> (car a) (car b)))))
+                  (goto-char (+ base (car entry)))
+                  (insert (cdr entry))))
+              (set-buffer-modified-p nil)
+              (org-latex-export-to-pdf))
+          (with-current-buffer work-buf
+            (setq buffer-file-name nil) ; never let this scratch copy save over src-file
+            (set-buffer-modified-p nil))
+          (kill-buffer work-buf))))))
 
 (defun ari/manuscript-wc ()
   "Count the story body of a manuscript org buffer and update \"About N words\".
