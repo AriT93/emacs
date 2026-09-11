@@ -753,6 +753,7 @@ fall back on and must use Emacs loopback pinentry instead."
   :config
   (setq org-agenda-files  '("~/Documents/notes/todo.org" "~/Documents/org-roam/daily"))
   (setq org-startup-indented nil)
+  (setq org-hide-emphasis-markers t)
   (setq org-default-notes-file "~/Documents/notes/notes.org")
   ;; Tag vocabulary for org-roam Zettelkasten workflow
   (setq org-tag-alist
@@ -816,6 +817,14 @@ fall back on and must use Emacs loopback pinentry instead."
   (visual-line-mode 1)
   ;; Defer org export backends - only needed when exporting
   (with-eval-after-load 'org (require 'ox-gfm))
+(use-package org-appear
+  :ensure t
+    :init
+    (with-eval-after-load 'org (org-appear-mode)))
+(use-package org-superstar
+  :ensure t
+  :init
+    (with-eval-after-load 'org (org-superstar-mode)))
   (use-package org-modern
     :ensure t
     :init

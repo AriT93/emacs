@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-08-05 08:25:37 ari.turetzky>
+#+Time-stamp: <2026-09-11 07:49:18 ari.turetzky>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -856,6 +856,7 @@ eventually to make it more manageable
     :config
     (setq org-agenda-files  '("~/Documents/notes/todo.org" "~/Documents/org-roam/daily"))
     (setq org-startup-indented nil)
+    (setq org-hide-emphasis-markers t)
     (setq org-default-notes-file "~/Documents/notes/notes.org")
     ;; Tag vocabulary for org-roam Zettelkasten workflow
     (setq org-tag-alist
@@ -913,28 +914,36 @@ eventually to make it more manageable
 #+END_SRC
 
 #+BEGIN_SRC elisp
-  (use-package ox-jira
-    :ensure t)
-  ;; Defer org-habit loading
-  (with-eval-after-load 'org (require 'org-habit))
-  (setq org-habit-show-all-today t)
-  (setq org-habit-show-habits t)
-  (setq org-startup-indented nil)
-  (visual-line-mode 1)
-  ;; Defer org export backends - only needed when exporting
-  (with-eval-after-load 'org (require 'ox-gfm))
-  (use-package org-modern
+    (use-package ox-jira
+      :ensure t)
+    ;; Defer org-habit loading
+    (with-eval-after-load 'org (require 'org-habit))
+    (setq org-habit-show-all-today t)
+    (setq org-habit-show-habits t)
+    (setq org-startup-indented nil)
+    (visual-line-mode 1)
+    ;; Defer org export backends - only needed when exporting
+    (with-eval-after-load 'org (require 'ox-gfm))
+  (use-package org-appear
+    :ensure t
+      :init
+      (with-eval-after-load 'org (org-appear-mode)))
+  (use-package org-superstar
     :ensure t
     :init
-    (with-eval-after-load 'org (global-org-modern-mode)))
-  (with-eval-after-load 'org
-    (require 'org-modern)
-    (require 'ox-md)
-;;    (require 'ox-confluence)
-    (require 'ox-jira))
-  ;; org-variable-pitch removed — it fires face-checks on every fontification
-  ;; and errors 300+ times per session when org-indent-mode is not active
-  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+      (with-eval-after-load 'org (org-superstar-mode)))
+    (use-package org-modern
+      :ensure t
+      :init
+      (with-eval-after-load 'org (global-org-modern-mode)))
+    (with-eval-after-load 'org
+      (require 'org-modern)
+      (require 'ox-md)
+  ;;    (require 'ox-confluence)
+      (require 'ox-jira))
+    ;; org-variable-pitch removed — it fires face-checks on every fontification
+    ;; and errors 300+ times per session when org-indent-mode is not active
+    (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 #+END_SRC
 
 #+BEGIN_SRC elisp
