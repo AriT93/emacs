@@ -2124,6 +2124,8 @@ Da General give command-t like ease to emacs
       "nt" '(org-remark-toggle :which-key "toggle")
       "nv" '(org-remark-view :which-key "view")
       "nE" '(ari/org-remark-export-to-latex-with-margin-notes :which-key "export margin-note PDF")
+      "nz" '(ari/strip-zero-width-spaces :which-key "strip zero-width spaces (buffer/region)")
+      "nZ" '(ari/strip-zero-width-spaces-file :which-key "strip zero-width spaces (file...)")
       "N" '(:ignore t :which-key "org-noter")
       "Ne" '(ari/org-noter-export-annotated-pdf :which-key "export annotated PDF")
       ;; "w" is taken globally by compare-windows (C-c w), so word-count

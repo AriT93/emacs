@@ -1548,6 +1548,85 @@ buffer -- the source file on disk is never modified or saved."
           (kill-buffer work-buf))))))
 #+end_src
 
+** Strip Grammarly zero-width spaces
+Text pasted/exported from Google Docs while the Grammarly browser
+extension is active comes out riddled with U+200B (zero-width space)
+characters -- Grammarly wraps nearly every word in one for its
+in-editor overlay, and that bleeds into anything exported from the
+doc (plain text, PDF -> =pdftotext=, etc). They're invisible in
+Emacs, so a file can look completely normal and still fail: running
+=ari/org-remark-export-to-latex-with-margin-notes= (or any org LaTeX
+export) over such a buffer makes pdflatex die with hundreds of
+"Unicode character ... (U+200B) not set up for use with LaTeX"
+errors and no PDF is produced. This first showed up exporting
+=~/Documents/LPC/ENG12/stories/Lethal Injection - Nadianna Roy.txt=.
+
+Deleting U+200B outright is *not* safe: in some of these files it's
+the only thing separating two words (no literal space at all), so a
+blind delete glues them together ("wordword"). This instead deletes
+a U+200B when it sits next to real whitespace (redundant -- the real
+space/newline already separates the words) and replaces it with a
+single space only when it's standing in for a missing space between
+two word characters; anywhere else (next to punctuation) it's just
+dropped.
+
+#+begin_src elisp
+(defun ari/strip-zero-width-spaces (&optional beg end)
+  "Remove Grammarly-style zero-width spaces (U+200B) from BEG to END.
+Interactively, acts on the active region, or the whole buffer if no
+region is active. See the \"Strip Grammarly zero-width spaces\"
+section of ari-custom.org for why this exists and isn't just
+\(replace-regexp \"\\u200b\" \"\"\).
+Returns the number of spots cleaned."
+  (interactive (if (use-region-p)
+                    (list (region-beginning) (region-end))
+                  (list nil nil)))
+  (let* ((zwsp (string ?\u200B))
+         (beg (or beg (point-min)))
+         (end (copy-marker (or end (point-max))))
+         (count 0))
+    (save-excursion
+      (goto-char beg)
+      (while (re-search-forward
+              (concat "[ \t\n" zwsp "]*" zwsp "[ \t\n" zwsp "]*") end t)
+        (let* ((matched (match-string 0))
+               (replacement
+                (cond
+                 ;; Real whitespace already in the run: just drop the ZWSPs,
+                 ;; keep whatever spaces/newlines were actually there.
+                 ((string-match-p "[ \t\n]" matched)
+                  (replace-regexp-in-string (regexp-quote zwsp) "" matched))
+                 ;; No real whitespace: ZWSP was standing in for the missing
+                 ;; space between two words -- restore it as a real space.
+                 ((and (> (match-beginning 0) (point-min))
+                       (< (match-end 0) (point-max))
+                       (memq (char-syntax (char-before (match-beginning 0)))
+                             '(?w ?_))
+                       (memq (char-syntax (char-after (match-end 0)))
+                             '(?w ?_)))
+                  " ")
+                 ;; Next to punctuation/start/end of buffer: just drop it.
+                 (t ""))))
+          (replace-match replacement t t)
+          (setq count (1+ count)))))
+    (set-marker end nil)
+    (when (called-interactively-p 'any)
+      (message "ari/strip-zero-width-spaces: cleaned %d spot(s)" count))
+    count))
+
+(defun ari/strip-zero-width-spaces-file (file)
+  "Run `ari/strip-zero-width-spaces' over FILE on disk and save it.
+Handy for cleaning a pasted-from-Google-Docs .txt before annotating
+it with org-remark or org-noter, so the eventual LaTeX/PDF export
+doesn't choke on U+200B."
+  (interactive "fFile to strip zero-width spaces from: ")
+  (with-current-buffer (find-file-noselect file)
+    (let ((count (ari/strip-zero-width-spaces)))
+      (save-buffer)
+      (message "ari/strip-zero-width-spaces-file: cleaned %d spot(s) in %s"
+               count (file-name-nondirectory file)))))
+#+end_src
+
 ** org-noter annotated-PDF export
 Overlay each *precise* org-noter note (=org-noter-insert-precise-note=,
 bound to =i= - see the org-noter keybindings in emacs-config.org) onto the

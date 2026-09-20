@@ -1,3 +1,4 @@
+
 ;;; ari-custom.el --- holds all my own private stuff -*- lexical-binding: t; -*-
 ;;add a comment
 ;;; Commentary:
@@ -34,7 +35,7 @@
       (occur (if isearch-regexp isearch-string
                (regexp-quote isearch-string))))))
 
-(defun djcb-opacity-modify (&optional dec)
+     (defun djcb-opacity-modify (&optional dec)
        "Modify the transparency of the Emacs frame in 10% steps.
 If DEC is non-nil, decrease transparency by 10%, otherwise increase it.
 Transparency is constrained between `frame-alpha-lower-limit' and 100.
@@ -56,7 +57,7 @@ Returns the new alpha value, or nil if no change was made."
           (message "Error modifying frame opacity: %s" (error-message-string err))
           nil)))
 
-(defun fg/jira-update-heading ()
+  (defun fg/jira-update-heading ()
     "Update current org heading with data from Jira.
 Fetches issue details from Jira using the JIRAISSUEKEY property and updates
 the heading text and properties with current issue data. Requires jiralib2 to
@@ -92,6 +93,7 @@ the heading and properties."
       (error
        (message "Error updating Jira heading: %s" (error-message-string err))
        nil)))
+
 
 (defun ari/migrate-discussed-ids-to-meetings ()
   "Migrate IDs from '** Discussed' headings to parent '* Meeting:' headings.
@@ -1421,6 +1423,61 @@ buffer -- the source file on disk is never modified or saved."
             (setq buffer-file-name nil) ; never let this scratch copy save over src-file
             (set-buffer-modified-p nil))
           (kill-buffer work-buf))))))
+
+(defun ari/strip-zero-width-spaces (&optional beg end)
+  "Remove Grammarly-style zero-width spaces (U+200B) from BEG to END.
+Interactively, acts on the active region, or the whole buffer if no
+region is active. See the \"Strip Grammarly zero-width spaces\"
+section of ari-custom.org for why this exists and isn't just
+\(replace-regexp \"\\u200b\" \"\"\).
+Returns the number of spots cleaned."
+  (interactive (if (use-region-p)
+                    (list (region-beginning) (region-end))
+                  (list nil nil)))
+  (let* ((zwsp (string ?\u200B))
+         (beg (or beg (point-min)))
+         (end (copy-marker (or end (point-max))))
+         (count 0))
+    (save-excursion
+      (goto-char beg)
+      (while (re-search-forward
+              (concat "[ \t\n" zwsp "]*" zwsp "[ \t\n" zwsp "]*") end t)
+        (let* ((matched (match-string 0))
+               (replacement
+                (cond
+                 ;; Real whitespace already in the run: just drop the ZWSPs,
+                 ;; keep whatever spaces/newlines were actually there.
+                 ((string-match-p "[ \t\n]" matched)
+                  (replace-regexp-in-string (regexp-quote zwsp) "" matched))
+                 ;; No real whitespace: ZWSP was standing in for the missing
+                 ;; space between two words -- restore it as a real space.
+                 ((and (> (match-beginning 0) (point-min))
+                       (< (match-end 0) (point-max))
+                       (memq (char-syntax (char-before (match-beginning 0)))
+                             '(?w ?_))
+                       (memq (char-syntax (char-after (match-end 0)))
+                             '(?w ?_)))
+                  " ")
+                 ;; Next to punctuation/start/end of buffer: just drop it.
+                 (t ""))))
+          (replace-match replacement t t)
+          (setq count (1+ count)))))
+    (set-marker end nil)
+    (when (called-interactively-p 'any)
+      (message "ari/strip-zero-width-spaces: cleaned %d spot(s)" count))
+    count))
+
+(defun ari/strip-zero-width-spaces-file (file)
+  "Run `ari/strip-zero-width-spaces' over FILE on disk and save it.
+Handy for cleaning a pasted-from-Google-Docs .txt before annotating
+it with org-remark or org-noter, so the eventual LaTeX/PDF export
+doesn't choke on U+200B."
+  (interactive "fFile to strip zero-width spaces from: ")
+  (with-current-buffer (find-file-noselect file)
+    (let ((count (ari/strip-zero-width-spaces)))
+      (save-buffer)
+      (message "ari/strip-zero-width-spaces-file: cleaned %d spot(s) in %s"
+               count (file-name-nondirectory file)))))
 
 (defcustom ari/org-noter-annotated-pdf-margin-width "2in"
   "Width of the blank margin column added for notes, as a LaTeX length."
