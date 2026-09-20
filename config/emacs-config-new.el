@@ -1916,6 +1916,8 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "nt" '(org-remark-toggle :which-key "toggle")
     "nv" '(org-remark-view :which-key "view")
     "nE" '(ari/org-remark-export-to-latex-with-margin-notes :which-key "export margin-note PDF")
+    "N" '(:ignore t :which-key "org-noter")
+    "Ne" '(ari/org-noter-export-annotated-pdf :which-key "export annotated PDF")
     ;; "w" is taken globally by compare-windows (C-c w), so word-count
     ;; lives under "c" instead.
     "c" '(:ignore t :which-key "word count")
@@ -2104,9 +2106,75 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 (use-package pdf-tools
   :ensure t
-  :config (pdf-tools-install :no-query)
+  :config
+  (pdf-tools-install :no-query)
   (setq-default pdf-view-display-size 'fit-page)
-  (add-hook 'pdf-view-mode-hook (lambda() (display-line-numbers-mode -1))))
+  (setq pdf-annot-activate-created-annotations t)
+  (add-hook 'pdf-view-mode-hook (lambda() (display-line-numbers-mode -1)))
+  (defun ari/pdf-print-buffer ()
+    "Save any pending annotations and print the current PDF."
+    (interactive)
+    (unless (derived-mode-p 'pdf-view-mode)
+      (user-error "Not in a pdf-view buffer"))
+    (when (buffer-modified-p)
+      (pdf-view-save-buffer))
+    (let ((file (buffer-file-name)))
+      (unless file
+        (user-error "Buffer has no associated file"))
+      (start-process "pdf-print" nil "lpr" file)
+      (message "Sent %s to the printer" file)))
+  (define-key pdf-view-mode-map (kbd "C-c C-a p") #'ari/pdf-print-buffer))
+
+(defun ari/org-noter-notes-name-no-spaces (document-path)
+    "Suggest a lowercase, underscore-separated notes file name for DOCUMENT-PATH."
+    (concat (downcase (replace-regexp-in-string "[ -]+" "_" (file-name-base document-path)))
+            ".org"))
+
+  (defun ari/org-noter--auto-answer-new-notes-prompts (orig-fn prompt collection &rest args)
+    "Auto-answer org-noter's new-notes-file prompts instead of asking:
+always pick the snake_case name, and always save next to the document
+(the first, and after `org-noter-notes-search-path' is empty, only
+directory org-noter itself offers)."
+    (cond
+     ((string-prefix-p "What name do you want the notes to have?" prompt)
+      (or (seq-find (lambda (name) (string-match-p "\\`[a-z0-9]+\\(_[a-z0-9]+\\)*\\.org\\'" name))
+                    collection)
+          (apply orig-fn prompt collection args)))
+     ((string-prefix-p "Where do you want to save it?" prompt)
+      (if (consp collection) (car collection) (apply orig-fn prompt collection args)))
+     (t (apply orig-fn prompt collection args))))
+
+  (use-package org-noter
+    :ensure t
+    :after (:any org pdf-view)
+    :hook (org-noter-find-additional-notes-functions . ari/org-noter-notes-name-no-spaces)
+    :config
+    (setq org-noter-notes-search-path nil
+          org-noter-default-notes-file-names nil
+          org-noter-auto-save-last-location t
+          org-noter-always-create-frame nil
+          org-noter-doc-split-fraction '(0.6 . 0.4)
+          ;; Capture a HIGHLIGHT property (page + region coords) on any note
+          ;; taken with an active selection, so the annotated-PDF export can
+          ;; mark the passage - see below for why the actual PDF-mutating
+          ;; half of this feature is turned back off.
+          org-noter-highlight-selected-text t)
+    ;; org-noter-pdf's own handler for `org-noter-highlight-selected-text'
+    ;; calls `pdf-annot-add-highlight-markup-annotation', which writes a real
+    ;; annotation into the *original* PDF - not wanted here (the original
+    ;; must never be touched; see the pdf-tools section). Removing this
+    ;; hook keeps the HIGHLIGHT property (still stored by
+    ;; `org-noter-insert-note' itself, independent of this hook) without the
+    ;; write; `ari/org-noter-export-annotated-pdf' draws the mark instead,
+    ;; only in the exported copy.
+    (remove-hook 'org-noter--add-highlight-hook #'org-noter-pdf--highlight-location)
+    ;; Precise notes (region-anchored, real position on the page) are the
+    ;; default for "i" - plain page-only notes carry no position an
+    ;; annotated-PDF export could use (see `ari/org-noter-export-annotated-pdf'
+    ;; in ari-custom.org), so swap the usual plain/precise assignment.
+    (define-key org-noter-doc-mode-map (kbd "i") #'org-noter-insert-precise-note)
+    (define-key org-noter-doc-mode-map (kbd "I") #'org-noter-insert-note)
+    (advice-add 'completing-read :around #'ari/org-noter--auto-answer-new-notes-prompts))
 
 (use-package discover
   :ensure t)

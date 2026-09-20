@@ -1422,6 +1422,475 @@ buffer -- the source file on disk is never modified or saved."
             (set-buffer-modified-p nil))
           (kill-buffer work-buf))))))
 
+(defcustom ari/org-noter-annotated-pdf-margin-width "2in"
+  "Width of the blank margin column added for notes, as a LaTeX length."
+  :group 'org-noter
+  :type 'string)
+
+(defun ari/org-noter--doc-heading-pos ()
+  "Return the position of the nearest heading at/above point with a
+NOTER_DOCUMENT property."
+  (save-excursion
+    (org-back-to-heading t)
+    (while (and (not (org-entry-get nil "NOTER_DOCUMENT"))
+                (org-up-heading-safe)))
+    (unless (org-entry-get nil "NOTER_DOCUMENT")
+      (user-error "No ancestor heading with a NOTER_DOCUMENT property found"))
+    (point)))
+
+(defun ari/org-noter--entry-quoted-text ()
+  "Return the literal PDF-selected text quoted in the note at point, or
+nil. org-noter inserts the text you actually selected in the PDF
+verbatim as either an inline ``text'' quote (selections at or under
+`org-noter-max-short-selected-text-length', 80 chars) or a
+#+BEGIN_QUOTE/#+END_QUOTE block (longer selections) - whichever is
+present is returned. If neither is present, the selected text became
+the heading's own title instead (org-noter does this when you accept
+the default title, which is exactly the raw selection - only omitting a
+separate body quote because it would just duplicate the title), so the
+title is returned as a last resort. This is copied character-for-
+character from the PDF (or, for the title case, usually is - a search
+against it simply finds nothing if not, which is harmless), so it can
+be searched for directly with `pdf-info-search-regexp' - see
+`ari/org-noter--search-highlight-edges' - which sidesteps the mouse-drag
+coordinate capture bug entirely (the HIGHLIGHT property, by contrast, is
+pdf-view's captured click/drag coordinates, which is what turned out to
+be unreliable)."
+  (let ((end (save-excursion (org-end-of-subtree t t))))
+    (save-excursion
+      (org-end-of-meta-data t)
+      (let ((body (buffer-substring-no-properties (point) end)))
+        (cond
+         ((string-match "#\\+BEGIN_QUOTE\n\\(\\(?:.\\|\n\\)*?\\)\n#\\+END_QUOTE" body)
+          (match-string 1 body))
+         ((string-match "``\\([^\n]*?\\)''" body)
+          (match-string 1 body))
+         (t (nth 4 (org-heading-components))))))))
+
+(defun ari/org-noter--regexp-for-pdf-search (text)
+  "Build a PCRE from TEXT for `pdf-info-search-regexp': regexp-quote it,
+then relax any run of whitespace (including the newline from a line
+wrap inside a #+BEGIN_QUOTE block) to \\s* - poppler's text extraction
+does not reliably put an ordinary space at a line-wrap join (verified:
+searching \"her voice\" with a literal space failed to match text that
+was actually right there on the page; \"her\\s*voice\" matched
+correctly), so matching on the literal separator can silently fail."
+  (replace-regexp-in-string "[ \t\n]+" "\\\\s*" (regexp-quote text)))
+
+(defun ari/org-noter--search-highlight-edges (doc-path page text)
+  "Search PAGE of DOC-PATH for TEXT (run through
+`ari/org-noter--regexp-for-pdf-search' first) and return the first
+match's edge boxes (one per visual line spanned), or nil if TEXT is
+empty or not found on that page."
+  (when (and text (> (length text) 0))
+    (let ((matches (ignore-errors
+                     (pdf-info-search-regexp
+                      (ari/org-noter--regexp-for-pdf-search text)
+                      page nil doc-path))))
+      (cdr (assq 'edges (car matches))))))
+
+(defun ari/org-noter--parse-page-property (prop)
+  "Parse a NOTER_PAGE property string PROP into an org-noter location cons.
+Mirrors `org-noter--parse-location-property' exactly: a precise note with
+both top and left position is stored as the 3-part (PAGE TOP . LEFT), not
+just (PAGE . TOP), so both forms need handling."
+  (when (and prop (> (length prop) 0))
+    (let ((value (car (read-from-string prop))))
+      (cond ((and (consp value) (integerp (car value)) (numberp (cdr value))) value)
+            ((and (consp value) (integerp (car value)) (consp (cdr value))
+                  (numberp (cadr value)) (numberp (cddr value)))
+             value)
+            ((integerp value) (cons value 0))))))
+
+(defun ari/org-noter--latex-escape (s)
+  "Escape the LaTeX-special characters most likely to appear in a note."
+  (replace-regexp-in-string "[\\{}$&%#_^~]" "\\\\\\&" s))
+
+(defcustom ari/org-noter-annotated-pdf-min-highlight-height 0.02
+  "Minimum highlight-box height, as a fraction of page height.
+Some PDFs (missing/incomplete glyph-height metrics) make pdf-tools
+report a selection's top and bottom edge as identical - a genuinely
+zero-height box, which draws as a flat line (looking like a
+strikethrough) rather than an outline around the text. When a box comes
+back at or under this height, it is padded symmetrically to this height
+instead of being drawn as-is."
+  :group 'org-noter
+  :type 'float)
+
+(defun ari/org-noter--normalize-edges (edges)
+  "Normalize EDGES (LEFT TOP RIGHT BOTTOM) so left<right and top<bottom,
+padding a degenerate (near-zero-height) box up to
+`ari/org-noter-annotated-pdf-min-highlight-height'.
+pdf-tools stores raw drag-start/drag-end coordinates, so depending on
+which direction a selection was dragged, \"left\"/\"top\" can come out
+numerically greater than \"right\"/\"bottom\" - left as-is, that inverts
+a box's height or width to negative, which LaTeX then renders as a
+collapsed sliver. Separately (and this is what actually happened with a
+real note here), some PDFs make pdf-tools report top and bottom as
+exactly equal - already zero-height before any ordering is involved -
+which is what the padding step below corrects."
+  (pcase-let ((`(,l ,tp ,r ,b) edges))
+    (let ((left (min l r)) (right (max l r))
+          (top (min tp b)) (bottom (max tp b)))
+      (when (< (- bottom top) ari/org-noter-annotated-pdf-min-highlight-height)
+        (let ((pad (/ ari/org-noter-annotated-pdf-min-highlight-height 2.0))
+              (mid (/ (+ top bottom) 2.0)))
+          (setq top (- mid pad) bottom (+ mid pad))))
+      (list left top right bottom))))
+
+(defun ari/org-noter--plausible-highlight-edges-p (edges)
+  "Reject a highlight box that is geometrically impossible for a text
+selection: taller than it is wide while also taller than a normal
+single line. A real text selection is always much wider than tall (even
+one word spans more horizontally than a line's height); a box shaped
+the other way only happens when pdf-tools mis-captured a mostly-vertical
+drag (seen in practice on a multi-line selection: dragging start-to-end
+without sweeping across the text produced a 0.015-wide, 0.044-tall
+sliver out in the left margin instead of a box around the sentence)
+rather than genuinely selecting that little width across two lines."
+  (pcase-let ((`(,l ,tp ,r ,b) edges))
+    (let ((width (- r l)) (height (- b tp)))
+      (not (and (> height (* 1.5 ari/org-noter-annotated-pdf-min-highlight-height))
+                (< width height))))))
+
+(defun ari/org-noter--parse-highlight-property (prop)
+  "Parse a HIGHLIGHT property string PROP into a list of normalized,
+plausible (LEFT TOP RIGHT BOTTOM) edge boxes, or nil. PROP is the
+printed form of a `pdf-highlight' struct (page + coords, as stored by
+org-noter's own `org-noter-highlight-selected-text' feature - see the
+org-noter-pdf module for the struct definition). A selection spanning a
+line wrap has one edge box per visual line; all plausible ones are
+returned so each gets outlined - see
+`ari/org-noter--plausible-highlight-edges-p' for what gets dropped and
+why."
+  (when (and prop (> (length prop) 0))
+    (let* ((struct (ignore-errors (car (read-from-string prop))))
+           (coords (and (recordp struct) (pdf-highlight-coords struct)))
+           (edges-list (and coords (listp (cdr coords)) (cdr coords))))
+      (seq-filter #'ari/org-noter--plausible-highlight-edges-p
+                  (mapcar #'ari/org-noter--normalize-edges
+                          (seq-filter (lambda (e) (= (length e) 4)) edges-list))))))
+
+(defun ari/org-noter--collect-precise-notes ()
+  "Return (DOC-PATH . NOTES) for the org-noter subtree at point.
+NOTES is a list of (PAGE TOP TEXT HIGHLIGHT), one per note with a real
+(non-zero) top position, i.e. one taken with
+`org-noter-insert-precise-note'. HIGHLIGHT is a list of (LEFT TOP RIGHT
+BOTTOM) edge boxes (one per visual line of the selection), preferring a
+live `pdf-info-search-regexp' lookup of the note's own quoted PDF text
+(see `ari/org-noter--entry-quoted-text') over the mouse-drag-captured
+HIGHLIGHT property, since the latter turned out to be unreliable in
+practice (see the org-noter annotated-PDF export notes) - falls back to
+the stored property (still subject to
+`ari/org-noter--plausible-highlight-edges-p') only when there is no
+quoted text or the search finds nothing on that page; nil if neither
+source produced anything."
+  (let (doc-path notes)
+    (save-excursion
+      (goto-char (ari/org-noter--doc-heading-pos))
+      (setq doc-path (expand-file-name (org-entry-get nil "NOTER_DOCUMENT")
+                                        (file-name-directory (buffer-file-name))))
+      (org-map-entries
+       (lambda ()
+         (let* ((loc (ari/org-noter--parse-page-property (org-entry-get nil "NOTER_PAGE")))
+                (top (and loc (org-noter--get-location-top loc)))
+                (page (and loc (org-noter--get-location-page loc)))
+                (quoted-text (ari/org-noter--entry-quoted-text))
+                (search-edges (and quoted-text page
+                                    (ari/org-noter--search-highlight-edges doc-path page quoted-text)))
+                (raw-highlight (org-entry-get nil "HIGHLIGHT"))
+                (highlight (if search-edges
+                               (mapcar #'ari/org-noter--normalize-edges search-edges)
+                             (ari/org-noter--parse-highlight-property raw-highlight))))
+           (when (and raw-highlight (not highlight) (boundp 'ari/org-noter--dropped-highlight-titles))
+             (push (nth 4 (org-heading-components)) ari/org-noter--dropped-highlight-titles))
+           (when (and loc top (> top 0))
+             (push (list page top (nth 4 (org-heading-components)) highlight)
+                   notes))))
+       t 'tree))
+    (cons doc-path (nreverse notes))))
+
+(defun ari/org-noter--estimate-note-height (text)
+  "Rough box height in inches for TEXT at the export's note width/font size."
+  (let* ((chars-per-line 26)
+         (lines (max 1 (ceiling (length text) chars-per-line))))
+    (+ 0.15 (* lines 0.115))))
+
+(defun ari/org-noter--stack-notes (notes)
+  "Group NOTES (PAGE TOP TEXT HIGHLIGHT) by page, adjusting TOP to avoid
+overlap. Returns an alist of (PAGE . ((TOP TEXT HIGHLIGHT) ...)), each
+page's notes sorted top to bottom with a minimum gap enforced between
+them."
+  (let (by-page)
+    (dolist (note notes)
+      (push (list (nth 1 note) (nth 2 note) (nth 3 note))
+            (alist-get (nth 0 note) by-page)))
+    (dolist (page-notes by-page)
+      (setcdr page-notes (sort (cdr page-notes) (lambda (a b) (< (car a) (car b))))))
+    (dolist (page-notes by-page)
+      (let ((min-top 0.0))
+        (dolist (entry (cdr page-notes))
+          (when (< (car entry) min-top)
+            (setcar entry min-top))
+          (setq min-top (+ (car entry)
+                            (/ (ari/org-noter--estimate-note-height (nth 1 entry)) 11.0))))))
+    by-page))
+
+(defvar ari/org-noter--dropped-highlight-titles nil
+  "Let-bound by `ari/org-noter-export-annotated-pdf' while collecting
+notes, so `ari/org-noter--collect-precise-notes' can report which notes
+had a HIGHLIGHT property that failed the plausibility check entirely
+(see `ari/org-noter--plausible-highlight-edges-p') - those notes still
+get exported, just without an outline box.")
+
+(defun ari/org-noter--export-annotated-pdf-latex (doc-path by-page out-file)
+  "LaTeX/pdfpages backend for `ari/org-noter-export-annotated-pdf'.
+Kept as a fallback for `ari/org-noter--export-annotated-pdf-ghostscript'
+(the default) since it depends on a working pdflatex install, but has a
+known issue: pdfpages occasionally clips content drawn after a specific
+included page at some positions (verified: identical draw commands
+render at full width with no PDF included, and other positions on the
+very same included page render fine, so it is a pdfpages/this-PDF
+interaction, not a coordinate bug) - see the ghostscript backend, which
+avoids `pdfpages' (and the whole LaTeX toolchain) entirely by working
+directly in raw PostScript/PDF coordinates instead."
+  (dolist (tool '("pdfinfo" "pdflatex"))
+    (unless (executable-find tool)
+      (user-error "%s not found on exec-path" tool)))
+    (let* ((work-dir (make-temp-file "org-noter-annot-" t))
+           (tex-file (expand-file-name "annot.tex" work-dir))
+           (page-count
+            (with-temp-buffer
+              (call-process "pdfinfo" nil t nil doc-path)
+              (goto-char (point-min))
+              (if (re-search-forward "^Pages:[ \t]*\\([0-9]+\\)" nil t)
+                  (string-to-number (match-string 1))
+                (user-error "Could not determine page count via pdfinfo"))))
+           (page-size
+            (with-temp-buffer
+              (call-process "pdfinfo" nil t nil doc-path)
+              (goto-char (point-min))
+              (if (re-search-forward "^Page size:[ \t]*\\([0-9.]+\\) x \\([0-9.]+\\) pts" nil t)
+                  (cons (match-string 1) (match-string 2))
+                (user-error "Could not determine page size via pdfinfo")))))
+      (with-temp-buffer
+        (insert "\\documentclass{article}\n")
+        (insert "\\usepackage{pdfpages}\n\\usepackage{eso-pic}\n\\usepackage{xcolor}\n")
+        (insert (format "\\newlength{\\srcw}\\setlength{\\srcw}{%sbp}\n" (car page-size)))
+        (insert (format "\\newlength{\\srch}\\setlength{\\srch}{%sbp}\n" (cdr page-size)))
+        (insert (format "\\newlength{\\margincol}\\setlength{\\margincol}{%s}\n"
+                        ari/org-noter-annotated-pdf-margin-width))
+        (insert "\\setlength{\\paperwidth}{\\srcw}\\addtolength{\\paperwidth}{\\margincol}\n")
+        (insert "\\setlength{\\paperheight}{\\srch}\n")
+        (insert "\\pdfpagewidth=\\paperwidth\\pdfpageheight=\\paperheight\n")
+        (insert "\\newcommand{\\pdfnote}[2]{\\AtPageUpperLeft{\\put(\\LenToUnit{\\srcw+0.1in},\\LenToUnit{-#1\\srch})")
+        (insert "{\\parbox{\\dimexpr\\margincol-0.3in\\relax}{\\scriptsize\\itshape\\fcolorbox{gray}{gray!8}{\\parbox{0.9\\linewidth}{#2}}}}}}\n")
+        ;; Underline (not a filled/boxed highlight) beneath the passage: a
+        ;; solid/translucent fill would sit in the foreground on top of the
+        ;; included page and obscure the text; the `transparent' package
+        ;; that would allow a see-through fill errors on this machine's
+        ;; MiKTeX (same class of breakage as the marginnote issue in the
+        ;; org-remark export above), and a background-layer fill is fully
+        ;; hidden behind the included page regardless. A box outline was
+        ;; tried first, but pdf-tools sometimes merges a selection spanning
+        ;; a line wrap into one bounding rectangle rather than one box per
+        ;; visual line - drawn as an outline that reads as a big, wrong
+        ;; box; drawn as a thin line at just the bottom edge, the same bad
+        ;; data is far less visually jarring (and correct data still
+        ;; underlines the right passage cleanly).
+        (insert "\\newcommand{\\pdfhl}[4]{\\AtPageUpperLeft{\\put(\\LenToUnit{#1\\srcw},\\LenToUnit{-#4\\srch})")
+        (insert "{\\textcolor{orange}{\\rule{\\dimexpr#3\\srcw-#1\\srcw\\relax}{1.2pt}}}}}\n")
+        (insert "\\begin{document}\n")
+        (dotimes (i page-count)
+          (let* ((page (1+ i))
+                 (page-notes (cdr (assoc page by-page))))
+            (when page-notes
+              (insert "\\AddToShipoutPictureFG*{%\n")
+              (dolist (entry page-notes)
+                (dolist (box (nth 2 entry))
+                  (insert (format "\\pdfhl{%s}{%s}{%s}{%s}%%\n"
+                                  (nth 0 box) (nth 1 box) (nth 2 box) (nth 3 box))))
+                (insert (format "\\pdfnote{%s}{%s}%%\n" (nth 0 entry)
+                                (ari/org-noter--latex-escape (nth 1 entry)))))
+              (insert "}\n"))
+            (insert (format "\\includepdf[pages=%d,noautoscale=true,offset=0 0,pagecommand={}]{%s}\n"
+                            page doc-path))
+            (when page-notes (insert "\\ClearShipoutPictureFG\n"))))
+        (insert "\\end{document}\n")
+        (write-region (point-min) (point-max) tex-file))
+      (let ((default-directory work-dir))
+        (with-temp-buffer
+          (unless (zerop (call-process "pdflatex" nil t nil "-interaction=nonstopmode" tex-file))
+            (let ((log (buffer-string)))
+              (delete-directory work-dir t)
+              (error "pdflatex failed:\n%s" log)))))
+      (copy-file (expand-file-name "annot.pdf" work-dir) out-file t)
+      (delete-directory work-dir t)))
+
+(defun ari/org-noter--ps-escape (s)
+  "Escape S for use inside a PostScript `(...)' string literal."
+  (replace-regexp-in-string "[\\\\()]" "\\\\\\&" s))
+
+(defun ari/org-noter--wrap-text (text width-chars)
+  "Naively word-wrap TEXT into lines of at most WIDTH-CHARS characters."
+  (let ((words (split-string text)) (lines nil) (cur ""))
+    (dolist (w words)
+      (if (and (> (length cur) 0) (> (+ (length cur) 1 (length w)) width-chars))
+          (progn (push cur lines) (setq cur w))
+        (setq cur (if (= (length cur) 0) w (concat cur " " w)))))
+    (when (> (length cur) 0) (push cur lines))
+    (nreverse lines)))
+
+(defun ari/org-noter--ps-underline (box pagewidth pageheight)
+  "Return a PostScript `moveto ... lineto stroke' line for edge BOX
+\(LEFT TOP RIGHT BOTTOM, page-relative fractions), using PDF's native
+bottom-up point coordinates (no unit-conversion layer needed, unlike the
+LaTeX backend)."
+  (let ((x1 (* (nth 0 box) pagewidth))
+        (x2 (* (nth 2 box) pagewidth))
+        (y (* (- 1 (nth 3 box)) pageheight)))
+    (format "%.2f %.2f moveto %.2f %.2f lineto stroke\n" x1 y x2 y)))
+
+(defun ari/org-noter--ps-margin-note (x top-frac pageheight box-width text)
+  "Return PostScript commands drawing a boxed margin note for TEXT, top
+edge at TOP-FRAC (page-relative fraction), at absolute point X."
+  (let* ((lines (ari/org-noter--wrap-text text 26))
+         (line-height 10)
+         (top-y (* (- 1 top-frac) pageheight))
+         (box-height (+ 6 (* (length lines) line-height))))
+    (with-temp-buffer
+      (insert "0 0 0 setrgbcolor 0.5 setlinewidth\n")
+      (insert (format "%.2f %.2f %.2f %.2f re stroke\n"
+                      x (- top-y box-height) box-width box-height))
+      (insert "/Helvetica findfont 7 scalefont setfont\n")
+      (let ((y (- top-y line-height)))
+        (dolist (line lines)
+          (insert (format "%.2f %.2f moveto (%s) show\n"
+                          (+ x 3) y (ari/org-noter--ps-escape line)))
+          (setq y (- y line-height))))
+      (buffer-string))))
+
+(defun ari/org-noter--page-bbox (ps-content start)
+  "Return (WIDTH . HEIGHT) from the nearest %%PageBoundingBox at/after
+START in PS-CONTENT."
+  (when (string-match
+         "%%PageBoundingBox: *\\([0-9.]+\\) *\\([0-9.]+\\) *\\([0-9.]+\\) *\\([0-9.]+\\)"
+         ps-content start)
+    (cons (- (string-to-number (match-string 3 ps-content))
+             (string-to-number (match-string 1 ps-content)))
+          (- (string-to-number (match-string 4 ps-content))
+             (string-to-number (match-string 2 ps-content))))))
+
+(defun ari/org-noter--num (n)
+  "Format N as pdftops would: a bare integer when whole, else a decimal."
+  (if (= n (truncate n)) (number-to-string (truncate n)) (number-to-string n)))
+
+(defun ari/org-noter--export-annotated-pdf-ghostscript (doc-path by-page out-file)
+  "Ghostscript backend for `ari/org-noter-export-annotated-pdf': converts
+DOC-PATH to PostScript with `pdftops' (plain, one `showpage' per page -
+unlike `gs -sDEVICE=ps2write', which re-embeds pages as length-prefixed
+PDF streams that can't be safely text-edited), widens each page that
+needs marks (and its clip rectangle - easy to miss: without widening the
+clip too, anything drawn past the original page edge, like the margin
+notes, is silently invisible) and injects raw PostScript draw commands
+for the underline(s)/margin note(s) directly before that page's own
+`showpage', then rasterizes back to PDF with `gs -sDEVICE=pdfwrite'.
+Works entirely in PDF/PostScript's own bottom-up point coordinates, so
+there is no unit-conversion layer to get wrong, and - the actual reason
+this backend exists - it does not go through `pdfpages', which was
+found to occasionally (and unpredictably) clip content drawn after a
+specific included page."
+  (dolist (tool '("pdftops" "gs"))
+    (unless (executable-find tool)
+      (user-error "%s not found on exec-path" tool)))
+  (let* ((work-dir (make-temp-file "org-noter-gs-" t))
+         (ps-file (expand-file-name "orig.ps" work-dir))
+         (ps-out (expand-file-name "annot.ps" work-dir))
+         (margin-pt 144.0)) ; matches the LaTeX backend's 2in default
+    (unless (zerop (call-process "pdftops" nil nil nil doc-path ps-file))
+      (error "pdftops failed to convert %s" doc-path))
+    (let ((content (with-temp-buffer
+                     (insert-file-contents ps-file)
+                     (buffer-string))))
+      (dolist (page-notes by-page)
+        (let* ((page (car page-notes))
+               (marker (format "%%%%Page: %d %d" page page))
+               (pstart (string-match (regexp-quote marker) content)))
+          (when pstart
+            (let* ((showpage-at (string-match "showpage" content pstart))
+                   (pend (if showpage-at (+ showpage-at (length "showpage"))
+                           (length content)))
+                   (segment (substring content pstart pend))
+                   (bbox (ari/org-noter--page-bbox content pstart))
+                   (pw (car bbox)) (ph (cdr bbox))
+                   (neww (+ pw margin-pt)))
+              (setq segment
+                    (replace-regexp-in-string
+                     (format "%s %s pdfSetupPaper"
+                             (regexp-quote (ari/org-noter--num pw))
+                             (regexp-quote (ari/org-noter--num ph)))
+                     (format "%s %s pdfSetupPaper"
+                             (ari/org-noter--num neww) (ari/org-noter--num ph))
+                     segment t t))
+              (setq segment
+                    (replace-regexp-in-string
+                     (format "0 0 %s %s re W"
+                             (regexp-quote (ari/org-noter--num pw))
+                             (regexp-quote (ari/org-noter--num ph)))
+                     (format "0 0 %s %s re W"
+                             (ari/org-noter--num neww) (ari/org-noter--num ph))
+                     segment t t))
+              (let ((marks "\n% org-noter overlay\n0.85 0.4 0.0 setrgbcolor 1.2 setlinewidth\n"))
+                (dolist (entry (cdr page-notes))
+                  (dolist (box (nth 2 entry))
+                    (setq marks (concat marks (ari/org-noter--ps-underline box pw ph)))))
+                (dolist (entry (cdr page-notes))
+                  (setq marks (concat marks
+                                      (ari/org-noter--ps-margin-note
+                                       (+ pw 10) (nth 0 entry) ph (- margin-pt 15)
+                                       (nth 1 entry)))))
+                (setq segment
+                      (if showpage-at
+                          (concat (substring segment 0 (- (length segment) (length "showpage")))
+                                  marks "showpage")
+                        (concat segment marks))))
+              (setq content (concat (substring content 0 pstart) segment
+                                    (substring content pend)))))))
+      (with-temp-file ps-out (insert content)))
+    (unless (zerop (call-process "gs" nil nil nil "-q" "-dNOPAUSE" "-dBATCH"
+                                 "-sDEVICE=pdfwrite" (concat "-sOutputFile=" out-file) ps-out))
+      (error "gs pdfwrite failed"))
+    (delete-directory work-dir t)))
+
+(defun ari/org-noter-export-annotated-pdf ()
+  "Export the current org-noter document with its precise notes overlaid
+into a new `<name>_annotated.pdf' next to it. See the org-noter annotated-
+PDF export section for details; the source PDF is never modified. Tries
+the Ghostscript backend first, falling back to the LaTeX one (see its
+docstring for why the fallback exists) if that fails for any reason."
+  (interactive)
+  (unless (derived-mode-p 'org-mode)
+    (user-error "Run this from the org-noter notes buffer"))
+  (let ((ari/org-noter--dropped-highlight-titles nil))
+    (pcase-let ((`(,doc-path . ,notes) (ari/org-noter--collect-precise-notes)))
+      (unless (file-exists-p doc-path)
+        (user-error "Document not found: %s" doc-path))
+      (unless notes
+        (user-error "No precise notes found for %s (plain page-only notes are skipped)" doc-path))
+      (let* ((by-page (ari/org-noter--stack-notes notes))
+             (out-file (concat (file-name-sans-extension doc-path) "_annotated.pdf"))
+             (backend "ghostscript"))
+        (condition-case err
+            (ari/org-noter--export-annotated-pdf-ghostscript doc-path by-page out-file)
+          (error
+           (setq backend (format "latex (ghostscript backend failed: %s)" (error-message-string err)))
+           (ari/org-noter--export-annotated-pdf-latex doc-path by-page out-file)))
+        (if ari/org-noter--dropped-highlight-titles
+            (message "Wrote %s via %s (no mark for: %s - geometry looked implausible, probably a stray drag; retake with a clean left-to-right selection if you want it marked)"
+                     out-file backend (string-join (nreverse ari/org-noter--dropped-highlight-titles) ", "))
+          (message "Wrote %s via %s" out-file backend))
+        (find-file out-file)))))
+
 (defun ari/manuscript-wc ()
   "Count the story body of a manuscript org buffer and update \"About N words\".
 The body is the region between the front-matter `#+END_EXPORT' block and the
