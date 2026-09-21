@@ -1166,11 +1166,17 @@ eventually to make it more manageable
         filename)))
 
   ;; org-remark: in-buffer highlighting/annotation, stored as a companion
-  ;; "marginalia" org file next to the source. Keybindings follow the
-  ;; org-remark documentation's suggested "C-c n" prefix (wired below via
-  ;; the `general' leader in the General section).
+  ;; notes org file next to the source (named via
+  ;; `ari/org-remark-notes-file-name' in ari-custom.org: the source file's
+  ;; name, snake_cased, plus "_notes.org", so several source files in the
+  ;; same directory/session each get their own notes file instead of
+  ;; sharing one). Keybindings follow the org-remark documentation's
+  ;; suggested "C-c n" prefix (wired below via the `general' leader in the
+  ;; General section).
   (use-package org-remark
     :ensure t
+    :custom
+    (org-remark-notes-file-name #'ari/org-remark-notes-file-name)
     :init
     (org-remark-global-tracking-mode +1))
 
@@ -2418,9 +2424,11 @@ prompt text org-noter uses for each) so a new notes file is always
 snake_case and always lands next to the PDF, with no prompting.
 #+begin_src elisp
   (defun ari/org-noter-notes-name-no-spaces (document-path)
-    "Suggest a lowercase, underscore-separated notes file name for DOCUMENT-PATH."
-    (concat (downcase (replace-regexp-in-string "[ -]+" "_" (file-name-base document-path)))
-            ".org"))
+    "Suggest a snake_case notes file name for DOCUMENT-PATH.
+Uses the same `ari/snake-case-string' helper (ari-custom.org) that
+org-remark's notes file naming uses, so both packages produce
+consistently-named companion notes files."
+    (concat (ari/snake-case-string (file-name-base document-path)) ".org"))
 
   (defun ari/org-noter--auto-answer-new-notes-prompts (orig-fn prompt collection &rest args)
     "Auto-answer org-noter's new-notes-file prompts instead of asking:

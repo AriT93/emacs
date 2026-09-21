@@ -1,4 +1,3 @@
-
 ;;; ari-custom.el --- holds all my own private stuff -*- lexical-binding: t; -*-
 ;;add a comment
 ;;; Commentary:
@@ -35,7 +34,7 @@
       (occur (if isearch-regexp isearch-string
                (regexp-quote isearch-string))))))
 
-     (defun djcb-opacity-modify (&optional dec)
+(defun djcb-opacity-modify (&optional dec)
        "Modify the transparency of the Emacs frame in 10% steps.
 If DEC is non-nil, decrease transparency by 10%, otherwise increase it.
 Transparency is constrained between `frame-alpha-lower-limit' and 100.
@@ -57,7 +56,7 @@ Returns the new alpha value, or nil if no change was made."
           (message "Error modifying frame opacity: %s" (error-message-string err))
           nil)))
 
-  (defun fg/jira-update-heading ()
+(defun fg/jira-update-heading ()
     "Update current org heading with data from Jira.
 Fetches issue details from Jira using the JIRAISSUEKEY property and updates
 the heading text and properties with current issue data. Requires jiralib2 to
@@ -93,7 +92,6 @@ the heading and properties."
       (error
        (message "Error updating Jira heading: %s" (error-message-string err))
        nil)))
-
 
 (defun ari/migrate-discussed-ids-to-meetings ()
   "Migrate IDs from '** Discussed' headings to parent '* Meeting:' headings.
@@ -1331,6 +1329,33 @@ Creates a full org-roam reference note from the current elfeed entry."
     (null missing-files)))
 
 (add-hook 'after-init-hook #'ari/validate-config-files)
+
+(defun ari/snake-case-string (s)
+  "Convert S to snake_case.
+Lowercases S and collapses every run of non-alphanumeric characters
+into a single underscore, trimming any leading/trailing underscore."
+  (let* ((lower (downcase s))
+         (snake (replace-regexp-in-string "[^a-z0-9]+" "_" lower)))
+    (string-trim snake "_" "_")))
+
+(defun ari/org-remark-notes-file-name ()
+  "Return a marginal notes file name for the current buffer.
+
+Like the built-in `org-remark-notes-file-name-function', except the
+source file's base name is converted to snake_case (see
+`ari/snake-case-string') before appending \"_notes.org\", e.g.
+\"My Cool File.txt\" becomes \"my_cool_file_notes.org\". If the current
+buffer is not visiting a file, falls back to marginalia.org in
+`user-emacs-directory', same as the built-in function."
+  (if buffer-file-name
+      (let ((source-filename (org-remark-source-find-file-name)))
+        (when (and (stringp source-filename)
+                   (file-exists-p source-filename))
+          (concat (ari/snake-case-string
+                   (file-name-sans-extension
+                    (file-name-nondirectory source-filename)))
+                  "_notes.org")))
+    (expand-file-name "marginalia.org" user-emacs-directory)))
 
 (defconst ari/org-remark-latex-margin-preamble
   "#+LATEX_HEADER: \\usepackage[left=1in,right=2.5in,marginparwidth=1.7in,marginparsep=0.25in]{geometry}
