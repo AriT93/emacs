@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-09-11 07:49:18 ari.turetzky>
+#+Time-stamp: <2026-09-25 14:42:41 ari.turetzky>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -679,52 +679,60 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
 #+END_SRC
 ** Treemacs
 #+BEGIN_SRC elisp
-  (use-package treemacs-projectile
-    :after treemacs projectile
-    :ensure t)
-  (use-package treemacs-magit
-    :after treemacs magit
-    :ensure t)
-  (use-package treemacs
-    :ensure t
-    :defer t  ; Lazy-load treemacs - only load when explicitly invoked
-    :commands (treemacs treemacs-select-window)
-    :config
-    (setq treemacs-space-between-root-nodes nil)
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode t)
-    (doom-themes-treemacs-config)
-    (setq doom-themes-treemacs-theme "doom-colors")
-    :bind
-    ("M-0" . treemacs-select-window))
+   (use-package treemacs-projectile
+     :after treemacs projectile
+     :ensure t)
+   (use-package treemacs-magit
+     :after treemacs magit
+     :ensure t)
+   (use-package treemacs
+     :ensure t
+     :defer t  ; Lazy-load treemacs - only load when explicitly invoked
+     :commands (treemacs treemacs-select-window)
+     :config
+     (setq treemacs-space-between-root-nodes nil)
+     (treemacs-follow-mode t)
+     (treemacs-filewatch-mode t)
+     (treemacs-fringe-indicator-mode t)
+     (doom-themes-treemacs-config)
+     (setq doom-themes-treemacs-theme "doom-colors")
+     :bind
+     ("M-0" . treemacs-select-window))
 
-  (use-package doom-themes
-    :ensure t
-    :defer t  ; Lazy-load doom-themes - load after startup
-    :init
-    ;; Set theme early to avoid visual flashing
-    (setq doom-themes-enable-bold t)
-    (setq doom-themes-enable-italic t)
-    (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-    (add-to-list 'custom-theme-load-path "~/emacs/site")
-    :config
-    ;; Disable done-headline fontification: doom-themes-ext-org uses match group 2
-    ;; which is optional in current org's heading regexp, causing "No match 2" errors.
-    (setq org-fontify-done-headline nil)
-    (doom-themes-org-config)
-    (require 'doom-themes-ext-org))
-  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-  (add-to-list 'custom-theme-load-path "~/emacs/site")
-  (use-package hc-zenburn-theme
-    :ensure t
-    :custom-face
-    (region ((t (:background "DarkOliveGreen"))))
-    (highlight ((t (:background "DarkSeaGreen4"))))
-    (consult-highlight-match ((t (:background "DarkSeaGreen4"))))
-    (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
-    (lazy-highlight ((t (:background "DarkSeaGreen4")))))
-  (load-theme 'hc-zenburn t)
+   (use-package doom-themes
+     :ensure t
+     :defer t  ; Lazy-load doom-themes - load after startup
+     :init
+     ;; Set theme early to avoid visual flashing
+     (setq doom-themes-enable-bold t)
+     (setq doom-themes-enable-italic t)
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+     (add-to-list 'custom-theme-load-path "~/emacs/site")
+     :config
+     ;; Disable done-headline fontification: doom-themes-ext-org uses match group 2
+     ;; which is optional in current org's heading regexp, causing "No match 2" errors.
+     (setq org-fontify-done-headline nil)
+     (doom-themes-org-config)
+     (require 'doom-themes-ext-org))
+   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+   (add-to-list 'custom-theme-load-path "~/emacs/site")
+   (use-package hc-zenburn-theme
+     :ensure t
+     :custom-face
+     (region ((t (:background "DarkOliveGreen"))))
+     (highlight ((t (:background "DarkSeaGreen4"))))
+     (consult-highlight-match ((t (:background "DarkSeaGreen4"))))
+     (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
+     (lazy-highlight ((t (:background "DarkSeaGreen4")))))
+   (use-package solarized-dark-high-contrast
+     :ensure t
+     :custom-face
+     (region ((t (:background "DarkOliveGreen"))))
+     (highlight ((t (:background "DarkSeaGreen4"))))
+     (consult-highlight-match ((t (:background "DarkSeaGreen4"))))
+     (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
+     (lazy-highlight ((t (:background "DarkSeaGreen4")))));; (load-theme 'hc-zenburn t)
+   (load-theme 'solarized-dark-high-contrast t)
 #+END_SRC
 ** Doom Modeline
 #+BEGIN_SRC elisp

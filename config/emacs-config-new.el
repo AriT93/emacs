@@ -646,7 +646,15 @@ fall back on and must use Emacs loopback pinentry instead."
   (consult-highlight-match ((t (:background "DarkSeaGreen4"))))
   (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
   (lazy-highlight ((t (:background "DarkSeaGreen4")))))
-(load-theme 'hc-zenburn t)
+(use-package solarized-dark-high-contrast
+  :ensure t
+  :custom-face
+  (region ((t (:background "DarkOliveGreen"))))
+  (highlight ((t (:background "DarkSeaGreen4"))))
+  (consult-highlight-match ((t (:background "DarkSeaGreen4"))))
+  (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
+  (lazy-highlight ((t (:background "DarkSeaGreen4")))));; (load-theme 'hc-zenburn t)
+(load-theme 'solarized-dark-high-contrast t)
 
 (use-package nerd-icons
   :ensure t
