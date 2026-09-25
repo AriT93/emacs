@@ -186,6 +186,8 @@ fall back on and must use Emacs loopback pinentry instead."
 (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
+
+
 (show-paren-mode 1)
 (recentf-mode 1)
 (fringe-mode 10)
@@ -505,6 +507,7 @@ fall back on and must use Emacs loopback pinentry instead."
   :defer 2
   :ensure t)
 
+
 (use-package nvm
   :defer 2
   :ensure t)
@@ -596,6 +599,7 @@ fall back on and must use Emacs loopback pinentry instead."
   (with-eval-after-load 'git-gutter (require 'git-gutter-fringe))
   )
 
+
 (use-package persistent-scratch
   :ensure t
   :config
@@ -646,7 +650,7 @@ fall back on and must use Emacs loopback pinentry instead."
   (consult-highlight-match ((t (:background "DarkSeaGreen4"))))
   (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
   (lazy-highlight ((t (:background "DarkSeaGreen4")))))
-(use-package solarized-dark-high-contrast
+(use-package solarized-theme
   :ensure t
   :custom-face
   (region ((t (:background "DarkOliveGreen"))))
@@ -654,7 +658,7 @@ fall back on and must use Emacs loopback pinentry instead."
   (consult-highlight-match ((t (:background "DarkSeaGreen4"))))
   (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
   (lazy-highlight ((t (:background "DarkSeaGreen4")))));; (load-theme 'hc-zenburn t)
-(load-theme 'solarized-dark-high-contrast t)
+(load-theme 'solarized-wombat-dark t)
 
 (use-package nerd-icons
   :ensure t
@@ -700,6 +704,7 @@ fall back on and must use Emacs loopback pinentry instead."
   ;; Enables ligature checks globally in all buffers. You can also do it
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
+
 
 (use-package flymake
   :hook ((prog-mode . flymake-mode)
@@ -815,7 +820,7 @@ fall back on and must use Emacs loopback pinentry instead."
          :immediate-finish t
          :empty-lines-after 1)))
 
-(use-package ox-jira
+  (use-package ox-jira
     :ensure t)
   ;; Defer org-habit loading
   (with-eval-after-load 'org (require 'org-habit))
@@ -861,6 +866,7 @@ fall back on and must use Emacs loopback pinentry instead."
         org-cite-csl-styles-dir "~/Zotero/styles")
 )
 
+
 (setq org-latex-listings 'minted)
 (add-to-list 'org-latex-packages-alist '("" "minted" t))
 
@@ -882,6 +888,7 @@ fall back on and must use Emacs loopback pinentry instead."
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
 
 (use-package jiralib2
   :ensure t
@@ -1109,6 +1116,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package ox-gfm
   :ensure t)
 
+
 (use-package org-mime
   :ensure t)
 (add-to-list 'org-src-lang-modes '("typescript" . javascript))
@@ -1255,6 +1263,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
  ;;   :config
  ;;   (load-theme 'vscode-dark-plus t))
 
+
 (use-package exec-path-from-shell
   :ensure t
   :config
@@ -1290,11 +1299,13 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
          (key (substring (shell-command-to-string full-command) 0 -1)))
     (setq org-crypt-key key)))
 
-;; yaml
+  ;; yaml
 ;; Defer yaml-mode - only load when opening yaml files
 (autoload 'yaml-mode "yaml-mode" "Major mode for editing YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
+
+
 
 (use-package inf-ruby
   :defer 2
@@ -1428,7 +1439,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :bind (:map corfu-map
               ("M-p" . corfu-popupinfo-scroll-down)
               ("M-n" . corfu-popupinfo-scroll-up)
-              ("M-d" . corfu-popupinfo-toggle)))
+              ("C-M-d" . corfu-popupinfo-toggle)))
 
 ;; Icons for corfu - nerd-icons-corfu uses nerd font glyphs consistent with
 ;; doom-modeline and nerd-icons-completion (replaces kind-icon/SVG approach)
@@ -1457,7 +1468,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq dabbrev-check-all-buffers nil)
 (setq dabbrev-check-other-buffers nil)
 
-;;   (use-package lsp-mode
+  ;;   (use-package lsp-mode
   ;;     :ensure t
   ;;     :pin melpa
   ;;     :commands (lsp lsp-deferred)
@@ -1625,6 +1636,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 :hook
 (markdown-mode . abbrev-mode))
 
+
 (require 'dired-x)
 (setq dired-omit-files
       (rx(or(seq bol(? ".") "#")
@@ -1659,6 +1671,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;;     ad-do-it))
 ;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
 
+
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook()
   (message "SQL mode hook executed")
@@ -1675,7 +1688,8 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (setq sql-product (quote ms))
   (setq sql-mysql-login-params (append sql-mysql-login-params '(port))))
 
-(use-package rjsx-mode
+
+  (use-package rjsx-mode
     :defer 2
     :ensure t)
   ;; NOTE: eglot-ensure hooks moved to main eglot configuration (line ~2189)
@@ -1742,6 +1756,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1))
+
 
 (use-package helpful
   :ensure t
@@ -1942,7 +1957,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "cc" '(org-word-count :which-key "count region/buffer")
     "cs" '(org-wc-count-subtrees :which-key "count subtrees (property)")))
 
-(use-package copilot
+    (use-package copilot
       :straight (:host github :repo "copilot-emacs/copilot.el"
                  :branch "main"
                 :files ("*.el" (:exclude "copilot-chat.el")))
@@ -2141,7 +2156,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
       (message "Sent %s to the printer" file)))
   (define-key pdf-view-mode-map (kbd "C-c C-a p") #'ari/pdf-print-buffer))
 
-(defun ari/org-noter-notes-name-no-spaces (document-path)
+  (defun ari/org-noter-notes-name-no-spaces (document-path)
     "Suggest a snake_case notes file name for DOCUMENT-PATH.
 Uses the same `ari/snake-case-string' helper (ari-custom.org) that
 org-remark's notes file naming uses, so both packages produce
@@ -2606,6 +2621,7 @@ directory org-noter itself offers)."
 ;;; You might want to adjust this setting if you icons are not centererd or if you more or less space.fs
 (setq flyover-icon-left-padding 0.9)
 (setq flyover-icon-right-padding 0.9)
+
 
 ;; eros - Evaluation Result OverlayS for Emacs Lisp
 ;; Shows eval results (C-x C-e, etc.) as inline overlays at cursor
