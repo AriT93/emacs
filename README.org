@@ -1,13 +1,62 @@
 #+TITLE: My Emacs Configuration
 
-This repository contains my personal Emacs configuration files. It provides a tailored Emacs environment with customizations for various modes, themes, and settings. Key features include:
+Personal Emacs configuration, written as literate org files in =config/= that
+tangle to =*-new.el=. Packages are managed by straight.el only, with versions
+pinned by a tracked lockfile (=config/straight-lockfile.el=).
 
-- Enhanced user interface with a custom theme
-- Streamlined workflow with optimized keybindings
-- Improved support for Org mode and other major modes
+Full history and rationale: the org-roam note "Emacs Configuration
+Improvements Research (2025-2026)".
 
-To use this configuration:
+* Setting up a machine
+The repo lives at =~/emacs= (not =~/.emacs.d=). Needs Emacs 30+, =git=, and
+network access to GitHub.
 
-1.  Clone the repository to `~/.emacs.d`.
-2.  Create a symbolic link to your init file (e.g., `init.el` or `init.org`).
-3.  Start Emacs.
+1. Set aside any old package.el install:
+   #+begin_src sh
+   mv ~/.emacs.d/elpa ~/.emacs.d/elpa.pre-straight 2>/dev/null
+   rm -f ~/.emacs.d/package-quickstart.el ~/.emacs.d/package-quickstart.elc
+   #+end_src
+2. Get the config and link the tracked files:
+   #+begin_src sh
+   git clone <this repo> ~/emacs   # or: cd ~/emacs && git pull
+   [ -e ~/.emacs.d/early-init.el ] && mv ~/.emacs.d/early-init.el ~/.emacs.d/early-init.el.bak
+   ln -s ~/emacs/config/early-init.el ~/.emacs.d/early-init.el
+   cp ~/emacs/config/dot_emacs ~/.emacs   # diff first if ~/.emacs exists
+   #+end_src
+   The lockfile link (=straight/versions/default.el=) is created by the config.
+3. If =~/.emacs.d/straight/repos/org= already exists, move it to org's stable
+   branch (straight won't switch branches of an existing clone):
+   #+begin_src sh
+   R=~/.emacs.d/straight/repos/org
+   git -C $R fetch origin bugfix && git -C $R checkout -B bugfix origin/bugfix
+   #+end_src
+   After the first start: =M-x straight-rebuild-package RET org=, restart.
+4. Start Emacs from a terminal. The first start clones and builds ~170
+   packages (several minutes); if it stops on an error, fix and restart.
+5. =M-x straight-thaw-versions=, then restart, to match the lockfile exactly.
+   This also detaches HEAD in the =~/dev/git= checkouts (agent-shell, flyover,
+   ligature.el, org-block-capf, notdeft); =git switch= back if needed.
+6. If =~/dev/git/notdeft= was freshly cloned, build its search backend:
+   #+begin_src sh
+   # Ubuntu: sudo apt install pkg-config libtclap-dev libxapian-dev
+   # macOS:  brew install xapian tclap pkg-config
+   make -C ~/dev/git/notdeft exe
+   #+end_src
+7. Verify: =M-x org-version= is 9.8.x, =*Warnings*= is empty, =F9= opens
+   notdeft, a =.rb= file under =~/dev/git= starts eglot. Then
+   =rm -rf ~/.emacs.d/elpa.pre-straight=.
+
+Machine notes (Linux ABI 14 tree-sitter, writer-deck pinentry/vterm, work-Mac
+proxy) are in the org-roam note under "Rolling out to another machine".
+
+* Updating packages
+=M-x straight-pull-all= → restart and check → =M-x straight-freeze-versions=
+→ commit =config/straight-lockfile.el=. On other machines: =git pull=, then
+=M-x straight-thaw-versions=. Never =git pull= inside
+=~/.emacs.d/straight/repos/*= by hand. Roll back a bad update with
+=git checkout config/straight-lockfile.el= + =straight-thaw-versions=.
+
+* Editing the config
+Edit the =config/*.org= files, not the generated =*-new.el=; tangle with
+=C-c C-v t= (=emacs-config.org= tangles automatically on save).
+=config/early-init.el= is the only copy of early-init; edit it in place.
