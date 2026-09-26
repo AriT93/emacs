@@ -7,3 +7,7 @@ xmptmp-*
 site/languagetool/LanguageTool-*/
 # LanguageTool n-gram data (~15GB) - optional, see setup.sh for download instructions
 site/languagetool/ngrams/
+
+# macOS / editor droppings
+.DS_Store
+nvim.log
