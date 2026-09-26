@@ -1125,20 +1125,30 @@ NAME should be in first.last format (with or without @ prefix)."
 
 #+begin_src elisp
 (defvar my/org-roam-node-cache nil "Cached completion candidates.")
-(defvar my/org-roam-node-cache-mtime nil "DB mtime when cache was built.")
+(defvar my/org-roam-node-cache-mtime nil "DB + WAL mtimes when cache was built.")
+
+(defun my/org-roam-db-mtimes ()
+  "Modification times of the org-roam DB and its WAL file.
+With journal_mode=WAL, writes land in the -wal file and the main DB
+file's mtime only moves on checkpoint, so both must be checked."
+  (when (boundp 'org-roam-db-location)
+    (mapcar (lambda (f)
+              (and (file-exists-p f)
+                   (file-attribute-modification-time (file-attributes f))))
+            (list org-roam-db-location (concat org-roam-db-location "-wal")))))
 
 (defun my/org-roam-node-cache-advice (orig-fn &rest args)
-  "Return cached completions if DB unchanged."
-  (let ((db-mtime (and (boundp 'org-roam-db-location)
-                       (file-exists-p org-roam-db-location)
-                       (file-attribute-modification-time
-                        (file-attributes org-roam-db-location)))))
-    (when (or (null my/org-roam-node-cache)
-              (null my/org-roam-node-cache-mtime)
-              (not (equal my/org-roam-node-cache-mtime db-mtime)))
-      (setq my/org-roam-node-cache (apply orig-fn args)
-            my/org-roam-node-cache-mtime db-mtime)))
-  my/org-roam-node-cache)
+  "Return cached completions if DB unchanged.
+Only unfiltered/unsorted calls are cached; calls with a FILTER-FN or
+SORT-FN (e.g. from `org-roam-node-insert') always go to the DB."
+  (if (seq-some #'identity args)
+      (apply orig-fn args)
+    (let ((mtimes (my/org-roam-db-mtimes)))
+      (when (or (null my/org-roam-node-cache)
+                (not (equal my/org-roam-node-cache-mtime mtimes)))
+        (setq my/org-roam-node-cache (funcall orig-fn)
+              my/org-roam-node-cache-mtime mtimes))
+      my/org-roam-node-cache)))
 
 (with-eval-after-load 'org-roam
   (advice-add #'org-roam-node-read--completions

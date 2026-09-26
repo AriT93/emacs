@@ -215,10 +215,10 @@ fall back on and must use Emacs loopback pinentry instead."
 ;; hilit-chg must be loaded before these faces exist
 (with-eval-after-load 'hilit-chg
   (set-face-attribute 'highlight-changes nil
-                      :foreground nil :background nil
+                      :foreground 'unspecified :background 'unspecified
                       :underline '(:color "gray60" :style wave))
   (set-face-attribute 'highlight-changes-delete nil
-                      :foreground nil :background nil
+                      :foreground 'unspecified :background 'unspecified
                       :underline '(:color "gray50" :style wave) :strike-through nil)
   ;; hilit-chg overlays don't set a priority, so they can paint over the
   ;; region face when the selection grows onto recently-changed text.
@@ -539,9 +539,7 @@ fall back on and must use Emacs loopback pinentry instead."
   (marginalia-mode)
   :bind
   (:map minibuffer-local-map
-        ("M-A" . marginalia-cycle))
-  :custom
-  (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
+        ("M-A" . marginalia-cycle)))
 
 (use-package ace-window
   :ensure t
@@ -830,14 +828,16 @@ fall back on and must use Emacs loopback pinentry instead."
   (visual-line-mode 1)
   ;; Defer org export backends - only needed when exporting
   (with-eval-after-load 'org (require 'ox-gfm))
+;; Buffer-local minor modes: hook them to org-mode. Calling them inside
+;; `with-eval-after-load' only enabled them in whatever buffer was current
+;; when org loaded (*scratch*), where org-appear's post-command handler
+;; then ran the org parser on elisp ("rx '**' range error").
 (use-package org-appear
   :ensure t
-    :init
-    (with-eval-after-load 'org (org-appear-mode)))
+  :hook (org-mode . org-appear-mode))
 (use-package org-superstar
   :ensure t
-  :init
-    (with-eval-after-load 'org (org-superstar-mode)))
+  :hook (org-mode . org-superstar-mode))
   (use-package org-modern
     :ensure t
     :init
@@ -1703,7 +1703,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     :config
     (add-hook 'js2-mode-hook 'prettier-js-mode)
     (add-hook 'rjsx-mode-hook 'prettier-js-mode)
-    (add-hook 'jtsx-jsx-mode 'prettier-js-mode)
+    (add-hook 'jtsx-jsx-mode-hook 'prettier-js-mode)
     )
 
 (setq emmet-expand-jsx-className? t)
@@ -1864,7 +1864,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     :prefix "C-c")
   (my-leader-def
     "t" 'project-find-file  ;; Was 'fzf-projectile
-    "a" 'ace-jump-mode
     "g" '(:ignore t :which-key "rspec")
     "gp" '(inf-ruby-switch-from-compilation :which-key "enter debugger")
     "ga" '(rspec-verify-all :which-key "run all specs")
@@ -1992,9 +1991,10 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :ensure t
   :demand t)  ; Load immediately - used for AI code completion
 (use-package agent-shell
-  :vc t
+  ;; Local checkout. `:vc t' + `:load-path' is obsolete as of Emacs 32
+  ;; use-package (warns every startup), so load straight from the path.
   :load-path "~/dev/git/agent-shell"
-  :ensure t
+  :ensure nil
   :demand t
   :config
   (setq agent-shell-anthropic-authentication
