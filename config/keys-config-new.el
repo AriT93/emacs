@@ -22,10 +22,7 @@
 (global-set-key (kbd "M--") 'text-scale-adjust)
 (global-set-key (kbd "M-0") 'text-scale-adjust)
 
-;; (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-;; (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-;; (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-;; (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
+
 
 (require 'ari-custom-new)
 ;; Changed from C-8/C-9/C-0 to preserve digit argument functionality
@@ -34,7 +31,7 @@
 (global-set-key (kbd "C-M-0") (lambda()(interactive)
                                  (modify-frame-parameters nil `((alpha . 100)))))
 
-;; S-C-left and right will horizontally resize windows
+ ;; S-C-left and right will horizontally resize windows
  ;; S-C-up and down will vertically resize them
  (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
  (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
@@ -42,15 +39,12 @@
  (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 ;; (global-set-key (kbd "M-o") 'ace-window)
 
+
 (global-set-key (kbd "C-h f") #'helpful-callable)
 (global-set-key (kbd "C-h F") #'helpful-function)
 (global-set-key (kbd "C-h C") #'helpful-command)
 (global-set-key (kbd "C-h v") #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
 (global-set-key (kbd "C-c C-d") #'helpful-at-point)
-(setq counsel-describe-function-function #'helpful-callable)
-(setq counsel-describe-variable-function #'helpful-variable)
-
-(global-set-key "\C-cd" 'dash-at-point)
 
 (provide 'keys-config-new)

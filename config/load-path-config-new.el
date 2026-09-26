@@ -19,8 +19,7 @@
       (add-to-list 'load-path expanded-path))))
 
 ;; Development packages - check each one exists
-(dolist (dev-path '("~/dev/git/lsp-bridge/"
-                    "~/dev/git/flyover/"
+(dolist (dev-path '("~/dev/git/flyover/"
                     "~/dev/git/org-block-capf"))
   (let ((expanded-path (expand-file-name dev-path)))
     (when (file-exists-p expanded-path)
@@ -31,8 +30,5 @@
   (require 'org-block-capf)
   (add-hook 'org-mode-hook #'org-block-capf-add-to-completion-at-point-functions))
 
-(load "ps-print")
-
-(autoload 'python-mode "python-mode" "Python editing mode." t)
-
 (provide 'load-path-config-new)
+

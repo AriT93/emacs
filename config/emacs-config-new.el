@@ -48,8 +48,7 @@
 (setq org-fontify-done-headline nil)
 
 ;; Optimize garbage collection during startup
-(setq gc-cons-threshold (* 100 1000 1000))  ; 100MB during startup
-(setq gc-cons-percentage 0.6)               ; More aggressive GC
+;; GC thresholds, native-comp and read-process-output-max: see early-init.el
 
 ;; Startup timing diagnostics
 (defvar ari/startup-times (make-hash-table))
@@ -210,32 +209,10 @@ fall back on and must use Emacs loopback pinentry instead."
 (setq dictionary-server "dict.org")                   ; Use dict.org, skip localhost prompt
 (add-hook 'text-mode-hook #'dictionary-tooltip-mode)  ; Hover for definitions
 (add-hook 'prog-mode-hook #'subword-mode)             ; CamelCase navigation
-(add-hook 'prog-mode-hook #'highlight-changes-mode)   ; Highlight changes since save
-;; Subtle styling for highlight-changes (neutral underline, no red)
-;; hilit-chg must be loaded before these faces exist
-(with-eval-after-load 'hilit-chg
-  (set-face-attribute 'highlight-changes nil
-                      :foreground 'unspecified :background 'unspecified
-                      :underline '(:color "gray60" :style wave))
-  (set-face-attribute 'highlight-changes-delete nil
-                      :foreground 'unspecified :background 'unspecified
-                      :underline '(:color "gray50" :style wave) :strike-through nil)
-  ;; hilit-chg overlays don't set a priority, so they can paint over the
-  ;; region face when the selection grows onto recently-changed text.
-  ;; Force a low priority (mirrors hl-line's -50 convention) so the
-  ;; region always wins.
-  (advice-add 'hilit-chg-make-ov :after
-              (lambda (_prop start end)
-                (dolist (ov (overlays-in start end))
-                  (when (overlay-get ov 'hilit-chg)
-                    (overlay-put ov 'priority -60))))))
 (undelete-frame-mode 1)                               ; Recover deleted frames
-;; C-c d is dash-at-point (keys-config); use C-c D for duplicate
 (global-set-key (kbd "C-c D") 'duplicate-dwim)        ; Duplicate line/region
 (global-set-key (kbd "C-c w") 'compare-windows)       ; Quick diff two windows
 (global-set-key (kbd "C-c u") 'ffap-menu)             ; List all URLs in buffer
-;; C-c h is consult-history, so the toggle lives on C-c H
-(global-set-key (kbd "C-c H") 'highlight-changes-visible-mode) ; Toggle change visibility
 
 ;; Speedbar docked in side window (Emacs 31 feature)
 (setq speedbar-use-images t)
@@ -260,10 +237,8 @@ fall back on and must use Emacs loopback pinentry instead."
 (setq undo-limit 8000000)
 (setq undo-strong-limit 12000000)
 (setq undo-outer-limit 12000000)
-(setq read-process-output-max (* 2048 2048))
 (setq inhibit-startup-screen t)
 (setq inhibit-splash-screen t)
-(setq uniquify-buffer-name-style t)
 (setq uniquify-buffer-name-style (quote post-forward))
 (setq uniquify-min-dir-content 0)
 (electric-pair-mode 1)
@@ -286,16 +261,17 @@ fall back on and must use Emacs loopback pinentry instead."
 (setq browse-url-browser-function 'browse-url-default-browser)
 (add-hook 'eww-after-render-hook 'eww-readable)
 (add-hook 'eww-after-render-hook 'visual-line-mode)
-(setq native-comp-speed 2)
 (setq package-native-compile t)
 ;; xwidget will autoload when needed
 (setq alert-default-style 'notifier)
 
 ;;; follow links in xwidgets
 (use-package xwwp
-  :ensure t)
+  :ensure t
+  :defer t)
 (use-package string-inflection
-  :ensure t)
+  :ensure t
+  :defer t)
 (use-package font-lock
   :ensure nil
   :custom-face
@@ -392,6 +368,8 @@ fall back on and must use Emacs loopback pinentry instead."
   :ensure t
   :custom
   (completion-styles '(orderless basic partial-completion flex))
+  ;; initialism: "ornf" matches org-roam-node-find (kept from prescient filtering)
+  (orderless-matching-styles '(orderless-literal orderless-regexp orderless-initialism))
   (completion-category-overrides '((file (styles partial-completion))
                                     (org-roam-node (styles basic orderless))))
   (tab-always-indent 'complete)  ;; TAB indents first, then completes
@@ -421,12 +399,6 @@ fall back on and must use Emacs loopback pinentry instead."
                  nil
                  (window-parameters (mode-line-format . none))))
 
-  ;; Configure which-key integration - show embark actions in which-key
-  (setq embark-action-indicator
-        (lambda (map _target)
-          (which-key--show-keymap "Embark" map nil nil 'no-paging)
-          #'which-key--hide-popup-ignore-command)
-        embark-become-indicator embark-action-indicator)
 
   ;; Custom actions for specific categories
   (defun embark-insert-relative-path (file)
@@ -496,12 +468,6 @@ fall back on and must use Emacs loopback pinentry instead."
 
 (global-set-key "\C-cy" 'consult-yank-pop)
 
-;; (use-package no-littering
-;;   :straight (:host github :repo "emacscollective/no-littering" :files ("*.el"))
-;;   :ensure t
-;;   :config
-;;   (setq auto-save-file-name-transforms
-;;         '((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 (use-package pos-tip
   :defer 2
@@ -574,7 +540,6 @@ fall back on and must use Emacs loopback pinentry instead."
 (use-package git-timemachine
   :defer 2
   :ensure t
-  :diminish
   )
 (use-package git-gutter
   :ensure t
@@ -619,9 +584,8 @@ fall back on and must use Emacs loopback pinentry instead."
   (treemacs-filewatch-mode t)
   (treemacs-fringe-indicator-mode t)
   (doom-themes-treemacs-config)
-  (setq doom-themes-treemacs-theme "doom-colors")
-  :bind
-  ("M-0" . treemacs-select-window))
+  (setq doom-themes-treemacs-theme "doom-colors"))
+;; M-0 stays text-scale-adjust (keys-config); use M-x treemacs-select-window
 
 (use-package doom-themes
   :ensure t
@@ -630,8 +594,6 @@ fall back on and must use Emacs loopback pinentry instead."
   ;; Set theme early to avoid visual flashing
   (setq doom-themes-enable-bold t)
   (setq doom-themes-enable-italic t)
-  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-  (add-to-list 'custom-theme-load-path "~/emacs/site")
   :config
   ;; Disable done-headline fontification: doom-themes-ext-org uses match group 2
   ;; which is optional in current org's heading regexp, causing "No match 2" errors.
@@ -728,26 +690,10 @@ fall back on and must use Emacs loopback pinentry instead."
 
 ;; Ruby: rubocop backend is built-in to Emacs 29+, eglot provides LSP diagnostics
 
-(server-start)
+(require 'server)
+(unless (server-running-p) (server-start))
 
-(use-package diminish
-  :ensure t
-  :config
-
-  (diminish 'org-mode  "")
-  (diminish 'auto-revert-mode)
-  (diminish 'yas-minor-mode)
-  (diminish 'emmet-mode)
-  (diminish 'rjsx-minor-mode)
-  (diminish 'eldoc-mode)
-  (diminish 'org-src-mode)
-  (diminish 'abbrev-mode)
-  (diminish 'ruby-block-mode)
-  (diminish 'ruby-electric-mode)
-  (diminish 'buffer-face-mode)
-  (diminish 'auto-fill-function)
-  (diminish "seeing-is-believing")
-  (diminish 'hs-minor-mode))
+;; diminish removed: doom-modeline doesn't display minor modes
 
 ;; Defer ox-latex loading - only needed when exporting
 (with-eval-after-load 'org (require 'ox-latex))
@@ -824,8 +770,6 @@ fall back on and must use Emacs loopback pinentry instead."
   (with-eval-after-load 'org (require 'org-habit))
   (setq org-habit-show-all-today t)
   (setq org-habit-show-habits t)
-  (setq org-startup-indented nil)
-  (visual-line-mode 1)
   ;; Defer org export backends - only needed when exporting
   (with-eval-after-load 'org (require 'ox-gfm))
 ;; Buffer-local minor modes: hook them to org-mode. Calling them inside
@@ -1089,7 +1033,8 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
              org-word-count org-wc-count-subtrees))
 
 (use-package org-ql
-  :ensure t)
+  :ensure t
+  :defer t)
 
 ;; Move org-roam CAPF to end so cheaper completions run first
 (defun my/org-roam-capf-to-back ()
@@ -1123,8 +1068,13 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq org-src-fontify-natively t)
 (setq org-src-tab-acts-natively t)
 (setq org-src-window-setup 'current-window)
+;; Use the `plantuml' executable (Homebrew / apt) rather than hunting for the jar.
 (use-package plantuml-mode
-  :ensure t)
+  :ensure t
+  :mode ("\\.puml\\'" "\\.plantuml\\'")
+  :custom
+  (plantuml-default-exec-mode 'executable))
+(setq org-plantuml-exec-mode 'plantuml)
 (setq org-startup-with-inline-images t)
 (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
 
@@ -1159,7 +1109,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :ensure t
   :config
   (setq org-pandoc-options '((standalone . t)))
-  (setq org-pandoc-command (substring (shell-command-to-string "which pandoc") 0 -1)))
+  (setq org-pandoc-command (or (executable-find "pandoc") "pandoc")))
 
  (use-package org-variable-pitch
    :after org
@@ -1175,41 +1125,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package virtualenvwrapper
   :defer 2
   :ensure t
-  :init
+  :config
   (venv-initialize-interactive-shells)
   (venv-initialize-eshell)
-  (setq venv-location "~/.virtualenvs")
-  )
+  (setq venv-location "~/.virtualenvs"))
 
-;; PlantUML JAR path - use executable-find for cross-platform compatibility
-(let ((plantuml-bin (executable-find "plantuml")))
-  (when plantuml-bin
-    ;; For systems where plantuml is a script wrapper, try to find the actual JAR
-    (let* ((bin-dir (file-name-directory plantuml-bin))
-           (possible-jar-paths
-            (list
-             ;; Apple Silicon Homebrew (correct path)
-             (expand-file-name "plantuml/*/libexec/plantuml.jar" (expand-file-name "../Cellar" bin-dir))
-             ;; Intel Homebrew
-             (expand-file-name "plantuml/*/libexec/plantuml.jar" (expand-file-name "../../Cellar" bin-dir))
-             ;; Linux package managers often put it here
-             "/usr/share/plantuml/plantuml.jar"
-             "/usr/share/java/plantuml.jar")))
-      (let ((found-jar nil))
-        ;; Check each possible path pattern
-        (dolist (pattern possible-jar-paths)
-          (when (not found-jar)
-            (let ((expanded (file-expand-wildcards pattern)))
-              (dolist (path expanded)
-                (when (and (not found-jar) (file-exists-p path))
-                  (setq found-jar path))))))
-        (when found-jar
-          (setq org-plantuml-jar-path found-jar)
-          (setq plantuml-jar-path found-jar)
-          (message "PlantUML JAR found at: %s" found-jar)
-          (ari/startup-timer "plantuml-configured"))
-        (unless found-jar
-          (message "Warning: PlantUML JAR not found. Searched patterns: %s" possible-jar-paths))))))
 
 ;; Final startup timing
 (ari/startup-timer "config-complete")
@@ -1219,49 +1139,16 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;; Reset settings after startup for better runtime performance
 (add-hook 'emacs-startup-hook
           (lambda ()
-            ;; Restore package settings
-            (setq package-archives '(
-                                     ("melpa"  . "https://melpa.org/packages/")
-                                     ("elpa"   . "https://elpa.gnu.org/packages/")
-                                     ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                                     ("melpa-stable" . "https://stable.melpa.org/packages/")
-                                     ))
-            (setq package-check-signature 'allow-unsigned)
-            
-            ;; Reset GC settings
-            (setq gc-cons-threshold (* 50 1024 1024))  ; 50MB after startup
-            (setq gc-cons-percentage 0.1)              ; Less aggressive GC
-            
-            ;; Restore some verbose settings for runtime (optional)
-            (setq message-log-max 1000)                ; Re-enable message log for runtime
-            ;; flycheck removed - using flymake now
-            (message "Package and GC settings restored for runtime performance")))
+            ;; Re-enable message log for runtime (GC reset lives in early-init.el)
+            (setq message-log-max 1000)))
 
 (setq org-mime-export-options '(:section-numbers nil
                                                  :with-author nil
                                                  :with-toc nil))
 
-;; (use-package zenburn-theme
-;;   :defer 2
-;;   :after (:all ace-window)
-;;   :ensure t
-;;   :init
-;;   (setq zenburn-override-colors-alist '(
-;;                                         ("zenburn-bg" . "gray16")
-;;                                         ("zenburn-bg-1" . "#5F7F5F")))
 
 
-;;        (load-theme 'zenburn t)
-;;   :config
-;;   (setq zenburn-use-variable-pitch t)
-;;   (setq zenburn-scale-org-headlines t)
-;;   (setq zenburn-scale-outline-headlines t)
-;;   )
 
- ;; (use-package vscode-dark-plus-theme
- ;;   :ensure t
- ;;   :config
- ;;   (load-theme 'vscode-dark-plus t))
 
 
 (use-package exec-path-from-shell
@@ -1283,21 +1170,15 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (with-eval-after-load 'org (require 'org-crypt))
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance (quote("crypt")))
-(if (memq window-system '(mac ns x))
-    (let* ((gpg-command "gpg --list-secret-key --keyid-format short")
-           (grep-sec "grep sec")
-           (grep-key "ggrep -o -P '(?<=/)[A-Z0-9]{8}'")
-           (head-command "head -1")
-           (full-command (format "%s | %s | %s | %s" gpg-command grep-sec grep-key head-command))
-           (key (substring (shell-command-to-string full-command) 0 -1)))
-      (setq org-crypt-key key))
-  (let* ((gpg-command "gpg --list-secret-key --keyid-format short")
-         (grep-sec "grep sec")
-         (grep-key "grep -o -P '(?<=/)[A-Z0-9]{8}'")
-         (head-command "head -1")
-         (full-command (format "%s | %s | %s | %s" gpg-command grep-sec grep-key head-command))
-         (key (substring (shell-command-to-string full-command) 0 -1)))
-    (setq org-crypt-key key)))
+;; First secret key's short ID (what the old gpg|grep|ggrep pipeline found),
+;; looked up in-process via epg and off the startup path.
+(defun ari/org-crypt-default-key ()
+  "Short (8 hex) ID of the first secret GPG key, or nil."
+  (require 'epg)
+  (when-let* ((key (car (epg-list-keys (epg-make-context 'OpenPGP) nil t)))
+              (sub (car (epg-key-sub-key-list key))))
+    (substring (epg-sub-key-id sub) -8)))
+(run-with-idle-timer 3 nil (lambda () (setq org-crypt-key (ari/org-crypt-default-key))))
 
   ;; yaml
 ;; Defer yaml-mode - only load when opening yaml files
@@ -1310,9 +1191,9 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package inf-ruby
   :defer 2
   :ensure t)
-(require 'ruby-mode)
-(use-package  ruby-electric
-  :ensure t)
+(use-package ruby-electric
+  :ensure t
+  :defer t)
 (use-package feature-mode
   :defer 2
   :ensure t
@@ -1376,13 +1257,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (require 'mail-config-new)
   (require 'blog)))
 
-;; (use-package highline
-;;   :ensure t
-;;   :defer 2
-;;   :config
-;;   (global-highline-mode t)
-;;   (setq highline-face '((:background "gray40")))
-;;   (setq highline-vertical-face '(( :background "lemonChiffon2"))))
 
 
 (column-number-mode)
@@ -1468,86 +1342,17 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq dabbrev-check-all-buffers nil)
 (setq dabbrev-check-other-buffers nil)
 
-  ;;   (use-package lsp-mode
-  ;;     :ensure t
-  ;;     :pin melpa
-  ;;     :commands (lsp lsp-deferred)
-  ;;     :hook ((go-mode . lsp-deferred)(go-ts-mode . lsp-deferred)(ruby-mode . lsp-deferred) (java-mode . lsp-deferred) (python-mode . lsp-deferred)(jtsx-jsx-mode . lsp-deferred)(lsp-mode . lsp-enable-which-key-integration))
-  ;;     :custom
-  ;;     (lsp-auto-configure t)
-  ;;     (lsp-prefer-flymake nil)
-  ;;     (lsp-inhibit-message t)
-  ;;     (lsp-eldoc-render-all t)
-  ;;     :config
-  ;;     (setq lsp-enable-which-key-integration t)
-  ;;     (setq lsp-enable-symbol-highlighting t)
-  ;;     (setq lsp-modeline-code-actions-enable t)
-  ;;     (setq lsp-diagnostics-provider :auto)
-  ;;     (setq lsp-diagnostics-mode nil)
-  ;;     (setq lsp-semantic-tokens-enable t)
-  ;;     (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-  ;;     (setq lsp-idle-delay 0.500)
-  ;;     (setq lsp-log-io nil)
-  ;;     (setq lsp-completion-provider :capf)
-  ;;     (setq lsp-enable-file-watchers nil)
-  ;;     )
 
 
-  ;; (use-package lsp-bridge
-  ;;   :straight '(lsp-bridge :type git :host github :repo "manateelazycat/lsp-bridge"
-  ;;             :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
-  ;;             :build (:not compile))
-  ;; :hook
-  ;;   (prog-mode . lsp-bridge-mode))
 
 
-  ;;   (use-package lsp-java
-  ;;     :ensure t
-  ;;     :config (add-hook 'java-mode-hook #'lsp))
 
-  ;;   (setenv "JAVA_HOME" "/opt/homebrew/Cellar/openjdk/22.0.2/")
-  ;;   (setq lsp-java-java-path "/opt/homebrew/Cellar/openjdk/22.0.2/bin/java")
-  ;;   (use-package lsp-ivy
-  ;;     :defer 2
-  ;;     :ensure t)
 
-  ;;   (use-package lsp-ui
-  ;;     :defer 2
-  ;;     :commands lsp-ui-mode
-  ;;     :after lsp-mode
-  ;;     :config
-  ;;     (define-key lsp-ui-mode-map "\C-ca" 'lsp-execute-code-action)
-  ;;     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-  ;;     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-  ;;     (define-key lsp-ui-mode-map (kbd "<f5>") #'lsp-ui-find-workspace-symbol)
-  ;;     (setq lsp-ui-sideline-enable t)
-  ;;     (setq lsp-lens-enable t)
-  ;;     (setq lsp-ui-sideline-enable t
-  ;;           lsp-ui-sideline-show-symbol t
-  ;;           lsp-ui-sideline-show-hover t
-  ;;           lsp-ui-sideline-show-flycheck t
-  ;;           lsp-ui-sideline-show-code-actions t
-  ;;           lsp-ui-sideline-show-diagnostics t)
 
-  ;;     (setq lsp-ui-doc-enable nil)
-  ;;     (setq lsp-ui-imenu-enable nil)
-  ;;     (setq lsp-ui-peek-enable t)       )
 
-  ;;   (use-package lsp-treemacs
-  ;;     :defer 2
-  ;;     :after lsp
-  ;;     :config
-  ;;     (lsp-treemacs-sync-mode t)
-  ;;     )
-  ;;   (require 'lsp-ui-flycheck)
-  ;;   (setq lsp-inhibit-message t)
-  ;;   (setq lsp-prefer-flymake nil)
-  ;;   (setq lsp-eldoc-render-all t)
 
-  ;;   (setq lsp-auto-guess-root nil)
+;;   (setq lsp-auto-guess-root nil)
 
-;;    (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
- ;;   (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
 
 (use-package project
   :ensure nil  ;; Built into Emacs
@@ -1585,7 +1390,8 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;;
 
 (use-package web-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (add-hook 'html-mode-hook 'abbrev-mode)
 (add-hook 'web-mode-hook 'abbrev-mode)
@@ -1656,20 +1462,9 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq-default indent-tabs-mode nil)
 (setq-default c-basic-offset 4)
 
-;;(require 'multiple-cursors)
 
-;;(require 'whitespace)
-;;(autoload 'nuke-trailing-whitespace "whitespace" nil t)
-;;(add-hook 'write-file-hooks 'nuke-trailing-whitespace)
 
-;;(require 'start-opt)
-;; (defadvice whitespace-cleanup (around whitespace-cleanup-indent-tab
-;;                                       activate)
-;;   "Fix whitespace-cleanup indent-tabs-mode bug"
-;;   (let ((whitespace-indent-tabs-mode indent-tabs-mode)
-;;         (whitespace-tab-width tab-width))
-;;     ad-do-it))
-;; (add-to-list 'nuke-trailing-whitespace-always-major-modes 'csharp-mode)
+
 
 
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
@@ -1700,21 +1495,19 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     :hook((jtsx-jsx-mode . emmet-mode)(jtsx-jsx-mode . prettier-js-mode))
     )
   (use-package prettier-js
-    :config
-    (add-hook 'js2-mode-hook 'prettier-js-mode)
-    (add-hook 'rjsx-mode-hook 'prettier-js-mode)
-    (add-hook 'jtsx-jsx-mode-hook 'prettier-js-mode)
-    )
+    :hook ((js2-mode rjsx-mode jtsx-jsx-mode) . prettier-js-mode))
 
 (setq emmet-expand-jsx-className? t)
 
 (use-package emmet-mode
   :ensure t
+  :defer t
   :config
   (add-to-list 'emmet-jsx-major-modes 'jtsx-jsx-mode))
 
 (use-package deft
   :ensure t
+  :bind ("<f8>" . deft)
   :config
   (setq deft-extensions'("org" "txt" "md"))
   (setq deft-default-extension "org")
@@ -1726,34 +1519,36 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (setq deft-file-naming-rules '((noslash . "-")
                                  (nospace . "-")
                                  (case-fn . downcase)))
-  (setq deft-text-mode 'org-mode)
-  (global-set-key (kbd "<f8>") 'deft)
-  )
+  (setq deft-text-mode 'org-mode))
 
 (add-to-list 'load-path "~/dev/git/notdeft/")
 (add-to-list 'load-path "~/dev/git/notdeft/extras")
 (setq notdeft-directory "~/Documents/org-roam/")
 (setq notdeft-directories '("~/Documents/org-roam/"))
 (setq notdeft-xapian-program (expand-file-name"~/dev/git/notdeft/xapian/notdeft-xapian"))
-;; Defer notdeft - only load when invoked
-(autoload 'notdeft "notdeft-mode" "NotDeft note-taking" t)
-(global-set-key (kbd "<f9>") 'notdeft)
+;; Loaded at startup on purpose (with org-roam, the only eager note tools).
+;; The old autoload pointed at a nonexistent "notdeft-mode" file, so F9 failed.
+(when (locate-library "notdeft")
+  (require 'notdeft)
+  (global-set-key (kbd "<f9>") 'notdeft))
 
 (use-package cypher-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 ;; Use executable-find for cross-platform compatibility
 (when-let* ((cypher-shell-path (executable-find "cypher-shell")))
   (setq n4js-cli-program cypher-shell-path))
 (setq n4js-cli-arguments '("-u" "neo4j"))
 (setq n4js-pop-to-buffer t)
-(setq n4js-font-lock-keywords cypher-font-lock-keywords)
+(with-eval-after-load 'n4js
+  (require 'cypher-mode)
+  (setq n4js-font-lock-keywords cypher-font-lock-keywords))
 
 (use-package which-key
   :ensure t
   :init
   (which-key-mode)
-  :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1))
 
@@ -1768,6 +1563,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 (use-package elfeed
   :ensure t
+  :commands elfeed
   :config
   ;; Org-link functions (keep for org-roam integration)
   (defun elfeed-link-title (entry)
@@ -1778,7 +1574,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
            (titlelink (concat "[[" link "][" title "]]")))
       (when titlelink
         (kill-new titlelink)
-        (x-set-selection 'PRIMARY titlelink)
+        (gui-set-selection 'PRIMARY titlelink)
         (message "Yanked: %s" titlelink))))
 
   (defun elfeed-show-link-title ()
@@ -1801,14 +1597,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
   (elfeed-org))
 
-;; nano-elfeed dependencies
-;; (use-package stripes
-;;   :ensure t
-;;   :defer t)
 
-;; nano-elfeed for cleaner feed display (uses nano-theme faces)
-;;(setq nano-elfeed-icon-path (expand-file-name "~/emacs/site/nano-elfeed/icons"))
-;;(require 'nano-elfeed)
 
 ;; Cleaner article view: no line numbers, sans font
 (add-hook 'elfeed-show-mode-hook
@@ -1828,34 +1617,18 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :config
   (prescient-persist-mode 1))
 
+;; prescient only sorts (recency/frequency); orderless does the matching,
+;; so the minibuffer and corfu use the same rules and orderless's
+;; !exclude / &annotation / =literal prefixes work.
 (use-package vertico-prescient
   :ensure t
   :after vertico
+  :custom
+  (vertico-prescient-enable-filtering nil)
   :config
   (vertico-prescient-mode 1))
 
-;; (use-package ivy-prescient
-;;   :ensure t
-;;   :after counsel
-;;   :config
-;;   (ivy-prescient-mode 1)
-;;   (setq  prescient-sort-length-enable nil)
-;;   (setq ivy-prescient-retain-classic-highlighting t)
-;;   (setq ivy-prescient-enable-filtering nil)
-;;   (setq ivy-prescient-enable-sorting t)
-;;   (setq ivy-re-builders-alist
-;;         '(
-;;           (counsel-M-x . ivy--regex-plus)
-;;           (ivy-switch-buffer . ivy--regex-plus)
-;;           (ivy-switch-buffer-other-window . ivy--regex-plus)
-;;           (counsel-ag . ivy--regex-plus)
-;;           (t . ivy-prescient-re-builder))))
 
-;; (use-package company-prescient
-  ;; :ensure t
-  ;; :after company
-  ;; :config
-  ;; (company-prescient-mode 1))
 
 (use-package general
   :ensure t
@@ -1979,23 +1752,27 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
     :ensure t
     :custom
+    ;; Functions, so ~/.authinfo.gpg is only decrypted on first use
     (chatgpt-shell-openai-key
-        (auth-source-pick-first-password :host  "api.openai.com" :user "apikey"))
+     (lambda () (auth-source-pick-first-password :host "api.openai.com" :user "apikey")))
     (chatgpt-shell-anthropic-key
-     (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey"))
-    (chat-gptel-google-key (auth-source-pick-first-password :host "generativelanguage.googleapis.com" :user "apikey"))
+     (lambda () (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey")))
     :config
-    (require 'chatgpt-shell))
+    (require 'chatgpt-shell)
+    ;; Default to local Ollama (free); API models remain selectable.
+    ;; Model list is queried from Ollama, so no-op if it isn't running.
+    (ignore-errors (chatgpt-shell-ollama-load-models))
+    (setq chatgpt-shell-model-version "qwen3.5-9b-mlx-64k")) ; chatgpt-shell drops ":latest"
 (use-package acp
   :vc (:url "https://github.com/xenodium/acp.el")
   :ensure t
-  :demand t)  ; Load immediately - used for AI code completion
+  :defer t)  ; required by agent-shell
 (use-package agent-shell
   ;; Local checkout. `:vc t' + `:load-path' is obsolete as of Emacs 32
   ;; use-package (warns every startup), so load straight from the path.
   :load-path "~/dev/git/agent-shell"
   :ensure nil
-  :demand t
+  :defer 3  ; local checkout has no autoloads; load when idle after startup
   :config
   (setq agent-shell-anthropic-authentication
         (agent-shell-anthropic-make-authentication :login t))
@@ -2012,6 +1789,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
   (use-package gptel
     :ensure t
+    :defer t
     :config
     (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
 
@@ -2024,37 +1802,24 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     :custom
     (copilot-chat-backend 'curl)
     (copilot-chat-frontend 'org)
-    (copilot-chat-default-model "claude-sonnet-4-6")
+    (copilot-chat-default-model "claude-sonnet-5")
     (copilot-chat-model-ignore-picker t))
 
 
-     (let ((model-config '((:version . "gpt-4o-mini") (:short-version)
-                            (:label . "ChatGPT") (:provider . "OpenAI")
-                            (:path . "/v1/chat/completions") (:token-width . 3)
-                            (:context-window . 128000)
-                            (:handler . chatgpt-shell-openai--handle-chatgpt-command)
-                            (:filter . chatgpt-shell-openai--filter-output)
-                            (:payload . chatgpt-shell-openai--make-payload) 
-                            (:headers . chatgpt-shell-openai--make-headers)
-                            (:url . chatgpt-shell-openai--make-url)
-                            (:key . chatgpt-shell-openai-key)
-                            (:url-base . chatgpt-shell-api-url-base)
-                            (:validate-command . chatgpt-shell-openai--validate-command))))
-       (add-to-list 'chatgpt-shell-models model-config))
-
-    (gptel-make-ollama "Ollama"             ;Any name of your choosing
-    :host "localhost:11434"               ;Where it's running
-    :stream t                             ;Stream responses
-    :models '(mistral:latest))             ;List of models
-
-    ;; :key can be a function that returns the API key.
-  (gptel-make-gemini "Gemini"
-    :key (gptel-api-key-from-auth-source "generativelanguage.googleapis.com")
-    :stream t)
 
   ;; gptel presets - named bundles of model + system prompt + settings
   ;; Apply with @preset-name in a prompt, or via the transient menu
   (with-eval-after-load 'gptel
+    (gptel-make-ollama "Ollama"
+      :host "localhost:11434"
+      :stream t
+      :models '(qwen3.5-9b-mlx-64k:latest    ; `ollama list'
+                qwen3.5:9b-mlx
+                gemma4-12b-64k:latest))
+    ;; Key as a function: looked up (and authinfo decrypted) on first use
+    (gptel-make-gemini "Gemini"
+      :key #'gptel-api-key-from-auth-source
+      :stream t)
     (gptel-make-preset 'coding
       :description "Code generation and review"
       :system "You are an expert programmer. Provide concise, correct code with brief explanations. Prefer idiomatic solutions. No unnecessary prose."
@@ -2062,7 +1827,12 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     (gptel-make-preset 'writing
       :description "Writing and documentation"
       :system "You are a helpful writing assistant. Be clear and concise, maintaining the author's voice."
-      :temperature 0.7))
+      :temperature 0.7)
+    ;; Default: Claude via the GitHub Copilot subscription (no per-token
+    ;; cost). First use runs `gptel-gh-login' (GitHub device-code flow).
+    ;; Ollama and Gemini stay available from the gptel menu.
+    (setq gptel-backend (gptel-make-gh-copilot "Copilot")
+          gptel-model 'claude-sonnet-5))
 
     (use-package ob-chatgpt-shell
       :straight t
@@ -2072,8 +1842,8 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (use-package aidermacs
   :bind (("C-c a" . aidermacs-transient-menu))
   :custom
-  (aidermacs-use-architect-mode t)
-  (aidermacs-default-model "gemini/gemini-2.0-flash"))
+  ;; Local Ollama model (free). `aidermacs-use-architect-mode' is obsolete.
+  (aidermacs-default-model "ollama_chat/qwen3.5-9b-mlx-64k:latest"))
 
   ;; aider removed - aidermacs above is the active aider integration
 
@@ -2137,6 +1907,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 (use-package pdf-tools
   :ensure t
+  :magic ("%PDF" . pdf-view-mode)
   :config
   (pdf-tools-install :no-query)
   (setq-default pdf-view-display-size 'fit-page)
@@ -2179,7 +1950,7 @@ directory org-noter itself offers)."
 
   (use-package org-noter
     :ensure t
-    :after (:any org pdf-view)
+    :commands org-noter
     :hook (org-noter-find-additional-notes-functions . ari/org-noter-notes-name-no-spaces)
     :config
     (setq org-noter-notes-search-path nil
@@ -2210,10 +1981,12 @@ directory org-noter itself offers)."
     (advice-add 'completing-read :around #'ari/org-noter--auto-answer-new-notes-prompts))
 
 (use-package discover
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package mastodon
-  :ensure  t
+  :ensure t
+  :commands mastodon
   :config
   (setq mastodon-active-user "AriT93")
   (setq mastodon-instance-url "https://mastodon.social")
@@ -2496,7 +2269,8 @@ directory org-noter itself offers)."
   :hook (go-mode . eglot-ensure))
 
 (use-package language-detection
-  :ensure t)
+  :ensure t
+  :defer t)
 (use-package slack
   :custom-face
   (slack-mrkdwn-code-face ((t ( :foreground "DarkOrange3"))))

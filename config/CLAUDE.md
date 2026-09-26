@@ -43,6 +43,18 @@ This is a personal Emacs configuration repository using org-mode for literate co
 - Provides seamless cross-platform compatibility without ABI warnings
 - Grammars are automatically installed on first startup
 
+### Early Init (tracked)
+- `config/early-init.el` is the ONLY copy to edit. Install per machine with
+  `ln -sf ~/emacs/config/early-init.el ~/.emacs.d/early-init.el` (or copy).
+- It owns GC thresholds (100MB startup / 50MB after), native-comp (JIT, 2 jobs,
+  speed 2) and `read-process-output-max`. Don't set these in the main config —
+  an untracked drifted copy once silently overrode them (2026-09 review).
+
+### Startup policy
+Only org, org-roam and notdeft load eagerly. Everything else uses
+`:defer`/`:commands`/`:mode`/`:hook`/`:magic`. Never enable a buffer-local
+minor mode from `with-eval-after-load` (it lands in *scratch*); use `:hook`.
+
 ### Load Order
 The main entry point appears to be `emacs-config-new.el` which:
 1. Sets up package repositories (MELPA, ELPA, NonGNU, MELPA Stable)
@@ -54,6 +66,7 @@ The main entry point appears to be `emacs-config-new.el` which:
 ## Development Workflow
 
 ### Emacs Binary Location
+Currently Emacs 32.0.50 on the Mac.
 - **macOS (Work)**: `/Applications/Emacs.app/Contents/MacOS/Emacs`
 - **macOS (Home)**: `/Users/abturet/dev/git/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs`
 - **Linux**: `/home/abturet/dev/emacs/src/emacs`
@@ -76,7 +89,6 @@ The main entry point appears to be `emacs-config-new.el` which:
 ### Custom Load Paths
 The configuration loads additional packages from (with portability checks):
 - `~/emacs/site/` subdirectories (color-theme, lisp, ruby-block, blog)
-- `~/dev/git/lsp-bridge/`
 - `~/dev/git/flyover/`
 - `~/dev/git/org-block-capf`
 

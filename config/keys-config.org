@@ -46,10 +46,6 @@ These keys are a hold over from my very early beginnings with visual
    I don't use mulitple cursors because I usually get into
 trouble when I do. but these keys are for that
 #+BEGIN_SRC elisp
-;; (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-;; (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-;; (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-;; (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
 #+END_SRC
 ** Fade in .... Fade out
    change the transparency - moved to C-M- combinations to preserve digit arguments
@@ -80,14 +76,9 @@ trouble when I do. but these keys are for that
      (global-set-key (kbd "C-h v") #'helpful-variable)
      (global-set-key (kbd "C-h k") #'helpful-key)
      (global-set-key (kbd "C-c C-d") #'helpful-at-point)
-     (setq counsel-describe-function-function #'helpful-callable)
-     (setq counsel-describe-variable-function #'helpful-variable)
 #+END_SRC
-** Dash at point
-   open up dash and look up what's at the point
+** End
 #+BEGIN_SRC elisp
- (global-set-key "\C-cd" 'dash-at-point)
-
  (provide 'keys-config-new)
 #+END_SRC
 

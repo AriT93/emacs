@@ -13,12 +13,11 @@
 ;; Use ruby-ts-mode for .rb files (inherits from prog-mode, so hooks work automatically)
 (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-ts-mode))
 
-(use-package ruby-tools
+ (use-package ruby-tools
    :ensure t
    :init
    (add-hook 'ruby-mode-hook #'ruby-tools-mode)
-   (add-hook 'ruby-ts-mode-hook #'ruby-tools-mode)
-   :diminish ruby-tools-mode)
+   (add-hook 'ruby-ts-mode-hook #'ruby-tools-mode))
 (use-package rubocopfmt
   :ensure t
   :hook
@@ -27,7 +26,6 @@
  )
 
 (use-package seeing-is-believing
-  :diminish seeing-is-believing
   :ensure t
   :config
   (setq seeing-is-believing-alignment 'chunk)
@@ -43,7 +41,8 @@
   :config
   (setq rspec-use-spring-when-possible nil)
   (setq rspec-command-options "--format progress"))
-  (add-hook 'after-init-hook  'inf-ruby-switch-setup)
+  ;; This module loads 2s after startup, so after-init-hook has already run
+  (inf-ruby-switch-setup)
 
   (require 'ruby-block)
   (require 'ruby-electric)
@@ -76,6 +75,8 @@
              (directory-file-name
               (file-name-directory rbenv-path))))))
   (global-rbenv-mode t))
+
+
 
 ;; (use-package autotest
 ;;   :ensure t
