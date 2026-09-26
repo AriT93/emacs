@@ -25,4 +25,3 @@
   :hook (org-mode . org-block-capf-add-to-completion-at-point-functions))
 
 (provide 'load-path-config-new)
-

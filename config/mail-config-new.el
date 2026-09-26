@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-  (require 'smtpmail)
+(require 'smtpmail)
   (add-to-list 'load-path "~/dev/git/mu/build/mu4e/")
   (require 'mu4e)
 

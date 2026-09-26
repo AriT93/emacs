@@ -95,6 +95,17 @@ check things work, then ~M-x straight-freeze-versions~ and commit
 ;; Configure straight.el settings BEFORE loading
 (setq straight-check-for-modifications '(check-on-save find-when-checking))
 (setq straight-use-package-by-default t)
+;; Use Emacs's bundled copies of these; never let straight install its own.
+;; Otherwise a dependency (eglot-java, consult-eglot...) pulls in duplicate
+;; copies, and when the bundled `project' is already loaded, loading
+;; straight's eglot fails in `require-with-check' ("Feature 'project' ...
+;; is now provided by ..."), leaving eglot dead. Kept via straight on
+;; purpose: org (bugfix branch), transient (magit needs newer than Emacs 31's
+;; on Linux) and compat (designed to install over the bundled stub).
+(setq straight-built-in-pseudo-packages
+      '(emacs nadvice python image-mode
+        seq let-alist map peg project xref eglot eldoc external-completion
+        flymake jsonrpc editorconfig track-changes))
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -704,6 +715,10 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
 Migrated from flycheck (May 2026). Flymake is built-in, lighter weight,
 and integrates natively with eglot. No org-lint overhead.
 #+BEGIN_SRC elisp
+  ;; Emacs 30+ won't run flymake backends that can execute code (rubocop
+  ;; loading .rubocop.yml plugins, elisp byte-compile) on "untrusted" files.
+  ;; Trust my own code dirs; anything else stays untrusted.
+  (setq trusted-content '("~/dev/git/" "~/emacs/"))
   (use-package flymake
     :straight nil
     :hook ((prog-mode . flymake-mode)
@@ -762,7 +777,9 @@ eventually to make it more manageable
     (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
     :config
     (setq org-agenda-files  '("~/Documents/notes/todo.org" "~/Documents/org-roam/daily"))
-    (setq org-startup-indented nil)
+    ;; Re-enabled 2026-09: the May per-keystroke lag was org-variable-pitch
+    ;; warning on every fontification, not org-indent itself.
+    (setq org-startup-indented t)
     (setq org-hide-emphasis-markers t)
     (setq org-default-notes-file "~/Documents/notes/notes.org")
     ;; Tag vocabulary for org-roam Zettelkasten workflow
@@ -832,8 +849,7 @@ eventually to make it more manageable
   ;; then ran the org parser on elisp ("rx '**' range error").
   (use-package org-appear
     :hook (org-mode . org-appear-mode))
-  (use-package org-superstar
-    :hook (org-mode . org-superstar-mode))
+  ;; org-superstar removed: org-modern already styles heading stars
     (use-package org-modern
       :init
       (with-eval-after-load 'org (global-org-modern-mode)))

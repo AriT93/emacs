@@ -13,7 +13,7 @@
 ;; Use ruby-ts-mode for .rb files (inherits from prog-mode, so hooks work automatically)
 (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-ts-mode))
 
- (use-package ruby-tools
+(use-package ruby-tools
    :init
    (add-hook 'ruby-mode-hook #'ruby-tools-mode)
    (add-hook 'ruby-ts-mode-hook #'ruby-tools-mode))
@@ -70,8 +70,6 @@
              (directory-file-name
               (file-name-directory rbenv-path))))))
   (global-rbenv-mode t))
-
-
 
 ;; (use-package autotest
 ;;   :ensure t

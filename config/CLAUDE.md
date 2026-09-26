@@ -28,6 +28,12 @@ This is a personal Emacs configuration repository using org-mode for literate co
   so every `use-package` installs via straight; use `:straight nil` for built-ins
   (eglot, flymake, project, savehist, which-key, font-lock) and for extensions
   shipped inside another package (vertico-directory, corfu-popupinfo).
+- **`straight-built-in-pseudo-packages`** lists libraries straight must never
+  install (project, flymake, xref, eglot, eldoc, jsonrpc, seq, map, ...). Without
+  it, a dependency pulls in duplicate copies and `require-with-check` breaks eglot
+  ("Feature 'project' ... is now provided by ..."). When checking load-path
+  shadows, do NOT filter out shadows of Emacs.app files — only org, transient and
+  compat should shadow built-ins.
 - **Never add `:ensure t` or `:vc`** — they'd bring package.el back and cause duplicate,
   shadowing copies (the 2026-09 review found ~20 of those).
 - **Local checkouts** build from `~/dev/git/<repo>` via

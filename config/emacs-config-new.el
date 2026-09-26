@@ -59,6 +59,17 @@
 ;; Configure straight.el settings BEFORE loading
 (setq straight-check-for-modifications '(check-on-save find-when-checking))
 (setq straight-use-package-by-default t)
+;; Use Emacs's bundled copies of these; never let straight install its own.
+;; Otherwise a dependency (eglot-java, consult-eglot...) pulls in duplicate
+;; copies, and when the bundled `project' is already loaded, loading
+;; straight's eglot fails in `require-with-check' ("Feature 'project' ...
+;; is now provided by ..."), leaving eglot dead. Kept via straight on
+;; purpose: org (bugfix branch), transient (magit needs newer than Emacs 31's
+;; on Linux) and compat (designed to install over the bundled stub).
+(setq straight-built-in-pseudo-packages
+      '(emacs nadvice python image-mode
+        seq let-alist map peg project xref eglot eldoc external-completion
+        flymake jsonrpc editorconfig track-changes))
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -160,8 +171,6 @@ fall back on and must use Emacs loopback pinentry instead."
 (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
 (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
-
-
 
 (show-paren-mode 1)
 (recentf-mode 1)
@@ -439,7 +448,6 @@ fall back on and must use Emacs loopback pinentry instead."
 (use-package pos-tip
   :defer 2)
 
-
 (use-package nvm
   :defer 2)
 (use-package js-comint
@@ -518,7 +526,6 @@ fall back on and must use Emacs loopback pinentry instead."
   :init
   (with-eval-after-load 'git-gutter (require 'git-gutter-fringe))
   )
-
 
 (use-package persistent-scratch
   :config
@@ -613,7 +620,10 @@ fall back on and must use Emacs loopback pinentry instead."
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
 
-
+;; Emacs 30+ won't run flymake backends that can execute code (rubocop
+;; loading .rubocop.yml plugins, elisp byte-compile) on "untrusted" files.
+;; Trust my own code dirs; anything else stays untrusted.
+(setq trusted-content '("~/dev/git/" "~/emacs/"))
 (use-package flymake
   :straight nil
   :hook ((prog-mode . flymake-mode)
@@ -657,7 +667,9 @@ fall back on and must use Emacs loopback pinentry instead."
   (org-variable-pitch-fixed-face ((t (:inherit 'org-block :extend t :family "Cascadia Code"))))
   :config
   (setq org-agenda-files  '("~/Documents/notes/todo.org" "~/Documents/org-roam/daily"))
-  (setq org-startup-indented nil)
+  ;; Re-enabled 2026-09: the May per-keystroke lag was org-variable-pitch
+  ;; warning on every fontification, not org-indent itself.
+  (setq org-startup-indented t)
   (setq org-hide-emphasis-markers t)
   (setq org-default-notes-file "~/Documents/notes/notes.org")
   ;; Tag vocabulary for org-roam Zettelkasten workflow
@@ -712,7 +724,7 @@ fall back on and must use Emacs loopback pinentry instead."
          :immediate-finish t
          :empty-lines-after 1)))
 
-  (use-package ox-jira)
+(use-package ox-jira)
   ;; Defer org-habit loading
   (with-eval-after-load 'org (require 'org-habit))
   (setq org-habit-show-all-today t)
@@ -723,8 +735,7 @@ fall back on and must use Emacs loopback pinentry instead."
 ;; then ran the org parser on elisp ("rx '**' range error").
 (use-package org-appear
   :hook (org-mode . org-appear-mode))
-(use-package org-superstar
-  :hook (org-mode . org-superstar-mode))
+;; org-superstar removed: org-modern already styles heading stars
   (use-package org-modern
     :init
     (with-eval-after-load 'org (global-org-modern-mode)))
@@ -750,7 +761,6 @@ fall back on and must use Emacs loopback pinentry instead."
         org-cite-csl-styles-dir "~/Zotero/styles")
 )
 
-
 (setq org-latex-listings 'minted)
 (add-to-list 'org-latex-packages-alist '("" "minted" t))
 
@@ -772,7 +782,6 @@ fall back on and must use Emacs loopback pinentry instead."
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-
 
 (use-package jiralib2
   :config
@@ -994,7 +1003,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package ox-gfm
   :after org)
 
-
 (use-package org-mime)
 (add-to-list 'org-src-lang-modes '("typescript" . javascript))
 (setq org-src-fontify-natively t)
@@ -1059,7 +1067,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (venv-initialize-eshell)
   (setq venv-location "~/.virtualenvs"))
 
-
 ;; Final startup timing
 (ari/startup-timer "config-complete")
 
@@ -1074,11 +1081,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq org-mime-export-options '(:section-numbers nil
                                                  :with-author nil
                                                  :with-toc nil))
-
-
-
-
-
 
 (use-package exec-path-from-shell
   :config
@@ -1119,8 +1121,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package eglot-java :defer t)
 (use-package visual-fill :defer t)
 (use-package ghostel :defer t)                        ; see ari-custom fix
-
-
 
 (use-package inf-ruby
   :defer 2)
@@ -1179,8 +1179,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (require 'gnus-config)
   (require 'mail-config-new)
   (require 'blog)))
-
-
 
 (column-number-mode)
 (global-display-line-numbers-mode t)
@@ -1260,17 +1258,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq dabbrev-check-all-buffers nil)
 (setq dabbrev-check-other-buffers nil)
 
-
-
-
-
-
-
-
-
-
 ;;   (setq lsp-auto-guess-root nil)
-
 
 (use-package project
   :straight nil  ;; Built into Emacs
@@ -1359,7 +1347,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 :hook
 (markdown-mode . abbrev-mode))
 
-
 (require 'dired-x)
 (setq dired-omit-files
       (rx(or(seq bol(? ".") "#")
@@ -1383,7 +1370,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 
 
-
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook()
   (message "SQL mode hook executed")
@@ -1400,8 +1386,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (setq sql-product (quote ms))
   (setq sql-mysql-login-params (append sql-mysql-login-params '(port))))
 
-
-  (use-package rjsx-mode
+(use-package rjsx-mode
     :defer 2)
   ;; NOTE: eglot-ensure hooks moved to main eglot configuration (line ~2189)
   ;; to avoid duplicate hook registration which can cause font-locking issues
@@ -1465,7 +1450,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (which-key-mode)
   :config
   (setq which-key-idle-delay 1))
-
 
 (use-package helpful
   :defer t  ; Lazy-load helpful - only load when help commands are used
@@ -1536,8 +1520,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (vertico-prescient-enable-filtering nil)
   :config
   (vertico-prescient-mode 1))
-
-
 
 (use-package general
   :config
@@ -1637,7 +1619,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "cc" '(org-word-count :which-key "count region/buffer")
     "cs" '(org-wc-count-subtrees :which-key "count subtrees (property)")))
 
-    (use-package copilot
+(use-package copilot
       :straight (:host github :repo "copilot-emacs/copilot.el"
                  :branch "main"
                 :files ("*.el" (:exclude "copilot-chat.el")))
@@ -1826,7 +1808,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
       (message "Sent %s to the printer" file)))
   (define-key pdf-view-mode-map (kbd "C-c C-a p") #'ari/pdf-print-buffer))
 
-  (defun ari/org-noter-notes-name-no-spaces (document-path)
+(defun ari/org-noter-notes-name-no-spaces (document-path)
     "Suggest a snake_case notes file name for DOCUMENT-PATH.
 Uses the same `ari/snake-case-string' helper (ari-custom.org) that
 org-remark's notes file naming uses, so both packages produce
@@ -2159,7 +2141,7 @@ directory org-noter itself offers)."
 (use-package go-mode
   :hook (go-mode . eglot-ensure))
 
-  ;; Defer flyover - load with flymake
+;; Defer flyover - load with flymake
   (use-package flyover
   :straight (:local-repo "~/dev/git/flyover"
              :host github :repo "konrad1977/flyover")
@@ -2211,7 +2193,6 @@ directory org-noter itself offers)."
   ;;; You might want to adjust this setting if you icons are not centererd or if you more or less space.fs
   (setq flyover-icon-left-padding 0.9)
   (setq flyover-icon-right-padding 0.9)
-
 
 ;; eros - Evaluation Result OverlayS for Emacs Lisp
 ;; Shows eval results (C-x C-e, etc.) as inline overlays at cursor
