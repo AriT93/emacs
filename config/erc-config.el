@@ -52,11 +52,9 @@
                                 :nick "AriT93")))
 (setq erc-default-server "irc.libera.chat")
 (setq erc-lurker-hide-list '("JOIN" "PART" "QUIT"))
-(use-package erc-image
-  :ensure t)
+(use-package erc-image)
 (require 'erc-image)
-(use-package erc-hl-nicks
-  :ensure t)
+(use-package erc-hl-nicks)
 (add-to-list 'erc-modules 'image)
 (add-to-list 'erc-modules 'hl-nicks)
 (erc-update-modules)

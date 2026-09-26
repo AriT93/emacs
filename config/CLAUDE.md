@@ -22,18 +22,24 @@ This is a personal Emacs configuration repository using org-mode for literate co
 - `mail-config.org` → `mail-config-new.el`: Email configuration (mu4e, etc.)
 - `erc-config.el` and `gnus-config.el`: Communication configurations
 
-### Package Management
-- **Hybrid approach**: `package.el` (MELPA/ELPA) + `straight.el` (GitHub packages) + `:vc` (Emacs 30+)
-- **No quelpa**: Migrated to straight.el for all GitHub packages (as of 2025-10-25)
-- `use-package` for clean package configuration
-- **GitHub packages managed via straight.el**:
-  - `copilot` - GitHub Copilot integration
-  - `gptel-aibo` - AI-powered code assistance
-  - `chatgpt-shell` - ChatGPT interface
-- **Emacs 30+ packages using `:vc` directive**:
-  - `acp` - AI code completion (xenodium/acp.el)
-  - `agent-shell` - AI shell commands (xenodium/agent-shell)
-  - Use `:vc (:url "https://github.com/user/repo")` for new GitHub packages on Emacs 30+
+### Package Management (straight.el only, since 2026-09-26)
+- **straight.el is the only package manager.** package.el is never initialized
+  (`package-enable-at-startup nil` in early-init). `straight-use-package-by-default t`,
+  so every `use-package` installs via straight; use `:straight nil` for built-ins
+  (eglot, flymake, project, savehist, which-key, font-lock) and for extensions
+  shipped inside another package (vertico-directory, corfu-popupinfo).
+- **Never add `:ensure t` or `:vc`** — they'd bring package.el back and cause duplicate,
+  shadowing copies (the 2026-09 review found ~20 of those).
+- **Local checkouts** build from `~/dev/git/<repo>` via
+  `:straight (:local-repo "~/dev/git/foo" :host github :repo "owner/foo")`
+  (agent-shell, flyover, ligature.el, org-block-capf, notdeft). straight clones
+  them there on a machine that lacks them.
+- **org** tracks the `bugfix` branch (stable 9.8.x), not `main` (10.0 dev).
+- **Lockfile**: `config/straight-lockfile.el` (tracked); the config symlinks
+  `~/.emacs.d/straight/versions/default.el` to it. Update flow: `straight-pull-all`
+  → restart/test → `straight-freeze-versions` → commit. Restore/sync:
+  `git pull` → `straight-thaw-versions`.
+- Never `git pull` inside `~/.emacs.d/straight/repos/*` by hand.
 
 ### Tree-sitter Configuration
 - Uses `treesit-auto` package for automatic grammar management
@@ -138,14 +144,7 @@ The following safety and architectural improvements have been implemented:
 - Linux Ubuntu: 12.06s (Emacs 31.0.50)
 - Work Mac: ~30-40s estimated (from 150s)
 
-**To regenerate package-quickstart on new machines:**
-```bash
-# Mac:
-/Applications/Emacs.app/Contents/MacOS/Emacs --batch --eval "(require 'package)" --eval "(package-quickstart-refresh)"
-
-# Linux:
-/home/abturet/dev/emacs/src/emacs --batch --eval "(require 'package)" --eval "(package-quickstart-refresh)"
-```
+**New machine:** symlink early-init (see above) and start Emacs; straight clones and builds everything on first start (several minutes), then `M-x straight-thaw-versions` to match the lockfile.
 
 ### Emacs 31 Compatibility Fixes (October 2025)
 - **Migrated from quelpa to straight.el**: Removed quelpa-use-package dependency

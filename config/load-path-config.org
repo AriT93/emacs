@@ -25,17 +25,11 @@
       (when (file-exists-p expanded-path)
         (add-to-list 'load-path expanded-path))))
 
-  ;; Development packages - check each one exists
-  (dolist (dev-path '("~/dev/git/flyover/"
-                      "~/dev/git/org-block-capf"))
-    (let ((expanded-path (expand-file-name dev-path)))
-      (when (file-exists-p expanded-path)
-        (add-to-list 'load-path expanded-path))))
-
-  ;; Only require org-block-capf if it's available
-  (when (locate-library "org-block-capf")
-    (require 'org-block-capf)
-    (add-hook 'org-mode-hook #'org-block-capf-add-to-completion-at-point-functions))
+  ;; Local checkout (not on MELPA); straight builds it from ~/dev/git
+  (use-package org-block-capf
+    :straight (:local-repo "~/dev/git/org-block-capf"
+               :host github :repo "xenodium/org-block-capf")
+    :hook (org-mode . org-block-capf-add-to-completion-at-point-functions))
 #+END_SRC
 
 * End

@@ -14,19 +14,16 @@
 (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-ts-mode))
 
  (use-package ruby-tools
-   :ensure t
    :init
    (add-hook 'ruby-mode-hook #'ruby-tools-mode)
    (add-hook 'ruby-ts-mode-hook #'ruby-tools-mode))
 (use-package rubocopfmt
-  :ensure t
   :hook
   (ruby-mode . rubocopfmt-mode)
   (ruby-ts-mode . rubocopfmt-mode)
  )
 
 (use-package seeing-is-believing
-  :ensure t
   :config
   (setq seeing-is-believing-alignment 'chunk)
   (setq seeing-is-believing-max-length 150)
@@ -37,7 +34,6 @@
   )
 
 (use-package rspec-mode
-  :ensure t
   :config
   (setq rspec-use-spring-when-possible nil)
   (setq rspec-command-options "--format progress"))
@@ -60,7 +56,6 @@
   (add-hook 'ruby-ts-mode-hook #'setup-ruby-environment)
 
 (use-package rbenv
-  :ensure t
   :init
   (setq rbenv-show-active-ruby-in-modeline nil)
   :config

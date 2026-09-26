@@ -130,8 +130,7 @@
             ("/yahoo/Inbox" . ?w)))
 
     ;; allow for updating mail using 'U' in the main view:
-    (use-package pinentry
-      :ensure t)
+    (use-package pinentry)
     (setq mu4e-get-mail-command "mbsync -a")
     (setq mu4e-get-mail-command (format "INSIDE_EMACS=%s mbsync -a" emacs-version) epa-pinentry-mode 'ask)
     (pinentry-start)
@@ -139,7 +138,7 @@
     (require 'gnus-icalendar)
     (gnus-icalendar-setup)
     (setq message-kill-buffer-on-exit t)
-    (require 'alert)
+    (use-package alert :demand t)  ; was only installed as a slack dependency
     (setq alert-default-style 'libnotify)
 
     (mu4e-icalendar-setup)
@@ -154,7 +153,6 @@
     (setq mm-discouraged-alternatives '("text/html" "text/richtext" "image/.*"))
     (use-package mu4e-alert
       :after mu4e
-      :ensure t
       :config
       (mu4e-alert-set-default-style 'libnotify)
       (setq mu4e-alert-interesting-mail-query abt/mu4e-inbox-query)

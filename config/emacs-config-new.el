@@ -28,14 +28,8 @@
 ;; Removed load-source-file-function setting - it conflicts with load-prefer-newer
 ;; and causes unnecessary decompression of .el.gz files during startup
 
-;; Aggressive startup optimizations
-(setq package-enable-at-startup nil)  ; Prevent double package initialization
-(setq package-quickstart t)           ; Use package quickstart for faster loading
-(setq package--init-file-ensured t)   ; Skip package initialization checks
-
-;; Defer package operations during startup
-(setq package-check-signature nil)    ; Skip signature checking during startup
-;; Removed: (setq package-archives nil) - this breaks packages with archive dependencies
+;; package.el is not used at all (straight.el only); early-init.el sets
+;; package-enable-at-startup nil so it never initializes.
 
 ;; Reduce startup overhead
 (setq inhibit-startup-screen t)
@@ -58,16 +52,14 @@
 
 (ari/startup-timer "package-init")
 
-;; Suppress lexical-binding and straight.el hybrid warnings for third-party packages
 (setq warning-suppress-log-types
       (append warning-suppress-log-types
-              '((files missing-lexbind-cookie)
-                (straight))))  ; Suppress straight.el hybrid package.el warnings
+              '((files missing-lexbind-cookie))))
 
 ;; Configure straight.el settings BEFORE loading
 (setq straight-check-for-modifications '(check-on-save find-when-checking))
+(setq straight-use-package-by-default t)
 
-;; Load straight.el FIRST before package.el initialization
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
@@ -84,46 +76,31 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-;; Claim org via straight IMMEDIATELY after bootstrap, before any other package
-;; can trigger the built-in org and cause a version mismatch warning.
-;; Pinned to release_9.8.9: main tracks a moving HEAD that has repeatedly
-;; carried a regression in org-export-dispatch's PDF-and-open action
-;; (confirmed recurring 2026-08-21 via `straight-pull-all', which moved org
-;; to a "10.0-pre" dev snapshot with the bug back). Do not unpin without
-;; testing `C-c C-e l o' against the target commit first.
+;; The lockfile is tracked in this repo. straight only reads lockfiles from
+;; its own straight/versions/ dir, so link default.el to the tracked copy
+;; (created on any machine that doesn't have the link yet).
+(let ((tracked (expand-file-name "~/emacs/config/straight-lockfile.el"))
+      (link (straight--versions-file "default.el")))
+  (when (and (file-exists-p tracked) (not (file-symlink-p link)))
+    (make-directory (file-name-directory link) t)
+    (when (file-exists-p link) (rename-file link (concat link ".bak") t))
+    (make-symbolic-link tracked link)))
+
+;; Claim org via straight IMMEDIATELY after bootstrap, before any other
+;; package can load the built-in org and cause a version mismatch warning.
+;; Tracks the `bugfix' branch: org's stable maintenance line (9.8.x
+;; releases + fixes). `main' is 10.0 development, which is where the
+;; 2026-07 `org-export-dispatch' PDF regression came from. The exact
+;; commit is pinned by the lockfile.
 (straight-use-package
  '(org :type git :host github :repo "emacs-straight/org-mode"
-       :commit "7427df2d96d264734e1ba2a943545faa1c8c763f" ; release_9.8.9
+       :branch "bugfix"
        :depth full
        :pre-build (straight-recipes-org-elpa--build)
        :build (:not autoloads)
        :files (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))))
 
-;; NOW configure and initialize package.el AFTER straight.el is loaded
-;; This order prevents the "package.el already loaded" or "straight.el already loaded" warnings
-(require 'package)
-(setq package-archives '(
-                         ("melpa"  . "https://melpa.org/packages/")
-                         ("elpa"   . "https://elpa.gnu.org/packages/")
-                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                         ("melpa-stable" . "https://stable.melpa.org/packages/")
-                         ))
-(setq package-check-signature 'allow-unsigned)  ; Allow unsigned packages but prefer signed ones
-(setq package-install-upgrade-built-in t)       ; Allow upgrading built-in packages (e.g. transient for magit)
-(package-initialize)
-
-;; Ensure transient >= 0.13 is installed for magit (built-in version is too old)
-(unless (package-installed-p 'transient '(0 13))
-  (package-refresh-contents)
-  (package-install 'transient)
-  (package-quickstart-refresh)
-  (when (featurep 'transient) (unload-feature 'transient t))
-  (require 'transient))
-
-;; Install and load use-package (needs package.el to be initialized)
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; use-package ships with Emacs 29+
 (require 'use-package)
 (ari/startup-timer "use-package-loaded")
 
@@ -159,7 +136,6 @@ fall back on and must use Emacs loopback pinentry instead."
 (when (ari/headless-linux-p)
   (setq epa-pinentry-mode 'loopback)
   (use-package pinentry
-    :ensure t
     :config
     (pinentry-start)))
 
@@ -267,13 +243,11 @@ fall back on and must use Emacs loopback pinentry instead."
 
 ;;; follow links in xwidgets
 (use-package xwwp
-  :ensure t
   :defer t)
 (use-package string-inflection
-  :ensure t
   :defer t)
 (use-package font-lock
-  :ensure nil
+  :straight nil
   :custom-face
       (font-lock-comment-face ((t (:foreground "PaleGreen4" :italic t)))))
 
@@ -284,7 +258,6 @@ fall back on and must use Emacs loopback pinentry instead."
   )
 
 (use-package vertico
-  :ensure t
   :init
   (vertico-mode)
   :custom
@@ -304,13 +277,12 @@ fall back on and must use Emacs loopback pinentry instead."
 
 ;; Persist history over Emacs restarts
 (use-package savehist
-  :ensure t
+  :straight nil
   :init
   (savehist-mode))
 
 ;; Consult commands with enhanced search and navigation
 (use-package consult
-  :ensure t
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
@@ -365,7 +337,6 @@ fall back on and must use Emacs loopback pinentry instead."
 
 ;; Flexible text matching - replacement for ivy-prescient
 (use-package orderless
-  :ensure t
   :custom
   (completion-styles '(orderless basic partial-completion flex))
   ;; initialism: "ornf" matches org-roam-node-find (kept from prescient filtering)
@@ -377,7 +348,6 @@ fall back on and must use Emacs loopback pinentry instead."
 
 ;; Contextual actions - similar to ivy actions but more powerful
 (use-package embark
-  :ensure t
 
   ;; Basic keybindings
   :bind
@@ -418,7 +388,6 @@ fall back on and must use Emacs loopback pinentry instead."
 
 ;; Enhanced Embark+Consult integration
 (use-package embark-consult
-  :ensure t
   :after (embark consult)
   :hook
   (embark-collect-mode . consult-preview-at-point-mode)
@@ -439,7 +408,6 @@ fall back on and must use Emacs loopback pinentry instead."
 
 ;; Add nerd-icons to marginalia
 (use-package nerd-icons-completion
-  :ensure t
   :after marginalia
   :hook (marginalia-mode . nerd-icons-completion-marginalia-setup)
   :config
@@ -447,7 +415,6 @@ fall back on and must use Emacs loopback pinentry instead."
 
 ;; Add a posframe-like UI for Vertico (if desired)
 (use-package vertico-posframe
-  :ensure t  
   :after vertico
   :config
   (setq vertico-posframe-parameters
@@ -459,7 +426,7 @@ fall back on and must use Emacs loopback pinentry instead."
 ;; Add visual directory navigation
 (use-package vertico-directory
   :after vertico
-  :ensure nil
+  :straight nil
   :bind (:map vertico-map
               ("RET" . vertico-directory-enter)
               ("DEL" . vertico-directory-delete-char)
@@ -470,22 +437,18 @@ fall back on and must use Emacs loopback pinentry instead."
 
 
 (use-package pos-tip
-  :defer 2
-  :ensure t)
+  :defer 2)
 
 
 (use-package nvm
-  :defer 2
-  :ensure t)
+  :defer 2)
 (use-package js-comint
-  :ensure t
   :defer 2
   :config
   (require 'nvm)
   (js-do-use-nvm))
 
 (use-package js2-mode
-  :ensure t
   :defer 2
   :bind (:map js2-mode-map
               ("\C-x\C-e" . js-send-last-sexp)
@@ -500,7 +463,6 @@ fall back on and must use Emacs loopback pinentry instead."
 
 (use-package marginalia
   :defer 2
-  :ensure t
   :init
   (marginalia-mode)
   :bind
@@ -508,7 +470,6 @@ fall back on and must use Emacs loopback pinentry instead."
         ("M-A" . marginalia-cycle)))
 
 (use-package ace-window
-  :ensure t
   :defer t  ; Lazy-load ace-window - only load when invoked
   :commands (ace-window)
   :bind
@@ -520,7 +481,6 @@ fall back on and must use Emacs loopback pinentry instead."
   (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
 
 (use-package magit
-  :ensure t
   :defer t  ; Lazy-load magit - only load when git commands are used
   :commands (magit-status magit-dispatch magit-file-dispatch))
 
@@ -539,10 +499,8 @@ fall back on and must use Emacs loopback pinentry instead."
 
 (use-package git-timemachine
   :defer 2
-  :ensure t
   )
 (use-package git-gutter
-  :ensure t
   :hook (prog-mode . git-gutter-mode)
   :config
   (setq git-gutter:update-interval 0.02)
@@ -557,25 +515,20 @@ fall back on and must use Emacs loopback pinentry instead."
   )
 
 (use-package git-gutter-fringe
-  :ensure t
   :init
   (with-eval-after-load 'git-gutter (require 'git-gutter-fringe))
   )
 
 
 (use-package persistent-scratch
-  :ensure t
   :config
   (persistent-scratch-setup-default))
 
 (use-package treemacs-projectile
-  :after treemacs projectile
-  :ensure t)
+  :after treemacs projectile)
 (use-package treemacs-magit
-  :after treemacs magit
-  :ensure t)
+  :after treemacs magit)
 (use-package treemacs
-  :ensure t
   :defer t  ; Lazy-load treemacs - only load when explicitly invoked
   :commands (treemacs treemacs-select-window)
   :config
@@ -588,7 +541,6 @@ fall back on and must use Emacs loopback pinentry instead."
 ;; M-0 stays text-scale-adjust (keys-config); use M-x treemacs-select-window
 
 (use-package doom-themes
-  :ensure t
   :defer t  ; Lazy-load doom-themes - load after startup
   :init
   ;; Set theme early to avoid visual flashing
@@ -603,7 +555,6 @@ fall back on and must use Emacs loopback pinentry instead."
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (add-to-list 'custom-theme-load-path "~/emacs/site")
 (use-package hc-zenburn-theme
-  :ensure t
   :custom-face
   (region ((t (:background "DarkOliveGreen"))))
   (highlight ((t (:background "DarkSeaGreen4"))))
@@ -611,7 +562,6 @@ fall back on and must use Emacs loopback pinentry instead."
   (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
   (lazy-highlight ((t (:background "DarkSeaGreen4")))))
 (use-package solarized-theme
-  :ensure t
   :custom-face
   (region ((t (:background "DarkOliveGreen"))))
   (highlight ((t (:background "DarkSeaGreen4"))))
@@ -621,10 +571,8 @@ fall back on and must use Emacs loopback pinentry instead."
 (load-theme 'solarized-wombat-dark t)
 
 (use-package nerd-icons
-  :ensure t
   )
 (use-package doom-modeline
-  :ensure t
   :config
   (setq doom-modeline-buffer-file-name-style 'buffer-name)
   (setq doom-modeline-env-enable-ruby nil)
@@ -638,8 +586,8 @@ fall back on and must use Emacs loopback pinentry instead."
 (setq auto-revert-check-vc-info nil)
 
 (use-package ligature
-  :if (file-exists-p (expand-file-name "~/dev/git/ligature.el"))
-  :load-path "~/dev/git/ligature.el"
+  :straight (:local-repo "~/dev/git/ligature.el"
+             :host github :repo "mickeynp/ligature.el")
   :defer 2  ; Defer ligature loading - not critical for startup
   :config
   ;; Enable the "www" ligature in every possible major mode
@@ -667,6 +615,7 @@ fall back on and must use Emacs loopback pinentry instead."
 
 
 (use-package flymake
+  :straight nil
   :hook ((prog-mode . flymake-mode)
          (text-mode . flymake-mode))
   :bind (:map flymake-mode-map
@@ -684,7 +633,6 @@ fall back on and must use Emacs loopback pinentry instead."
 
 ;; ESLint support for JS/TS modes
 (use-package flymake-eslint
-  :ensure t
   :hook ((js-mode js-ts-mode typescript-ts-mode jtsx-jsx-mode rjsx-mode)
          . flymake-eslint-enable))
 
@@ -764,26 +712,20 @@ fall back on and must use Emacs loopback pinentry instead."
          :immediate-finish t
          :empty-lines-after 1)))
 
-  (use-package ox-jira
-    :ensure t)
+  (use-package ox-jira)
   ;; Defer org-habit loading
   (with-eval-after-load 'org (require 'org-habit))
   (setq org-habit-show-all-today t)
   (setq org-habit-show-habits t)
-  ;; Defer org export backends - only needed when exporting
-  (with-eval-after-load 'org (require 'ox-gfm))
 ;; Buffer-local minor modes: hook them to org-mode. Calling them inside
 ;; `with-eval-after-load' only enabled them in whatever buffer was current
 ;; when org loaded (*scratch*), where org-appear's post-command handler
 ;; then ran the org parser on elisp ("rx '**' range error").
 (use-package org-appear
-  :ensure t
   :hook (org-mode . org-appear-mode))
 (use-package org-superstar
-  :ensure t
   :hook (org-mode . org-superstar-mode))
   (use-package org-modern
-    :ensure t
     :init
     (with-eval-after-load 'org (global-org-modern-mode)))
   (with-eval-after-load 'org
@@ -795,10 +737,8 @@ fall back on and must use Emacs loopback pinentry instead."
   ;; and errors 300+ times per session when org-indent-mode is not active
   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 
-(use-package biblio
-  :ensure t)
+(use-package biblio)
 (use-package org-ref
-  :ensure t
   :after (biblio)
   :defer t  ; Changed from nil to t - lazy-load org-ref
   :config
@@ -835,7 +775,6 @@ fall back on and must use Emacs loopback pinentry instead."
 
 
 (use-package jiralib2
-  :ensure t
   :config
   (setq
    jiralib2-auth 'cookie
@@ -844,12 +783,10 @@ fall back on and must use Emacs loopback pinentry instead."
   (add-hook 'org-roam-capture-new-node-hook #'fg/jira-update-heading)
   (add-hook 'org-capture-before-finalize-hook #'fg/jira-update-heading)
   )
-(use-package emacsql
-  :ensure t)
+(use-package emacsql)
 
 (use-package org-roam
   :after org
-  :ensure t
   :demand t
   :init
   (setq org-roam-v2-ack t)
@@ -1018,7 +955,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;; suggested "C-c n" prefix (wired below via the `general' leader in the
 ;; General section).
 (use-package org-remark
-  :ensure t
   :custom
   (org-remark-notes-file-name #'ari/org-remark-notes-file-name)
   :init
@@ -1027,13 +963,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;; org-wc: on-demand word counts as overlays next to headings, summed
 ;; over sub-headings. Not live -- re-run org-wc-display to refresh.
 (use-package org-wc
-  :ensure t
   :defer t
   :commands (org-wc-display org-wc-remove-overlays
              org-word-count org-wc-count-subtrees))
 
 (use-package org-ql
-  :ensure t
   :defer t)
 
 ;; Move org-roam CAPF to end so cheaper completions run first
@@ -1056,21 +990,18 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
               (ansi-color-context-region nil))
           (ansi-color-apply-on-region beg end))))))
 (add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
-(use-package ox-twbs
-  :ensure t)
+(use-package ox-twbs)
 (use-package ox-gfm
-  :ensure t)
+  :after org)
 
 
-(use-package org-mime
-  :ensure t)
+(use-package org-mime)
 (add-to-list 'org-src-lang-modes '("typescript" . javascript))
 (setq org-src-fontify-natively t)
 (setq org-src-tab-acts-natively t)
 (setq org-src-window-setup 'current-window)
 ;; Use the `plantuml' executable (Homebrew / apt) rather than hunting for the jar.
 (use-package plantuml-mode
-  :ensure t
   :mode ("\\.puml\\'" "\\.plantuml\\'")
   :custom
   (plantuml-default-exec-mode 'executable))
@@ -1084,8 +1015,10 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq org-agenda-include-diary t)
 (setq org-agenda-include-all-todo t)
 
-(use-package ob-typescript
-  :ensure t)
+;; babel backends must be installed before org-babel-do-load-languages below
+(use-package ob-typescript)
+(use-package ob-cypher)
+(use-package ob-aider :defer t)
 (with-eval-after-load 'org
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -1106,25 +1039,21 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 (use-package ox-pandoc
   :defer 2
-  :ensure t
   :config
   (setq org-pandoc-options '((standalone . t)))
   (setq org-pandoc-command (or (executable-find "pandoc") "pandoc")))
 
  (use-package org-variable-pitch
    :after org
-   :ensure t
    )
 
 (use-package olivetti
   :after org
-  :ensure t
   :config
   (setq olivetti-minimum-body-width 120))
 
 (use-package virtualenvwrapper
   :defer 2
-  :ensure t
   :config
   (venv-initialize-interactive-shells)
   (venv-initialize-eshell)
@@ -1152,7 +1081,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 
 (use-package exec-path-from-shell
-  :ensure t
   :config
   (setq exec-path-from-shell-check-startup-files nil)
   (setq exec-path-from-shell-variables '("PATH" "ANTHROPIC_API_KEY" "ARTIFACTORY_PASSWORD" "ARTIFACTORY_USER"))
@@ -1180,50 +1108,47 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     (substring (epg-sub-key-id sub) -8)))
 (run-with-idle-timer 3 nil (lambda () (setq org-crypt-key (ari/org-crypt-default-key))))
 
-  ;; yaml
-;; Defer yaml-mode - only load when opening yaml files
-(autoload 'yaml-mode "yaml-mode" "Major mode for editing YAML files" t)
-(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
+(use-package yaml-mode
+:mode "\\.ya?ml\\'")
+
+(use-package org-roam-ui :after org-roam :defer t)   ; C-c z u
+(use-package org-contrib :defer t)
+(use-package orgit :after magit :defer t)
+(use-package consult-project-extra :defer t)
+(use-package terraform-mode :defer t)
+(use-package eglot-java :defer t)
+(use-package visual-fill :defer t)
+(use-package ghostel :defer t)                        ; see ari-custom fix
 
 
 
 (use-package inf-ruby
-  :defer 2
-  :ensure t)
+  :defer 2)
 (use-package ruby-electric
-  :ensure t
   :defer t)
 (use-package feature-mode
   :defer 2
-  :ensure t
   :config
   (setq feature-use-docker-compose nil)
   (setq feature-rake-command "cucumber --format progress {OPTIONS} {feature}"))
 
 (use-package yasnippet
   :defer 2
-  :ensure t
   :config
   (yas-global-mode t))
 (use-package yasnippet-snippets
-  :defer 2
-  :ensure t)
+  :defer 2)
 (use-package rake
-  :defer 2
-  :ensure t)
+  :defer 2)
 (use-package inflections
-  :defer 2
-  :ensure t)
+  :defer 2)
 (use-package graphql
-  :defer 2
-  :ensure t)
+  :defer 2)
 ;; Defer org-protocol and org-roam-protocol
 (with-eval-after-load 'org (require 'org-protocol))
 (with-eval-after-load 'org-roam (require 'org-roam-protocol))
 (use-package haml-mode
-  :defer 2
-  :ensure t)
+  :defer 2)
 ;; pulse.el (built-in) replaces beacon - flash line on jumps
 (require 'pulse)
 (setq pulse-iterations 10)
@@ -1237,10 +1162,8 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
                windmove-left windmove-right))
   (advice-add cmd :after #'pulse-line))
 (use-package rainbow-mode
-  :defer 2
-  :ensure t)
+  :defer 2)
 (use-package rainbow-delimiters
-  :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; ari/validate-config-files defined in ari-custom.el
@@ -1273,13 +1196,10 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
                 gnus-mode-hook
                 mu4e-view-mode-hook
                 gnus-article-mode-hook
-                dashboard-mode-hook
-                slack-mode-hook
-                slack-message-buffer-mode-hook))
+                dashboard-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package corfu
-  :ensure t
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.3)
@@ -1306,7 +1226,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 (use-package corfu-popupinfo
   :after corfu
-  :ensure nil
+  :straight nil
   :hook (corfu-mode . corfu-popupinfo-mode)
   :custom
   (corfu-popupinfo-delay '(0.5 . 0.2))
@@ -1318,7 +1238,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;; Icons for corfu - nerd-icons-corfu uses nerd font glyphs consistent with
 ;; doom-modeline and nerd-icons-completion (replaces kind-icon/SVG approach)
 (use-package nerd-icons-corfu
-  :ensure t
   :after corfu
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
@@ -1327,7 +1246,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 ;; Enhance completion at point via cape
 (use-package cape
-  :ensure t
   :init
   ;; cape-file globally (fast, path-based, no buffer scanning)
   (add-to-list 'completion-at-point-functions #'cape-file)
@@ -1355,7 +1273,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 
 (use-package project
-  :ensure nil  ;; Built into Emacs
+  :straight nil  ;; Built into Emacs
   :config
   ;; Project switching should open dired, like your projectile config
   (setq project-switch-commands 'project-dired)
@@ -1390,7 +1308,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;;
 
 (use-package web-mode
-  :ensure t
   :defer t)
 
 (add-hook 'html-mode-hook 'abbrev-mode)
@@ -1485,13 +1402,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 
   (use-package rjsx-mode
-    :defer 2
-    :ensure t)
+    :defer 2)
   ;; NOTE: eglot-ensure hooks moved to main eglot configuration (line ~2189)
   ;; to avoid duplicate hook registration which can cause font-locking issues
 
   (use-package jtsx
-    :ensure t
     :hook((jtsx-jsx-mode . emmet-mode)(jtsx-jsx-mode . prettier-js-mode))
     )
   (use-package prettier-js
@@ -1500,13 +1415,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (setq emmet-expand-jsx-className? t)
 
 (use-package emmet-mode
-  :ensure t
   :defer t
   :config
   (add-to-list 'emmet-jsx-major-modes 'jtsx-jsx-mode))
 
 (use-package deft
-  :ensure t
   :bind ("<f8>" . deft)
   :config
   (setq deft-extensions'("org" "txt" "md"))
@@ -1521,19 +1434,20 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
                                  (case-fn . downcase)))
   (setq deft-text-mode 'org-mode))
 
-(add-to-list 'load-path "~/dev/git/notdeft/")
-(add-to-list 'load-path "~/dev/git/notdeft/extras")
-(setq notdeft-directory "~/Documents/org-roam/")
-(setq notdeft-directories '("~/Documents/org-roam/"))
-(setq notdeft-xapian-program (expand-file-name"~/dev/git/notdeft/xapian/notdeft-xapian"))
 ;; Loaded at startup on purpose (with org-roam, the only eager note tools).
-;; The old autoload pointed at a nonexistent "notdeft-mode" file, so F9 failed.
-(when (locate-library "notdeft")
-  (require 'notdeft)
-  (global-set-key (kbd "<f9>") 'notdeft))
+;; The xapian backend binary is built in the checkout (see notdeft docs).
+(use-package notdeft
+  :straight (:local-repo "~/dev/git/notdeft"
+             :host github :repo "hasu/notdeft")
+  :demand t
+  :bind ("<f9>" . notdeft)
+  :init
+  (setq notdeft-directory "~/Documents/org-roam/"
+        notdeft-directories '("~/Documents/org-roam/")
+        notdeft-xapian-program
+        (expand-file-name "~/dev/git/notdeft/xapian/notdeft-xapian")))
 
 (use-package cypher-mode
-  :ensure t
   :defer t)
 
 ;; Use executable-find for cross-platform compatibility
@@ -1546,7 +1460,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (setq n4js-font-lock-keywords cypher-font-lock-keywords))
 
 (use-package which-key
-  :ensure t
+  :straight nil
   :init
   (which-key-mode)
   :config
@@ -1554,7 +1468,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 
 (use-package helpful
-  :ensure t
   :defer t  ; Lazy-load helpful - only load when help commands are used
   :commands (helpful-callable helpful-variable helpful-key helpful-at-point)
   :config
@@ -1562,7 +1475,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (setq help-enable-completion-autoload t));; Enable completion for autoloadable symbols
 
 (use-package elfeed
-  :ensure t
   :commands elfeed
   :config
   ;; Org-link functions (keep for org-roam integration)
@@ -1591,7 +1503,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     (org-capture-finalize)))
 
 (use-package elfeed-org
-  :ensure t
   :after elfeed
   :config
   (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
@@ -1613,7 +1524,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
              ("r" . ari/elfeed-capture-to-roam)))
 
 (use-package prescient
-  :ensure t
   :config
   (prescient-persist-mode 1))
 
@@ -1621,7 +1531,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;; so the minibuffer and corfu use the same rules and orderless's
 ;; !exclude / &annotation / =literal prefixes work.
 (use-package vertico-prescient
-  :ensure t
   :after vertico
   :custom
   (vertico-prescient-enable-filtering nil)
@@ -1631,7 +1540,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 
 
 (use-package general
-  :ensure t
   :config
   (general-create-definer my-leader-def
     :prefix "C-c")
@@ -1745,12 +1653,10 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     :defer 15)  ; Defer gptel-aibo loading
 
   (use-package shell-maker
-    :straight (:host github :repo "xenodium/shell-maker" :files ("*.el"))
-    :ensure t)
+    :straight (:host github :repo "xenodium/shell-maker" :files ("*.el")))
 
   (use-package chatgpt-shell
     :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
-    :ensure t
     :custom
     ;; Functions, so ~/.authinfo.gpg is only decrypted on first use
     (chatgpt-shell-openai-key
@@ -1764,15 +1670,13 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     (ignore-errors (chatgpt-shell-ollama-load-models))
     (setq chatgpt-shell-model-version "qwen3.5-9b-mlx-64k")) ; chatgpt-shell drops ":latest"
 (use-package acp
-  :vc (:url "https://github.com/xenodium/acp.el")
-  :ensure t
   :defer t)  ; required by agent-shell
 (use-package agent-shell
-  ;; Local checkout. `:vc t' + `:load-path' is obsolete as of Emacs 32
-  ;; use-package (warns every startup), so load straight from the path.
-  :load-path "~/dev/git/agent-shell"
-  :ensure nil
-  :defer 3  ; local checkout has no autoloads; load when idle after startup
+  ;; Built from the local checkout (whatever branch is checked out there);
+  ;; straight clones it to ~/dev/git on a machine that doesn't have it.
+  :straight (:local-repo "~/dev/git/agent-shell"
+             :host github :repo "xenodium/agent-shell")
+  :defer t
   :config
   (setq agent-shell-anthropic-authentication
         (agent-shell-anthropic-make-authentication :login t))
@@ -1788,7 +1692,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
                       (getenv "PATH")))))
 
   (use-package gptel
-    :ensure t
     :defer t
     :config
     (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
@@ -1835,8 +1738,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
           gptel-model 'claude-sonnet-5))
 
     (use-package ob-chatgpt-shell
-      :straight t
-      :ensure t)
+      :straight t)
     (require 'ob-chatgpt-shell)
     (ob-chatgpt-shell-setup)
   (use-package aidermacs
@@ -1848,12 +1750,10 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   ;; aider removed - aidermacs above is the active aider integration
 
 (use-package magit-delta
-  :ensure t
   :hook
   (magit-mode . magit-delta-mode))
 
 (use-package popper
-  :ensure t ; or :straight t
   :bind (("C-`"   . popper-toggle)
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle))
@@ -1906,7 +1806,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 ;; See Programming Languages section below for modern treesit configuration
 
 (use-package pdf-tools
-  :ensure t
   :magic ("%PDF" . pdf-view-mode)
   :config
   (pdf-tools-install :no-query)
@@ -1949,7 +1848,6 @@ directory org-noter itself offers)."
      (t (apply orig-fn prompt collection args))))
 
   (use-package org-noter
-    :ensure t
     :commands org-noter
     :hook (org-noter-find-additional-notes-functions . ari/org-noter-notes-name-no-spaces)
     :config
@@ -1981,20 +1879,16 @@ directory org-noter itself offers)."
     (advice-add 'completing-read :around #'ari/org-noter--auto-answer-new-notes-prompts))
 
 (use-package discover
-  :ensure t
   :defer t)
 
 (use-package mastodon
-  :ensure t
   :commands mastodon
   :config
   (setq mastodon-active-user "AriT93")
   (setq mastodon-instance-url "https://mastodon.social")
   (mastodon-discover))
 
-(use-package auctex
-  :ensure t)
-(add-to-list 'load-path "~/dev/git/procress")
+(use-package auctex)
 (use-package procress
   :commands procress-auctex-mode
   :init
@@ -2006,7 +1900,7 @@ directory org-noter itself offers)."
   (procress-load-default-svg-images))
 
 (use-package eglot
-  :ensure t
+  :straight nil
   :hook ((python-ts-mode . eglot-ensure)
          (java-mode . eglot-ensure)
          (go-ts-mode . eglot-ensure)
@@ -2075,7 +1969,6 @@ directory org-noter itself offers)."
 
 ;; Better EGLOT integration with consult and embark
 (use-package consult-eglot
-  :ensure t
   :after (eglot consult)
   :config
   ;; Use consult for EGLOT commands
@@ -2113,7 +2006,6 @@ directory org-noter itself offers)."
 
 ;; Use treesit-auto for automatic grammar installation and mode management
 (use-package treesit-auto
-  :ensure t
   :demand t
   :config
   ;; Detect ABI version and use appropriate grammar revisions
@@ -2265,142 +2157,65 @@ directory org-noter itself offers)."
 (setq c++-ts-mode-indent-offset 4)
 
 (use-package go-mode
-  :ensure t
   :hook (go-mode . eglot-ensure))
 
-(use-package language-detection
-  :ensure t
+  ;; Defer flyover - load with flymake
+  (use-package flyover
+  :straight (:local-repo "~/dev/git/flyover"
+             :host github :repo "konrad1977/flyover")
   :defer t)
-(use-package slack
-  :custom-face
-  (slack-mrkdwn-code-face ((t ( :foreground "DarkOrange3"))))
-  (lui-button-face ((t (:foreground "DodgerBlue" :underline t))))
-  :ensure t
-  :bind (("C-c S K" . slack-stop)
-         ("C-c S c" . slack-select-rooms)
-         ("C-c S u" . slack-select-unread-rooms)
-         ("C-c S U" . slack-user-select)
-         ("C-c S s" . slack-search-from-messages)
-         ("C-c S J" . slack-jump-to-browser)
-         ("C-c S j" . slack-jump-to-app)
-         ("C-c S e" . slack-insert-emoji)
-         ("C-c S E" . slack-message-edit)
-         ("C-c S r" . slack-message-add-reaction)
-         ("C-c S t" . slack-thread-show-or-create)
-         ("C-c S g" . slack-message-redisplay)
-         ("C-c S G" . slack-conversations-list-update-quick)
-         ("C-c S q" . slack-quote-and-reply)
-         ("C-c S Q" . slack-quote-and-reply-with-link)
-         (:map slack-mode-map
-               (("@" . slack-message-embed-mention)
-                ("#" . slack-message-embed-channel)))
-         (:map slack-thread-message-buffer-mode-map
-               (("C-c '" . slack-message-write-another-buffer)
-                ("@" . slack-message-embed-mention)
-                ("#" . slack-message-embed-channel)))
-         (:map slack-message-buffer-mode-map
-               (("C-c '" . slack-message-write-another-buffer)))
-         (:map slack-message-compose-buffer-mode-map
-               (("C-c '" . slack-message-send-from-buffer))))
-  :custom
-  (slack-extra-subscribed-channels (mapcar 'intern (list "general" "devx-isb-console")))
-  (slack-update-quick t)
-  (slack-block-highlight-source t)
-  (slack-enable-wysiwyg t)
-  (slack-buffer-emojify t)
-  (slack-thread-also-send-to-room nil)
-  :config
-  (slack-register-team
-   :name "arit93"
-   :token (auth-source-pick-first-password
-           :host "arit93.slack.com"
-           :user "arit93")
-   :cookie (auth-source-pick-first-password
-            :host "arit93.slack.com"
-            :user "arit93^cookie")
-   :full-and-display-names t
-   :subscribed-channels nil ; Can change it dynamically
-   )
-  (slack-register-team
-   :name "uhacc"
-   :token (auth-source-pick-first-password
-           :host "uhacc.slack.com"
-           :user "arit93")
-   :cookie (auth-source-pick-first-password
-            :host "uhacc.slack.com"
-            :user "arit93^cookie")
-   :full-and-display-names t
-   :default t
-   :subscribed-channels nil ; Can change it dynamically
-   ))
-  ;; (slack-register-team
-  ;;  :name "Development"
-  ;;  :default t
-  ;;  :enterprise-token (auth-source-pick-first-password
-  ;;                     :host "workdaydev.slack.com"
-  ;;                     :user "etoken")
-  ;;  :token (auth-source-pick-first-password
-  ;;          :host "workdaydev.slack.com"
-  ;;          :user "arit93")
-  ;;  :cookie (auth-source-pick-first-password
-  ;;           :host "workdaydev.slack.com"
-  ;;           :user "cookie")
-  ;;  :subsribed-channels nil ))
-
-;; Defer flyover - load with flymake
 (with-eval-after-load 'flymake (require 'flyover))
-(add-hook 'flymake-mode-hook #'flyover-mode)
+  (add-hook 'flymake-mode-hook #'flyover-mode)
 
-;; Use theme colors for error/warning/info faces
-(setq flyover-use-theme-colors t)
+  ;; Use theme colors for error/warning/info faces
+  (setq flyover-use-theme-colors t)
 
-;; Adjust background lightness (lower values = darker)
-(setq flyover-background-lightness 45)
+  ;; Adjust background lightness (lower values = darker)
+  (setq flyover-background-lightness 45)
 
-;; Make icon background darker than foreground
-(setq flyover-percent-darker 40)
+  ;; Make icon background darker than foreground
+  (setq flyover-percent-darker 40)
 
-(setq flyover-text-tint 'lighter) ;; or 'darker or nil
-;; Enable wrapping of long error messages across multiple lines
-(setq flyover-wrap-messages t)
+  (setq flyover-text-tint 'lighter) ;; or 'darker or nil
+  ;; Enable wrapping of long error messages across multiple lines
+  (setq flyover-wrap-messages t)
 
-;; Maximum length of each line when wrapping messages
-(setq flyover-max-line-length 80)
+  ;; Maximum length of each line when wrapping messages
+  (setq flyover-max-line-length 80)
 
-;; "Percentage to lighten or darken the text when tinting is enabled."
-(setq flyover-text-tint-percent 50)
-(setq flyover-levels '(error warning info))
+  ;; "Percentage to lighten or darken the text when tinting is enabled."
+  (setq flyover-text-tint-percent 50)
+  (setq flyover-levels '(error warning info))
 
-(setq flyover-checkers '(flymake))
-(setq flyover-debug nil)  ; Disable flyover debug messages
+  (setq flyover-checkers '(flymake))
+  (setq flyover-debug nil)  ; Disable flyover debug messages
 
-;;; Hide checker name for a cleaner UI
-(setq flyover-hide-checker-name t) 
+  ;;; Hide checker name for a cleaner UI
+  (setq flyover-hide-checker-name t) 
 
-;;; show at end of the line instead.
-(setq flyover-show-at-eol t) 
+  ;;; show at end of the line instead.
+  (setq flyover-show-at-eol t) 
 
-;;; Hide overlay when cursor is at same line, good for show-at-eol.
-(setq flyover-hide-when-cursor-is-on-same-line t) 
+  ;;; Hide overlay when cursor is at same line, good for show-at-eol.
+  (setq flyover-hide-when-cursor-is-on-same-line t) 
 
-;;; Show an arrow (or icon of your choice) before the error to highlight the error a bit more.
-(setq flyover-show-virtual-line t)
+  ;;; Show an arrow (or icon of your choice) before the error to highlight the error a bit more.
+  (setq flyover-show-virtual-line t)
 
-;;; Icons
-(setq flyover-info-icon "🛈")
-(setq flyover-warning-icon "⚠")
-(setq flyover-error-icon "✘")
+  ;;; Icons
+  (setq flyover-info-icon "🛈")
+  (setq flyover-warning-icon "⚠")
+  (setq flyover-error-icon "✘")
 
-;;; Icon padding
-;;; You might want to adjust this setting if you icons are not centererd or if you more or less space.fs
-(setq flyover-icon-left-padding 0.9)
-(setq flyover-icon-right-padding 0.9)
+  ;;; Icon padding
+  ;;; You might want to adjust this setting if you icons are not centererd or if you more or less space.fs
+  (setq flyover-icon-left-padding 0.9)
+  (setq flyover-icon-right-padding 0.9)
 
 
 ;; eros - Evaluation Result OverlayS for Emacs Lisp
 ;; Shows eval results (C-x C-e, etc.) as inline overlays at cursor
 (use-package eros
-  :ensure t
   :hook (emacs-lisp-mode . eros-mode)
   :custom
   (eros-eval-result-prefix "=> ")
@@ -2409,7 +2224,6 @@ directory org-noter itself offers)."
 ;; quickrun - Run code snippets in various languages
 ;; Results can display as overlays or in a popup buffer
 (use-package quickrun
-  :ensure t
   :defer t
   :bind (("C-c q q" . quickrun)
          ("C-c q r" . quickrun-region)
@@ -2431,7 +2245,6 @@ directory org-noter itself offers)."
 ;; (C-c L) so org-roam buffers stay fast — flymake-mode is left off in org-mode
 ;; (see the Flymake block above).
 (use-package flymake-languagetool
-  :ensure t
   :commands (flymake-languagetool-load flymake-languagetool-maybe-load)
   :hook (text-mode . flymake-languagetool-load)
   :init
@@ -2460,7 +2273,6 @@ directory org-noter itself offers)."
 
 ;; writegood-mode for passive voice and weasel words (lightweight complement)
 (use-package writegood-mode
-  :ensure t
   :defer t
   :bind ("C-c W" . writegood-mode))
 

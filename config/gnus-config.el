@@ -5,6 +5,9 @@
 
 (message "loading gnus-config")
 (require 'smtpmail)
+;; gnus-parameters etc. below need gnus loaded (nnreddit's autoloads used to
+;; pull it in implicitly; this module loads 2s after startup, off the critical path)
+(require 'gnus)
 
 
 (setq send-mail-function 'smtpmail-send-it)
