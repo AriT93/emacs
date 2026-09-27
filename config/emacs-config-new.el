@@ -195,6 +195,7 @@ fall back on and must use Emacs loopback pinentry instead."
 (add-hook 'text-mode-hook #'dictionary-tooltip-mode)  ; Hover for definitions
 (add-hook 'prog-mode-hook #'subword-mode)             ; CamelCase navigation
 (undelete-frame-mode 1)                               ; Recover deleted frames
+(setq query-replace-show-preview 'both)               ; Emacs 32: live preview in M-%
 (global-set-key (kbd "C-c D") 'duplicate-dwim)        ; Duplicate line/region
 (global-set-key (kbd "C-c w") 'compare-windows)       ; Quick diff two windows
 (global-set-key (kbd "C-c u") 'ffap-menu)             ; List all URLs in buffer
@@ -1060,6 +1061,19 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :config
   (setq olivetti-minimum-body-width 120))
 
+;; logos: focus mode for drafting. Headings count as "pages", so
+;; C-x n n narrows to the current scene/chapter and C-x ]/[ move between
+;; them; C-c F toggles focus (olivetti centring, hidden mode line).
+(use-package logos
+  :bind (("C-c F" . logos-focus-mode)
+         ([remap narrow-to-region] . logos-narrow-dwim)
+         ([remap forward-page] . logos-forward-page-dwim)
+         ([remap backward-page] . logos-backward-page-dwim))
+  :custom
+  (logos-outlines-are-pages t)
+  (logos-olivetti t)
+  (logos-hide-mode-line t))
+
 (use-package virtualenvwrapper
   :defer 2
   :config
@@ -1274,6 +1288,11 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   
   ;; Project completion uses the same system as your other completions
   (setq project-read-file-name-function #'project--read-file-cpd-relative)
+
+  ;; Emacs 31+: jump to the analogous file in another project (C-c p M).
+  ;; project-save-some-buffers is already on C-c p C-x s.
+  (when (fboundp 'project-find-matching-buffer)
+    (keymap-set project-prefix-map "M" #'project-find-matching-buffer))
   
   ;; Global keybinding for project commands (similar to your C-c p for projectile)
   :bind-keymap
@@ -1653,6 +1672,22 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     (setq chatgpt-shell-model-version "qwen3.5-9b-mlx-64k")) ; chatgpt-shell drops ":latest"
 (use-package acp
   :defer t)  ; required by agent-shell
+;; claude-code-ide: runs Claude Code in a terminal buffer and gives it an
+;; MCP server inside THIS Emacs (project, xref, tree-sitter, imenu).
+;; Replaces the old broken "emacs" MCP entry in ~/.claude.json. Complements
+;; agent-shell (ACP chat buffer) rather than replacing it.
+(use-package claude-code-ide
+  :straight (:host github :repo "manzaltu/claude-code-ide.el")
+  :bind ("C-c C-'" . claude-code-ide-menu)
+  :config
+  ;; Use the same claude as the shell (a stale npm copy is first on
+  ;; Emacs's exec-path on the Mac)
+  (let ((local (expand-file-name "~/.local/bin/claude")))
+    (when (file-executable-p local)
+      (setq claude-code-ide-cli-path local)))
+  (setq claude-code-ide-terminal-backend 'vterm)
+  (claude-code-ide-emacs-tools-setup))
+
 (use-package agent-shell
   ;; Built from the local checkout (whatever branch is checked out there);
   ;; straight clones it to ~/dev/git on a machine that doesn't have it.
@@ -2146,8 +2181,14 @@ directory org-noter itself offers)."
   :straight (:local-repo "~/dev/git/flyover"
              :host github :repo "konrad1977/flyover")
   :defer t)
-(with-eval-after-load 'flymake (require 'flyover))
-  (add-hook 'flymake-mode-hook #'flyover-mode)
+;; Emacs 32 has this built in (`flymake-inline-diagnostics'): full "fancy"
+;; layout for the diagnostic at point, a short end-of-line note for the
+;; rest. Flyover is only used on older Emacs (the Ubuntu box is on 31).
+;; Version check, not boundp: flymake loads lazily.
+(if (>= emacs-major-version 32)
+    (setq flymake-inline-diagnostics '((current . fancy) (t . short)))
+  (with-eval-after-load 'flymake (require 'flyover))
+  (add-hook 'flymake-mode-hook #'flyover-mode))
 
   ;; Use theme colors for error/warning/info faces
   (setq flyover-use-theme-colors t)
@@ -2256,6 +2297,22 @@ directory org-noter itself offers)."
 (use-package writegood-mode
   :defer t
   :bind ("C-c W" . writegood-mode))
+
+;; jinx: fast spell check that only checks visible text (libenchant).
+;; Needs enchant: `brew install enchant' / `apt install libenchant-2-dev
+;; pkgconf'. Compiles a small module on first use.
+(use-package jinx
+  :hook (text-mode . jinx-mode)
+  :bind (([remap ispell-word] . jinx-correct)   ; M-$
+         ("C-M-$" . jinx-languages)))
+
+;; Continuation lines of wrapped prose line up under the first
+;; non-space column (Emacs 30+; variable-pitch aware on 31+). Not in org:
+;; org-indent-mode already manages wrap prefixes there.
+(defun ari/visual-wrap-prefix-unless-org ()
+  (unless (derived-mode-p 'org-mode)
+    (visual-wrap-prefix-mode 1)))
+(add-hook 'text-mode-hook #'ari/visual-wrap-prefix-unless-org)
 
 (set-face-attribute 'default nil
                     :inherit nil
