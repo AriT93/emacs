@@ -2,7 +2,7 @@
 #+AUTHOR: Ari Turetzky
 #+EMAIL: ari@turetzky.org
 #+TAGS: emacs config
-#+Time-stamp: <2026-09-25 16:23:39 abturet>
+#+Time-stamp: <2026-09-26 17:38:09 abturet>
 #+PROPERTY: header-args:elisp :tangle ~/emacs/config/emacs-config-new.el
 #+PROPERTY: header-args:sh  :results silent :tangle no
 #+PROPERTY: header-args:ruby :tangle no
@@ -2052,7 +2052,7 @@ Popper helps with managing transient windows  see [[https://github.com/karthink/
                      :height 120
                      :italic t
                      :family "Helvetica"
-                     :background "gray40"))))
+                     ))))
   (add-hook 'prog-mode-hook #'blamer-mode)
 #+end_src
 ** SVG-Tag-mode

@@ -1801,7 +1801,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
                    :height 120
                    :italic t
                    :family "Helvetica"
-                   :background "gray40"))))
+                   ))))
 (add-hook 'prog-mode-hook #'blamer-mode)
 
 (use-package svg-tag-mode
