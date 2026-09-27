@@ -170,7 +170,7 @@
  ("yaml-mode" . "93dba98c050e9abfc623ec66aa499dbbb46b2fe1")
  ("yasnippet" . "c1e6ff23e9af16b856c88dfaab9d3ad7b746ad37")
  ("yasnippet-snippets" . "606ee926df6839243098de6d71332a697518cb86")
- ("~/dev/git/agent-shell" . "8ad7a6c982259f3dac57e25136bedbd4cb81e770")
+ ("~/dev/git/agent-shell" . "d551202139dc0ad5f671fd19ca237515eb4ae762")
  ("~/dev/git/flyover" . "dbbc13f67c427ca771137937105c256fa5989c64")
  ("~/dev/git/ligature.el" . "e0bc07ec41203b72386a2b878b6c8a65c28f4ced")
  ("~/dev/git/notdeft" . "1b7054dcfc3547a7cafeb621552cec01d0540478")
