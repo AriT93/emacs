@@ -1514,10 +1514,71 @@ doesn't choke on U+200B."
       (message "ari/strip-zero-width-spaces-file: cleaned %d spot(s) in %s"
                count (file-name-nondirectory file)))))
 
-(defcustom ari/org-noter-annotated-pdf-margin-width "2in"
-  "Width of the blank margin column added for notes, as a LaTeX length."
+(defcustom ari/org-noter-annotated-pdf-margin-width "2.5in"
+  "Width of the blank margin column added for notes, as a LaTeX length.
+Keep in sync with `ari/org-noter-annotated-pdf-margin-pt' (the
+Ghostscript backend's equivalent, in points)."
   :group 'org-noter
   :type 'string)
+
+(defcustom ari/org-noter-annotated-pdf-margin-pt 180.0
+  "Width of the blank margin column added for notes by the Ghostscript
+backend, in PostScript points (72 per inch)."
+  :group 'org-noter
+  :type 'number)
+
+(defcustom ari/org-noter-annotated-pdf-highlight-color '(1.0 0.95 0.72)
+  "RGB (0-1 floats) of the passage highlight. It is painted with a
+Multiply blend, so the text underneath stays fully legible - lighter
+values give a subtler highlight."
+  :group 'org-noter
+  :type '(list float float float))
+
+(defcustom ari/org-noter-annotated-pdf-note-font-size 8.5
+  "Font size (points) of margin note text in the Ghostscript backend."
+  :group 'org-noter
+  :type 'number)
+
+(defcustom ari/org-noter-annotated-pdf-note-font "sans"
+  "fontconfig pattern for the margin note font (Ghostscript backend),
+resolved with `fc-match' - the default \"sans\" is whatever the system's
+generic sans-serif is (Noto Sans here). Falls back to PostScript
+Helvetica if fontconfig isn't available."
+  :group 'org-noter
+  :type 'string)
+
+(defun ari/org-noter--fc-font (pattern)
+  "Return (POSTSCRIPT-NAME . FILE) for fontconfig PATTERN, or nil."
+  (let* ((out (and (executable-find "fc-match")
+                   (with-temp-buffer
+                     (call-process "fc-match" nil t nil "-f" "%{postscriptname}|%{file}" pattern)
+                     (buffer-string))))
+         (parts (and out (split-string out "|"))))
+    (when (and (= (length parts) 2) (file-exists-p (nth 1 parts)))
+      (cons (nth 0 parts) (nth 1 parts)))))
+
+(defun ari/org-noter--note-font ()
+  "Return (REGULAR BOLD FONTPATH) for `ari/org-noter-annotated-pdf-note-font':
+the PostScript names of its regular and bold faces, plus a `:'-separated
+directory list for gs's -sFONTPATH so `findfont' can load the system
+TrueType fonts by name. Falls back to (\"Helvetica\" \"Helvetica-Bold\"
+nil) when fontconfig can't resolve them."
+  (let ((reg (ari/org-noter--fc-font ari/org-noter-annotated-pdf-note-font))
+        (bold (ari/org-noter--fc-font (concat ari/org-noter-annotated-pdf-note-font ":bold"))))
+    (if (and reg bold)
+        (list (car reg) (car bold)
+              (string-join (delete-dups (list (file-name-directory (cdr reg))
+                                              (file-name-directory (cdr bold))))
+                           ":"))
+      (list "Helvetica" "Helvetica-Bold" nil))))
+
+(defun ari/org-noter-annotated-pdf-path (doc-path)
+  "Return the snake_case `<name>_annotated.pdf' output path for DOC-PATH,
+next to it (see `ari/snake-case-string'), so exports never produce file
+names with spaces even when the source PDF has them."
+  (expand-file-name (concat (ari/snake-case-string (file-name-base doc-path))
+                            "_annotated.pdf")
+                    (file-name-directory doc-path)))
 
 (defun ari/org-noter--doc-heading-pos ()
   "Return the position of the nearest heading at/above point with a
@@ -1555,7 +1616,8 @@ be unreliable)."
         (cond
          ((string-match "#\\+BEGIN_QUOTE\n\\(\\(?:.\\|\n\\)*?\\)\n#\\+END_QUOTE" body)
           (match-string 1 body))
-         ((string-match "``\\([^\n]*?\\)''" body)
+         ;; can wrap across lines when the note text is filled
+         ((string-match "``\\(\\(?:.\\|\n\\)*?\\)''" body)
           (match-string 1 body))
          (t (nth 4 (org-heading-components))))))))
 
@@ -1580,6 +1642,23 @@ empty or not found on that page."
                       (ari/org-noter--regexp-for-pdf-search text)
                       page nil doc-path))))
       (cdr (assq 'edges (car matches))))))
+
+(defun ari/org-noter--merge-line-boxes (boxes)
+  "Merge edge BOXES (LEFT TOP RIGHT BOTTOM) that sit on the same visual
+line into one box spanning them. `pdf-info-search-regexp' returns one
+box per word/glyph run, which overlap slightly - with a Multiply-blended
+highlight every overlap prints as a darker vertical stripe."
+  (let (lines)
+    (dolist (box (sort (copy-sequence boxes) (lambda (a b) (< (nth 1 a) (nth 1 b)))))
+      (let ((line (car lines)))
+        (if (and line
+                 (< (abs (- (/ (+ (nth 1 box) (nth 3 box)) 2.0)
+                            (/ (+ (nth 1 line) (nth 3 line)) 2.0)))
+                    (/ (- (nth 3 line) (nth 1 line)) 2.0)))
+            (setcar lines (list (min (nth 0 line) (nth 0 box)) (min (nth 1 line) (nth 1 box))
+                                (max (nth 2 line) (nth 2 box)) (max (nth 3 line) (nth 3 box))))
+          (push box lines))))
+    (nreverse lines)))
 
 (defun ari/org-noter--parse-page-property (prop)
   "Parse a NOTER_PAGE property string PROP into an org-noter location cons.
@@ -1691,9 +1770,10 @@ source produced anything."
                 (search-edges (and quoted-text page
                                     (ari/org-noter--search-highlight-edges doc-path page quoted-text)))
                 (raw-highlight (org-entry-get nil "HIGHLIGHT"))
-                (highlight (if search-edges
-                               (mapcar #'ari/org-noter--normalize-edges search-edges)
-                             (ari/org-noter--parse-highlight-property raw-highlight))))
+                (highlight (ari/org-noter--merge-line-boxes
+                            (if search-edges
+                                (mapcar #'ari/org-noter--normalize-edges search-edges)
+                              (ari/org-noter--parse-highlight-property raw-highlight)))))
            (when (and raw-highlight (not highlight) (boundp 'ari/org-noter--dropped-highlight-titles))
              (push (nth 4 (org-heading-components)) ari/org-noter--dropped-highlight-titles))
            (when (and loc top (> top 0))
@@ -1702,17 +1782,45 @@ source produced anything."
        t 'tree))
     (cons doc-path (nreverse notes))))
 
-(defun ari/org-noter--estimate-note-height (text)
-  "Rough box height in inches for TEXT at the export's note width/font size."
-  (let* ((chars-per-line 26)
-         (lines (max 1 (ceiling (length text) chars-per-line))))
-    (+ 0.15 (* lines 0.115))))
+(defconst ari/org-noter--note-pad 6.0
+  "Inner padding (points) of a margin note box.")
 
-(defun ari/org-noter--stack-notes (notes)
+(defconst ari/org-noter--note-gap 6.0
+  "Vertical gap (points) enforced between stacked margin notes.")
+
+(defun ari/org-noter--note-box-width ()
+  "Width in points of a margin note box (Ghostscript backend)."
+  (- ari/org-noter-annotated-pdf-margin-pt 24))
+
+(defun ari/org-noter--note-layout (text)
+  "Return (LINES LINE-HEIGHT BOX-HEIGHT) for TEXT as drawn by
+`ari/org-noter--ps-margin-note'. Wrapping assumes an average glyph is
+~0.55em wide (about right for Noto/DejaVu Sans, a little generous for
+Helvetica), so lines rarely overrun the box. Shared with `ari/org-noter--stack-notes' so the stacking math
+matches the boxes actually drawn (an independent estimate here was what
+used to let tall notes overlap the next one)."
+  (let* ((fs ari/org-noter-annotated-pdf-note-font-size)
+         (line-height (* fs 1.3))
+         (inner (- (ari/org-noter--note-box-width) (* 2 ari/org-noter--note-pad) 3))
+         (chars (max 10 (floor inner (* fs 0.55))))
+         ;; "NN. " placeholder reserves room for the bold note number
+         ;; drawn ahead of the first line, then is stripped back off
+         (lines (ari/org-noter--wrap-text
+                 (concat "NN. " (ari/org-noter--ascii-text text)) chars)))
+    (setcar lines (string-trim-left (substring (car lines) 3)))
+    (list lines line-height
+          (+ (* 2 ari/org-noter--note-pad) (* (max 1 (length lines)) line-height)))))
+
+(defun ari/org-noter--estimate-note-height (text)
+  "Box height in points for TEXT as the margin note will draw it."
+  (nth 2 (ari/org-noter--note-layout text)))
+
+(defun ari/org-noter--stack-notes (notes &optional page-height)
   "Group NOTES (PAGE TOP TEXT HIGHLIGHT) by page, adjusting TOP to avoid
-overlap. Returns an alist of (PAGE . ((TOP TEXT HIGHLIGHT) ...)), each
-page's notes sorted top to bottom with a minimum gap enforced between
-them."
+overlap. Returns an alist of (PAGE . ((TOP TEXT HIGHLIGHT) ...)), sorted
+by page, each page's notes sorted top to bottom with a minimum gap
+enforced between them. PAGE-HEIGHT (points, default 792 = US Letter)
+converts the point-based note heights into page fractions."
   (let (by-page)
     (dolist (note notes)
       (push (list (nth 1 note) (nth 2 note) (nth 3 note))
@@ -1725,8 +1833,10 @@ them."
           (when (< (car entry) min-top)
             (setcar entry min-top))
           (setq min-top (+ (car entry)
-                            (/ (ari/org-noter--estimate-note-height (nth 1 entry)) 11.0))))))
-    by-page))
+                            (/ (+ (ari/org-noter--estimate-note-height (nth 1 entry))
+                                  ari/org-noter--note-gap)
+                               (float (or page-height 792))))))))
+    (sort by-page (lambda (a b) (< (car a) (car b))))))
 
 (defvar ari/org-noter--dropped-highlight-titles nil
   "Let-bound by `ari/org-noter-export-annotated-pdf' while collecting
@@ -1833,34 +1943,86 @@ directly in raw PostScript/PDF coordinates instead."
     (when (> (length cur) 0) (push cur lines))
     (nreverse lines)))
 
-(defun ari/org-noter--ps-underline (box pagewidth pageheight)
-  "Return a PostScript `moveto ... lineto stroke' line for edge BOX
-\(LEFT TOP RIGHT BOTTOM, page-relative fractions), using PDF's native
-bottom-up point coordinates (no unit-conversion layer needed, unlike the
-LaTeX backend)."
-  (let ((x1 (* (nth 0 box) pagewidth))
-        (x2 (* (nth 2 box) pagewidth))
-        (y (* (- 1 (nth 3 box)) pageheight)))
-    (format "%.2f %.2f moveto %.2f %.2f lineto stroke\n" x1 y x2 y)))
+(defun ari/org-noter--ascii-text (s)
+  "Fold typographic punctuation in S to ASCII. The margin notes are
+drawn with a plain PostScript `show', whose font encoding has no UTF-8, so curly
+quotes/dashes/ellipses typed in a note would otherwise print as junk
+bytes; anything else outside ASCII is replaced with `?'."
+  (let ((s (replace-regexp-in-string "[‘’‚′]" "'" s)))
+    (setq s (replace-regexp-in-string "[“”„″]" "\"" s))
+    (setq s (replace-regexp-in-string "—" "--" s))
+    (setq s (replace-regexp-in-string "[–‐‑]" "-" s))
+    (setq s (replace-regexp-in-string "…" "..." s))
+    (setq s (replace-regexp-in-string "[  ]" " " s))
+    (replace-regexp-in-string "[^[:ascii:]]" "?" s)))
 
-(defun ari/org-noter--ps-margin-note (x top-frac pageheight box-width text)
-  "Return PostScript commands drawing a boxed margin note for TEXT, top
-edge at TOP-FRAC (page-relative fraction), at absolute point X."
-  (let* ((lines (ari/org-noter--wrap-text text 26))
-         (line-height 10)
-         (top-y (* (- 1 top-frac) pageheight))
-         (box-height (+ 6 (* (length lines) line-height))))
+(defun ari/org-noter--ps-highlight (box pagewidth pageheight)
+  "Return PostScript filling edge BOX (LEFT TOP RIGHT BOTTOM, page-
+relative fractions) with the highlight color, in PDF's native bottom-up
+point coordinates. The caller sets a Multiply blend mode first (needs
+gs's -dALLOWPSTRANSPARENCY), so the fill tints the text instead of
+covering it - no underline/outline needed. Padded by a point or two so
+the highlight doesn't hug the glyphs."
+  (let* ((x1 (- (* (nth 0 box) pagewidth) 1.0))
+         (x2 (+ (* (nth 2 box) pagewidth) 1.0))
+         (y-top (+ (* (- 1 (nth 1 box)) pageheight) 1.5))
+         (y-bot (- (* (- 1 (nth 3 box)) pageheight) 1.5)))
+    (format "%.2f %.2f %.2f %.2f rectfill\n" x1 y-bot (- x2 x1) (- y-top y-bot))))
+
+(defun ari/org-noter--ps-margin-note (x top-frac pageheight text number font)
+  "Return PostScript drawing margin note NUMBER for TEXT at absolute
+point X, top edge at TOP-FRAC (page-relative fraction): a soft warm card
+with a highlight-colored accent bar on its left edge, dark-gray text led
+by the bold note number (matching the number beside the highlighted
+line, see `ari/org-noter--ps-line-number'). FONT is (REGULAR BOLD
+FONTPATH) from `ari/org-noter--note-font'. Layout comes from
+`ari/org-noter--note-layout' so it matches the stacking math."
+  (pcase-let* ((`(,lines ,line-height ,box-height) (ari/org-noter--note-layout text))
+               (`(,r ,g ,b) ari/org-noter-annotated-pdf-highlight-color)
+               (fs ari/org-noter-annotated-pdf-note-font-size)
+               (pad ari/org-noter--note-pad)
+               (box-width (ari/org-noter--note-box-width))
+               (top-y (* (- 1 top-frac) pageheight))
+               (bot-y (- top-y box-height)))
     (with-temp-buffer
-      (insert "0 0 0 setrgbcolor 0.5 setlinewidth\n")
-      (insert (format "%.2f %.2f %.2f %.2f re stroke\n"
-                      x (- top-y box-height) box-width box-height))
-      (insert "/Helvetica findfont 7 scalefont setfont\n")
-      (let ((y (- top-y line-height)))
+      ;; card background + hairline border
+      (insert "0.985 0.975 0.955 setrgbcolor\n")
+      (insert (format "%.2f %.2f %.2f %.2f rectfill\n" x bot-y box-width box-height))
+      (insert "0.8 0.78 0.74 setrgbcolor 0.4 setlinewidth\n")
+      (insert (format "%.2f %.2f %.2f %.2f rectstroke\n" x bot-y box-width box-height))
+      ;; accent bar, a deeper shade of the highlight color
+      (insert (format "%.3f %.3f %.3f setrgbcolor\n" (* r 0.95) (* g 0.75) (* b 0.35)))
+      (insert (format "%.2f %.2f 3 %.2f rectfill\n" x bot-y box-height))
+      (insert "0.2 0.2 0.2 setrgbcolor\n")
+      (let ((y (- top-y pad (* fs 0.95)))
+            (tx (+ x 3 pad)))
+        (insert (format "/%s findfont %.1f scalefont setfont\n" (nth 1 font) fs))
+        (insert (format "%.2f %.2f moveto (%d. ) show\n" tx y number))
+        (insert (format "/%s findfont %.1f scalefont setfont\n" (nth 0 font) fs))
         (dolist (line lines)
-          (insert (format "%.2f %.2f moveto (%s) show\n"
-                          (+ x 3) y (ari/org-noter--ps-escape line)))
-          (setq y (- y line-height))))
+          (insert (format "(%s) show\n" (ari/org-noter--ps-escape line)))
+          (setq y (- y line-height))
+          (insert (format "%.2f %.2f moveto\n" tx y))))
       (buffer-string))))
+
+(defconst ari/org-noter--line-number-x 50.0
+  "Right edge (points from the page's left edge) of the note numbers
+drawn in the left margin - inside a normal 1in (72pt) text margin, clear
+of the text.")
+
+(defun ari/org-noter--ps-line-number (box pageheight numbers font)
+  "Return PostScript printing NUMBERS (a list; several notes can start on
+the same line, printed as \"3, 4\") small and bold in the page's left
+margin, right-aligned at `ari/org-noter--line-number-x' and vertically
+centered on highlight BOX's line - so each highlighted line is numbered
+where it sits, even when stacking has pushed its note card further down
+the right margin. FONT is (REGULAR BOLD FONTPATH)."
+  (let ((y-mid (* (- 1 (/ (+ (nth 1 box) (nth 3 box)) 2.0)) pageheight)))
+    (concat "0.55 0.45 0.2 setrgbcolor\n"
+            (format "/%s findfont 7 scalefont setfont\n" (nth 1 font))
+            (format "(%s) dup stringwidth pop %.2f exch sub %.2f moveto show\n"
+                    (mapconcat #'number-to-string numbers ", ")
+                    ari/org-noter--line-number-x (- y-mid 2.5)))))
 
 (defun ari/org-noter--page-bbox (ps-content start)
   "Return (WIDTH . HEIGHT) from the nearest %%PageBoundingBox at/after
@@ -1885,8 +2047,10 @@ PDF streams that can't be safely text-edited), widens each page that
 needs marks (and its clip rectangle - easy to miss: without widening the
 clip too, anything drawn past the original page edge, like the margin
 notes, is silently invisible) and injects raw PostScript draw commands
-for the underline(s)/margin note(s) directly before that page's own
-`showpage', then rasterizes back to PDF with `gs -sDEVICE=pdfwrite'.
+for the highlight(s)/margin note(s) directly before that page's own
+`showpage', then rasterizes back to PDF with `gs -sDEVICE=pdfwrite'
+\(with -dALLOWPSTRANSPARENCY, which the highlights' Multiply blend
+mode needs).
 Works entirely in PDF/PostScript's own bottom-up point coordinates, so
 there is no unit-conversion layer to get wrong, and - the actual reason
 this backend exists - it does not go through `pdfpages', which was
@@ -1898,7 +2062,9 @@ specific included page."
   (let* ((work-dir (make-temp-file "org-noter-gs-" t))
          (ps-file (expand-file-name "orig.ps" work-dir))
          (ps-out (expand-file-name "annot.ps" work-dir))
-         (margin-pt 144.0)) ; matches the LaTeX backend's 2in default
+         (margin-pt (float ari/org-noter-annotated-pdf-margin-pt))
+         (font (ari/org-noter--note-font))
+         (note-number 0))
     (unless (zerop (call-process "pdftops" nil nil nil doc-path ps-file))
       (error "pdftops failed to convert %s" doc-path))
     (let ((content (with-temp-buffer
@@ -1932,15 +2098,30 @@ specific included page."
                      (format "0 0 %s %s re W"
                              (ari/org-noter--num neww) (ari/org-noter--num ph))
                      segment t t))
-              (let ((marks "\n% org-noter overlay\n0.85 0.4 0.0 setrgbcolor 1.2 setlinewidth\n"))
+              (let ((marks (concat "\n% org-noter overlay\ngsave /Multiply .setblendmode\n"
+                                   (apply #'format "%.3f %.3f %.3f setrgbcolor\n"
+                                          ari/org-noter-annotated-pdf-highlight-color))))
                 (dolist (entry (cdr page-notes))
                   (dolist (box (nth 2 entry))
-                    (setq marks (concat marks (ari/org-noter--ps-underline box pw ph)))))
-                (dolist (entry (cdr page-notes))
-                  (setq marks (concat marks
-                                      (ari/org-noter--ps-margin-note
-                                       (+ pw 10) (nth 0 entry) ph (- margin-pt 15)
-                                       (nth 1 entry)))))
+                    (setq marks (concat marks (ari/org-noter--ps-highlight box pw ph)))))
+                (setq marks (concat marks "grestore\n"))
+                (let (line-numbers) ; ((BOX . NUMBERS) ...), one per highlighted line
+                  (dolist (entry (cdr page-notes))
+                    (setq note-number (1+ note-number))
+                    (when-let* ((box (car (nth 2 entry))))
+                      (let ((same-line (seq-find
+                                        (lambda (ln) (< (abs (- (nth 1 (car ln)) (nth 1 box))) 0.005))
+                                        line-numbers)))
+                        (if same-line
+                            (setcdr same-line (append (cdr same-line) (list note-number)))
+                          (push (list box note-number) line-numbers))))
+                    (setq marks (concat marks
+                                        (ari/org-noter--ps-margin-note
+                                         (+ pw 12) (nth 0 entry) ph
+                                         (nth 1 entry) note-number font))))
+                  (dolist (ln line-numbers)
+                    (setq marks (concat marks (ari/org-noter--ps-line-number
+                                               (car ln) ph (cdr ln) font)))))
                 (setq segment
                       (if showpage-at
                           (concat (substring segment 0 (- (length segment) (length "showpage")))
@@ -1949,14 +2130,104 @@ specific included page."
               (setq content (concat (substring content 0 pstart) segment
                                     (substring content pend)))))))
       (with-temp-file ps-out (insert content)))
-    (unless (zerop (call-process "gs" nil nil nil "-q" "-dNOPAUSE" "-dBATCH"
-                                 "-sDEVICE=pdfwrite" (concat "-sOutputFile=" out-file) ps-out))
+    ;; The system TrueType font is found via -sFONTPATH and always embedded
+    ;; (subset), so the notes look the same in any viewer.
+    (unless (zerop (apply #'call-process "gs" nil nil nil
+                          `("-q" "-dNOPAUSE" "-dBATCH" "-dALLOWPSTRANSPARENCY"
+                            ,@(and (nth 2 font) (list (concat "-sFONTPATH=" (nth 2 font))))
+                            "-sDEVICE=pdfwrite" ,(concat "-sOutputFile=" out-file)
+                            ,ps-out)))
       (error "gs pdfwrite failed"))
+    (delete-directory work-dir t)))
+
+(defun ari/org-noter--pdf-page-size (doc-path)
+  "Return DOC-PATH's first page (WIDTH . HEIGHT) in points via `pdfinfo', or nil."
+  (when (executable-find "pdfinfo")
+    (with-temp-buffer
+      (call-process "pdfinfo" nil t nil doc-path)
+      (goto-char (point-min))
+      (when (re-search-forward "^Page size:[ \t]*\\([0-9.]+\\) x \\([0-9.]+\\) pts" nil t)
+        (cons (string-to-number (match-string 1))
+              (string-to-number (match-string 2)))))))
+
+(defun ari/org-noter--pdf-page-height (doc-path)
+  "Return DOC-PATH's first page height in points via `pdfinfo', or nil."
+  (cdr (ari/org-noter--pdf-page-size doc-path)))
+
+(defcustom ari/org-noter-annotated-pdf-response-heading "Response"
+  "Title of the heading whose contents get appended to the annotated PDF
+as closing page(s) - the overall written response, as opposed to the
+per-passage margin notes. Matched case-insensitively; see
+`ari/org-noter--collect-response' for where it may live."
+  :group 'org-noter
+  :type 'string)
+
+(defun ari/org-noter--collect-response ()
+  "Return (TITLE . BODY) of the response heading for the org-noter
+document at point, or nil. BODY is the heading's org text minus its
+planning/property drawer, including any subheadings. The heading may be
+inside the document's subtree, or any later heading before the next
+NOTER_DOCUMENT heading - so a top-level `* Response' written after the
+notes (the natural place for it) is picked up too."
+  (save-excursion
+    (goto-char (ari/org-noter--doc-heading-pos))
+    (let (found)
+      (while (and (not found) (outline-next-heading)
+                  (not (org-entry-get nil "NOTER_DOCUMENT")))
+        (when (string-equal-ignore-case
+               (org-get-heading t t t t) ari/org-noter-annotated-pdf-response-heading)
+          (setq found (cons (org-get-heading t t t t)
+                            (let ((end (save-excursion (org-end-of-subtree t t))))
+                              (org-end-of-meta-data t)
+                              (buffer-substring-no-properties (min (point) end) end))))))
+      (and found (string-match-p "[^[:space:]]" (cdr found)) found))))
+
+(defun ari/org-noter--append-response (out-file doc-path response)
+  "Typeset RESPONSE (TITLE . ORG-BODY) with pdflatex and append it to
+OUT-FILE as closing page(s), at DOC-PATH's page size. The body goes
+through org's own LaTeX exporter, so org markup (emphasis, lists,
+subheadings) carries over; it is set in Times (newtxtext) with 1in
+margins to sit naturally after a typical manuscript."
+  (dolist (tool '("pdflatex" "pdfunite"))
+    (unless (executable-find tool)
+      (user-error "%s not found on exec-path" tool)))
+  (require 'ox-latex)
+  (let* ((size (or (ari/org-noter--pdf-page-size doc-path) '(612 . 792)))
+         (work-dir (make-temp-file "org-noter-resp-" t))
+         (tex-file (expand-file-name "response.tex" work-dir))
+         (merged (expand-file-name "merged.pdf" work-dir))
+         (body (org-export-string-as
+                (concat "#+OPTIONS: toc:nil num:nil author:nil title:nil\n" (cdr response))
+                'latex t)))
+    (with-temp-file tex-file
+      (insert "\\documentclass[11pt]{article}\n"
+              "\\usepackage[utf8]{inputenc}\n\\usepackage[T1]{fontenc}\n"
+              "\\usepackage{newtxtext}\n\\usepackage[normalem]{ulem}\n"
+              (format "\\usepackage[paperwidth=%sbp,paperheight=%sbp,margin=1in]{geometry}\n"
+                      (car size) (cdr size))
+              "\\usepackage{parskip}\n\\usepackage{hyperref}\n"
+              "\\pagestyle{empty}\\setcounter{secnumdepth}{0}\n"
+              "\\begin{document}\n"
+              (format "\\section*{%s}\n" (ari/org-noter--latex-escape (car response)))
+              body
+              "\n\\end{document}\n"))
+    (let ((default-directory work-dir))
+      (with-temp-buffer
+        (unless (zerop (call-process "pdflatex" nil t nil "-interaction=nonstopmode" tex-file))
+          (let ((log (buffer-string)))
+            (delete-directory work-dir t)
+            (error "pdflatex failed on the response:\n%s" log)))))
+    (unless (zerop (call-process "pdfunite" nil nil nil out-file
+                                 (expand-file-name "response.pdf" work-dir) merged))
+      (delete-directory work-dir t)
+      (error "pdfunite failed appending the response"))
+    (copy-file merged out-file t)
     (delete-directory work-dir t)))
 
 (defun ari/org-noter-export-annotated-pdf ()
   "Export the current org-noter document with its precise notes overlaid
-into a new `<name>_annotated.pdf' next to it. See the org-noter annotated-
+into a new snake_case `<name>_annotated.pdf' next to it (see
+`ari/org-noter-annotated-pdf-path'). See the org-noter annotated-
 PDF export section for details; the source PDF is never modified. Tries
 the Ghostscript backend first, falling back to the LaTeX one (see its
 docstring for why the fallback exists) if that fails for any reason."
@@ -1969,14 +2240,18 @@ docstring for why the fallback exists) if that fails for any reason."
         (user-error "Document not found: %s" doc-path))
       (unless notes
         (user-error "No precise notes found for %s (plain page-only notes are skipped)" doc-path))
-      (let* ((by-page (ari/org-noter--stack-notes notes))
-             (out-file (concat (file-name-sans-extension doc-path) "_annotated.pdf"))
+      (let* ((by-page (ari/org-noter--stack-notes notes (ari/org-noter--pdf-page-height doc-path)))
+             (out-file (ari/org-noter-annotated-pdf-path doc-path))
+             (response (ari/org-noter--collect-response))
              (backend "ghostscript"))
         (condition-case err
             (ari/org-noter--export-annotated-pdf-ghostscript doc-path by-page out-file)
           (error
            (setq backend (format "latex (ghostscript backend failed: %s)" (error-message-string err)))
            (ari/org-noter--export-annotated-pdf-latex doc-path by-page out-file)))
+        (when response
+          (ari/org-noter--append-response out-file doc-path response)
+          (setq backend (concat backend ", response appended")))
         (if ari/org-noter--dropped-highlight-titles
             (message "Wrote %s via %s (no mark for: %s - geometry looked implausible, probably a stray drag; retake with a clean left-to-right selection if you want it marked)"
                      out-file backend (string-join (nreverse ari/org-noter--dropped-highlight-titles) ", "))

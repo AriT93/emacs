@@ -1866,8 +1866,12 @@ directory org-noter itself offers)."
 
   (use-package org-noter
     :commands org-noter
-    :hook (org-noter-find-additional-notes-functions . ari/org-noter-notes-name-no-spaces)
     :config
+    ;; Not via `:hook': use-package appends "-hook" to any name not already
+    ;; ending in it, so that registered the function on a nonexistent
+    ;; `org-noter-find-additional-notes-functions-hook' and new notes files
+    ;; silently kept the PDF's spaced name.
+    (add-hook 'org-noter-find-additional-notes-functions #'ari/org-noter-notes-name-no-spaces)
     (setq org-noter-notes-search-path nil
           org-noter-default-notes-file-names nil
           org-noter-auto-save-last-location t
