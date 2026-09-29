@@ -1290,9 +1290,128 @@ straight installs them (2026-09-26 migration). All load on demand.
   (use-package terraform-mode :defer t)
   (use-package eglot-java :defer t)
   (use-package visual-fill :defer t)
-  (use-package ghostel :defer t)                        ; see ari-custom fix
     #+END_SRC
-    
+
+** Ghostel
+A libghostty-backed terminal. See also the =ghostel-module-compile= advice in
+ari-custom.
+
+The native module is *not* built locally: Zig 0.16.0 bundles clang 20-era
+resource headers, whose =float.h= does not implement the =__need_infinity_nan=
+protocol that the macOS 26+ SDK's =math.h= relies on for =INFINITY= / =NAN=.
+Because zig builds its own libc++ in strict-ANSI mode (=-std=c++NN=, so
+=__STRICT_ANSI__= is set), neither header defines those macros and the libc++
+sub-compilation fails. ghostel pins Zig with =!= .eq → @compileError=, so
+bumping Zig locally is not an option; this resolves itself when upstream moves
+to a Zig that ships clang 21 headers. Until then the module comes from a
+GitHub release, so =auto-install= never shells out to =zig build=.
+
+=ghostel-module-directory= sits outside straight's tree so a package rebuild
+cannot delete the module while Emacs has it mapped.
+    #+BEGIN_SRC elisp
+  (use-package ghostel
+    :defer t
+    :init
+    ;; Module lives outside straight's tree so a package rebuild can't delete
+    ;; it while Emacs has it mapped.  `download' takes the prebuilt module from
+    ;; the GitHub release rather than shelling out to `zig build': ghostel pins
+    ;; Zig exactly, and on Zig 0.16.0 the macOS 26+ SDK breaks the bundled
+    ;; libc++ build (its math.h wants the clang 21 __need_infinity_nan
+    ;; protocol, which Zig's clang 20 float.h doesn't implement).
+    (setq ghostel-module-directory (expand-file-name "ghostel/" user-emacs-directory)
+          ghostel-module-auto-install 'download))
+    #+END_SRC
+
+*** Comint integration
+Replaces comint's ANSI handling with the libghostty VT parser: full SGR
+(256 / truecolor, curly and coloured underlines), OSC 8 hyperlinks, and OSC 7
+directory tracking without =shell-dirtrack-mode=. Applies to every
+comint-derived buffer, =inf-ruby= included. Cursor-positioning sequences are
+still dropped -- comint is a line-append buffer, so =htop= and friends need a
+real =M-x ghostel=.
+
+Hooking =comint-mode= rather than enabling =ghostel-comint-global-mode= gets
+the same coverage -- derived modes run their parent's hook -- while keeping
+the load lazy: nothing is pulled in until the first comint buffer exists.
+=:after ghostel= would instead leave shell buffers on stock =ansi-color= until
+a terminal happened to be opened.
+    #+BEGIN_SRC elisp
+  (use-package ghostel-comint
+    :straight nil                    ; ships inside the ghostel package
+    :defer t
+    :hook (comint-mode . ghostel-comint-mode))
+    #+END_SRC
+
+*** Compilation integration
+Routes =compile=, =recompile= and =project-compile= through a real PTY, so
+progress bars and colour behave as they do in an interactive shell.
+
+This advises =compilation-start=, so it also captures =F5= and anything else
+that reaches =compile= internally.
+
+The advice has to be armed *before* the first =compile=, which rules out
+=:after ghostel= -- that would leave the hijack inert until something had
+already opened a terminal. Loading the native module is not worth paying for
+at init either, so it arms on an idle timer, in the same spirit as the other
+deferred modules here.
+
+Guarded on the module actually being present: this config is shared with
+machines that have none, and there the advice would break =compile= outright
+rather than falling back.
+No dedicated keys: =general='s =my-leader-def= owns the whole =C-c= prefix
+(=C-c c= is its word-count group), and with the advice armed there is nothing
+left to bind for -- =compile=, =recompile=, =project-compile= and =F5= all
+already route through ghostel, and =C-u M-x compile= reaches the interactive
+variant. =ghostel-compile= / =ghostel-recompile= stay available via =M-x=.
+    #+BEGIN_SRC elisp
+  (use-package ghostel-compile
+    :straight nil                    ; ships inside the ghostel package
+    :defer t
+    :config
+    (ghostel-compile-global-mode 1))
+
+  ;; Loading the feature fires the `:config' above, which arms the advice.
+  (run-with-idle-timer
+   3 nil
+   (lambda ()
+     (when (file-exists-p
+            (expand-file-name (concat "ghostel-module" module-file-suffix)
+                              ghostel-module-directory))
+       (require 'ghostel-compile nil t))))
+    #+END_SRC
+
+*** Consult integration
+Adds a =Ghostel= group to =consult-bookmark= (narrow with =g=), ghostel sources
+to =consult-buffer=, and makes =consult-line= match across soft line wraps in
+ghostel buffers. With a prefix arg the pickers create a new terminal.
+
+=consult-ghostel= is a separate MELPA package; its recipe is recent, so a stale
+recipe checkout needs =M-x straight-pull-recipe-repositories= to resolve it.
+
+Two bindings shadow existing ones on purpose: =C-x m= takes over from
+=compose-mail= (unused here), and =C-c h= is =consult-history= globally but
+=consult-ghostel-history= inside a terminal -- the same command for the
+shell's own history rather than Emacs'.
+
+Upstream suggests an =after-init= hook for =consult-ghostel-mode=, which would
+pull =ghostel= and =consult= in at startup. Loading is left on demand instead,
+so the mode arms on first use of a binding below; the tradeoff is that ghostel
+sources are absent from =consult-buffer= until something has loaded ghostel.
+The two keymap bindings wait on their own maps rather than going through
+=:bind :map=, which would need =project= and =ghostel= already loaded.
+    #+BEGIN_SRC elisp
+  (use-package consult-ghostel
+    :defer t
+    :bind ("C-x m" . consult-ghostel)
+    :config
+    (consult-ghostel-mode 1)
+    (with-eval-after-load 'project
+      (define-key project-prefix-map (kbd "m") #'consult-ghostel-project))
+    (with-eval-after-load 'ghostel
+      (define-key ghostel-semi-char-mode-map (kbd "C-c h") #'consult-ghostel-history)))
+    #+END_SRC
+
+
 ** Teh requires
 This is kinda like that part in the bible with all the begats...
 #+BEGIN_SRC elisp

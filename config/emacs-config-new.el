@@ -1139,7 +1139,48 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package terraform-mode :defer t)
 (use-package eglot-java :defer t)
 (use-package visual-fill :defer t)
-(use-package ghostel :defer t)                        ; see ari-custom fix
+
+(use-package ghostel
+  :defer t
+  :init
+  ;; Module lives outside straight's tree so a package rebuild can't delete
+  ;; it while Emacs has it mapped.  `download' takes the prebuilt module from
+  ;; the GitHub release rather than shelling out to `zig build': ghostel pins
+  ;; Zig exactly, and on Zig 0.16.0 the macOS 26+ SDK breaks the bundled
+  ;; libc++ build (its math.h wants the clang 21 __need_infinity_nan
+  ;; protocol, which Zig's clang 20 float.h doesn't implement).
+  (setq ghostel-module-directory (expand-file-name "ghostel/" user-emacs-directory)
+        ghostel-module-auto-install 'download))
+
+(use-package ghostel-comint
+  :straight nil                    ; ships inside the ghostel package
+  :defer t
+  :hook (comint-mode . ghostel-comint-mode))
+
+(use-package ghostel-compile
+  :straight nil                    ; ships inside the ghostel package
+  :defer t
+  :config
+  (ghostel-compile-global-mode 1))
+
+;; Loading the feature fires the `:config' above, which arms the advice.
+(run-with-idle-timer
+ 3 nil
+ (lambda ()
+   (when (file-exists-p
+          (expand-file-name (concat "ghostel-module" module-file-suffix)
+                            ghostel-module-directory))
+     (require 'ghostel-compile nil t))))
+
+(use-package consult-ghostel
+  :defer t
+  :bind ("C-x m" . consult-ghostel)
+  :config
+  (consult-ghostel-mode 1)
+  (with-eval-after-load 'project
+    (define-key project-prefix-map (kbd "m") #'consult-ghostel-project))
+  (with-eval-after-load 'ghostel
+    (define-key ghostel-semi-char-mode-map (kbd "C-c h") #'consult-ghostel-history)))
 
 (use-package inf-ruby
   :defer 2)
