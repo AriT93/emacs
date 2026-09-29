@@ -489,6 +489,11 @@ fall back on and must use Emacs loopback pinentry instead."
   :custom-face
   (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
 
+(use-package transpose-frame
+  :defer t
+  :commands (transpose-frame flip-frame flop-frame rotate-frame
+             rotate-frame-clockwise rotate-frame-anticlockwise))
+
 (use-package magit
   :defer t  ; Lazy-load magit - only load when git commands are used
   :commands (magit-status magit-dispatch magit-file-dispatch))

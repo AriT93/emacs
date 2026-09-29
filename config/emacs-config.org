@@ -566,6 +566,11 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
     :custom-face
     (aw-leading-char-face ((t (:height 3.0 :foreground "dodgerblue")))))
+
+  (use-package transpose-frame
+    :defer t
+    :commands (transpose-frame flip-frame flop-frame rotate-frame
+               rotate-frame-clockwise rotate-frame-anticlockwise))
 #+END_SRC
 ** Git
 #+BEGIN_SRC elisp
