@@ -171,7 +171,6 @@
       mml-secure-openpgp-encrypt-to-self  t     ;    "
       mml-secure-openpgp-sign-with-sender t     ;    "
       epg-user-id "gpg_key_id"                  ;    "
-      epg-gpg-program "gpg2"                    ; program for encryption
       )
   (provide 'mail-config-new)
 ;;; mail-config-new.el ends here

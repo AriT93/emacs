@@ -168,7 +168,59 @@ config file [[file:load-path-config.org][load-path-config]]
 
 (add-hook 'emacs-startup-hook 'ensure-gpg-agent-running)
 
-(setq epg-gpg-program "gpg2")
+;; Pick the newest gpg on this machine, by absolute path.
+;;
+;; This config is shared across machines (Apple Silicon Mac, Intel Mac, the
+;; headless Linux writer-deck, work), so the binary cannot be hard-coded.  It
+;; also cannot be left to epg: `epg-config--program-alist' probes "gpg2" before
+;; "gpg", which on a Mac with GPG Suite installed lands on MacGPG2.
+;;
+;; MacGPG2 matters because GPG Suite tracks the GnuPG 2.2 LTS branch, and its
+;; gpg 2.2.44 does not emit the BEGIN_ENCRYPTION status line until after it has
+;; read its stdin -- while `epg-start-encrypt' waits for that line *before*
+;; sending the plaintext.  The two deadlock, so saving any .gpg file (notably
+;; ~/.authinfo.gpg) hangs forever with no error.  Decryption never uses that
+;; handshake, which is why reading the file always worked.  GnuPG 2.5 emits the
+;; line immediately.
+;;
+;; Comparing versions rather than blacklisting MacGPG2 by path means this keeps
+;; working if GPG Suite ever ships a newer engine, and needs no per-OS branch.
+(defun ari/gpg-version (program)
+  "Return the GnuPG version PROGRAM reports, or nil if it is not usable."
+  (ignore-errors
+    (with-temp-buffer
+      (when (eq 0 (call-process program nil '(t nil) nil "--version"))
+        (goto-char (point-min))
+        (when (re-search-forward "^gpg (GnuPG[^)]*) \\([0-9.]+\\)" nil t)
+          (match-string 1))))))
+
+(defun ari/newest-gpg ()
+  "Absolute path of the newest gpg found, or nil.
+Candidates are the usual per-platform locations plus whatever is on
+`exec-path'.  Duplicates collapse by `file-truename' -- /usr/local/bin/gpg
+is a symlink into /usr/local/MacGPG2, so it would otherwise be probed
+twice -- but the path we hand to epg is the stable one, not the resolved
+one, so a `brew upgrade gnupg' does not leave us pointing into a Cellar
+directory that has been replaced."
+  (let (seen versioned)
+    (dolist (path (list "/opt/homebrew/bin/gpg"           ; Apple Silicon brew
+                        "/usr/local/bin/gpg"              ; Intel brew
+                        "/usr/bin/gpg"                    ; Linux distro
+                        "/usr/local/MacGPG2/bin/gpg2"     ; GPG Suite
+                        (executable-find "gpg")
+                        (executable-find "gpg2")))
+      (when (and path (file-executable-p path))
+        (let ((true (file-truename path)))
+          (unless (member true seen)
+            (push true seen)
+            (when-let* ((v (ari/gpg-version path)))
+              (push (cons path v) versioned))))))
+    (car (car (sort versioned
+                    (lambda (a b) (version< (cdr b) (cdr a))))))))
+
+(when-let* ((gpg (ari/newest-gpg)))
+  (setq epg--configurations nil)          ; drop any configuration epg cached
+  (customize-set-variable 'epg-gpg-program gpg))
 (setq auth-sources '("~/.authinfo.gpg"))
 (setq auth-source-cache-expiry 3600)
 (setq auth-source-debug nil)
