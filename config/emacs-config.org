@@ -731,6 +731,15 @@ Use Ivy, counsel and Swiper(no swiping!) for isearch
     (setq doom-modeline-vcs-icon t)
     (setq doom-modeline-vcs-max-length 40)
     (setq doom-modeline-battery nil)
+    ;; Sans modeline. doom-modeline right-aligns by measured pixel width, so a
+    ;; proportional font lines up fine. Family only (not :inherit variable-pitch)
+    ;; so the modeline keeps its own height.
+    (dolist (face '(mode-line mode-line-active mode-line-inactive))
+      (set-face-attribute face nil :family "Helvetica"))
+    ;; doom-modeline only refreshes its checker segment on flymake reports, so a
+    ;; backend that gets disabled (untrusted file, failed server...) left the
+    ;; segment blank instead of showing the warning icon.
+    (advice-add 'flymake--disable-backend :after #'doom-modeline-update-flymake)
     (doom-modeline-mode 1))
 
   ;; gnutls loads automatically when needed
@@ -2801,9 +2810,33 @@ To install LanguageTool on a new machine, run: =~/emacs/site/languagetool/setup.
     ;; (here, an `en/'). Only passed if the data is actually present, so the server
     ;; still starts on machines without the ~13GB dataset downloaded.
     (let ((ngram-dir (expand-file-name "~/emacs/site/languagetool/ngrams")))
-      (when (file-directory-p (expand-file-name "en" ngram-dir))
+      ;; Probe a data file, not just `en/': a half-extracted en.zip leaves the dir
+      ;; but makes every check fail with HTTP 500 (NoSuchFileException).
+      (when (file-exists-p (expand-file-name "en/1grams/_1p_Lucene41_0.tim" ngram-dir))
         (setq flymake-languagetool-server-args (list "--languageModel" ngram-dir))))
+    ;; LanguageTool 6.x needs Java 17+, but the `java' on PATH may be older (the
+    ;; server then dies at launch and flymake waits forever). Use a 17+ JDK when
+    ;; one is installed: macOS java_home first, then Homebrew's openjdk.
+    (let ((java (seq-find #'file-executable-p
+                          (append
+                           (when (eq system-type 'darwin)
+                             (ignore-errors
+                               (list (expand-file-name
+                                      "bin/java"
+                                      (car (process-lines "/usr/libexec/java_home" "-F" "-v" "17+"))))))
+                           '("/opt/homebrew/opt/openjdk/bin/java"
+                             "/opt/homebrew/opt/openjdk@21/bin/java"
+                             "/opt/homebrew/opt/openjdk@17/bin/java")))))
+      (when java
+        (setq flymake-languagetool-server-command
+              (list java "-cp" ari/languagetool-server-jar
+                    "org.languagetool.server.HTTPServer"
+                    "--port" flymake-languagetool-server-port))))
     :config
+    ;; Emacs 30+ skips flymake backends on "untrusted" files (anything outside
+    ;; `trusted-content', e.g. org-roam notes). LanguageTool only posts buffer text
+    ;; to a local HTTP server and never executes it, so it is safe everywhere.
+    (put 'flymake-languagetool--checker 'flymake-always-safe t)
     ;; Skip org directive lines (#+TITLE:, #+OPTIONS:, #+LATEX_HEADER:, #+LATEX: …),
     ;; which all carry the `org-meta-line' face — otherwise LaTeX headers and
     ;; directives raise grammar false positives. Export-block bodies are already
