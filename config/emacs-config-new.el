@@ -222,6 +222,7 @@ fall back on and must use Emacs loopback pinentry instead."
 (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
 (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
 (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
+(set-face-attribute 'fixed-pitch nil :family "Cascadia Code")
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
 (show-paren-mode 1)
@@ -814,6 +815,22 @@ fall back on and must use Emacs loopback pinentry instead."
   ;; org-variable-pitch removed — it fires face-checks on every fontification
   ;; and errors 300+ times per session when org-indent-mode is not active
   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+
+;; Sans prose, monospace code. mixed-pitch remaps `default' to
+;; `variable-pitch' once per buffer and pins code/table/meta faces to
+;; `fixed-pitch' — no per-fontification work like org-variable-pitch.
+(use-package mixed-pitch
+  :hook (org-mode . mixed-pitch-mode)
+  :config
+  ;; Keep indentation and hidden stars monospace so org-indent lines up.
+  (dolist (face '(org-indent org-hide))
+    (add-to-list 'mixed-pitch-fixed-pitch-faces face)))
+
+;; Refill the paragraph as you type, so editing mid-paragraph doesn't
+;; leave it ragged (auto-fill only breaks at the end of a line). Uses
+;; `org-fill-paragraph', which leaves src blocks and tables alone.
+(use-package aggressive-fill-paragraph
+  :hook (org-mode . aggressive-fill-paragraph-mode))
 
 (use-package biblio)
 (use-package org-ref
@@ -2464,6 +2481,7 @@ directory org-noter itself offers)."
 (set-face-attribute 'tab-bar-tab nil :box '(:line-width 4 :color "#070019" :style nil))
 (set-face-attribute 'tab-bar-tab-inactive nil :box '(:line-width 4 :color "#4a4759" :style nil))
 (set-face-attribute 'variable-pitch nil :weight 'regular :height 160 :family "Helvetica")
+(set-face-attribute 'fixed-pitch nil :family "Cascadia Code")
 (set-face-attribute 'show-paren-match nil :foreground "CadetBlue")
 
 (provide 'emacs-config-new)
