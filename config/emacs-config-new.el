@@ -819,8 +819,16 @@ fall back on and must use Emacs loopback pinentry instead."
 ;; Sans prose, monospace code. mixed-pitch remaps `default' to
 ;; `variable-pitch' once per buffer and pins code/table/meta faces to
 ;; `fixed-pitch' — no per-fontification work like org-variable-pitch.
+;; Own face so mu4e/eww keep `variable-pitch'. "Sans Serif" is the
+;; machine's generic sans (fontconfig on Linux, Tahoma on this Mac via
+;; `face-font-family-alternatives'); 180 = 2pt over the default.
+(defface ari/org-prose '((t :family "Sans Serif" :height 180))
+  "Proportional face for org prose (via mixed-pitch).")
 (use-package mixed-pitch
   :hook (org-mode . mixed-pitch-mode)
+  :custom
+  (mixed-pitch-face 'ari/org-prose)
+  (mixed-pitch-set-height t)
   :config
   ;; Keep indentation and hidden stars monospace so org-indent lines up.
   (dolist (face '(org-indent org-hide))
