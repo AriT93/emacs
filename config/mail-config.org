@@ -129,11 +129,14 @@
             ("/gmail/[Gmail]/.Trash"     . ?t)
             ("/yahoo/Inbox" . ?w)))
 
-    ;; allow for updating mail using 'U' in the main view:
-    (use-package pinentry)
-    (setq mu4e-get-mail-command "mbsync -a")
-    (setq mu4e-get-mail-command (format "INSIDE_EMACS=%s mbsync -a" emacs-version) epa-pinentry-mode 'ask)
-    (pinentry-start)
+    ;; allow for updating mail using 'U' in the main view.
+    ;; Pinentry is set up per-platform in emacs-config (Emacs pinentry only
+    ;; on the headless writer-deck); starting it here unconditionally made
+    ;; the Mac prompt in the minibuffer instead of using the keychain.
+    (setq mu4e-get-mail-command
+          (if (ari/headless-linux-p)
+              (format "INSIDE_EMACS=%s mbsync -a" emacs-version)
+            "mbsync -a"))
     (require `mu4e-icalendar)
     (require 'gnus-icalendar)
     (gnus-icalendar-setup)
