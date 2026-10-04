@@ -821,8 +821,11 @@ fall back on and must use Emacs loopback pinentry instead."
 ;; `fixed-pitch' — no per-fontification work like org-variable-pitch.
 ;; Own face so mu4e/eww keep `variable-pitch'. "Sans Serif" is the
 ;; machine's generic sans (fontconfig on Linux, Tahoma on this Mac via
-;; `face-font-family-alternatives'); 180 = 2pt over the default.
-(defface ari/org-prose '((t :family "Sans Serif" :height 180))
+;; `face-font-family-alternatives'); 1.125 = 18pt over the 16pt default.
+;; Relative on purpose: olivetti treats an integer :height on the
+;; remapped `default' as a width multiplier (180 -> x1.8), which
+;; pushed the body wider than the window and left no margins.
+(defface ari/org-prose '((t :family "Sans Serif" :height 1.125))
   "Proportional face for org prose (via mixed-pitch).")
 (use-package mixed-pitch
   :hook (org-mode . mixed-pitch-mode)
@@ -1150,7 +1153,7 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
 (use-package olivetti
   :after org
   :config
-  (setq olivetti-minimum-body-width 120))
+  (setq olivetti-minimum-body-width 40))
 
 ;; logos: focus mode for drafting. Headings count as "pages", so
 ;; C-x n n narrows to the current scene/chapter and C-x ]/[ move between
