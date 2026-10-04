@@ -2486,10 +2486,26 @@ between the front-matter ~#+END_EXPORT~ block and the ~\theend~ marker, so
 the contact block, title, and LaTeX scaffolding are excluded. The count is
 rounded to the nearest 100 and written back into the "About N words" line.
 #+BEGIN_SRC elisp
+(defun ari/manuscript--noexport-words (beg end)
+  "Words between BEG and END that sit in :noexport: subtrees.
+Children of a :noexport: headline inherit the tag, so subtrees already
+counted as part of a parent are skipped."
+  (let ((total 0) (done 0))
+    (org-map-entries
+     (lambda ()
+       (let ((s (max (point) beg))
+             (e (min (save-excursion (org-end-of-subtree t t)) end)))
+         (when (and (> s done) (< s e))
+           (setq total (+ total (count-words s e))
+                 done e))))
+     "noexport")
+    total))
+
 (defun ari/manuscript-wc ()
   "Count the story body of a manuscript org buffer and update \"About N words\".
 The body is the region between the front-matter `#+END_EXPORT' block and the
-`\\theend' marker.  The result is rounded to the nearest 100 and written into
+`\\theend' marker (or the end of the buffer), minus any :noexport:
+subtrees (outlines, notes, cut scenes).  The result is rounded to the nearest 100 and written into
 the \"About N words\" line of the upper-right word-count slot.  Returns the
 raw (unrounded) count."
   (interactive)
@@ -2498,15 +2514,18 @@ raw (unrounded) count."
                        (if (re-search-forward "^#\\+END_EXPORT" nil t)
                            (point) (point-min))))
            (end (progn (goto-char (point-max))
-                       (if (re-search-backward "\\\\theend" nil t)
+                       ;; Bounded by BEG so the \newcommand{\theend} in the
+                       ;; LaTeX header can't be mistaken for the end marker.
+                       (if (re-search-backward "\\\\theend" beg t)
                            (point) (point-max))))
-           (raw (count-words beg end))
+           (raw (- (count-words beg end) (ari/manuscript--noexport-words beg end)))
            (n   (* 100 (max 1 (round raw 100))))
            (s   (number-to-string n)))
       (while (string-match "\\([0-9]\\)\\([0-9]\\{3\\}\\)\\(,\\|$\\)" s)
         (setq s (replace-match "\\1,\\2\\3" nil nil s)))
       (goto-char (point-min))
-      (when (re-search-forward "About [0-9,]+ words" nil t)
+      ;; Also matches LaTeX's 1{,}000 form of the thousands separator.
+      (when (re-search-forward "About [0-9,{}]+ words" nil t)
         (replace-match (format "About %s words" s)))
       (message "Story body: %d words (rounded to %s)" raw s)
       raw)))
