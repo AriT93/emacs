@@ -804,10 +804,27 @@ and integrates natively with eglot. No org-lint overhead.
     ;; Disable flymake in org-mode (no need for org-lint overhead)
     (add-hook 'org-mode-hook (lambda () (flymake-mode -1))))
 
-  ;; ESLint support for JS/TS modes
+  ;; ESLint support for JS/TS modes.
+  ;; flymake-eslint-enable signals an error when eslint isn't on exec-path
+  ;; (e.g. Yarn PnP projects like Exercism, which have no node_modules/.bin).
+  ;; An error in a major-mode hook aborts `run-mode-hooks' before
+  ;; global-font-lock turns font-lock on, so the buffer comes up unhighlighted
+  ;; until a manual `font-lock-update'. Prefer the project's Yarn SDK eslint,
+  ;; and never let a missing eslint escape the hook.
+  (defun ari/flymake-eslint-maybe-enable ()
+    "Enable flymake-eslint if an eslint executable can be found."
+    (let* ((root (locate-dominating-file default-directory ".yarn/sdks/eslint"))
+           (sdk (and root (expand-file-name ".yarn/sdks/eslint/bin/eslint.js" root)))
+           (exe (if (and sdk (file-executable-p sdk)) sdk (executable-find "eslint"))))
+      (when exe
+        (setq-local flymake-eslint-executable-name exe)
+        (condition-case err
+            (flymake-eslint-enable)
+          (error (message "flymake-eslint: %s" (error-message-string err)))))))
+
   (use-package flymake-eslint
     :hook ((js-mode js-ts-mode typescript-ts-mode jtsx-jsx-mode rjsx-mode)
-           . flymake-eslint-enable))
+           . ari/flymake-eslint-maybe-enable))
 
   ;; Ruby: rubocop backend is built-in to Emacs 29+, eglot provides LSP diagnostics
 #+END_SRC
@@ -2504,6 +2521,21 @@ who knows it might catch on
     (when (fboundp 'eglot-semantic-tokens-mode)
       (add-hook 'eglot-managed-mode-hook #'eglot-semantic-tokens-mode))
 
+    ;; Yarn PnP projects (Exercism's TS track) have no node_modules, so the
+    ;; global tsserver can't resolve deps ("Cannot find module '@jest/globals'").
+    ;; After `yarn dlx @yarnpkg/sdks base', point typescript-language-server
+    ;; at the project's PnP-aware tsserver.
+    (defun ari/typescript-eglot-contact (&rest _)
+      (let* ((root (locate-dominating-file default-directory ".yarn/sdks/typescript"))
+             (tsserver (and root (expand-file-name
+                                  ".yarn/sdks/typescript/lib/tsserver.js" root))))
+        `("typescript-language-server" "--stdio"
+          ,@(when (and tsserver (file-exists-p tsserver))
+              `(:initializationOptions (:tsserver (:path ,tsserver)))))))
+    (add-to-list 'eglot-server-programs
+                 '((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode typescript-mode)
+                   . ari/typescript-eglot-contact))
+
     ;; Key bindings
     :bind (:map eglot-mode-map
                 ("C-c l f" . eglot-format)
@@ -2715,6 +2747,276 @@ who knows it might catch on
   (setq c-ts-mode-indent-offset 4)
   (setq c++-ts-mode-indent-offset 4)
 #+END_SRC
+** Exercism
+exercism.el hardcodes =https://exercism.org/api/v2/...=, which sits behind a
+Cloudflare bot challenge: every non-browser client gets a 403 ("Just a
+moment...") whatever the User-Agent. The same API is served unchallenged
+from =https://api.exercism.org/v2/=, so rewrite the URL on the way out.
+#+begin_src elisp
+  (defun ari/exercism-api-url (args)
+    "Rewrite exercism.org/api/v2 URLs in `request' ARGS to api.exercism.org."
+    (let ((url (car args)))
+      (if (and (stringp url)
+               (string-prefix-p "https://exercism.org/api/v2/" url))
+          (cons (concat "https://api.exercism.org/v2/"
+                        (substring url (length "https://exercism.org/api/v2/")))
+                (cdr args))
+        args)))
+
+  (use-package exercism
+    ;; exercism.el has no autoload cookies, so list every entry point.
+    :commands (exercism exercism-configure exercism-set-track
+               exercism-open-exercise exercism-open-exercise-offline
+               exercism-download-all-unlocked-exercises exercism-run-tests
+               exercism-submit exercism-submit-then-open-in-browser
+               exercism-cli-version)
+    :config
+    (advice-add 'request :filter-args #'ari/exercism-api-url)
+    (advice-add 'exercism--download-exercise :around
+                #'ari/exercism-setup-after-download)
+    (advice-add 'exercism--list-exercises :override
+                #'ari/exercism-list-exercises)
+    (advice-add 'exercism--exercise-annotation-fn :around
+                #'ari/exercism-annotate-status))
+#+end_src
+
+exercism.el lists exercises anonymously, so it can't tell what you've done.
+With the CLI token and =?sideload=solutions=, the API also returns your
+solutions, each with a =status= (started, iterated, completed, published).
+Merge that into each exercise as =status= and show it in the
+=exercism-open-exercise= picker.
+#+begin_src elisp
+  (defun ari/exercism-api-token ()
+    "Return the API token from the exercism CLI config, or nil."
+    (ignore-errors
+      (alist-get 'token (json-read-file exercism-config-path))))
+
+  (defun ari/exercism-list-exercises (track-slug &optional only-unlocked?)
+    "Replacement for `exercism--list-exercises' that adds solution status.
+Each exercise alist gets a `status' entry (nil when not started)."
+    (promise-new
+     (lambda (resolve reject)
+       (let ((token (ari/exercism-api-token)))
+         (request
+           (concat "https://api.exercism.org/v2/tracks/" track-slug
+                   "/exercises?sideload=solutions")
+           :headers (and token `(("Authorization" . ,(concat "Bearer " token))))
+           :parser #'json-read
+           :error (cl-function
+                   (lambda (&key error-thrown &allow-other-keys)
+                     (funcall reject error-thrown)))
+           :success
+           (cl-function
+            (lambda (&key data &allow-other-keys)
+              (let ((statuses (make-hash-table :test #'equal)))
+                (seq-doseq (s (alist-get 'solutions data))
+                  (puthash (alist-get 'slug (alist-get 'exercise s))
+                           (alist-get 'status s) statuses))
+                (funcall
+                 resolve
+                 (seq-keep
+                  (lambda (ex)
+                    (when (or (not only-unlocked?) (eq (alist-get 'is_unlocked ex) t))
+                      (cons (cons 'status (gethash (alist-get 'slug ex) statuses))
+                            ex)))
+                  (alist-get 'exercises data)))))))))))
+
+  (defun ari/exercism-annotate-status (orig exercise)
+    "Prefix exercism's picker annotation with the solution status."
+    (let* ((data (cadr (assoc exercise minibuffer-completion-table)))
+           (status (alist-get 'status data)))
+      (concat " "
+              (propertize (format "%-11s"
+                                  (pcase status
+                                    ((or "completed" "published") (concat "✓ " status))
+                                    ((or "started" "iterated") (concat "… " status))
+                                    (_ "")))
+                          'face (pcase status
+                                  ((or "completed" "published") 'success)
+                                  ((or "started" "iterated") 'warning)
+                                  (_ 'shadow)))
+              (funcall orig exercise))))
+#+end_src
+
+JS/TS exercises use Yarn PnP: they need =yarn install= before tests or the
+LSP work, plus =@yarnpkg/sdks base= so eglot/flymake can find the
+PnP-aware tsserver and eslint (see the eglot and flymake-eslint blocks).
+exercism.el has no post-download hook, so advise the download and run the
+setup once it finishes. =M-x ari/exercism-setup-exercise= does the same for
+an exercise that's already on disk.
+
+=yarn dlx @yarnpkg/sdks base= is broken by @yarnpkg/core 4.9.2 (published
+with a =patch:got@...#~/.yarn/patches/...= dependency that only exists in
+the yarn repo). Until that's fixed, sdks runs from a small local project
+that pins core to 4.9.1; it's created on first use. Once a fixed core is
+out, set =ari/yarn-sdks-command= to ="yarn dlx @yarnpkg/sdks base"=.
+#+begin_src elisp
+  (defvar ari/yarn-sdks-runner-dir
+    (expand-file-name "~/.local/share/yarn-sdks-runner/")
+    "Local project that installs @yarnpkg/sdks with a pinned @yarnpkg/core.")
+
+  (defvar ari/yarn-sdks-command nil
+    "Shell command that generates .yarn/sdks in the current directory.
+nil means use the pinned runner in `ari/yarn-sdks-runner-dir'.")
+
+  (defun ari/yarn-sdks--command ()
+    "Return the sdks shell command, bootstrapping the pinned runner if needed."
+    (or ari/yarn-sdks-command
+        (let* ((dir ari/yarn-sdks-runner-dir)
+               (cli (expand-file-name "node_modules/@yarnpkg/sdks/lib/cli.js" dir)))
+          (if (file-exists-p cli)
+              (format "yarn node %s base" (shell-quote-argument cli))
+            (make-directory dir t)
+            (with-temp-file (expand-file-name "package.json" dir)
+              (insert "{ \"name\": \"sdks-runner\", \"private\": true,\n"
+                      "  \"packageManager\": \"yarn@4.5.1\",\n"
+                      "  \"dependencies\": { \"@yarnpkg/sdks\": \"^3.3.1\" },\n"
+                      "  \"resolutions\": { \"@yarnpkg/core\": \"4.9.1\" } }\n"))
+            (with-temp-file (expand-file-name ".yarnrc.yml" dir)
+              (insert "nodeLinker: node-modules\n"))
+            (with-temp-file (expand-file-name "yarn.lock" dir))
+            (format "(cd %s && yarn install) && yarn node %s base"
+                    (shell-quote-argument dir) (shell-quote-argument cli))))))
+
+  (defun ari/exercism-setup-exercise (dir)
+    "Run yarn install and generate Yarn SDKs for the exercise in DIR.
+Does nothing unless DIR has a package.json. Reconnects eglot for the
+exercise when done so it picks up the PnP-aware tsserver."
+    (interactive
+     (list (or (locate-dominating-file default-directory "package.json")
+               (read-directory-name "Exercise directory: "))))
+    (let ((default-directory (file-name-as-directory (expand-file-name dir))))
+      (if (not (file-exists-p "package.json"))
+          (message "[exercism] %s has no package.json, skipping yarn setup" dir)
+        (message "[exercism] yarn install + sdks in %s..." dir)
+        (let ((buf (get-buffer-create "*exercism-setup*")))
+          (with-current-buffer buf
+            (goto-char (point-max))
+            (insert (format "\n== %s\n" default-directory)))
+          (set-process-sentinel
+           (start-process-shell-command
+            "exercism-setup" buf
+            (concat "corepack yarn install && " (ari/yarn-sdks--command)))
+           (lambda (proc _event)
+             (when (memq (process-status proc) '(exit signal))
+               (if (/= (process-exit-status proc) 0)
+                   (message "[exercism] setup failed in %s, see *exercism-setup*" dir)
+                 (message "[exercism] setup done in %s" dir)
+                 (let (servers)
+                   (dolist (b (buffer-list))
+                     (with-current-buffer b
+                       (when (and buffer-file-name
+                                  (file-in-directory-p buffer-file-name dir)
+                                  (fboundp 'eglot-current-server)
+                                  (eglot-current-server))
+                         (cl-pushnew (eglot-current-server) servers))))
+                   (mapc #'eglot-reconnect servers))))))))))
+
+  (defun ari/exercism-setup-after-download (orig exercise-slug track-slug)
+    "Around advice for `exercism--download-exercise': set up the exercise after."
+    (promise-then (funcall orig exercise-slug track-slug)
+                  (lambda (result)
+                    (ari/exercism-setup-exercise
+                     (expand-file-name exercise-slug
+                                       (expand-file-name track-slug exercism--workspace)))
+                    result)))
+#+end_src
+** Jest
+=jest-test-mode= runs jest from the package.json root into a compilation
+buffer: =C-c C-t t= test at point, =C-c C-t n= this file, =C-c C-t p= whole
+project, =C-c C-t a= re-run last. Yarn PnP projects (Exercism) have no
+node_modules/.bin, so npx can't find jest there; use =yarn jest= instead.
+
+Exercism ships every test after the first as =xit=. =C-c C-t x= toggles
+it/xit (test/xtest, describe/xdescribe) on the block around point and adds
+the new name to the =@jest/globals= import if it's missing; =C-c C-t X=
+un-skips the whole file.
+#+begin_src elisp
+  (defun ari/jest-test-setup ()
+    "Enable `jest-test-mode', running jest through yarn in PnP projects."
+    (jest-test-mode 1)
+    (when (and buffer-file-name
+               (locate-dominating-file buffer-file-name ".pnp.cjs"))
+      (setq-local jest-test-command-string "corepack yarn %s jest %s %s")))
+
+  (defconst ari/jest--skip-pairs
+    '(("it" . "xit") ("test" . "xtest") ("describe" . "xdescribe"))
+    "Jest block functions and their skipped variants.")
+
+  (defun ari/jest--toggled-name (name)
+    (or (cdr (assoc name ari/jest--skip-pairs))
+        (car (rassoc name ari/jest--skip-pairs))))
+
+  (defun ari/jest--block-fn-node (node)
+    "Return the function identifier of NODE if it's a jest block call."
+    (when (equal (treesit-node-type node) "call_expression")
+      (let ((fn (treesit-node-child-by-field-name node "function")))
+        (and fn (equal (treesit-node-type fn) "identifier")
+             (ari/jest--toggled-name (treesit-node-text fn t))
+             fn))))
+
+  (defun ari/jest--replace-node (node text)
+    (save-excursion
+      (goto-char (treesit-node-start node))
+      (delete-region (treesit-node-start node) (treesit-node-end node))
+      (insert text)))
+
+  (defun ari/jest--ensure-import (name)
+    "Add NAME to the buffer's `import {...} from '@jest/globals'' if missing."
+    (when-let* ((imp (treesit-search-subtree
+                      (treesit-buffer-root-node)
+                      (lambda (n)
+                        (and (equal (treesit-node-type n) "import_statement")
+                             (string-match-p "@jest/globals" (treesit-node-text n t))))
+                      nil nil 1))
+                (named (treesit-search-subtree imp "named_imports")))
+      (unless (string-match-p (format "\\_<%s\\_>" (regexp-quote name))
+                              (treesit-node-text named t))
+        (save-excursion
+          (goto-char (1- (treesit-node-end named)))
+          (skip-chars-backward " \t\n")
+          (insert ", " name)))))
+
+  (defun ari/jest-toggle-skip ()
+    "Toggle the jest block around point between it/xit, test/xtest, describe/xdescribe."
+    (interactive)
+    (let* ((start (treesit-node-at (max (point-min)
+                                        (save-excursion (skip-chars-forward " \t") (point)))))
+           (call (treesit-parent-until
+                  start (lambda (n) (ari/jest--block-fn-node n)) t))
+           (fn (and call (ari/jest--block-fn-node call))))
+      (if (not fn)
+          (user-error "No it/test/describe block at point")
+        (let ((new (ari/jest--toggled-name (treesit-node-text fn t))))
+          (ari/jest--replace-node fn new)
+          (ari/jest--ensure-import new)
+          (message "%s" new)))))
+
+  (defun ari/jest-unskip-all ()
+    "Turn every xit/xtest/xdescribe in the buffer into it/test/describe."
+    (interactive)
+    (let* ((fns (seq-filter
+                 (lambda (n) (rassoc (treesit-node-text n t) ari/jest--skip-pairs))
+                 (treesit-query-capture
+                  (treesit-buffer-root-node)
+                  '((call_expression function: (identifier) @fn)) nil nil t)))
+           (names (seq-uniq (mapcar (lambda (n) (ari/jest--toggled-name
+                                                  (treesit-node-text n t)))
+                                    fns))))
+      ;; Replace from the end so earlier node positions stay valid.
+      (dolist (fn (sort fns (lambda (a b) (> (treesit-node-start a)
+                                              (treesit-node-start b)))))
+        (ari/jest--replace-node fn (ari/jest--toggled-name (treesit-node-text fn t))))
+      (mapc #'ari/jest--ensure-import names)
+      (message "Un-skipped %d block(s)" (length fns))))
+
+  (use-package jest-test-mode
+    :commands (jest-test-mode)
+    :hook ((typescript-ts-mode tsx-ts-mode js-ts-mode js-mode) . ari/jest-test-setup)
+    :bind (:map jest-test-mode-map
+                ("C-c C-t x" . ari/jest-toggle-skip)
+                ("C-c C-t X" . ari/jest-unskip-all)))
+#+end_src
 ** Go Mode
 #+begin_src elisp
   (use-package go-mode
