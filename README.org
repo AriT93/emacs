@@ -6,7 +6,7 @@ pinned by a tracked lockfile (=config/straight-lockfile.el=).
 
 Full history and rationale: the org-roam note "Emacs Configuration
 Improvements Research (2025-2026)".
-
+adding a comment to test github
 * Setting up a machine
 The repo lives at =~/emacs= (not =~/.emacs.d=). Needs Emacs 30+, =git=, and
 network access to GitHub.
