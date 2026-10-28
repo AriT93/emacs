@@ -282,7 +282,7 @@ fall back on and must use Emacs loopback pinentry instead."
 (setq uniquify-min-dir-content 0)
 (electric-pair-mode 1)
 (setq cal-tex-diary t)
-(setq blog-root "/ssh:abturet@turetzky.org:~/blog/")
+(setq blog-repo "~/blog/")  ; a dedicated clone of ari/turetzky.org on branch master (see site/blog/blog.el)
 (add-hook 'diary-display-hook 'fancy-diary-display)
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'before-save-hook 'time-stamp)
