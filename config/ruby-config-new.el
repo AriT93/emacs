@@ -62,13 +62,15 @@
   ;; Use executable-find for cross-platform compatibility
   (let ((rbenv-path (executable-find "rbenv")))
     (when rbenv-path
-      (setq rbenv-executable rbenv-path)
-      ;; Derive installation dir from executable path
-      ;; e.g., /opt/homebrew/bin/rbenv -> /opt/homebrew
-      (setq rbenv-installation-dir
-            (file-name-directory
-             (directory-file-name
-              (file-name-directory rbenv-path))))))
+      (setq rbenv-executable rbenv-path)))
+  ;; rbenv-installation-dir is where versions/ and shims/ live (~/.rbenv by
+  ;; default), not the Homebrew prefix of the rbenv binary.
+  (setq rbenv-installation-dir (or (getenv "RBENV_ROOT") (expand-file-name "~/.rbenv/")))
+  ;; exec-path-from-shell skips .zshrc (where rbenv init runs), so add the
+  ;; shims ourselves; otherwise tools fall back to system Ruby 2.6.
+  (let ((shims (expand-file-name "shims" rbenv-installation-dir)))
+    (add-to-list 'exec-path shims)
+    (setenv "PATH" (concat shims path-separator (getenv "PATH"))))
   (global-rbenv-mode t))
 
 ;; (use-package autotest

@@ -1539,19 +1539,24 @@ values give a subtler highlight."
   :group 'org-noter
   :type 'number)
 
-(defcustom ari/org-noter-annotated-pdf-note-font "sans"
+(defcustom ari/org-noter-annotated-pdf-note-font nil
   "fontconfig pattern for the margin note font (Ghostscript backend),
-resolved with `fc-match' - the default \"sans\" is whatever the system's
-generic sans-serif is (Noto Sans here). Falls back to PostScript
-Helvetica if fontconfig isn't available."
+resolved with `fc-match', or nil (the default) for PostScript's built-in
+Helvetica - gs always has it (as Nimbus Sans), so it needs no fontconfig
+and looks the same regardless of which system fonts are installed. A
+pattern like \"sans\" resolves to whatever fontconfig can see, which
+varies (Noto Sans one week, Verdana the next). Falls back to Helvetica
+if fontconfig can't resolve the pattern."
   :group 'org-noter
-  :type 'string)
+  :type '(choice (const :tag "Helvetica (built-in)" nil) string))
 
 (defun ari/org-noter--fc-font (pattern)
   "Return (POSTSCRIPT-NAME . FILE) for fontconfig PATTERN, or nil."
   (let* ((out (and (executable-find "fc-match")
                    (with-temp-buffer
-                     (call-process "fc-match" nil t nil "-f" "%{postscriptname}|%{file}" pattern)
+                     ;; stderr discarded: a stale fontconfig cache makes fc-match warn there
+                     ;; ("Unable to revert mtime: ..."), which would corrupt the font name
+                     (call-process "fc-match" nil (list t nil) nil "-f" "%{postscriptname}|%{file}" pattern)
                      (buffer-string))))
          (parts (and out (split-string out "|"))))
     (when (and (= (length parts) 2) (file-exists-p (nth 1 parts)))
@@ -1563,8 +1568,10 @@ the PostScript names of its regular and bold faces, plus a `:'-separated
 directory list for gs's -sFONTPATH so `findfont' can load the system
 TrueType fonts by name. Falls back to (\"Helvetica\" \"Helvetica-Bold\"
 nil) when fontconfig can't resolve them."
-  (let ((reg (ari/org-noter--fc-font ari/org-noter-annotated-pdf-note-font))
-        (bold (ari/org-noter--fc-font (concat ari/org-noter-annotated-pdf-note-font ":bold"))))
+  (let ((reg (and ari/org-noter-annotated-pdf-note-font
+                  (ari/org-noter--fc-font ari/org-noter-annotated-pdf-note-font)))
+        (bold (and ari/org-noter-annotated-pdf-note-font
+                   (ari/org-noter--fc-font (concat ari/org-noter-annotated-pdf-note-font ":bold")))))
     (if (and reg bold)
         (list (car reg) (car bold)
               (string-join (delete-dups (list (file-name-directory (cdr reg))
@@ -2130,13 +2137,16 @@ specific included page."
               (setq content (concat (substring content 0 pstart) segment
                                     (substring content pend)))))))
       (with-temp-file ps-out (insert content)))
-    ;; The system TrueType font is found via -sFONTPATH and always embedded
-    ;; (subset), so the notes look the same in any viewer.
+    ;; The note font is always embedded (subset), so the notes look the same
+    ;; in any viewer: a system TrueType font is found via -sFONTPATH, and the
+    ;; default built-in Helvetica needs an empty NeverEmbed list, since
+    ;; pdfwrite otherwise leaves the base-14 fonts unembedded.
     (unless (zerop (apply #'call-process "gs" nil nil nil
                           `("-q" "-dNOPAUSE" "-dBATCH" "-dALLOWPSTRANSPARENCY"
                             ,@(and (nth 2 font) (list (concat "-sFONTPATH=" (nth 2 font))))
                             "-sDEVICE=pdfwrite" ,(concat "-sOutputFile=" out-file)
-                            ,ps-out)))
+                            "-c" "<< /NeverEmbed [ ] >> setdistillerparams"
+                            "-f" ,ps-out)))
       (error "gs pdfwrite failed"))
     (delete-directory work-dir t)))
 
