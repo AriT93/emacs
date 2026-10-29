@@ -1507,16 +1507,21 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   (markdown-toggle-markup-hiding 'toggle)
   (font-lock-add-keywords nil '((nb/unhide-current-line)) t)
   (add-hook 'post-command-hook #'nb/refontify-on-linemove nil t))
-:custom-face
-(markdown-header-delimiter-face ((t (:foreground "#616161" :height 0.9))))
-(markdown-header-face-1 ((t (:height 1.6  :foreground "#A3BE8C" :weight extra-bold :inherit markdown-header-face))))
-(markdown-header-face-2 ((t (:height 1.4  :foreground "#EBCB8B" :weight extra-bold :inherit markdown-header-face))))
-(markdown-header-face-3 ((t (:height 1.2  :foreground "#D08770" :weight extra-bold :inherit markdown-header-face))))
-(markdown-header-face-4 ((t (:height 1.15 :foreground "#BF616A" :weight bold :inherit markdown-header-face))))
-(markdown-header-face-5 ((t (:height 1.1  :foreground "#b48ead" :weight bold :inherit markdown-header-face))))
-(markdown-header-face-6 ((t (:height 1.05 :foreground "#5e81ac" :weight semi-bold :inherit markdown-header-face))))
+;; Set these in the `user' theme rather than via :custom-face. :custom-face
+;; only changes the face's default spec, which solarized-wombat-dark
+;; overrides, so the headers lost all their size and color.
+(custom-theme-set-faces
+ 'user
+ '(markdown-header-delimiter-face ((t (:foreground "#616161" :height 0.9))))
+ '(markdown-header-face-1 ((t (:height 1.6  :foreground "#A3BE8C" :weight extra-bold :inherit markdown-header-face))))
+ '(markdown-header-face-2 ((t (:height 1.4  :foreground "#EBCB8B" :weight extra-bold :inherit markdown-header-face))))
+ '(markdown-header-face-3 ((t (:height 1.2  :foreground "#D08770" :weight extra-bold :inherit markdown-header-face))))
+ '(markdown-header-face-4 ((t (:height 1.15 :foreground "#BF616A" :weight bold :inherit markdown-header-face))))
+ '(markdown-header-face-5 ((t (:height 1.1  :foreground "#b48ead" :weight bold :inherit markdown-header-face))))
+ '(markdown-header-face-6 ((t (:height 1.05 :foreground "#5e81ac" :weight semi-bold :inherit markdown-header-face)))))
 :hook
-(markdown-mode . abbrev-mode))
+(markdown-mode . abbrev-mode)
+(markdown-mode . visual-line-mode))
 
 (require 'dired-x)
 (setq dired-omit-files
@@ -2083,6 +2088,8 @@ directory org-noter itself offers)."
          (rust-ts-mode . eglot-ensure)
          (c-ts-mode . eglot-ensure)
          (c++-ts-mode . eglot-ensure)
+         (markdown-mode . eglot-ensure)
+         (markdown-ts-mode . eglot-ensure)
          ;; Keep legacy modes for compatibility
          (python-mode . eglot-ensure)
          (go-mode . eglot-ensure)
