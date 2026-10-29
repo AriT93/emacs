@@ -1903,8 +1903,13 @@ setting this up for roam and keeping deft for notes
     :init
     (setq notdeft-directory "~/Documents/org-roam/"
           notdeft-directories '("~/Documents/org-roam/")
+          notdeft-open-query-function #'notdeft-mode-open-query
           notdeft-xapian-program
-          (expand-file-name "~/dev/git/notdeft/xapian/notdeft-xapian")))
+          (expand-file-name "~/dev/git/notdeft/xapian/notdeft-xapian"))
+    :config
+    ;; Upstream split the `notdeft' command and its major mode into
+    ;; `notdeft-mode'; the :bind autoload points at "notdeft", so load it.
+    (require 'notdeft-mode))
 #+end_src
 
 ** Cypher Mode

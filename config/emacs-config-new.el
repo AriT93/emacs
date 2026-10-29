@@ -1605,8 +1605,13 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
   :init
   (setq notdeft-directory "~/Documents/org-roam/"
         notdeft-directories '("~/Documents/org-roam/")
+        notdeft-open-query-function #'notdeft-mode-open-query
         notdeft-xapian-program
-        (expand-file-name "~/dev/git/notdeft/xapian/notdeft-xapian")))
+        (expand-file-name "~/dev/git/notdeft/xapian/notdeft-xapian"))
+  :config
+  ;; Upstream split the `notdeft' command and its major mode into
+  ;; `notdeft-mode'; the :bind autoload points at "notdeft", so load it.
+  (require 'notdeft-mode))
 
 (use-package cypher-mode
   :defer t)
