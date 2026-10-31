@@ -635,6 +635,14 @@ fall back on and must use Emacs loopback pinentry instead."
   (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
   (lazy-highlight ((t (:background "DarkSeaGreen4")))));; (load-theme 'hc-zenburn t)
 (load-theme 'solarized-wombat-dark t)
+;; Highlight the current line; the theme's hl-line is too faint on the
+;; wombat background, so use a brighter slate that keeps text readable.
+(use-package hl-line
+  :straight nil
+  :custom-face
+  (hl-line ((t (:background "#3f4a55" :extend t))))
+  :config
+  (global-hl-line-mode 1))
 
 (use-package nerd-icons
   )
@@ -2677,13 +2685,11 @@ exercise when done so it picks up the PnP-aware tsserver."
 
 ;; LanguageTool via flymake. The config standardized on flymake in May 2026
 ;; (eglot is flymake-native), so LanguageTool now rides the same pipeline as
-;; everything else. Auto-enabled in plain text / markdown through the text-mode
-;; flymake-mode hook. Org is intentionally ON-DEMAND via `ari/languagetool-check'
-;; (C-c L) so org-roam buffers stay fast — flymake-mode is left off in org-mode
-;; (see the Flymake block above).
+;; everything else. It is ON-DEMAND only, via `ari/languagetool-check' (C-c L):
+;; never auto-enabled, so org-roam stays fast and transient buffers like magit
+;; commit messages don't fire off checks.
 (use-package flymake-languagetool
   :commands (flymake-languagetool-load flymake-languagetool-maybe-load)
-  :hook (text-mode . flymake-languagetool-load)
   :init
   (setq flymake-languagetool-server-jar ari/languagetool-server-jar)
   (setq flymake-languagetool-server-port "8081")   ; must be a string, not an integer
@@ -2724,6 +2730,14 @@ exercise when done so it picks up the PnP-aware tsserver."
   ;; `trusted-content', e.g. org-roam notes). LanguageTool only posts buffer text
   ;; to a local HTTP server and never executes it, so it is safe everywhere.
   (put 'flymake-languagetool--checker 'flymake-always-safe t)
+  ;; The async reply can arrive after its source buffer is gone (e.g. magit
+  ;; kills COMMIT_EDITMSG on C-c C-c); upstream's callback then errors with
+  ;; "Selecting deleted buffer". Drop the reply and clean up its buffer instead.
+  (define-advice flymake-languagetool--handle-finished
+      (:around (fn status source-buffer report-fn) skip-dead-source)
+    (if (buffer-live-p source-buffer)
+        (funcall fn status source-buffer report-fn)
+      (kill-buffer (current-buffer))))
   ;; Skip org directive lines (#+TITLE:, #+OPTIONS:, #+LATEX_HEADER:, #+LATEX: …),
   ;; which all carry the `org-meta-line' face — otherwise LaTeX headers and
   ;; directives raise grammar false positives. Export-block bodies are already
