@@ -637,11 +637,13 @@ fall back on and must use Emacs loopback pinentry instead."
 (load-theme 'solarized-wombat-dark t)
 ;; Highlight the current line; the theme's hl-line is too faint on the
 ;; wombat background, so use a brighter slate that keeps text readable.
+;; Use `custom-set-faces' (the `user' theme) rather than :custom-face:
+;; use-package's :custom-face only sets the defface spec, which any
+;; loaded theme's hl-line spec overrides.
 (use-package hl-line
   :straight nil
-  :custom-face
-  (hl-line ((t (:background "#3f4a55" :extend t))))
   :config
+  (custom-set-faces '(hl-line ((t (:background "#3f4a55" :extend t)))))
   (global-hl-line-mode 1))
 
 (use-package nerd-icons
