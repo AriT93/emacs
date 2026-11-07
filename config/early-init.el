@@ -18,6 +18,21 @@
       native-comp-speed 2
       native-comp-async-report-warnings-errors 'silent)
 
+;; Homebrew libgccjit's driver can't find gcc's libemutls_w/libgcc on its own
+;; ("ld: library 'emutls_w' not found").  Globbed so gcc upgrades don't break it.
+(when (eq system-type 'darwin)
+  (let ((dirs (seq-filter
+               #'file-directory-p
+               (append (file-expand-wildcards
+                        "/opt/homebrew/opt/gcc/lib/gcc/current/gcc/*/*")
+                       '("/opt/homebrew/opt/gcc/lib/gcc/current"
+                         "/opt/homebrew/opt/libgccjit/lib/gcc/current")))))
+    (when dirs
+      (setenv "LIBRARY_PATH"
+              (string-join (append dirs (split-string (or (getenv "LIBRARY_PATH") "")
+                                                      ":" t))
+                           ":")))))
+
 ;; Larger reads from subprocesses (LSP servers)
 (setq read-process-output-max (* 4 1024 1024))
 

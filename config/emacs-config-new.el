@@ -620,6 +620,7 @@ fall back on and must use Emacs loopback pinentry instead."
   (require 'doom-themes-ext-org))
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (add-to-list 'custom-theme-load-path "~/emacs/site")
+(add-to-list 'custom-theme-load-path "~/emacs/site/lisp")
 (use-package hc-zenburn-theme
   :custom-face
   (region ((t (:background "DarkOliveGreen"))))
@@ -634,7 +635,7 @@ fall back on and must use Emacs loopback pinentry instead."
   (consult-highlight-match ((t (:background "DarkSeaGreen4"))))
   (consult-highlight-mark ((t (:background "DarkSeaGreen4"))))
   (lazy-highlight ((t (:background "DarkSeaGreen4")))));; (load-theme 'hc-zenburn t)
-(load-theme 'solarized-wombat-dark t)
+(load-theme 'cobalt2 t)
 ;; Highlight the current line; the theme's hl-line is too faint on the
 ;; wombat background, so use a brighter slate that keeps text readable.
 ;; Use `custom-set-faces' (the `user' theme) rather than :custom-face:
