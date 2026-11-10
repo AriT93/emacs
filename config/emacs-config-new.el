@@ -1764,13 +1764,6 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "zw"  '(ari/find-unprocessed-insights :which-key "weekly review")
     "zO"  '(ari/find-orphan-references :which-key "orphan refs")
     "zc"  '(ari/find-connected-references :which-key "connected refs")
-    "q" '(:ignore t :which-key "copilot")
-    "qa" '(copilot-accept-completion :which-key "copilot-accept-completion")
-    "qd" '(copilot-diagnose :which-key "copilot-diagnose")
-    "ql" '(copilot-accept-completion-by-line :which-key "copilot-accept-completion-by-line")
-    "qw" '(copilot-accept-completion-by-word :which-key "copilot-accept-completion-by-word")
-    "qp" '(copilot-previous-completion :which-key "copilot-previous-completion")
-    "qn" '(copilot-next-completion :which-key "copilot-next-completion")
     "e" '(:ignore t :which-key "eglot")
     "ef" '(eglot-format :which-key "format buffer")
     "ea" '(eglot-code-actions :which-key "code actions")
@@ -1811,133 +1804,154 @@ TITLE is the node title, TAGS is a string like \":tag1:tag2:\", CONTENT is the b
     "cc" '(org-word-count :which-key "count region/buffer")
     "cs" '(org-wc-count-subtrees :which-key "count subtrees (property)")))
 
-(use-package copilot
-      :straight (:host github :repo "copilot-emacs/copilot.el"
-                 :branch "main"
-                :files ("*.el" (:exclude "copilot-chat.el")))
-      :defer 10  ; Defer copilot loading
+(use-package gptel-aibo
+      :straight (:host github :repo "dolmens/gptel-aibo"
+                 :branch "main")
+      :after gptel
+      :defer 15)  ; Defer gptel-aibo loading
+
+    (use-package shell-maker
+      :straight (:host github :repo "xenodium/shell-maker" :files ("*.el")))
+
+    (use-package chatgpt-shell
+      :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
+      :custom
+      ;; Functions, so ~/.authinfo.gpg is only decrypted on first use
+      (chatgpt-shell-openai-key
+       (lambda () (auth-source-pick-first-password :host "api.openai.com" :user "apikey")))
+      (chatgpt-shell-anthropic-key
+       (lambda () (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey")))
       :config
-      ;; you can utilize :map :hook and :config to customize copilot
-      (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion))
-
-  (use-package gptel-aibo
-    :straight (:host github :repo "dolmens/gptel-aibo"
-               :branch "main")
-    :after gptel
-    :defer 15)  ; Defer gptel-aibo loading
-
-  (use-package shell-maker
-    :straight (:host github :repo "xenodium/shell-maker" :files ("*.el")))
-
-  (use-package chatgpt-shell
-    :straight (:host github :repo "xenodium/chatgpt-shell" :files ("*.el"))
-    :custom
-    ;; Functions, so ~/.authinfo.gpg is only decrypted on first use
-    (chatgpt-shell-openai-key
-     (lambda () (auth-source-pick-first-password :host "api.openai.com" :user "apikey")))
-    (chatgpt-shell-anthropic-key
-     (lambda () (auth-source-pick-first-password :host "api.anthropic.com" :user "apiKey")))
+      (require 'chatgpt-shell)
+      ;; Default to local Ollama (free); API models remain selectable.
+      ;; Model list is queried from Ollama, so no-op if it isn't running.
+      (ignore-errors (chatgpt-shell-ollama-load-models))
+      (setq chatgpt-shell-model-version "qwen3.5-9b-mlx-64k")) ; chatgpt-shell drops ":latest"
+  (use-package acp
+    :defer t)  ; required by agent-shell
+  ;; claude-code-ide: runs Claude Code in a terminal buffer and gives it an
+  ;; MCP server inside THIS Emacs (project, xref, tree-sitter, imenu).
+  ;; Replaces the old broken "emacs" MCP entry in ~/.claude.json. Complements
+  ;; agent-shell (ACP chat buffer) rather than replacing it.
+  (use-package claude-code-ide
+    :straight (:host github :repo "manzaltu/claude-code-ide.el")
+    :bind ("C-c C-'" . claude-code-ide-menu)
     :config
-    (require 'chatgpt-shell)
-    ;; Default to local Ollama (free); API models remain selectable.
-    ;; Model list is queried from Ollama, so no-op if it isn't running.
-    (ignore-errors (chatgpt-shell-ollama-load-models))
-    (setq chatgpt-shell-model-version "qwen3.5-9b-mlx-64k")) ; chatgpt-shell drops ":latest"
-(use-package acp
-  :defer t)  ; required by agent-shell
-;; claude-code-ide: runs Claude Code in a terminal buffer and gives it an
-;; MCP server inside THIS Emacs (project, xref, tree-sitter, imenu).
-;; Replaces the old broken "emacs" MCP entry in ~/.claude.json. Complements
-;; agent-shell (ACP chat buffer) rather than replacing it.
-(use-package claude-code-ide
-  :straight (:host github :repo "manzaltu/claude-code-ide.el")
-  :bind ("C-c C-'" . claude-code-ide-menu)
-  :config
-  ;; Use the same claude as the shell (a stale npm copy is first on
-  ;; Emacs's exec-path on the Mac)
-  (let ((local (expand-file-name "~/.local/bin/claude")))
-    (when (file-executable-p local)
-      (setq claude-code-ide-cli-path local)))
-  (setq claude-code-ide-terminal-backend 'vterm)
-  (claude-code-ide-emacs-tools-setup))
+    ;; Use the same claude as the shell (a stale npm copy is first on
+    ;; Emacs's exec-path on the Mac)
+    (let ((local (expand-file-name "~/.local/bin/claude")))
+      (when (file-executable-p local)
+        (setq claude-code-ide-cli-path local)))
+    (setq claude-code-ide-terminal-backend 'vterm)
+    (claude-code-ide-emacs-tools-setup))
 
-(use-package agent-shell
-  ;; Built from the local checkout (whatever branch is checked out there);
-  ;; straight clones it to ~/dev/git on a machine that doesn't have it.
-  :straight (:local-repo "~/dev/git/agent-shell"
-             :host github :repo "xenodium/agent-shell")
-  :defer t
-  :config
-  (setq agent-shell-anthropic-authentication
-        (agent-shell-anthropic-make-authentication :login t))
-  (setq agent-shell-anthropic-claude-acp-command
-        (list (expand-file-name "~/n/bin/claude-agent-acp")))
-  (setq agent-shell-session-strategy 'new)
-  ;; n (node version manager) puts node in ~/n/bin, but Emacs's subprocess
-  ;; PATH comes from a login shell that sources .zprofile, not .zshrc.
-  ;; Inject n/bin so the claude-agent-acp shebang (#!/usr/bin/env node) resolves.
-  (setq agent-shell-anthropic-claude-environment
-        (list (format "PATH=%s:%s"
-                      (expand-file-name "~/n/bin")
-                      (getenv "PATH")))))
-
-  (use-package gptel
+  (use-package agent-shell
+    ;; Built from the local checkout (whatever branch is checked out there);
+    ;; straight clones it to ~/dev/git on a machine that doesn't have it.
+    :straight (:local-repo "~/dev/git/agent-shell"
+               :host github :repo "xenodium/agent-shell")
     :defer t
     :config
-    (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
+    (setq agent-shell-anthropic-authentication
+          (agent-shell-anthropic-make-authentication :login t))
+    (setq agent-shell-anthropic-claude-acp-command
+          (list (or (executable-find "claude-agent-acp")
+                    (expand-file-name "~/n/bin/claude-agent-acp"))))
+    (setq agent-shell-openai-authentication
+          (agent-shell-openai-make-authentication :login t))
+    (setq agent-shell-session-strategy 'new)
+    ;; n (node version manager) puts node in ~/n/bin, but Emacs's subprocess
+    ;; PATH comes from a login shell that sources .zprofile, not .zshrc.
+    ;; Inject n/bin so the claude-agent-acp shebang (#!/usr/bin/env node) resolves.
+    (setq agent-shell-anthropic-claude-environment
+          (list (format "PATH=%s:%s"
+                        (expand-file-name "~/n/bin")
+                        (getenv "PATH")))))
 
-  (use-package copilot-chat
-    :straight (:host github :repo "chep/copilot-chat.el"
-               :branch "master"
-               :files ("*.el"))
-    :after copilot
-    :defer 15
+  ;; magit-hutch: local code review in magit (`d' then `R'), runs on gptel,
+  ;; so it uses the default gptel backend above (ChatGPT subscription OAuth).
+  (use-package hutch
+    :straight (:host github :repo "adjaecent/magit-hutch")
+    :after magit
+    :config
+    ;; Function, not a variable: appends "R" to the `d' (magit-diff) transient.
+    (hutch-add-review-binding)
+
+    ;; TEMPORARY SHIM (remove when magit-hutch supports streaming backends).
+    ;; The ChatGPT-subscription (Codex) endpoint rejects non-streamed requests
+    ;; ("Stream must be set to true"), and hutch neither requests streaming nor
+    ;; copes with streamed callbacks (text chunks, bare `t' end events).
+    (defun my/hutch-force-stream (orig prompt &rest keys)
+      "Request streaming from OAuth backends, which require it."
+      (apply orig prompt
+             (if (and (gptel-openai-oauth-p gptel-backend)
+                      (not (plist-member keys :stream)))
+                 (append keys '(:stream t))
+               keys)))
+    (defun my/hutch-ignore-stream-events (orig response info &rest args)
+      "Drop streamed partials hutch would misread as failures.
+Text chunks are ignored.  A bare `t' end-of-stream event is ignored while
+tool calls are pending or once submit_review has fired (ARGS' 4th element
+is hutch's result box); otherwise it passes through as an error."
+      (unless (or (stringp response)
+                  (and (eq response t)
+                       (or (plist-get info :tool-use)
+                           (hutch--result-box-get (nth 3 args)))))
+        (apply orig response info args)))
+    (advice-add 'gptel-request :around #'my/hutch-force-stream)
+    (advice-add 'hutch--agent-request :around #'my/hutch-ignore-stream-events))
+
+    (use-package gptel
+      :defer t
+      :config
+      (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
+
+    ;; gptel presets - named bundles of model + system prompt + settings
+    ;; Apply with @preset-name in a prompt, or via the transient menu
+    (with-eval-after-load 'gptel
+      (gptel-make-ollama "Ollama"
+        :host "localhost:11434"
+        :stream t
+        :models '(qwen3.5-9b-mlx-64k:latest    ; `ollama list'
+                  qwen3.5:9b-mlx
+                  gemma4-12b-64k:latest))
+      ;; Key as a function: looked up (and authinfo decrypted) on first use
+      (gptel-make-gemini "Gemini"
+        :key #'gptel-api-key-from-auth-source
+        :stream t)
+      (gptel-make-preset 'coding
+        :description "Code generation and review"
+        :system "You are an expert programmer. Provide concise, correct code with brief explanations. Prefer idiomatic solutions. No unnecessary prose."
+        :temperature 0.2)
+      (gptel-make-preset 'writing
+        :description "Writing and documentation"
+        :system "You are a helpful writing assistant. Be clear and concise, maintaining the author's voice."
+        :temperature 0.7)
+      ;; Default: ChatGPT/Codex via subscription OAuth (no API key, no
+      ;; per-token cost). First use: M-x gptel-openai-oauth-login.
+      ;; Ollama and Gemini stay available from the gptel menu.
+      ;; Model order matters: hutch uses the FIRST model of its backend, and
+      ;; gpt-5.5 / gpt-6-astra (the stock defaults) are rejected on ChatGPT
+      ;; accounts ("not supported when using Codex with a ChatGPT account").
+      (setq gptel-backend (gptel-make-openai-oauth "ChatGPT"
+                            :models '(gpt-6.1-sol gpt-6.1-terra gpt-6-sol
+                                      gpt-6-luna gpt-5.6-sol gpt-5.6-terra
+                                      gpt-5.6-luna))
+            gptel-model 'gpt-6.1-sol)
+      ;; magit-hutch reviews with the same subscription-backed backend.
+      (setq hutch-backend gptel-backend))
+
+      (use-package ob-chatgpt-shell
+        :straight t)
+      (require 'ob-chatgpt-shell)
+      (ob-chatgpt-shell-setup)
+    (use-package aidermacs
+    :bind (("C-c a" . aidermacs-transient-menu))
     :custom
-    (copilot-chat-backend 'curl)
-    (copilot-chat-frontend 'org)
-    (copilot-chat-default-model "claude-sonnet-5")
-    (copilot-chat-model-ignore-picker t))
+    ;; Local Ollama model (free). `aidermacs-use-architect-mode' is obsolete.
+    (aidermacs-default-model "ollama_chat/qwen3.5-9b-mlx-64k:latest"))
 
-
-
-  ;; gptel presets - named bundles of model + system prompt + settings
-  ;; Apply with @preset-name in a prompt, or via the transient menu
-  (with-eval-after-load 'gptel
-    (gptel-make-ollama "Ollama"
-      :host "localhost:11434"
-      :stream t
-      :models '(qwen3.5-9b-mlx-64k:latest    ; `ollama list'
-                qwen3.5:9b-mlx
-                gemma4-12b-64k:latest))
-    ;; Key as a function: looked up (and authinfo decrypted) on first use
-    (gptel-make-gemini "Gemini"
-      :key #'gptel-api-key-from-auth-source
-      :stream t)
-    (gptel-make-preset 'coding
-      :description "Code generation and review"
-      :system "You are an expert programmer. Provide concise, correct code with brief explanations. Prefer idiomatic solutions. No unnecessary prose."
-      :temperature 0.2)
-    (gptel-make-preset 'writing
-      :description "Writing and documentation"
-      :system "You are a helpful writing assistant. Be clear and concise, maintaining the author's voice."
-      :temperature 0.7)
-    ;; Default: Claude via the GitHub Copilot subscription (no per-token
-    ;; cost). First use runs `gptel-gh-login' (GitHub device-code flow).
-    ;; Ollama and Gemini stay available from the gptel menu.
-    (setq gptel-backend (gptel-make-gh-copilot "Copilot")
-          gptel-model 'claude-sonnet-5))
-
-    (use-package ob-chatgpt-shell
-      :straight t)
-    (require 'ob-chatgpt-shell)
-    (ob-chatgpt-shell-setup)
-  (use-package aidermacs
-  :bind (("C-c a" . aidermacs-transient-menu))
-  :custom
-  ;; Local Ollama model (free). `aidermacs-use-architect-mode' is obsolete.
-  (aidermacs-default-model "ollama_chat/qwen3.5-9b-mlx-64k:latest"))
-
-  ;; aider removed - aidermacs above is the active aider integration
+    ;; aider removed - aidermacs above is the active aider integration
 
 (use-package magit-delta
   :hook

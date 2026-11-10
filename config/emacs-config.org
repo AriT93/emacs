@@ -2079,13 +2079,6 @@ Da General give command-t like ease to emacs
       "zw"  '(ari/find-unprocessed-insights :which-key "weekly review")
       "zO"  '(ari/find-orphan-references :which-key "orphan refs")
       "zc"  '(ari/find-connected-references :which-key "connected refs")
-      "q" '(:ignore t :which-key "copilot")
-      "qa" '(copilot-accept-completion :which-key "copilot-accept-completion")
-      "qd" '(copilot-diagnose :which-key "copilot-diagnose")
-      "ql" '(copilot-accept-completion-by-line :which-key "copilot-accept-completion-by-line")
-      "qw" '(copilot-accept-completion-by-word :which-key "copilot-accept-completion-by-word")
-      "qp" '(copilot-previous-completion :which-key "copilot-previous-completion")
-      "qn" '(copilot-next-completion :which-key "copilot-next-completion")
       "e" '(:ignore t :which-key "eglot")
       "ef" '(eglot-format :which-key "format buffer")
       "ea" '(eglot-code-actions :which-key "code actions")
@@ -2128,15 +2121,6 @@ Da General give command-t like ease to emacs
 #+end_src
 ** Copilot and other AI tools
 #+begin_src elisp
-      (use-package copilot
-        :straight (:host github :repo "copilot-emacs/copilot.el"
-                   :branch "main"
-                  :files ("*.el" (:exclude "copilot-chat.el")))
-        :defer 10  ; Defer copilot loading
-        :config
-        ;; you can utilize :map :hook and :config to customize copilot
-        (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion))
-
     (use-package gptel-aibo
       :straight (:host github :repo "dolmens/gptel-aibo"
                  :branch "main")
@@ -2188,7 +2172,10 @@ Da General give command-t like ease to emacs
     (setq agent-shell-anthropic-authentication
           (agent-shell-anthropic-make-authentication :login t))
     (setq agent-shell-anthropic-claude-acp-command
-          (list (expand-file-name "~/n/bin/claude-agent-acp")))
+          (list (or (executable-find "claude-agent-acp")
+                    (expand-file-name "~/n/bin/claude-agent-acp"))))
+    (setq agent-shell-openai-authentication
+          (agent-shell-openai-make-authentication :login t))
     (setq agent-shell-session-strategy 'new)
     ;; n (node version manager) puts node in ~/n/bin, but Emacs's subprocess
     ;; PATH comes from a login shell that sources .zprofile, not .zshrc.
@@ -2198,24 +2185,43 @@ Da General give command-t like ease to emacs
                         (expand-file-name "~/n/bin")
                         (getenv "PATH")))))
 
+  ;; magit-hutch: local code review in magit (`d' then `R'), runs on gptel,
+  ;; so it uses the default gptel backend above (ChatGPT subscription OAuth).
+  (use-package hutch
+    :straight (:host github :repo "adjaecent/magit-hutch")
+    :after magit
+    :config
+    ;; Function, not a variable: appends "R" to the `d' (magit-diff) transient.
+    (hutch-add-review-binding)
+
+    ;; TEMPORARY SHIM (remove when magit-hutch supports streaming backends).
+    ;; The ChatGPT-subscription (Codex) endpoint rejects non-streamed requests
+    ;; ("Stream must be set to true"), and hutch neither requests streaming nor
+    ;; copes with streamed callbacks (text chunks, bare `t' end events).
+    (defun my/hutch-force-stream (orig prompt &rest keys)
+      "Request streaming from OAuth backends, which require it."
+      (apply orig prompt
+             (if (and (gptel-openai-oauth-p gptel-backend)
+                      (not (plist-member keys :stream)))
+                 (append keys '(:stream t))
+               keys)))
+    (defun my/hutch-ignore-stream-events (orig response info &rest args)
+      "Drop streamed partials hutch would misread as failures.
+Text chunks are ignored.  A bare `t' end-of-stream event is ignored while
+tool calls are pending or once submit_review has fired (ARGS' 4th element
+is hutch's result box); otherwise it passes through as an error."
+      (unless (or (stringp response)
+                  (and (eq response t)
+                       (or (plist-get info :tool-use)
+                           (hutch--result-box-get (nth 3 args)))))
+        (apply orig response info args)))
+    (advice-add 'gptel-request :around #'my/hutch-force-stream)
+    (advice-add 'hutch--agent-request :around #'my/hutch-ignore-stream-events))
+
     (use-package gptel
       :defer t
       :config
       (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll))
-
-    (use-package copilot-chat
-      :straight (:host github :repo "chep/copilot-chat.el"
-                 :branch "master"
-                 :files ("*.el"))
-      :after copilot
-      :defer 15
-      :custom
-      (copilot-chat-backend 'curl)
-      (copilot-chat-frontend 'org)
-      (copilot-chat-default-model "claude-sonnet-5")
-      (copilot-chat-model-ignore-picker t))
-
-
 
     ;; gptel presets - named bundles of model + system prompt + settings
     ;; Apply with @preset-name in a prompt, or via the transient menu
@@ -2238,11 +2244,19 @@ Da General give command-t like ease to emacs
         :description "Writing and documentation"
         :system "You are a helpful writing assistant. Be clear and concise, maintaining the author's voice."
         :temperature 0.7)
-      ;; Default: Claude via the GitHub Copilot subscription (no per-token
-      ;; cost). First use runs `gptel-gh-login' (GitHub device-code flow).
+      ;; Default: ChatGPT/Codex via subscription OAuth (no API key, no
+      ;; per-token cost). First use: M-x gptel-openai-oauth-login.
       ;; Ollama and Gemini stay available from the gptel menu.
-      (setq gptel-backend (gptel-make-gh-copilot "Copilot")
-            gptel-model 'claude-sonnet-5))
+      ;; Model order matters: hutch uses the FIRST model of its backend, and
+      ;; gpt-5.5 / gpt-6-astra (the stock defaults) are rejected on ChatGPT
+      ;; accounts ("not supported when using Codex with a ChatGPT account").
+      (setq gptel-backend (gptel-make-openai-oauth "ChatGPT"
+                            :models '(gpt-6.1-sol gpt-6.1-terra gpt-6-sol
+                                      gpt-6-luna gpt-5.6-sol gpt-5.6-terra
+                                      gpt-5.6-luna))
+            gptel-model 'gpt-6.1-sol)
+      ;; magit-hutch reviews with the same subscription-backed backend.
+      (setq hutch-backend gptel-backend))
 
       (use-package ob-chatgpt-shell
         :straight t)

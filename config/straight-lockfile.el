@@ -17,8 +17,6 @@
  ("consult" . "a64569f377b8bc0f62e1d2ae0f3ee48ba4a7cc1c")
  ("consult-eglot" . "3e4d9a40911b897c0a2c5d20199d0f7c30bfc1c2")
  ("consult-project-extra" . "52c453b7f85dea90cc53ff8fba750795606415df")
- ("copilot-chat.el" . "f8efb3673a14b7bfd1787778eed9cf05ef670f80")
- ("copilot.el" . "56c043ae5078c4f8e13538c45f2a4227c9c1eb00")
  ("corfu" . "15fed49c97bf6b2436641714ae15bbd2f3e37b77")
  ("cucumber.el" . "8d43c37ddf986af769870da27c31c1911f35b205")
  ("cypher-mode" . "ce8543d7877c736c574a17b49874c9dcdc7a06d6")
