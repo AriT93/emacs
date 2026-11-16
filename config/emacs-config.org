@@ -341,6 +341,7 @@ want from faces
     (setq blog-repo "~/blog/")  ; a dedicated clone of ari/turetzky.org on branch master (see site/blog/blog.el)
     (add-hook 'diary-display-hook 'fancy-diary-display)
     (add-hook 'text-mode-hook 'turn-on-auto-fill)
+    (add-hook 'prog-mode-hook (lambda () (setq-local fill-column 80)))  ; org prose uses 120
     (add-hook 'before-save-hook 'time-stamp)
     (setq dired-omit-files-p t)
     (setq tramp-auto-save-directory "~/tmp")
@@ -984,6 +985,10 @@ eventually to make it more manageable
   ;; `org-fill-paragraph', which leaves src blocks and tables alone.
   (use-package aggressive-fill-paragraph
     :hook (org-mode . aggressive-fill-paragraph-mode))
+
+  ;; Wider lines for org prose: 120 columns reads and writes more naturally
+  ;; than the default 70. Buffer-local so other text modes keep their width.
+  (add-hook 'org-mode-hook (lambda () (setq-local fill-column 120)))
 #+END_SRC
 
 #+BEGIN_SRC elisp
@@ -1312,8 +1317,50 @@ eventually to make it more manageable
 #+BEGIN_SRC elisp
   (use-package olivetti
     :after org
+    :hook (olivetti-mode-on . ari/olivetti-fit-fill-column)
     :config
-    (setq olivetti-minimum-body-width 40))
+    (setq olivetti-body-width 120
+          olivetti-minimum-body-width 40))
+
+  ;; Keep olivetti's page in line with org's 120-column fill. An integer
+  ;; `olivetti-body-width' counts monospace columns (scaled by the remapped
+  ;; default height), but org prose is in proportional `ari/org-prose', so
+  ;; 120 filled characters render narrower than 120 columns and the page
+  ;; ends up far wider than the text. Size the page to the widest filled
+  ;; line as actually displayed instead.
+  (defun ari/olivetti--widest-filled-line (window)
+    "Pixel width in WINDOW of the widest prose line filled near `fill-column'.
+  Skips headings, tables, keywords and src blocks; nil if there are none."
+    (save-excursion
+      (goto-char (point-min))
+      (let ((widest nil) (seen 0))
+        (while (and (not (eobp)) (< seen 300))
+          (let* ((b (line-beginning-position)) (e (line-end-position))
+                 (len (- e b)))
+            (when (and (<= (- fill-column 15) len (+ fill-column 15))
+                       (not (org-at-heading-p))
+                       (not (looking-at-p "[ \t]*[|#:]"))
+                       (not (org-in-src-block-p)))
+              (setq seen (1+ seen)
+                    widest (max (or widest 0)
+                                (car (window-text-pixel-size window b e))))))
+          (forward-line 1))
+        widest)))
+
+  (defun ari/olivetti-fit-fill-column ()
+    "Size the olivetti body in org buffers to fit text filled at `fill-column'."
+    (when (and (derived-mode-p 'org-mode) (display-graphic-p))
+      (let* ((window (get-buffer-window nil t))
+             (cw (frame-char-width))
+             (scale (/ (olivetti-scale-width 1000) 1000.0))
+             (widest (and window (ari/olivetti--widest-filled-line window)))
+             ;; Two columns of slack; with nothing filled yet, assume prose
+             ;; runs ~90% as wide as monospace (measured ~85% for this face).
+             (target (if widest
+                         (+ widest (* 2 cw))
+                       (* 0.9 fill-column cw scale))))
+        (setq-local olivetti-body-width (ceiling target (* cw scale)))
+        (olivetti-set-buffer-windows))))
 
   ;; logos: focus mode for drafting. Headings count as "pages", so
   ;; C-x n n narrows to the current scene/chapter and C-x ]/[ move between
@@ -1561,18 +1608,93 @@ This is kinda like that part in the bible with all the begats...
   (with-eval-after-load 'org-roam (require 'org-roam-protocol))
   (use-package haml-mode
     :defer 2)
-  ;; pulse.el (built-in) replaces beacon - flash line on jumps
+  ;; pulse.el (built-in): flash the cursor line so it's easy to find after
+  ;; moving around -- on any jump of 10+ lines (paging, search, xref, goto),
+  ;; when switching windows, and on C-l. The flash starts in the cursor's
+  ;; colour and fades into the background.
   (require 'pulse)
   (setq pulse-iterations 10)
   (setq pulse-delay 0.04)
+  (defun ari/pulse-set-color (&rest _)
+    "Start the pulse in the current theme's cursor colour."
+    (set-face-background 'pulse-highlight-start-face
+                         (face-background 'cursor nil t)))
+  (ari/pulse-set-color)
+  (advice-add 'load-theme :after #'ari/pulse-set-color)
+
   (defun pulse-line (&rest _)
     "Pulse the current line."
+    (interactive)
     (pulse-momentary-highlight-one-line (point)))
-  (dolist (cmd '(scroll-up-command scroll-down-command
-                 recenter-top-bottom other-window
-                 ace-window windmove-up windmove-down
-                 windmove-left windmove-right))
-    (advice-add cmd :after #'pulse-line))
+  ;; Find Cursor, like iTerm's Cmd-/: s-/ (Option-/ -- Option is super here, Cmd
+  ;; is meta) dims the rest of the window, turns the cursor into a block,
+  ;; and blinks a spot around it.
+  (defvar ari/find-cursor--overlays nil)
+  (defvar ari/find-cursor--timers nil)
+  (defvar ari/find-cursor--cursor nil
+    "(BUFFER LOCALP CURSOR-TYPE) to restore once the spotlight ends.")
+  (defun ari/find-cursor--clear ()
+    (mapc #'cancel-timer ari/find-cursor--timers)
+    (mapc #'delete-overlay ari/find-cursor--overlays)
+    (setq ari/find-cursor--timers nil ari/find-cursor--overlays nil)
+    (when ari/find-cursor--cursor
+      (pcase-let ((`(,buf ,localp ,type) ari/find-cursor--cursor))
+        (when (buffer-live-p buf)
+          (with-current-buffer buf
+            (if localp
+                (setq-local cursor-type type)
+              (kill-local-variable 'cursor-type)))))
+      (setq ari/find-cursor--cursor nil)))
+  (defun ari/find-cursor ()
+    "Spotlight point: dim the window and blink a highlight around the cursor.
+  The cursor is a box for the duration, even where it's normally a bar."
+    (interactive)
+    (ari/find-cursor--clear)
+    (setq ari/find-cursor--cursor
+          (list (current-buffer) (local-variable-p 'cursor-type) cursor-type))
+    (setq-local cursor-type 'box)
+    (let* ((win (selected-window))
+           (beg (max (line-beginning-position) (- (point) 3)))
+           (end (min (line-end-position) (+ (point) 4)))
+           (dim (make-overlay (window-start win) (window-end win t)))
+           (spot (make-overlay beg end))
+           (lit `(:background ,(face-background 'cursor nil t)
+                  :foreground ,(face-background 'default nil t)))
+           ;; Empty line or end of buffer: show a lit block where the text isn't.
+           (pad (and (= beg end) (propertize "   " 'face lit))))
+      (overlay-put dim 'face 'shadow)
+      (overlay-put dim 'window win)
+      (overlay-put spot 'window win)
+      (overlay-put spot 'priority 1000)
+      (setq ari/find-cursor--overlays (list dim spot))
+      (dotimes (i 6)
+        (let ((on (= 0 (% i 2))))
+          (push (run-at-time (* i 0.12) nil
+                             (lambda ()
+                               (if pad
+                                   (overlay-put spot 'before-string (and on pad))
+                                 (overlay-put spot 'face (and on lit)))))
+                ari/find-cursor--timers)))
+      (push (run-at-time 0.75 nil #'ari/find-cursor--clear) ari/find-cursor--timers)))
+  (global-set-key (kbd "s-/") #'ari/find-cursor)  ; Option-. never reaches Emacs
+  (advice-add 'recenter-top-bottom :after #'pulse-line)
+
+  (defvar ari/pulse--last nil
+    "(WINDOW BUFFER POINT) after the previous command.")
+  (defun ari/pulse-after-jump ()
+    "Pulse the line when point jumped 10+ lines or the selected window changed.
+  Wheel/trackpad scrolling is skipped so it doesn't flash continuously."
+    (let ((win (selected-window)) (buf (current-buffer)) (pt (point)))
+      (when (and ari/pulse--last
+                 (not (minibufferp))
+                 (not (memq this-command '(mwheel-scroll pixel-scroll-precision
+                                           ultra-scroll ultra-scroll-mac)))
+                 (or (not (eq win (nth 0 ari/pulse--last)))
+                     (and (eq buf (nth 1 ari/pulse--last))
+                          (>= (count-lines pt (nth 2 ari/pulse--last)) 10))))
+        (pulse-line))
+      (setq ari/pulse--last (list win buf pt))))
+  (add-hook 'post-command-hook #'ari/pulse-after-jump)
   (use-package rainbow-mode
     :defer 2)
   (use-package rainbow-delimiters
